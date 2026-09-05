@@ -7,7 +7,7 @@ Laravel 通过提供官方的插件和 Blade 指令，与 Vite 无缝集成，�
 ## 安装与配置
 
 > [!NOTE]
-> 以下文档介绍了如何手动安装和配置 Laravel Vite 插件。不过，Laravel 的 [入门套件](/docs/{{version}}/starter-kits) 已经包含了所有这些脚手架，是上手 Laravel 与 Vite 最快的方式。
+> 以下文档介绍了如何手动安装和配置 Laravel Vite 插件。不过，Laravel 的 [入门套件](/topic/Laravel%2013.x/kl9nop7vz4.html) 已经包含了所有这些脚手架，是上手 Laravel 与 Vite 最快的方式。
 
 ### 安装 Node
 
@@ -76,13 +76,13 @@ import './bootstrap';
 import '../css/app.css'; // [tl! add]
 ```
 
-Laravel 插件还支持多入口点以及高级配置选项，例如 [SSR 入口点](#ssr)。
+Laravel 插件还支持多入口点以及高级配置选项，例如 SSR 入口点。
 
 #### 使用安全的开发服务器
 
 如果你的本地开发 Web 服务器通过 HTTPS 为应用提供服务，在连接 Vite 开发服务器时可能会遇到问题。
 
-如果你在使用 [Laravel Herd](https://herd.laravel.com) 并已为站点启用安全访问，或者你在使用 [Laravel Valet](/docs/{{version}}/valet) 并已对应用执行过 [secure 命令](/docs/{{version}}/valet#securing-sites)，Laravel Vite 插件会自动检测并使用生成的 TLS 证书。
+如果你在使用 [Laravel Herd](https://herd.laravel.com) 并已为站点启用安全访问，或者你在使用 [Laravel Valet](/topic/Laravel%2013.x/xq9zr33vdo.html) 并已对应用执行过 [secure 命令](/topic/Laravel%2013.x/xq9zr33vdo.html)，Laravel Vite 插件会自动检测并使用生成的 TLS 证书。
 
 如果你使用的主机名与应用目录名不匹配，可以在应用的 `vite.config.js` 文件中手动指定主机：
 
@@ -125,7 +125,7 @@ export default defineConfig({
 
 #### 在 Sail 与 WSL2 中运行开发服务器
 
-在 Windows 子系统 Linux 2（WSL2）的 [Laravel Sail](/docs/{{version}}/sail) 中运行 Vite 开发服务器时，你应当向下应用的 `vite.config.js` 文件中添加以下配置，以确保浏览器能够与开发服务器通信：
+在 Windows 子系统 Linux 2（WSL2）的 [Laravel Sail](/topic/Laravel%2013.x/e296opw9q7.html) 中运行 Vite 开发服务器时，你应当向下应用的 `vite.config.js` 文件中添加以下配置，以确保浏览器能够与开发服务器通信：
 
 ```js
 // ...
@@ -213,7 +213,7 @@ npm run dev
 npm run build
 ```
 
-如果你在 WSL2 的 [Sail](/docs/{{version}}/sail) 中运行开发服务器，可能需要一些 [额外的配置](#configuring-hmr-in-sail-on-wsl2) 选项。
+如果你在 WSL2 的 [Sail](/topic/Laravel%2013.x/e296opw9q7.html) 中运行开发服务器，可能需要一些 额外的配置 选项。
 
 ## 使用 JavaScript
 
@@ -283,7 +283,7 @@ export default defineConfig({
 ```
 
 > [!NOTE]
-> Laravel 的 [入门套件](/docs/{{version}}/starter-kits) 已经包含了正确的 Laravel、Vue 和 Vite 配置。这些套件是上手 Laravel、Vue 和 Vite 最快的方式。
+> Laravel 的 [入门套件](/topic/Laravel%2013.x/kl9nop7vz4.html) 已经包含了正确的 Laravel、Vue 和 Vite 配置。这些套件是上手 Laravel、Vue 和 Vite 最快的方式。
 
 ### React
 
@@ -308,7 +308,7 @@ export default defineConfig({
 });
 ```
 
-你需要确保所有包含 JSX 的文件都带有 `.jsx` 或 `.tsx` 扩展名，并在需要时（如 [上文所示](#configuring-vite)）更新你的入口点。
+你需要确保所有包含 JSX 的文件都带有 `.jsx` 或 `.tsx` 扩展名，并在需要时（如 上文所示）更新你的入口点。
 
 你还需要在现有的 `@vite` 指令旁包含额外的 `@viteReactRefresh` Blade 指令。
 
@@ -320,7 +320,7 @@ export default defineConfig({
 `@viteReactRefresh` 指令必须在 `@vite` 指令之前调用。
 
 > [!NOTE]
-> Laravel 的 [入门套件](/docs/{{version}}/starter-kits) 已经包含了正确的 Laravel、React 和 Vite 配置。这些套件是上手 Laravel、React 和 Vite 最快的方式。
+> Laravel 的 [入门套件](/topic/Laravel%2013.x/kl9nop7vz4.html) 已经包含了正确的 Laravel、React 和 Vite 配置。这些套件是上手 Laravel、React 和 Vite 最快的方式。
 
 ### Svelte
 
@@ -350,7 +350,7 @@ export default defineConfig({
 ```
 
 > [!NOTE]
-> Laravel 的 [入门套件](/docs/{{version}}/starter-kits) 已经包含了正确的 Laravel、Svelte 和 Vite 配置。这些套件是上手 Laravel、Svelte 和 Vite 最快的方式。
+> Laravel 的 [入门套件](/topic/Laravel%2013.x/kl9nop7vz4.html) 已经包含了正确的 Laravel、Svelte 和 Vite 配置。这些套件是上手 Laravel、Svelte 和 Vite 最快的方式。
 
 ### Inertia
 
@@ -371,14 +371,14 @@ createInertiaApp({
 });
 ```
 
-如果你在 Inertia 中使用 Vite 的代码分割功能，我们建议配置 [资源预取](#asset-prefetching)。
+如果你在 Inertia 中使用 Vite 的代码分割功能，我们建议配置 资源预取。
 
 > [!NOTE]
-> Laravel 的 [入门套件](/docs/{{version}}/starter-kits) 已经包含了正确的 Laravel、Inertia 和 Vite 配置。这些套件是上手 Laravel、Inertia 和 Vite 最快的方式。
+> Laravel 的 [入门套件](/topic/Laravel%2013.x/kl9nop7vz4.html) 已经包含了正确的 Laravel、Inertia 和 Vite 配置。这些套件是上手 Laravel、Inertia 和 Vite 最快的方式。
 
 ### URL 处理
 
-在使用 Vite 并引用应用 HTML、CSS 或 JS 中的资源时，有几个注意事项。首先，如果你使用绝对路径引用资源，Vite 不会将该资源纳入构建；因此，你应当确保该资源在 public 目录中可用。在使用 [专用 CSS 入口点](#configuring-vite) 时，应避免使用绝对路径，因为在开发期间，浏览器会尝试从托管 CSS 的 Vite 开发服务器（而非 public 目录）加载这些路径。
+在使用 Vite 并引用应用 HTML、CSS 或 JS 中的资源时，有几个注意事项。首先，如果你使用绝对路径引用资源，Vite 不会将该资源纳入构建；因此，你应当确保该资源在 public 目录中可用。在使用 专用 CSS 入口点 时，应避免使用绝对路径，因为在开发期间，浏览器会尝试从托管 CSS 的 Vite 开发服务器（而非 public 目录）加载这些路径。
 
 引用相对资源路径时，你应当记住，路径是相对于引用它们的文件而言的。任何通过相对路径引用的资源都会被 Vite 重写、版本化并打包。
 
@@ -408,7 +408,7 @@ resources/
 ## 使用样式表
 
 > [!NOTE]
-> Laravel 的 [入门套件](/docs/{{version}}/starter-kits) 已经包含了正确的 Tailwind 和 Vite 配置。或者，如果你想在不使用入门套件的情况下将 Tailwind 与 Laravel 配合使用，请查看 [Tailwind 针对 Laravel 的安装指南](https://tailwindcss.com/docs/guides/laravel)。
+> Laravel 的 [入门套件](/topic/Laravel%2013.x/kl9nop7vz4.html) 已经包含了正确的 Tailwind 和 Vite 配置。或者，如果你想在不使用入门套件的情况下将 Tailwind 与 Laravel 配合使用，请查看 [Tailwind 针对 Laravel 的安装指南](https://tailwindcss.com/docs/guides/laravel)。
 
 所有 Laravel 应用都已经包含了 Tailwind 以及一个配置正确的 `vite.config.js` 文件。因此，你只需启动 Vite 开发服务器，或运行 `dev` Composer 命令，它会同时启动 Laravel 和 Vite 开发服务器：
 
@@ -420,7 +420,7 @@ composer run dev
 
 ## 使用字体
 
-Laravel Vite 插件可以为你的应用提供经过优化的自托管字体。配置字体后，插件会解析所请求的字体文件，将它们作为 Vite 资源输出，生成字体 CSS，并写入一个可由 Blade 的 [`@fonts` 指令](/docs/{{version}}/blade#fonts) 消费的字体清单。
+Laravel Vite 插件可以为你的应用提供经过优化的自托管字体。配置字体后，插件会解析所请求的字体文件，将它们作为 Vite 资源输出，生成字体 CSS，并写入一个可由 Blade 的 [`@fonts` 指令](/topic/Laravel%2013.x/wevwmrz9l2.html) 消费的字体清单。
 
 要配置字体，从 `laravel-vite-plugin/fonts` 中导入一个或多个 provider 辅助函数，并将它们添加到 Laravel 插件的 `fonts` 选项中：
 
@@ -537,7 +537,7 @@ npm install --save-dev fontaine
 
 在 JavaScript 或 CSS 中引用资源时，Vite 会自动处理并为其添加版本号。此外，在构建基于 Blade 的应用时，Vite 也可以处理并为你仅在 Blade 模板中引用的静态资源添加版本号。
 
-不过，要做到这一点，你需要通过在插件的 `assets` 选项中指定这些资源，让 Vite 感知到它们。该选项适用于你想要通过 `Vite::asset` 直接引用的静态文件。如果你想让 Laravel 生成字体 CSS 和预加载链接，请改用 [`fonts` 选项](#working-with-fonts)。
+不过，要做到这一点，你需要通过在插件的 `assets` 选项中指定这些资源，让 Vite 感知到它们。该选项适用于你想要通过 `Vite::asset` 直接引用的静态文件。如果你想让 Laravel 生成字体 CSS 和预加载链接，请改用 `fonts` 选项。
 
 例如，如果你想处理并版本化存储在 `resources/images` 中的所有图片以及存储在 `resources/fonts` 中的所有字体，应将以下内容添加到你的 Vite 配置中：
 
@@ -623,7 +623,7 @@ export default defineConfig({
 
 ### 别名
 
-在 JavaScript 应用中，[创建别名](#aliases) 来引用常用目录是很常见的做法。不过，你也可以通过 `Illuminate\Support\Facades\Vite` 类上的 `macro` 方法创建在 Blade 中使用的别名。通常，"宏"应当定义在 [服务提供者](/docs/{{version}}/providers) 的 `boot` 方法中：
+在 JavaScript 应用中，创建别名 来引用常用目录是很常见的做法。不过，你也可以通过 `Illuminate\Support\Facades\Vite` 类上的 `macro` 方法创建在 Blade 中使用的别名。通常，"宏"应当定义在 [服务提供者](/topic/Laravel%2013.x/qk942kovw1.html) 的 `boot` 方法中：
 
 ```php
 /**
@@ -645,7 +645,7 @@ public function boot(): void
 
 当使用 Vite 的代码分割功能构建 SPA 时，所需的资源会在每次页面导航时获取。这种行为可能导致 UI 渲染延迟。如果你的前端框架存在这个问题，Laravel 提供了在初始页面加载时主动预取应用 JavaScript 和 CSS 资源的能力。
 
-你可以通过在 [服务提供者](/docs/{{version}}/providers) 的 `boot` 方法中调用 `Vite::prefetch` 方法，指示 Laravel 主动预取资源：
+你可以通过在 [服务提供者](/topic/Laravel%2013.x/qk942kovw1.html) 的 `boot` 方法中调用 `Vite::prefetch` 方法，指示 Laravel 主动预取资源：
 
 ```php
 <?php
@@ -723,7 +723,7 @@ ASSET_URL=https://cdn.example.com
 https://cdn.example.com/build/assets/app.9dce8d17.js
 ```
 
-请记住，[绝对 URL 不会被 Vite 重写](#url-processing)，因此不会加上前缀。
+请记住，绝对 URL 不会被 Vite 重写，因此不会加上前缀。
 
 ## 环境变量
 
@@ -829,13 +829,13 @@ php artisan inertia:start-ssr
 ```
 
 > [!NOTE]
-> Laravel 的 [入门套件](/docs/{{version}}/starter-kits) 已经包含了正确的 Laravel、Inertia SSR 和 Vite 配置。这些套件是上手 Laravel、Inertia SSR 和 Vite 最快的方式。
+> Laravel 的 [入门套件](/topic/Laravel%2013.x/kl9nop7vz4.html) 已经包含了正确的 Laravel、Inertia SSR 和 Vite 配置。这些套件是上手 Laravel、Inertia SSR 和 Vite 最快的方式。
 
 ## 脚本与样式标签属性
 
 ### 内容安全策略（CSP）Nonce
 
-如果你想在脚本和样式标签上包含 [nonce 属性](https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/nonce)，作为 [内容安全策略](https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP) 的一部分，可以在自定义 [中间件](/docs/{{version}}/middleware) 中使用 `useCspNonce` 方法生成或指定一个 nonce：
+如果你想在脚本和样式标签上包含 [nonce 属性](https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/nonce)，作为 [内容安全策略](https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP) 的一部分，可以在自定义 [中间件](/topic/Laravel%2013.x/rwyl2exvz8.html) 中使用 `useCspNonce` 方法生成或指定一个 nonce：
 
 ```php
 <?php
@@ -867,7 +867,7 @@ class AddContentSecurityPolicyHeaders
 
 调用 `useCspNonce` 方法后，Laravel 会自动在所有生成的脚本和样式标签上包含 `nonce` 属性。
 
-如果你需要在其他地方指定 nonce（包括 Laravel [入门套件](/docs/{{version}}/starter-kits) 附带的 [Ziggy `@route` 指令](https://github.com/tighten/ziggy#using-routes-with-a-content-security-policy)），可以使用 `cspNonce` 方法获取它：
+如果你需要在其他地方指定 nonce（包括 Laravel [入门套件](/topic/Laravel%2013.x/kl9nop7vz4.html) 附带的 [Ziggy `@route` 指令](https://github.com/tighten/ziggy#using-routes-with-a-content-security-policy)），可以使用 `cspNonce` 方法获取它：
 
 ```blade
 @routes(nonce: Vite::cspNonce())
@@ -920,7 +920,7 @@ Vite::useIntegrityKey(false);
 
 ### 任意属性
 
-如果你需要在脚本和样式标签上包含额外的属性（例如 [data-turbo-track](https://turbo.hotwired.dev/handbook/drive#reloading-when-assets-change) 属性），可以通过 `useScriptTagAttributes` 和 `useStyleTagAttributes` 方法指定它们。通常，这些方法应当从 [服务提供者](/docs/{{version}}/providers) 中调用：
+如果你需要在脚本和样式标签上包含额外的属性（例如 [data-turbo-track](https://turbo.hotwired.dev/handbook/drive#reloading-when-assets-change) 属性），可以通过 `useScriptTagAttributes` 和 `useStyleTagAttributes` 方法指定它们。通常，这些方法应当从 [服务提供者](/topic/Laravel%2013.x/qk942kovw1.html) 中调用：
 
 ```php
 use Illuminate\Support\Facades\Vite;

@@ -119,7 +119,7 @@ sail artisan queue:work
 
 ### 执行 PHP 命令
 
-PHP 命令可以使用 `php` 命令执行。当然，这些命令会使用为你的应用配置的 PHP 版本执行。要了解 Laravel Sail 可用的 PHP 版本，请参阅 [PHP 版本文档](#sail-php-versions)：
+PHP 命令可以使用 `php` 命令执行。当然，这些命令会使用为你的应用配置的 PHP 版本执行。要了解 Laravel Sail 可用的 PHP 版本，请参阅 PHP 版本文档：
 
 ```shell
 sail php --version
@@ -201,13 +201,13 @@ MONGODB_URI=mongodb://${MONGODB_USERNAME}:${MONGODB_PASSWORD}@mongodb:27017
 
 ### Meilisearch
 
-如果在安装 Sail 时你选择安装了 [Meilisearch](https://www.meilisearch.com) 服务，你应用的 `compose.yaml` 文件中就会包含这个与 [Laravel Scout](/docs/{{version}}/scout) 集成的强大搜索引擎的条目。一旦你启动了容器，你就可以通过将 `MEILISEARCH_HOST` 环境变量设置为 `http://meilisearch:7700`，来连接到应用内的 Meilisearch 实例。
+如果在安装 Sail 时你选择安装了 [Meilisearch](https://www.meilisearch.com) 服务，你应用的 `compose.yaml` 文件中就会包含这个与 [Laravel Scout](/topic/Laravel%2013.x/2wy3l13ykm.html) 集成的强大搜索引擎的条目。一旦你启动了容器，你就可以通过将 `MEILISEARCH_HOST` 环境变量设置为 `http://meilisearch:7700`，来连接到应用内的 Meilisearch 实例。
 
 从你的本地机器上，你可以通过在 Web 浏览器中访问 `http://localhost:7700` 来使用 Meilisearch 基于 Web 的管理面板。
 
 ### Typesense
 
-如果在安装 Sail 时你选择安装了 [Typesense](https://typesense.org) 服务，你应用的 `compose.yaml` 文件中就会包含这个与 [Laravel Scout](/docs/{{version}}/scout#typesense) 原生集成的极速开源搜索引擎的条目。一旦你启动了容器，你就可以通过设置以下环境变量来连接到应用内的 Typesense 实例：
+如果在安装 Sail 时你选择安装了 [Typesense](https://typesense.org) 服务，你应用的 `compose.yaml` 文件中就会包含这个与 [Laravel Scout](/topic/Laravel%2013.x/2wy3l13ykm.html) 原生集成的极速开源搜索引擎的条目。一旦你启动了容器，你就可以通过设置以下环境变量来连接到应用内的 Typesense 实例：
 
 ```ini
 TYPESENSE_HOST=typesense
@@ -236,7 +236,7 @@ AWS_USE_PATH_STYLE_ENDPOINT=true
 
 ## 运行测试
 
-Laravel 开箱即用地提供了出色的测试支持，你可以使用 Sail 的 `test` 命令来运行应用的 [功能测试与单元测试](/docs/{{version}}/testing)。Pest / PHPUnit 接受的任意 CLI 选项也都可以传给 `test` 命令：
+Laravel 开箱即用地提供了出色的测试支持，你可以使用 Sail 的 `test` 命令来运行应用的 [功能测试与单元测试](/topic/Laravel%2013.x/e296oqw9q7.html)。Pest / PHPUnit 接受的任意 CLI 选项也都可以传给 `test` 命令：
 
 ```shell
 sail test
@@ -258,7 +258,7 @@ sail artisan test
 
 ### Laravel Dusk
 
-[Laravel Dusk](/docs/{{version}}/dusk) 提供了一个富有表现力、易于使用的浏览器自动化与测试 API。借助 Sail，你可以在本地计算机上无需安装 Selenium 或其他工具即可运行这些测试。要开始使用，请取消注释你应用 `compose.yaml` 文件中的 Selenium 服务：
+[Laravel Dusk](/topic/Laravel%2013.x/xpv520gv86.html) 提供了一个富有表现力、易于使用的浏览器自动化与测试 API。借助 Sail，你可以在本地计算机上无需安装 Selenium 或其他工具即可运行这些测试。要开始使用，请取消注释你应用 `compose.yaml` 文件中的 Selenium 服务：
 
 ```yaml
 selenium:
@@ -426,7 +426,7 @@ sail share --subdomain=my-sail-site
 
 ## 使用 Xdebug 调试
 
-Laravel Sail 的 Docker 配置包含对 [Xdebug](https://xdebug.org/) 的支持，这是一个流行且强大的 PHP 调试器。要启用 Xdebug，请确保你已 [发布 Sail 配置](#sail-customization)。然后，将以下变量添加到应用的 `.env` 文件中来配置 Xdebug：
+Laravel Sail 的 Docker 配置包含对 [Xdebug](https://xdebug.org/) 的支持，这是一个流行且强大的 PHP 调试器。要启用 Xdebug，请确保你已 发布 Sail 配置。然后，将以下变量添加到应用的 `.env` 文件中来配置 Xdebug：
 
 ```ini
 SAIL_XDEBUG_MODE=develop,debug,coverage

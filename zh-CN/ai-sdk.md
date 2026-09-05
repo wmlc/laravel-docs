@@ -123,7 +123,7 @@ agent()->prompt('What is Laravel?', provider: 'local', model: 'local-model');
 ],
 ```
 
-OpenAI 兼容提供商支持文本生成、流式传输、工具、结构化输出、图像附件、嵌入与转录。如果你的端点需要额外的请求体字段，请使用 [provider options](#provider-options) 提供。
+OpenAI 兼容提供商支持文本生成、流式传输、工具、结构化输出、图像附件、嵌入与转录。如果你的端点需要额外的请求体字段，请使用 provider options 提供。
 
 #### 兼容 OpenAI 的嵌入向量
 
@@ -459,7 +459,7 @@ $conversations = $team->conversations;
 $participant = $conversation->participant;
 ```
 
-如果你的应用使用多种参与者模型类型，建议定义 [Eloquent morph map](/docs/{{version}}/eloquent-relationships#custom-polymorphic-types)，使存储的参与者类型不耦合于你的模型类名。
+如果你的应用使用多种参与者模型类型，建议定义 [Eloquent morph map](/topic/Laravel%2013.x/kpv13d298w.html)，使存储的参与者类型不耦合于你的模型类名。
 
 > [!WARNING]
 > `continue` 方法不会校验给定参与者是否拥有该对话。你的应用应当在延续对话之前，先对对话的访问进行授权。
@@ -948,7 +948,7 @@ new ToolSearch(tools: [new SearchInvoices], strategy: 'bm25'),
 
 ### 文件存储工具
 
-`FileStorage` 工具工厂允许你让智能体访问 Laravel [filesystem disk](/docs/{{version}}/filesystem)。`all` 方法返回的工具，可让智能体在给定磁盘上列出、读取、检查、生成 URL、写入、删除与复制文件：
+`FileStorage` 工具工厂允许你让智能体访问 Laravel [filesystem disk](/topic/Laravel%2013.x/qk9428ovw1.html)。`all` 方法返回的工具，可让智能体在给定磁盘上列出、读取、检查、生成 URL、写入、删除与复制文件：
 
 ```php
 use Laravel\Ai\Tools\FileStorage;
@@ -976,10 +976,10 @@ return FileStorage::all('s3')
 
 ### MCP 工具
 
-如果你的应用使用了 [Laravel MCP](/docs/{{version}}/mcp)，你可以让智能体使用 [Model Context Protocol](https://modelcontextprotocol.io) 服务器暴露的工具。借助 [Laravel MCP client](/docs/{{version}}/mcp#client)，你可以连接远程或本地的 MCP 服务器，并将其工具直接传给智能体。
+如果你的应用使用了 [Laravel MCP](/topic/Laravel%2013.x/3oyjdzxyp5.html)，你可以让智能体使用 [Model Context Protocol](https://modelcontextprotocol.io) 服务器暴露的工具。借助 [Laravel MCP client](/topic/Laravel%2013.x/3oyjdzxyp5.html)，你可以连接远程或本地的 MCP 服务器，并将其工具直接传给智能体。
 
 > [!NOTE]
-> MCP 工具需要你的应用安装了 [Laravel MCP](/docs/{{version}}/mcp) 包。
+> MCP 工具需要你的应用安装了 [Laravel MCP](/topic/Laravel%2013.x/3oyjdzxyp5.html) 包。
 
 由于 MCP 客户端的 `tools` 方法返回的是集合，请使用 `...` 运算符将其展开到智能体的 `tools` 数组中：
 
@@ -1004,7 +1004,7 @@ public function tools(): iterable
 }
 ```
 
-AI SDK 会自动包裹每个 MCP 工具，使智能体可以像调用其他工具一样调用它。你也可以使用 [命名 MCP 客户端](/docs/{{version}}/mcp#named-clients)：
+AI SDK 会自动包裹每个 MCP 工具，使智能体可以像调用其他工具一样调用它。你也可以使用 [命名 MCP 客户端](/topic/Laravel%2013.x/3oyjdzxyp5.html)：
 
 ```php
 use Laravel\Mcp\Facades\Mcp;
@@ -1017,7 +1017,7 @@ public function tools(): iterable
 }
 ```
 
-或连接 [本地 MCP 服务器](/docs/{{version}}/mcp#client-connecting)：
+或连接 [本地 MCP 服务器](/topic/Laravel%2013.x/3oyjdzxyp5.html)：
 
 ```php
 use Laravel\Mcp\Client;
@@ -1030,7 +1030,7 @@ public function tools(): iterable
 }
 ```
 
-关于创建与认证 MCP 客户端的更多信息（包括 Bearer Token 与 OAuth），请参阅 [MCP 客户端文档](/docs/{{version}}/mcp#client)。
+关于创建与认证 MCP 客户端的更多信息（包括 Bearer Token 与 OAuth），请参阅 [MCP 客户端文档](/topic/Laravel%2013.x/3oyjdzxyp5.html)。
 
 ### 服务商工具
 
@@ -1096,7 +1096,7 @@ public function tools(): iterable
 
 #### 文件搜索
 
-`FileSearch` 提供商工具允许智能体搜索存储在 [向量存储](#vector-stores) 中的 [文件](#files)。这让智能体可以搜索你上传的文档以查找相关信息，从而实现检索增强生成（RAG）。
+`FileSearch` 提供商工具允许智能体搜索存储在 向量存储 中的 文件。这让智能体可以搜索你上传的文档以查找相关信息，从而实现检索增强生成（RAG）。
 
 **支持的提供商：** OpenAI、Gemini、xAI
 
@@ -1117,7 +1117,7 @@ public function tools(): iterable
 new FileSearch(stores: ['store_1', 'store_2']);
 ```
 
-如果你的文件带有 [元数据](#adding-files-to-stores)，可以通过提供 `where` 参数来筛选搜索结果。对于简单的相等筛选，传入数组：
+如果你的文件带有 元数据，可以通过提供 `where` 参数来筛选搜索结果。对于简单的相等筛选，传入数组：
 
 ```php
 new FileSearch(stores: ['store_id'], where: [
@@ -1454,9 +1454,9 @@ class SalesCoach implements Agent, HasProviderOptions
 }
 ```
 
-`providerOptions` 方法会接收当前使用的提供商（`Lab` 枚举或字符串），让你可以按提供商返回不同的选项。在使用 [故障转移](#failover) 时这尤其有用，因为每个回退提供商都能收到各自的配置。
+`providerOptions` 方法会接收当前使用的提供商（`Lab` 枚举或字符串），让你可以按提供商返回不同的选项。在使用 故障转移 时这尤其有用，因为每个回退提供商都能收到各自的配置。
 
-上面的 Anthropic 示例也通过 `cache_control` 启用了 [提示缓存](#prompt-caching)。
+上面的 Anthropic 示例也通过 `cache_control` 启用了 提示缓存。
 
 ### 提示词缓存
 
@@ -1485,7 +1485,7 @@ class SalesCoach implements Agent
 
 如果你的指令每次请求都会变化（例如内嵌了当前日期），请单独使用 `CacheToolDefinitions`。缓存一个每次请求都变化的前缀，会导致每次都新建一个缓存条目，于是你为写入缓存付费却从未复用它。
 
-不支持这些属性的提供商会忽略它们，因此即便使用 [故障转移](#failover)，智能体也可以安全地声明它们。
+不支持这些属性的提供商会忽略它们，因此即便使用 故障转移，智能体也可以安全地声明它们。
 
 缓存前缀默认保留 5 分钟。如果你向属性传入 TTL，Anthropic 可以将其保留 1 小时：
 
@@ -1494,7 +1494,7 @@ class SalesCoach implements Agent
 #[CacheToolDefinitions('1h')]
 ```
 
-此外，Anthropic 的自动缓存也可以通过顶层的 `cache_control` [provider option](#provider-options) 启用。它会在请求最后一个代码块之后放置一个单一断点，于是断点随对话增长而前移，每一轮都从缓存读取前几轮。两种机制可以组合使用。
+此外，Anthropic 的自动缓存也可以通过顶层的 `cache_control` provider option 启用。它会在请求最后一个代码块之后放置一个单一断点，于是断点随对话增长而前移，每一轮都从缓存读取前几轮。两种机制可以组合使用。
 
 > [!WARNING]
 > 由于提供商按「工具、指令、消息」的顺序构建提示，缓存指令 1 小时也意味着缓存工具定义 1 小时。两者混用会抛出 `InvalidArgumentException`。
@@ -1628,7 +1628,7 @@ $response = (new FileAssistant)
 
 工具批准由 `prompt`、`stream`、`queue`、`broadcast`、`broadcastNow`、`broadcastOnQueue` 方法支持。
 
-在流式传输与广播过程中，暂停由一个 `tool_approval_request` 事件表示。使用 [Vercel AI SDK 流协议](#streaming-using-the-vercel-ai-sdk-protocol) 时，批准请求与结果会使用该协议原生的工具批准片段来发出。
+在流式传输与广播过程中，暂停由一个 `tool_approval_request` 事件表示。使用 Vercel AI SDK 流协议 时，批准请求与结果会使用该协议原生的工具批准片段来发出。
 
 对于排队的智能体，最终响应会传给 `then` 回调，Laravel 还会分发一个 `ToolApprovalRequested` 事件。
 
@@ -1955,7 +1955,7 @@ $response = Embeddings::for([
 ])->generate(Lab::Gemini);
 ```
 
-多模态输入使用与 [附件](#attachments) 相同的文件类。这些文件可以从本地路径、文件系统磁盘、远程 URL 或 Base64 编码内容创建。图像、文档、视频也可由上传文件创建，文档则可由原始字符串内容创建：
+多模态输入使用与 附件 相同的文件类。这些文件可以从本地路径、文件系统磁盘、远程 URL 或 Base64 编码内容创建。图像、文档、视频也可由上传文件创建，文档则可由原始字符串内容创建：
 
 ```php
 use Laravel\Ai\Files\Audio;
@@ -2050,7 +2050,7 @@ $documents = Document::query()
     ->get();
 ```
 
-如果你希望让智能体把相似度搜索作为工具使用，请参阅 [相似度搜索](#similarity-search) 工具文档。
+如果你希望让智能体把相似度搜索作为工具使用，请参阅 相似度搜索 工具文档。
 
 > [!NOTE]
 > 向量查询目前支持使用 `pgvector` 扩展的 PostgreSQL 连接，以及 MariaDB 11.7 及以上版本。
@@ -2342,7 +2342,7 @@ $store->delete();
 
 ### 向存储添加文件
 
-拥有向量存储后，你可以使用 `add` 方法将 [文件](#files) 添加到其中。添加到存储的文件会自动建立索引，以便通过 [文件搜索提供商工具](#file-search) 进行语义搜索：
+拥有向量存储后，你可以使用 `add` 方法将 文件 添加到其中。添加到存储的文件会自动建立索引，以便通过 文件搜索提供商工具 进行语义搜索：
 
 ```php
 use Laravel\Ai\Files\Document;
@@ -2365,7 +2365,7 @@ $document->fileId;
 
 > **注意：** 通常，当把之前已存储的文件添加到向量存储时，返回的文档 ID 会与文件原先分配的 ID 一致；但部分向量存储提供商可能返回一个新的、不同的「文档 ID」。因此建议你始终将这两个 ID 都存入数据库，以便日后引用。
 
-你可以向文件添加元数据，再将其加入存储。这些元数据之后可用于在使用 [文件搜索提供商工具](#file-search) 时筛选搜索结果：
+你可以向文件添加元数据，再将其加入存储。这些元数据之后可用于在使用 文件搜索提供商工具 时筛选搜索结果：
 
 ```php
 $store->add(Document::fromPath('/path/to/document.pdf'), metadata: [
@@ -2381,7 +2381,7 @@ $store->add(Document::fromPath('/path/to/document.pdf'), metadata: [
 $store->remove('file_id');
 ```
 
-从向量存储移除文件，并不会将其从提供商的 [文件存储](#files) 中删除。若要从向量存储移除文件并从文件存储永久删除，请使用 `deleteFile` 参数：
+从向量存储移除文件，并不会将其从提供商的 文件存储 中删除。若要从向量存储移除文件并从文件存储永久删除，请使用 `deleteFile` 参数：
 
 ```php
 $store->remove('file_abc123', deleteFile: true);
@@ -2844,7 +2844,7 @@ Files::assertNothingDeleted();
 
 ### 向量存储
 
-调用 `Stores` 类上的 `fake` 方法，可以伪造向量存储操作。伪造存储还会自动伪造 [文件操作](#files)：
+调用 `Stores` 类上的 `fake` 方法，可以伪造向量存储操作。伪造存储还会自动伪造 文件操作：
 
 ```php
 use Laravel\Ai\Stores;
@@ -2899,7 +2899,7 @@ $store->assertNotAdded('other_file_id');
 $store->assertNotRemoved('other_file_id');
 ```
 
-如果文件存储在提供商的 [文件存储](#files) 中并在同一请求添加到向量存储，你可能不知道该文件的提供商 ID。此时，你可以向 `assertAdded` 方法传入闭包，对添加的文件内容做断言：
+如果文件存储在提供商的 文件存储 中并在同一请求添加到向量存储，你可能不知道该文件的提供商 ID。此时，你可以向 `assertAdded` 方法传入闭包，对添加的文件内容做断言：
 
 ```php
 use Laravel\Ai\Contracts\Files\StorableFile;
@@ -2913,7 +2913,7 @@ $store->assertAdded(fn (StorableFile $file) => $file->content() === 'Hello, Worl
 
 ## 事件
 
-Laravel AI SDK 会分发多种 [事件](/docs/{{version}}/events)，包括：
+Laravel AI SDK 会分发多种 [事件](/topic/Laravel%2013.x/x3vo0l4vm1.html)，包括：
 
 - `AddingFileToStore`
 - `AgentFailed`
