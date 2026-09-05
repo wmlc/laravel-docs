@@ -1,17 +1,5 @@
 # Precognition
 
-[介绍](#introduction)
-- [实时校验](#live-validation)
-    - [使用 Vue](#using-vue)
-    - [使用 React](#using-react)
-    - [使用 Alpine 和 Blade](#using-alpine)
-    - [配置 Axios](#configuring-axios)
-- [校验数组](#validating-arrays)
-- [自定义校验规则](#customizing-validation-rules)
-- [处理文件上传](#handling-file-uploads)
-- [管理副作用](#managing-side-effects)
-- [测试](#testing)
-
 ## 介绍
 
 Laravel Precognition 允许你预测未来 HTTP 请求的结果。Precognition 的主要用例之一是：无需在前端 JavaScript 应用中重复后端的校验规则，即可为前端提供"实时"校验能力。
