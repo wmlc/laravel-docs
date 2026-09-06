@@ -281,7 +281,7 @@ $process->waitUntil(function (string $type, string $output) {
 
 ### 异步进程的超时
 
-在异步进程运行过程中，可以使用 `ensureNotTimedOut` 方法确认进程是否已经超时。如果已经超时，该方法会抛出 [超时异常](#timeouts)：
+在异步进程运行过程中，可以使用 `ensureNotTimedOut` 方法确认进程是否已经超时。如果已经超时，该方法会抛出 超时异常：
 
 ```php
 $process = Process::timeout(120)->start('bash import.sh');
@@ -299,7 +299,7 @@ while ($process->running()) {
 
 Laravel 还内置了一组便捷的能力来管理一组并发、异步的进程，让你能轻松地并行执行许多任务。要开始使用，可以调用 `pool` 方法，它接收一个接收 `Illuminate\Process\Pool` 实例的闭包。
 
-在该闭包内可以定义属于进程池的进程。一旦通过 `start` 方法启动了进程池，就可以通过 `running` 方法访问当前正在运行的进程 [集合](/docs/{{version}}/collections)：
+在该闭包内可以定义属于进程池的进程。一旦通过 `start` 方法启动了进程池，就可以通过 `running` 方法访问当前正在运行的进程 [集合](/topic/Laravel%2013.x/4rvgn63ydj.html)：
 
 ```php
 use Illuminate\Process\Pool;
@@ -391,7 +391,7 @@ Route::get('/import', function () {
 });
 ```
 
-在测试这条路由时，我们可以对 `Process` 门面无参调用 `fake` 方法，让 Laravel 在每次调用进程时返回一个假的、成功的结果。同时，我们还能 [断言](#available-assertions) 某个进程是否被「调用过」：
+在测试这条路由时，我们可以对 `Process` 门面无参调用 `fake` 方法，让 Laravel 在每次调用进程时返回一个假的、成功的结果。同时，我们还能 断言 某个进程是否被「调用过」：
 
 ```php tab=Pest
 <?php
@@ -535,7 +535,7 @@ Process::fake([
 
 ### 可用的断言
 
-如 [前文](#faking-processes) 所述，Laravel 为功能测试提供了多种进程断言。下面分别介绍这些断言。
+如 前文 所述，Laravel 为功能测试提供了多种进程断言。下面分别介绍这些断言。
 
 #### assertRan
 

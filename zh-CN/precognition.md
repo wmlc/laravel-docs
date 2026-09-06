@@ -4,7 +4,7 @@
 
 Laravel Precognition 允许你预测未来 HTTP 请求的结果。Precognition 的主要用例之一是：无需在前端 JavaScript 应用中重复后端的校验规则，即可为前端提供"实时"校验能力。
 
-当 Laravel 收到"预知请求（precognitive request）"时，它会执行该路由的所有中间件，并解析路由控制器所需的依赖，包括对 [表单请求类（Form Request）](/docs/{{version}}/validation#form-request-validation)的校验——但它不会真正执行控制器方法。
+当 Laravel 收到"预知请求（precognitive request）"时，它会执行该路由的所有中间件，并解析路由控制器所需的依赖，包括对 [表单请求类（Form Request）](/topic/Laravel%2013.x/e296oew9q7.html)的校验——但它不会真正执行控制器方法。
 
 > [!NOTE]
 > 自 Inertia 2.3 起，原生支持 Precognition。详见 [Inertia Forms 文档](https://inertiajs.com/forms)。更早的 Inertia 版本需要 Precognition 0.x。
@@ -15,7 +15,7 @@ Laravel Precognition 允许你预测未来 HTTP 请求的结果。Precognition �
 
 借助 Laravel Precognition，你可以在前端 Vue 应用中提供实时校验体验，而无需在前端重复校验规则。为了演示它的工作方式，我们来构建一个创建新用户的表单。
 
-首先，要为某条路由启用 Precognition，需要把 `HandlePrecognitiveRequests` 中间件添加到路由定义里。你还应该创建一个 [表单请求类（Form Request）](/docs/{{version}}/validation#form-request-validation) 来承载该路由的校验规则：
+首先，要为某条路由启用 Precognition，需要把 `HandlePrecognitiveRequests` 中间件添加到路由定义里。你还应该创建一个 [表单请求类（Form Request）](/topic/Laravel%2013.x/e296oew9q7.html) 来承载该路由的校验规则：
 
 ```php
 use App\Http\Requests\StoreUserRequest;
@@ -178,7 +178,7 @@ const submit = () => form.submit()
 
 借助 Laravel Precognition，你可以在前端 React 应用中提供实时校验体验，而无需在前端重复校验规则。为了演示它的工作方式，我们来构建一个创建新用户的表单。
 
-首先，要为某条路由启用 Precognition，需要把 `HandlePrecognitiveRequests` 中间件添加到路由定义里。你还应该创建一个 [表单请求类（Form Request）](/docs/{{version}}/validation#form-request-validation) 来承载该路由的校验规则：
+首先，要为某条路由启用 Precognition，需要把 `HandlePrecognitiveRequests` 中间件添加到路由定义里。你还应该创建一个 [表单请求类（Form Request）](/topic/Laravel%2013.x/e296oew9q7.html) 来承载该路由的校验规则：
 
 ```php
 use App\Http\Requests\StoreUserRequest;
@@ -336,7 +336,7 @@ const submit = (e) => {
 
 借助 Laravel Precognition，你可以在前端 Alpine 应用中提供实时校验体验，而无需在前端重复校验规则。为了演示它的工作方式，我们来构建一个创建新用户的表单。
 
-首先，要为某条路由启用 Precognition，需要把 `HandlePrecognitiveRequests` 中间件添加到路由定义里。你还应该创建一个 [表单请求类（Form Request）](/docs/{{version}}/validation#form-request-validation) 来承载该路由的校验规则：
+首先，要为某条路由启用 Precognition，需要把 `HandlePrecognitiveRequests` 中间件添加到路由定义里。你还应该创建一个 [表单请求类（Form Request）](/topic/Laravel%2013.x/e296oew9q7.html) 来承载该路由的校验规则：
 
 ```php
 use App\Http\Requests\CreateUserRequest;
@@ -588,7 +588,7 @@ class StoreUserRequest extends FormRequest
 
 默认情况下，Laravel Precognition 在预知校验请求中既不上传也不校验文件。这是为了避免大文件被不必要地重复上传。
 
-由于这一行为，你需要确保应用通过 [自定义相应表单请求类的校验规则](#customizing-validation-rules) 来指明：这些字段只在完整表单提交时才要求必填：
+由于这一行为，你需要确保应用通过 自定义相应表单请求类的校验规则 来指明：这些字段只在完整表单提交时才要求必填：
 
 ```php
 /**

@@ -11,11 +11,11 @@ Laravel 在内部使用众多服务提供者来引导其核心服务，例如邮
 所有用户定义的服务提供者都注册在 `bootstrap/providers.php` 文件中。在下面的文档中，你将学习如何编写自己的服务提供者并将其注册到 Laravel 应用中。
 
 > [!NOTE]
-> 如果你想进一步了解 Laravel 如何处理请求以及其内部工作机制，请查阅我们关于 Laravel [请求生命周期](/docs/{{version}}/lifecycle) 的文档。
+> 如果你想进一步了解 Laravel 如何处理请求以及其内部工作机制，请查阅我们关于 Laravel [请求生命周期](/topic/Laravel%2013.x/3xyq4o4vmq.html) 的文档。
 
 ## 编写服务提供者
 
-所有服务提供者都继承自 `Illuminate\Support\ServiceProvider` 类。大多数服务提供者包含一个 `register` 和一个 `boot` 方法。在 `register` 方法中，你应当**只向[服务容器（Service Container）](/docs/{{version}}/container)绑定内容**。切勿在 `register` 方法中尝试注册任何事件监听器、路由（Route）或其他任何功能。
+所有服务提供者都继承自 `Illuminate\Support\ServiceProvider` 类。大多数服务提供者包含一个 `register` 和一个 `boot` 方法。在 `register` 方法中，你应当**只向[服务容器（Service Container）](/topic/Laravel%2013.x/x3vo054vm1.html)绑定内容**。切勿在 `register` 方法中尝试注册任何事件监听器、路由（Route）或其他任何功能。
 
 Artisan 命令行工具可通过 `make:provider` 命令生成一个新的服务提供者。Laravel 会自动将你的新服务提供者注册到应用的 `bootstrap/providers.php` 文件中：
 
@@ -25,7 +25,7 @@ php artisan make:provider RiakServiceProvider
 
 ### register 方法
 
-如前所述，在 `register` 方法中，你应当只向[服务容器（Service Container）](/docs/{{version}}/container)绑定内容。切勿在 `register` 方法中尝试注册任何事件监听器、路由（Route）或其他任何功能。否则，你可能会意外使用到尚未加载的服务提供者所提供的服务。
+如前所述，在 `register` 方法中，你应当只向[服务容器（Service Container）](/topic/Laravel%2013.x/x3vo054vm1.html)绑定内容。切勿在 `register` 方法中尝试注册任何事件监听器、路由（Route）或其他任何功能。否则，你可能会意外使用到尚未加载的服务提供者所提供的服务。
 
 我们来看一个基础的服务提供者。在服务提供者的任何方法中，你始终可以访问 `$app` 属性，它提供了对服务容器的访问：
 
@@ -52,7 +52,7 @@ class RiakServiceProvider extends ServiceProvider
 }
 ```
 
-这个服务提供者只定义了一个 `register` 方法，并用该方法在服务容器中定义了 `App\Services\Riak\Connection` 的实现。如果你还不熟悉 Laravel 的服务容器，请查阅[它的文档](/docs/{{version}}/container)。
+这个服务提供者只定义了一个 `register` 方法，并用该方法在服务容器中定义了 `App\Services\Riak\Connection` 的实现。如果你还不熟悉 Laravel 的服务容器，请查阅[它的文档](/topic/Laravel%2013.x/x3vo054vm1.html)。
 
 #### `bindings` 与 `singletons` 属性
 
@@ -95,7 +95,7 @@ class AppServiceProvider extends ServiceProvider
 
 ### boot 方法
 
-那么，如果我们需要在服务提供者中注册一个[视图合成器](/docs/{{version}}/views#view-composers)该怎么做？这应当在 `boot` 方法中完成。**该方法在所有其他服务提供者都注册完成之后才会被调用**，这意味着你可以访问框架已注册的所有其他服务：
+那么，如果我们需要在服务提供者中注册一个[视图合成器](/topic/Laravel%2013.x/m892gz6y01.html)该怎么做？这应当在 `boot` 方法中完成。**该方法在所有其他服务提供者都注册完成之后才会被调用**，这意味着你可以访问框架已注册的所有其他服务：
 
 ```php
 <?php
@@ -162,7 +162,7 @@ return [
 
 ## 延迟服务提供者
 
-如果你的服务提供者**只**在[服务容器（Service Container）](/docs/{{version}}/container)中注册绑定，你可以选择将其注册延迟到实际需要其中某个已注册绑定时再进行。延迟加载此类服务提供者可以提升应用性能，因为它不会在每次请求（Request）时都从文件系统加载。
+如果你的服务提供者**只**在[服务容器（Service Container）](/topic/Laravel%2013.x/x3vo054vm1.html)中注册绑定，你可以选择将其注册延迟到实际需要其中某个已注册绑定时再进行。延迟加载此类服务提供者可以提升应用性能，因为它不会在每次请求（Request）时都从文件系统加载。
 
 Laravel 会编译并存储一份由延迟服务提供者提供的所有服务的列表，以及其服务提供者类的名称。然后，只有当你尝试解析其中某个服务时，Laravel 才会加载该服务提供者。
 

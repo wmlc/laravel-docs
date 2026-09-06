@@ -4,11 +4,11 @@
 
 迁移就像数据库的版本控制，它让团队可以定义并共享应用数据库结构的定义。如果你曾不得不告诉同事在拉取源码后「手动向本地数据库加一列」，那么你已经亲身体验过数据库迁移要解决的问题。
 
-Laravel 的 `Schema` [facade](/docs/{{version}}/facades) 为所有 Laravel 支持的数据库系统提供与具体数据库无关的建表与表结构变更能力。通常，迁移会通过该 facade 来创建和修改数据库表与列。
+Laravel 的 `Schema` [facade](/topic/Laravel%2013.x/569x508yep.html) 为所有 Laravel 支持的数据库系统提供与具体数据库无关的建表与表结构变更能力。通常，迁移会通过该 facade 来创建和修改数据库表与列。
 
 ## 生成迁移
 
-你可以使用 `make:migration` [Artisan 命令](/docs/{{version}}/artisan) 生成数据库迁移。新生成的迁移文件会放到 `database/migrations` 目录中。每个迁移文件名都包含一个时间戳，用于让 Laravel 确定迁移的执行顺序：
+你可以使用 `make:migration` [Artisan 命令](/topic/Laravel%2013.x/3dykqdoyl0.html) 生成数据库迁移。新生成的迁移文件会放到 `database/migrations` 目录中。每个迁移文件名都包含一个时间戳，用于让 Laravel 确定迁移的执行顺序：
 
 ```shell
 php artisan make:migration create_flights_table
@@ -19,7 +19,7 @@ Laravel 会根据迁移名称尝试猜测表名以及该迁移是否会创建新
 如果希望为生成的迁移文件指定自定义路径，可以在执行 `make:migration` 命令时使用 `--path` 选项。该路径应相对于应用根目录。
 
 > [!NOTE]
-> 可以通过 [stub publishing](/docs/{{version}}/artisan#stub-customization) 自定义迁移 stub 模板。
+> 可以通过 [stub publishing](/topic/Laravel%2013.x/3dykqdoyl0.html) 自定义迁移 stub 模板。
 
 ### 合并迁移
 
@@ -50,7 +50,7 @@ php artisan schema:dump --database=testing --prune
 
 一个迁移类包含两个方法：`up` 与 `down`。`up` 方法用于向数据库添加新表、列或索引，而 `down` 方法应当撤销 `up` 方法所执行的操作。
 
-在这两个方法内部，你可以使用 Laravel schema builder 以声明式方式创建与修改表。要了解 `Schema` builder 上可用的全部方法，请 [查阅其文档](#creating-tables)。例如，下面的迁移会创建一个 `flights` 表：
+在这两个方法内部，你可以使用 Laravel schema builder 以声明式方式创建与修改表。要了解 `Schema` builder 上可用的全部方法，请 查阅其文档。例如，下面的迁移会创建一个 `flights` 表：
 
 ```php
 <?php
@@ -228,7 +228,7 @@ php artisan migrate:fresh
 php artisan migrate:fresh --seed
 ```
 
-默认情况下，`migrate:fresh` 命令只会删除默认数据库连接中的表。但可以使用 `--database` 选项指定要迁移的数据库连接。该连接名应与应用 `database` [配置文件](/docs/{{version}}/configuration) 中定义的某个连接相对应：
+默认情况下，`migrate:fresh` 命令只会删除默认数据库连接中的表。但可以使用 `--database` 选项指定要迁移的数据库连接。该连接名应与应用 `database` [配置文件](/topic/Laravel%2013.x/3dykqpoyl0.html) 中定义的某个连接相对应：
 
 ```shell
 php artisan migrate:fresh --database=admin
@@ -255,7 +255,7 @@ Schema::create('users', function (Blueprint $table) {
 });
 ```
 
-创建表时，可以使用 schema builder 的任意 [列方法](#creating-columns) 来定义表的列。
+创建表时，可以使用 schema builder 的任意 列方法 来定义表的列。
 
 #### 判断表 / 列是否存在
 
@@ -382,94 +382,94 @@ Schema builder 的 blueprint 提供了许多方法，对应与可以添加到表
 
 #### 布尔类型
 
-[`boolean`](#column-method-boolean)
+`boolean`
 
 #### 字符串与文本类型
 
-[`char`](#column-method-char)
-[`longText`](#column-method-longText)
-[`mediumText`](#column-method-mediumText)
-[`string`](#column-method-string)
-[`text`](#column-method-text)
-[`tinyText`](#column-method-tinyText)
+`char`
+`longText`
+`mediumText`
+`string`
+`text`
+`tinyText`
 
 #### 数值类型
 
-[`bigIncrements`](#column-method-bigIncrements)
-[`bigInteger`](#column-method-bigInteger)
-[`decimal`](#column-method-decimal)
-[`double`](#column-method-double)
-[`float`](#column-method-float)
-[`id`](#column-method-id)
-[`increments`](#column-method-increments)
-[`integer`](#column-method-integer)
-[`mediumIncrements`](#column-method-mediumIncrements)
-[`mediumInteger`](#column-method-mediumInteger)
-[`smallIncrements`](#column-method-smallIncrements)
-[`smallInteger`](#column-method-smallInteger)
-[`tinyIncrements`](#column-method-tinyIncrements)
-[`tinyInteger`](#column-method-tinyInteger)
-[`unsignedBigInteger`](#column-method-unsignedBigInteger)
-[`unsignedInteger`](#column-method-unsignedInteger)
-[`unsignedMediumInteger`](#column-method-unsignedMediumInteger)
-[`unsignedSmallInteger`](#column-method-unsignedSmallInteger)
-[`unsignedTinyInteger`](#column-method-unsignedTinyInteger)
+`bigIncrements`
+`bigInteger`
+`decimal`
+`double`
+`float`
+`id`
+`increments`
+`integer`
+`mediumIncrements`
+`mediumInteger`
+`smallIncrements`
+`smallInteger`
+`tinyIncrements`
+`tinyInteger`
+`unsignedBigInteger`
+`unsignedInteger`
+`unsignedMediumInteger`
+`unsignedSmallInteger`
+`unsignedTinyInteger`
 
 #### 日期与时间类型
 
-[`dateTime`](#column-method-dateTime)
-[`dateTimeTz`](#column-method-dateTimeTz)
-[`date`](#column-method-date)
-[`time`](#column-method-time)
-[`timeTz`](#column-method-timeTz)
-[`timestamp`](#column-method-timestamp)
-[`timestamps`](#column-method-timestamps)
-[`timestampsTz`](#column-method-timestampsTz)
-[`softDeletes`](#column-method-softDeletes)
-[`softDeletesTz`](#column-method-softDeletesTz)
-[`year`](#column-method-year)
+`dateTime`
+`dateTimeTz`
+`date`
+`time`
+`timeTz`
+`timestamp`
+`timestamps`
+`timestampsTz`
+`softDeletes`
+`softDeletesTz`
+`year`
 
 #### 二进制类型
 
-[`binary`](#column-method-binary)
+`binary`
 
 #### 对象与 JSON 类型
 
-[`json`](#column-method-json)
-[`jsonb`](#column-method-jsonb)
+`json`
+`jsonb`
 
 #### UUID 与 ULID 类型
 
-[`ulid`](#column-method-ulid)
-[`ulidMorphs`](#column-method-ulidMorphs)
-[`uuid`](#column-method-uuid)
-[`uuidMorphs`](#column-method-uuidMorphs)
-[`nullableUlidMorphs`](#column-method-nullableUlidMorphs)
-[`nullableUuidMorphs`](#column-method-nullableUuidMorphs)
+`ulid`
+`ulidMorphs`
+`uuid`
+`uuidMorphs`
+`nullableUlidMorphs`
+`nullableUuidMorphs`
 
 #### 空间类型
 
-[`geography`](#column-method-geography)
-[`geometry`](#column-method-geometry)
+`geography`
+`geometry`
 
 #### 关联类型
 
-[`foreignId`](#column-method-foreignId)
-[`foreignIdFor`](#column-method-foreignIdFor)
-[`foreignUlid`](#column-method-foreignUlid)
-[`foreignUuid`](#column-method-foreignUuid)
-[`foreignUuidFor`](#column-method-foreignUuidFor)
-[`morphs`](#column-method-morphs)
-[`nullableMorphs`](#column-method-nullableMorphs)
+`foreignId`
+`foreignIdFor`
+`foreignUlid`
+`foreignUuid`
+`foreignUuidFor`
+`morphs`
+`nullableMorphs`
 
 #### 特殊类型
 
-[`enum`](#column-method-enum)
-[`set`](#column-method-set)
-[`macAddress`](#column-method-macAddress)
-[`ipAddress`](#column-method-ipAddress)
-[`rememberToken`](#column-method-rememberToken)
-[`vector`](#column-method-vector)
+`enum`
+`set`
+`macAddress`
+`ipAddress`
+`rememberToken`
+`vector`
 
 #### `bigIncrements()` {.collection-method .first-collection-method}
 
@@ -755,7 +755,7 @@ $table->mediumText('data')->charset('binary'); // MEDIUMBLOB
 
 `morphs` 方法是一个便捷方法，会同时添加一个 `{column}_type` 等价 `VARCHAR` 列和一个 `{column}_id` 等价列。`{column}_id` 列的类型取决于模型主键类型，分别为 `UNSIGNED BIGINT`、`CHAR(36)` 或 `CHAR(26)`。
 
-该方法适用于定义 [多态 Eloquent 关联](/docs/{{version}}/eloquent-relationships) 所需要的列。在下面的示例中，会创建 `taggable_type` 和 `taggable_id` 两列：
+该方法适用于定义 [多态 Eloquent 关联](/topic/Laravel%2013.x/kpv13d298w.html) 所需要的列。在下面的示例中，会创建 `taggable_type` 和 `taggable_id` 两列：
 
 ```php
 $table->morphs('taggable');
@@ -763,7 +763,7 @@ $table->morphs('taggable');
 
 #### `nullableMorphs()` {.collection-method}
 
-该方法与 [morphs](#column-method-morphs) 方法类似，但生成的列允许为空（`nullable`）：
+该方法与 morphs 方法类似，但生成的列允许为空（`nullable`）：
 
 ```php
 $table->nullableMorphs('taggable');
@@ -771,7 +771,7 @@ $table->nullableMorphs('taggable');
 
 #### `nullableUlidMorphs()` {.collection-method}
 
-该方法与 [ulidMorphs](#column-method-ulidMorphs) 方法类似，但生成的列允许为空（`nullable`）：
+该方法与 ulidMorphs 方法类似，但生成的列允许为空（`nullable`）：
 
 ```php
 $table->nullableUlidMorphs('taggable');
@@ -779,7 +779,7 @@ $table->nullableUlidMorphs('taggable');
 
 #### `nullableUuidMorphs()` {.collection-method}
 
-该方法与 [uuidMorphs](#column-method-uuidMorphs) 方法类似，但生成的列允许为空（`nullable`）：
+该方法与 uuidMorphs 方法类似，但生成的列允许为空（`nullable`）：
 
 ```php
 $table->nullableUuidMorphs('taggable');
@@ -787,7 +787,7 @@ $table->nullableUuidMorphs('taggable');
 
 #### `rememberToken()` {.collection-method}
 
-`rememberToken` 方法用于创建一个可空的 `VARCHAR(100)` 等价列，用于存储「记住我」[认证令牌](/docs/{{version}}/authentication#remembering-users)：
+`rememberToken` 方法用于创建一个可空的 `VARCHAR(100)` 等价列，用于存储「记住我」[认证令牌](/topic/Laravel%2013.x/xq9zrgjvdo.html)：
 
 ```php
 $table->rememberToken();
@@ -977,7 +977,7 @@ $table->unsignedTinyInteger('votes');
 
 `ulidMorphs` 方法是一个便捷方法，会同时添加一个 `{column}_type` 等价 `VARCHAR` 列和一个 `{column}_id` `CHAR(26)` 等价列。
 
-该方法适用于定义使用 ULID 标识符的 [多态 Eloquent 关联](/docs/{{version}}/eloquent-relationships) 所需要的列。在下面的示例中，会创建 `taggable_type` 和 `taggable_id` 两列：
+该方法适用于定义使用 ULID 标识符的 [多态 Eloquent 关联](/topic/Laravel%2013.x/kpv13d298w.html) 所需要的列。在下面的示例中，会创建 `taggable_type` 和 `taggable_id` 两列：
 
 ```php
 $table->ulidMorphs('taggable');
@@ -987,7 +987,7 @@ $table->ulidMorphs('taggable');
 
 `uuidMorphs` 方法是一个便捷方法，会同时添加一个 `{column}_type` 等价 `VARCHAR` 列和一个 `{column}_id` `CHAR(36)` 等价列。
 
-该方法适用于定义使用 UUID 标识符的 [多态 Eloquent 关联](/docs/{{version}}/eloquent-relationships#polymorphic-relationships) 所需要的列。在下面的示例中，会创建 `taggable_type` 和 `taggable_id` 两列：
+该方法适用于定义使用 UUID 标识符的 [多态 Eloquent 关联](/topic/Laravel%2013.x/kpv13d298w.html) 所需要的列。在下面的示例中，会创建 `taggable_type` 和 `taggable_id` 两列：
 
 ```php
 $table->uuidMorphs('taggable');
@@ -1044,7 +1044,7 @@ Schema::table('users', function (Blueprint $table) {
 });
 ```
 
-下表列出了所有可用的列修饰符。该列表不包含 [索引修饰符](#creating-indexes)：
+下表列出了所有可用的列修饰符。该列表不包含 索引修饰符：
 
 | 修饰符                              | 描述                                                                                       |
 | ----------------------------------- | ------------------------------------------------------------------------------------------ |
@@ -1359,7 +1359,7 @@ Laravel 同时为这些动作提供了一套更具表达力的替代语法：
 | `$table->nullOnDelete();`       | 删除时将外键值置为 NULL。                    |
 | `$table->noActionOnDelete();`   | 若存在子记录则阻止删除。                     |
 
-任何额外的 [列修饰符](#column-modifiers) 都必须在 `constrained` 方法之前调用：
+任何额外的 列修饰符 都必须在 `constrained` 方法之前调用：
 
 ```php
 $table->foreignId('user_id')
@@ -1396,11 +1396,11 @@ Schema::withoutForeignKeyConstraints(function () {
 ```
 
 > [!WARNING]
-> SQLite 默认禁用外键约束。在使用 SQLite 时，请确保已在数据库配置中 [启用外键支持](/docs/{{version}}/database#configuration)，然后再尝试在迁移中创建外键。
+> SQLite 默认禁用外键约束。在使用 SQLite 时，请确保已在数据库配置中 [启用外键支持](/topic/Laravel%2013.x/kl9no87vz4.html)，然后再尝试在迁移中创建外键。
 
 ## 事件
 
-为了便利，每次迁移操作都会派发一个 [事件](/docs/{{version}}/events)。下面所有的事件都继承自基类 `Illuminate\Database\Events\MigrationEvent`：
+为了便利，每次迁移操作都会派发一个 [事件](/topic/Laravel%2013.x/x3vo0l4vm1.html)。下面所有的事件都继承自基类 `Illuminate\Database\Events\MigrationEvent`：
 
 | 类                                              | 描述                                          |
 | ----------------------------------------------- | --------------------------------------------- |

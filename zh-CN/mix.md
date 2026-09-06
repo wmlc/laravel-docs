@@ -3,7 +3,7 @@
 ## 简介
 
 > [!WARNING]
-> Laravel Mix 是一个遗留包，不再积极维护。[Vite](/docs/{{version}}/vite) 可作为现代化的替代方案。
+> Laravel Mix 是一个遗留包，不再积极维护。[Vite](/topic/Laravel%2013.x/ndvm3gj93j.html) 可作为现代化的替代方案。
 
 [Laravel Mix](https://github.com/laravel-mix/laravel-mix) 是由 [Laracasts](https://laracasts.com) 创始人 Jeffrey Way 开发的一个包，它提供了一个流畅的 API，使用多种常见的 CSS 和 JavaScript 预处理器为你的 Laravel 应用定义 webpack 构建步骤。
 

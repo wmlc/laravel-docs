@@ -2,7 +2,7 @@
 
 ## 简介
 
-在其他框架中，分页可能非常痛苦。我们希望 Laravel 的分页方案能让人耳目一新。Laravel 的分页器与[查询构造器（Query Builder）](/docs/{{version}}/queries)和 [Eloquent ORM](/docs/{{version}}/eloquent) 集成，以零配置的方式提供便捷、易用的数据库记录分页。
+在其他框架中，分页可能非常痛苦。我们希望 Laravel 的分页方案能让人耳目一新。Laravel 的分页器与[查询构造器（Query Builder）](/topic/Laravel%2013.x/xpv525gv86.html)和 [Eloquent ORM](/topic/Laravel%2013.x/rwyl2kxvz8.html) 集成，以零配置的方式提供便捷、易用的数据库记录分页。
 
 默认情况下，分页器生成的 HTML 兼容 [Tailwind CSS 框架](https://tailwindcss.com/)；不过，也提供 Bootstrap 分页支持。
 
@@ -20,7 +20,7 @@
 
 ### 对查询构造器结果分页
 
-有多种方式可以对条目进行分页。最简单的方式是在[查询构造器（Query Builder）](/docs/{{version}}/queries)或 [Eloquent 查询](/docs/{{version}}/eloquent)上使用 `paginate` 方法。`paginate` 方法会根据用户当前正在查看的页面，自动设置查询的"limit"和"offset"。默认情况下，当前页通过 HTTP 请求上 `page` 查询字符串参数的值来检测。该值由 Laravel 自动检测，并会自动插入到分页器生成的链接中。
+有多种方式可以对条目进行分页。最简单的方式是在[查询构造器（Query Builder）](/topic/Laravel%2013.x/xpv525gv86.html)或 [Eloquent 查询](/topic/Laravel%2013.x/rwyl2kxvz8.html)上使用 `paginate` 方法。`paginate` 方法会根据用户当前正在查看的页面，自动设置查询的"limit"和"offset"。默认情况下，当前页通过 HTTP 请求上 `page` 查询字符串参数的值来检测。该值由 Laravel 自动检测，并会自动插入到分页器生成的链接中。
 
 在此示例中，传给 `paginate` 方法的唯一参数是你希望"每页"显示的条目数量。在本例中，我们指定每页显示 `15` 条：
 
@@ -58,7 +58,7 @@ $users = DB::table('users')->simplePaginate(15);
 
 ### 对 Eloquent 结果分页
 
-你也可以对 [Eloquent](/docs/{{version}}/eloquent) 查询进行分页。在此示例中，我们将对 `App\Models\User` 模型进行分页，并指明计划每页显示 15 条记录。如你所见，语法与对查询构造器（Query Builder）结果分页几乎相同：
+你也可以对 [Eloquent](/topic/Laravel%2013.x/rwyl2kxvz8.html) 查询进行分页。在此示例中，我们将对 `App\Models\User` 模型进行分页，并指明计划每页显示 15 条记录。如你所见，语法与对查询构造器（Query Builder）结果分页几乎相同：
 
 ```php
 use App\Models\User;
@@ -112,7 +112,7 @@ http://localhost/users?cursor=eyJpZCI6MTUsIl9wb2ludHNUb05leHRJdGVtcyI6dHJ1ZX0
 $users = DB::table('users')->orderBy('id')->cursorPaginate(15);
 ```
 
-一旦你获取了游标分页器实例，就可以像通常使用 `paginate` 和 `simplePaginate` 方法那样[显示分页结果](#displaying-pagination-results)。有关游标分页器提供的实例方法的更多信息，请查阅 [cursor paginator instance method documentation](#cursor-paginator-instance-methods)。
+一旦你获取了游标分页器实例，就可以像通常使用 `paginate` 和 `simplePaginate` 方法那样显示分页结果。有关游标分页器提供的实例方法的更多信息，请查阅 cursor paginator instance method documentation。
 
 > [!WARNING]
 > 你的查询必须包含"order by"子句才能利用游标分页。此外，查询排序所依据的列必须属于你正在分页的表。
@@ -202,7 +202,7 @@ $users = User::paginate(15)->fragment('users');
 
 调用 `paginate` 方法时，你会收到 `Illuminate\Pagination\LengthAwarePaginator` 的实例；而调用 `simplePaginate` 方法会返回 `Illuminate\Pagination\Paginator` 的实例。最后，调用 `cursorPaginate` 方法会返回 `Illuminate\Pagination\CursorPaginator` 的实例。
 
-这些对象提供了若干描述结果集的方法。除了这些辅助方法外，分页器实例是可迭代的，可以像数组一样循环。因此，一旦你获取了结果，就可以使用 [Blade](/docs/{{version}}/blade) 显示结果并渲染页面链接：
+这些对象提供了若干描述结果集的方法。除了这些辅助方法外，分页器实例是可迭代的，可以像数组一样循环。因此，一旦你获取了结果，就可以使用 [Blade](/topic/Laravel%2013.x/wevwmrz9l2.html) 显示结果并渲染页面链接：
 
 ```blade
 <div class="container">

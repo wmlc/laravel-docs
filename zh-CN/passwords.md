@@ -5,7 +5,7 @@
 大多数 Web 应用都会提供一种让用户重置忘记密码的方式。Laravel 提供了便捷的服务来发送密码重置链接以及安全地重置密码，而不需要你为每个创建的应用手动重新实现。
 
 > [!NOTE]
-> 想快速上手？在全新的 Laravel 应用中安装一个 Laravel [应用入门套件](/docs/{{version}}/starter-kits)。Laravel 的入门套件会负责搭建你的整个认证系统，包括重置忘记的密码。
+> 想快速上手？在全新的 Laravel 应用中安装一个 Laravel [应用入门套件](/topic/Laravel%2013.x/kl9nop7vz4.html)。Laravel 的入门套件会负责搭建你的整个认证系统，包括重置忘记的密码。
 
 ### 配置
 
@@ -52,7 +52,7 @@
 
 通常，你应当配置你的 Web 服务器（如 Nginx 或 Apache），使其只将匹配给定主机名的请求发送到你的应用。但是，如果你无法直接自定义 Web 服务器，并且需要指示 Laravel 只响应某些主机名，可以通过在应用的 `bootstrap/app.php` 文件中使用 `trustHosts` 中间件方法来做到这一点。当你的应用提供密码重置功能时，这一点尤为重要。
 
-要了解有关该中间件方法的更多信息，请查阅 [TrustHosts 中间件文档](/docs/{{version}}/requests#configuring-trusted-hosts)。
+要了解有关该中间件方法的更多信息，请查阅 [TrustHosts 中间件文档](/topic/Laravel%2013.x/2ky040l9z8.html)。
 
 ## 路由
 
@@ -93,17 +93,17 @@ Route::post('/forgot-password', function (Request $request) {
 })->middleware('guest')->name('password.email');
 ```
 
-在继续之前，让我们更详细地检查一下这条路由。首先，验证请求的 `email` 属性。接下来，我们将使用 Laravel 内置的"密码代理（password broker）"（通过 `Password` Facade）向用户发送密码重置链接。密码代理（password broker）会负责通过给定字段（在本例中是邮箱地址）检索用户，并通过 Laravel 内置的[通知系统](/docs/{{version}}/notifications)向用户发送密码重置链接。
+在继续之前，让我们更详细地检查一下这条路由。首先，验证请求的 `email` 属性。接下来，我们将使用 Laravel 内置的"密码代理（password broker）"（通过 `Password` Facade）向用户发送密码重置链接。密码代理（password broker）会负责通过给定字段（在本例中是邮箱地址）检索用户，并通过 Laravel 内置的[通知系统](/topic/Laravel%2013.x/2ky045l9z8.html)向用户发送密码重置链接。
 
-`sendResetLink` 方法返回一个"status"slug（状态标识）。可以使用 Laravel 的[本地化](/docs/{{version}}/localization)辅助函数翻译此状态，以便向用户显示有关其请求状态的友好消息。密码重置状态的翻译由应用的 `lang/{lang}/passwords.php` 语言文件决定。该 `passwords` 语言文件中包含了状态 slug 每个可能取值的条目。
+`sendResetLink` 方法返回一个"status"slug（状态标识）。可以使用 Laravel 的[本地化](/topic/Laravel%2013.x/kpv13q298w.html)辅助函数翻译此状态，以便向用户显示有关其请求状态的友好消息。密码重置状态的翻译由应用的 `lang/{lang}/passwords.php` 语言文件决定。该 `passwords` 语言文件中包含了状态 slug 每个可能取值的条目。
 
 > [!NOTE]
 > 默认情况下，Laravel 应用骨架不包含 `lang` 目录。如果你希望自定义 Laravel 的语言文件，可以通过 `lang:publish` Artisan 命令发布它们。
 
-你可能会疑惑，在调用 `Password` Facade 的 `sendResetLink` 方法时，Laravel 是如何知道如何从应用的数据库检索用户记录的。Laravel 密码代理（password broker）利用你的认证系统的"用户提供者（user provider）"来检索数据库记录。密码代理（password broker）使用的用户提供者（user provider）在你的 `config/auth.php` 配置文件的 `passwords` 配置数组中配置。要了解有关编写自定义用户提供者（user provider）的更多信息，请查阅 [authentication documentation](/docs/{{version}}/authentication#adding-custom-user-providers)。
+你可能会疑惑，在调用 `Password` Facade 的 `sendResetLink` 方法时，Laravel 是如何知道如何从应用的数据库检索用户记录的。Laravel 密码代理（password broker）利用你的认证系统的"用户提供者（user provider）"来检索数据库记录。密码代理（password broker）使用的用户提供者（user provider）在你的 `config/auth.php` 配置文件的 `passwords` 配置数组中配置。要了解有关编写自定义用户提供者（user provider）的更多信息，请查阅 [authentication documentation](/topic/Laravel%2013.x/xq9zrgjvdo.html)。
 
 > [!NOTE]
-> 手动实现密码重置时，你需要自行定义视图和路由的内容。如果你希望包含全部必要认证与验证逻辑的脚手架，请查看 [Laravel 应用入门套件](/docs/{{version}}/starter-kits)。
+> 手动实现密码重置时，你需要自行定义视图和路由的内容。如果你希望包含全部必要认证与验证逻辑的脚手架，请查看 [Laravel 应用入门套件](/topic/Laravel%2013.x/kl9nop7vz4.html)。
 
 ### 重置密码
 
@@ -161,9 +161,9 @@ Route::post('/reset-password', function (Request $request) {
 
 如果提供给密码代理（password broker）的令牌、邮箱地址和密码有效，就会调用传给 `reset` 方法的闭包。在这个接收用户实例和密码重置表单提供的明文密码的闭包中，我们可以更新数据库中的用户密码。
 
-`reset` 方法返回一个"status"slug（状态标识）。可以使用 Laravel 的[本地化](/docs/{{version}}/localization)辅助函数翻译此状态，以便向用户显示有关其请求状态的友好消息。密码重置状态的翻译由应用的 `lang/{lang}/passwords.php` 语言文件决定。该 `passwords` 语言文件中包含了状态 slug 每个可能取值的条目。如果你的应用不包含 `lang` 目录，可以使用 `lang:publish` Artisan 命令创建它。
+`reset` 方法返回一个"status"slug（状态标识）。可以使用 Laravel 的[本地化](/topic/Laravel%2013.x/kpv13q298w.html)辅助函数翻译此状态，以便向用户显示有关其请求状态的友好消息。密码重置状态的翻译由应用的 `lang/{lang}/passwords.php` 语言文件决定。该 `passwords` 语言文件中包含了状态 slug 每个可能取值的条目。如果你的应用不包含 `lang` 目录，可以使用 `lang:publish` Artisan 命令创建它。
 
-在继续之前，你可能会疑惑，在调用 `Password` Facade 的 `reset` 方法时，Laravel 是如何知道如何从应用的数据库检索用户记录的。Laravel 密码代理（password broker）利用你的认证系统的"用户提供者（user provider）"来检索数据库记录。密码代理（password broker）使用的用户提供者（user provider）在你的 `config/auth.php` 配置文件的 `passwords` 配置数组中配置。要了解有关编写自定义用户提供者（user provider）的更多信息，请查阅 [authentication documentation](/docs/{{version}}/authentication#adding-custom-user-providers)。
+在继续之前，你可能会疑惑，在调用 `Password` Facade 的 `reset` 方法时，Laravel 是如何知道如何从应用的数据库检索用户记录的。Laravel 密码代理（password broker）利用你的认证系统的"用户提供者（user provider）"来检索数据库记录。密码代理（password broker）使用的用户提供者（user provider）在你的 `config/auth.php` 配置文件的 `passwords` 配置数组中配置。要了解有关编写自定义用户提供者（user provider）的更多信息，请查阅 [authentication documentation](/topic/Laravel%2013.x/xq9zrgjvdo.html)。
 
 ## 删除过期令牌
 
@@ -173,7 +173,7 @@ Route::post('/reset-password', function (Request $request) {
 php artisan auth:clear-resets
 ```
 
-如果你希望将此过程自动化，可以考虑将该命令添加到应用的 [scheduler](/docs/{{version}}/scheduling)（调度器）中：
+如果你希望将此过程自动化，可以考虑将该命令添加到应用的 [scheduler](/topic/Laravel%2013.x/e296olw9q7.html)（调度器）中：
 
 ```php
 use Illuminate\Support\Facades\Schedule;
@@ -204,7 +204,7 @@ public function boot(): void
 
 #### 自定义重置邮件
 
-你可以轻松修改用于向用户发送密码重置链接的通知类。开始之前，在你 `App\Models\User` 模型上重写 `sendPasswordResetNotification` 方法。在该方法中，你可以使用你自己创建的任何[通知类](/docs/{{version}}/notifications)发送通知。密码重置 `$token` 是该方法接收的第一个参数。你可以使用此 `$token` 构建你选择的密码重置 URL，并向用户发送通知：
+你可以轻松修改用于向用户发送密码重置链接的通知类。开始之前，在你 `App\Models\User` 模型上重写 `sendPasswordResetNotification` 方法。在该方法中，你可以使用你自己创建的任何[通知类](/topic/Laravel%2013.x/2ky045l9z8.html)发送通知。密码重置 `$token` 是该方法接收的第一个参数。你可以使用此 `$token` 构建你选择的密码重置 URL，并向用户发送通知：
 
 ```php
 use App\Notifications\ResetPasswordNotification;

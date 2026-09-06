@@ -10,7 +10,7 @@
 
 ### 创建扩展包
 
-构建新 Laravel 包最简单的方式是使用官方的 [Laravel package skeleton](https://github.com/laravel/package-skeleton)（Laravel 包骨架）。该骨架提供了构建 Laravel 包所需的一切，包括一个服务提供者（Service Provider）、通过 Pest 进行的测试、通过 Larastan 进行的静态分析、通过 Pint 进行的代码格式化，以及一个用于端到端包开发的 workbench 应用。你可以使用 [Laravel installer CLI](/docs/{{version}}/installation#creating-a-laravel-project) 的 `package` 命令创建一个新包：
+构建新 Laravel 包最简单的方式是使用官方的 [Laravel package skeleton](https://github.com/laravel/package-skeleton)（Laravel 包骨架）。该骨架提供了构建 Laravel 包所需的一切，包括一个服务提供者（Service Provider）、通过 Pest 进行的测试、通过 Larastan 进行的静态分析、通过 Pint 进行的代码格式化，以及一个用于端到端包开发的 workbench 应用。你可以使用 [Laravel installer CLI](/topic/Laravel%2013.x/2wy3lj3ykm.html) 的 `package` 命令创建一个新包：
 
 ```shell
 laravel package my-package
@@ -24,7 +24,7 @@ laravel package my-package
 
 ## 扩展包自动发现
 
-Laravel 应用的 `bootstrap/providers.php` 文件包含应由 Laravel 加载的服务提供者（Service Provider）列表。但是，你无需要求用户手动将你的服务提供者（Service Provider）添加到列表中，而是可以在包的 `composer.json` 文件的 `extra` 部分定义该提供者（Service Provider），从而让 Laravel 自动加载它。除了服务提供者（Service Provider），你还可以列出希望注册的所有 [Facade](/docs/{{version}}/facades)：
+Laravel 应用的 `bootstrap/providers.php` 文件包含应由 Laravel 加载的服务提供者（Service Provider）列表。但是，你无需要求用户手动将你的服务提供者（Service Provider）添加到列表中，而是可以在包的 `composer.json` 文件的 `extra` 部分定义该提供者（Service Provider），从而让 Laravel 自动加载它。除了服务提供者（Service Provider），你还可以列出希望注册的所有 [Facade](/topic/Laravel%2013.x/569x508yep.html)：
 
 ```json
 "extra": {
@@ -69,9 +69,9 @@ Laravel 应用的 `bootstrap/providers.php` 文件包含应由 Laravel 加载的
 
 ## 服务提供者
 
-服务提供者（Service Provider）是连接你的包与 Laravel 的桥梁。服务提供者（Service Provider）负责将内容绑定到 Laravel 的[服务容器（Service Container）](/docs/{{version}}/container)中，并告知 Laravel 从何处加载包资源，例如视图、配置和语言文件。
+服务提供者（Service Provider）是连接你的包与 Laravel 的桥梁。服务提供者（Service Provider）负责将内容绑定到 Laravel 的[服务容器（Service Container）](/topic/Laravel%2013.x/x3vo054vm1.html)中，并告知 Laravel 从何处加载包资源，例如视图、配置和语言文件。
 
-服务提供者（Service Provider）继承自 `Illuminate\Support\ServiceProvider` 类，并包含两个方法：`register` 和 `boot`。基础的 `ServiceProvider` 类位于 `illuminate/support` Composer 包中，你应当将其添加到你自己包的依赖中。要了解有关服务提供者（Service Provider）结构和用途的更多信息，请查看[它们的文档](/docs/{{version}}/providers)。
+服务提供者（Service Provider）继承自 `Illuminate\Support\ServiceProvider` 类，并包含两个方法：`register` 和 `boot`。基础的 `ServiceProvider` 类位于 `illuminate/support` Composer 包中，你应当将其添加到你自己包的依赖中。要了解有关服务提供者（Service Provider）结构和用途的更多信息，请查看[它们的文档](/topic/Laravel%2013.x/qk942kovw1.html)。
 
 ## 资源
 
@@ -137,7 +137,7 @@ public function boot(): void
 
 ### 数据库迁移
 
-如果你的包包含[数据库迁移（migration）](/docs/{{version}}/migrations)，可以使用 `publishesMigrations` 方法告知 Laravel 给定目录或文件包含迁移。当 Laravel 发布迁移时，它会自动更新文件名中的时间戳以反映当前日期和时间：
+如果你的包包含[数据库迁移（migration）](/topic/Laravel%2013.x/x3vo0g4vm1.html)，可以使用 `publishesMigrations` 方法告知 Laravel 给定目录或文件包含迁移。当 Laravel 发布迁移时，它会自动更新文件名中的时间戳以反映当前日期和时间：
 
 ```php
 /**
@@ -153,7 +153,7 @@ public function boot(): void
 
 ### 语言文件
 
-如果你的包包含[语言文件](/docs/{{version}}/localization)，可以使用 `loadTranslationsFrom` 方法告知 Laravel 如何加载它们。例如，如果你的包名为 `courier`，你应当在该包的服务提供者（Service Provider）的 `boot` 方法中添加以下内容：
+如果你的包包含[语言文件](/topic/Laravel%2013.x/kpv13q298w.html)，可以使用 `loadTranslationsFrom` 方法告知 Laravel 如何加载它们。例如，如果你的包名为 `courier`，你应当在该包的服务提供者（Service Provider）的 `boot` 方法中添加以下内容：
 
 ```php
 /**
@@ -205,7 +205,7 @@ public function boot(): void
 
 ### 视图
 
-要向 Laravel 注册你的包的[视图](/docs/{{version}}/views)，你需要告知 Laravel 视图所在的位置。可以使用服务提供者（Service Provider）的 `loadViewsFrom` 方法完成。 `loadViewsFrom` 方法接受两个参数：视图模板的路径和你的包名。例如，如果你的包名是 `courier`，你会向该包的服务提供者（Service Provider）的 `boot` 方法中添加以下内容：
+要向 Laravel 注册你的包的[视图](/topic/Laravel%2013.x/m892gz6y01.html)，你需要告知 Laravel 视图所在的位置。可以使用服务提供者（Service Provider）的 `loadViewsFrom` 方法完成。 `loadViewsFrom` 方法接受两个参数：视图模板的路径和你的包名。例如，如果你的包名是 `courier`，你会向该包的服务提供者（Service Provider）的 `boot` 方法中添加以下内容：
 
 ```php
 /**
@@ -299,7 +299,7 @@ Blade 会通过 Pascal 命名法（pascal-casing）转换组件名来自动检�
 
 #### 匿名组件
 
-如果你的包包含匿名组件，它们必须放置在包的"视图"目录（由 [loadViewsFrom 方法](#views) 指定）的 `components` 目录中。然后，你可以通过在组件名前加上包的视图命名空间来渲染它们：
+如果你的包包含匿名组件，它们必须放置在包的"视图"目录（由 loadViewsFrom 方法 指定）的 `components` 目录中。然后，你可以通过在组件名前加上包的视图命名空间来渲染它们：
 
 ```blade
 <x-courier::alert />
@@ -323,7 +323,7 @@ public function boot(): void
 
 ## 命令
 
-要向 Laravel 注册包的 Artisan 命令，可以使用 `commands` 方法。该方法接受一组命令类名。命令注册后，你就可以使用 [Artisan CLI](/docs/{{version}}/artisan) 执行它们：
+要向 Laravel 注册包的 Artisan 命令，可以使用 `commands` 方法。该方法接受一组命令类名。命令注册后，你就可以使用 [Artisan CLI](/topic/Laravel%2013.x/3dykqdoyl0.html) 执行它们：
 
 ```php
 use Courier\Console\Commands\InstallCommand;
@@ -345,7 +345,7 @@ public function boot(): void
 
 ### 优化命令
 
-Laravel 的 [optimize 命令](/docs/{{version}}/deployment#optimization) 会缓存应用的配置、事件、路由和视图。使用 `optimizes` 方法，你可以注册包自身的 Artisan 命令，这些命令应在执行 `optimize` 和 `optimize:clear` 命令时被调用：
+Laravel 的 [optimize 命令](/topic/Laravel%2013.x/xpv52dgv86.html) 会缓存应用的配置、事件、路由和视图。使用 `optimizes` 方法，你可以注册包自身的 Artisan 命令，这些命令应在执行 `optimize` 和 `optimize:clear` 命令时被调用：
 
 ```php
 /**
@@ -364,7 +364,7 @@ public function boot(): void
 
 ### 重载命令
 
-Laravel 的 [reload 命令](/docs/{{version}}/deployment#reloading-services) 会终止任何正在运行的服务，以便系统进程监视器可以自动重启它们。使用 `reloads` 方法，你可以注册包自身的 Artisan 命令，这些命令应在执行 `reload` 命令时被调用：
+Laravel 的 [reload 命令](/topic/Laravel%2013.x/xpv52dgv86.html) 会终止任何正在运行的服务，以便系统进程监视器可以自动重启它们。使用 `reloads` 方法，你可以注册包自身的 Artisan 命令，这些命令应在执行 `reload` 命令时被调用：
 
 ```php
 /**

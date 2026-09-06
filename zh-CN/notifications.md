@@ -2,7 +2,7 @@
 
 ## 简介
 
-除了支持[发送邮件](/docs/{{version}}/mail)之外，Laravel 还支持通过多种传送频道发送通知，包括邮件、短信（通过 [Vonage](https://www.vonage.com/communications-apis/)，前身为 Nexmo）和 [Slack](https://slack.com)。此外，社区已经创建了多种[社区构建的通知频道](https://laravel-notification-channels.com/about/#suggesting-a-new-channel)，可以通过数十个不同的频道发送通知！通知也可以存储在数据库中，以便在 Web 界面中显示。
+除了支持[发送邮件](/topic/Laravel%2013.x/d6vro0rv3g.html)之外，Laravel 还支持通过多种传送频道发送通知，包括邮件、短信（通过 [Vonage](https://www.vonage.com/communications-apis/)，前身为 Nexmo）和 [Slack](https://slack.com)。此外，社区已经创建了多种[社区构建的通知频道](https://laravel-notification-channels.com/about/#suggesting-a-new-channel)，可以通过数十个不同的频道发送通知！通知也可以存储在数据库中，以便在 Web 界面中显示。
 
 通常，通知应该是简短的信息性消息，用于告知用户应用中中发生的某些事件。例如，如果你正在编写一个计费应用，可以通过电子邮件和短信频道向用户发送「发票已支付」通知。
 
@@ -20,7 +20,7 @@ php artisan make:notification InvoicePaid
 
 ### 使用 Notifiable Trait
 
-可以通过两种方式发送通知：使用 `Notifiable` Trait 的 `notify` 方法，或使用 `Notification` [Facade](/docs/{{version}}/facades)。默认情况下，`Notifiable` Trait 包含在应用的 `App\Models\User` 模型中：
+可以通过两种方式发送通知：使用 `Notifiable` Trait 的 `notify` 方法，或使用 `Notification` [Facade](/topic/Laravel%2013.x/569x508yep.html)。默认情况下，`Notifiable` Trait 包含在应用的 `App\Models\User` 模型中：
 
 ```php
 <?php
@@ -49,7 +49,7 @@ $user->notify(new InvoicePaid($invoice));
 
 ### 使用 Notification Facade
 
-或者，你可以通过 `Notification` [Facade](/docs/{{version}}/facades) 发送通知。当你需要向多个可通知实体（例如用户集合）发送通知时，此方法非常有用。要使用 Facade 发送通知，请将所有可通知实体和通知实例传递给 `send` 方法：
+或者，你可以通过 `Notification` [Facade](/topic/Laravel%2013.x/569x508yep.html) 发送通知。当你需要向多个可通知实体（例如用户集合）发送通知时，此方法非常有用。要使用 Facade 发送通知，请将所有可通知实体和通知实例传递给 `send` 方法：
 
 ```php
 use Illuminate\Support\Facades\Notification;
@@ -87,7 +87,7 @@ public function via(object $notifiable): array
 ### 队列化通知
 
 > [!WARNING]
-> 在队列化通知之前，应配置队列并[启动 worker](/docs/{{version}}/queues#running-the-queue-worker)。
+> 在队列化通知之前，应配置队列并[启动 worker](/topic/Laravel%2013.x/wevwmkz9l2.html)。
 
 发送通知可能需要一些时间，特别是当频道需要进行外部 API 调用以传送通知时。为了加快应用的响应时间，可以通过向类添加 `ShouldQueue` 接口和 `Queueable` Trait 来让通知进入队列。该接口和 Trait 已为使用 `make:notification` 命令生成的所有通知导入，因此可以立即将它们添加到通知类中：
 
@@ -244,7 +244,7 @@ class InvoicePaid extends Notification implements ShouldQueue
 }
 ```
 
-如果你希望通过[加密](/docs/{{version}}/encryption)确保队列化通知数据的隐私性和完整性，请将 `ShouldBeEncrypted` 接口添加到通知类：
+如果你希望通过[加密](/topic/Laravel%2013.x/enyd5k197d.html)确保队列化通知数据的隐私性和完整性，请将 `ShouldBeEncrypted` 接口添加到通知类：
 
 ```php
 <?php
@@ -287,11 +287,11 @@ public function retryUntil(): DateTime
 ```
 
 > [!NOTE]
-> 有关这些任务属性和方法的更多信息，请查阅有关[队列任务](/docs/{{version}}/queues#max-job-attempts-and-timeout)的文档。
+> 有关这些任务属性和方法的更多信息，请查阅有关[队列任务](/topic/Laravel%2013.x/wevwmkz9l2.html)的文档。
 
 #### 队列化通知中间件
 
-队列化通知可以像[队列任务](/docs/{{version}}/queues#job-middleware)一样定义中间件。首先，在通知类上定义 `middleware` 方法。`middleware` 方法将接收 `$notifiable` 和 `$channel` 变量，使你能够根据通知的目标自定义返回的中间件：
+队列化通知可以像[队列任务](/topic/Laravel%2013.x/wevwmkz9l2.html)一样定义中间件。首先，在通知类上定义 `middleware` 方法。`middleware` 方法将接收 `$notifiable` 和 `$channel` 变量，使你能够根据通知的目标自定义返回的中间件：
 
 ```php
 use Illuminate\Queue\Middleware\RateLimited;
@@ -349,7 +349,7 @@ class InvoicePaid extends Notification implements ShouldQueue
 ```
 
 > [!NOTE]
-> 要了解有关解决这些问题的更多信息，请查看有关[队列任务和数据库事务](/docs/{{version}}/queues#jobs-and-database-transactions)的文档。
+> 要了解有关解决这些问题的更多信息，请查看有关[队列任务和数据库事务](/topic/Laravel%2013.x/wevwmkz9l2.html)的文档。
 
 #### 确定是否应发送队列化通知
 
@@ -616,7 +616,7 @@ public function toMail(object $notifiable): MailMessage
 ```
 
 > [!NOTE]
-> 通知邮件消息提供的 `attach` 方法也接受[可附加对象](/docs/{{version}}/mail#attachable-objects)。请查阅完整的[可附加对象文档](/docs/{{version}}/mail#attachable-objects)以了解更多信息。
+> 通知邮件消息提供的 `attach` 方法也接受[可附加对象](/topic/Laravel%2013.x/d6vro0rv3g.html)。请查阅完整的[可附加对象文档](/topic/Laravel%2013.x/d6vro0rv3g.html)以了解更多信息。
 
 将文件附加到消息时，你还可以通过将 `array` 作为第二个参数传递给 `attach` 方法来指定显示名称和/或 MIME 类型：
 
@@ -655,7 +655,7 @@ public function toMail(object $notifiable): MailMessage
 }
 ```
 
-可以使用 `attachFromStorageDisk` 方法附加存在于特定[文件系统磁盘](/docs/{{version}}/filesystem)上的文件。此方法接受磁盘名称和该磁盘上文件的路径：
+可以使用 `attachFromStorageDisk` 方法附加存在于特定[文件系统磁盘](/topic/Laravel%2013.x/qk9428ovw1.html)上的文件。此方法接受磁盘名称和该磁盘上文件的路径：
 
 ```php
 use App\Mail\InvoicePaid as InvoicePaidMailable;
@@ -735,7 +735,7 @@ public function toMail(object $notifiable): MailMessage
 
 ### 使用 Mailables
 
-如果需要，你可以从通知的 `toMail` 方法返回完整的[mailable 对象](/docs/{{version}}/mail)。返回 `Mailable` 而不是 `MailMessage` 时，你需要使用 mailable 对象的 `to` 方法指定消息收件人：
+如果需要，你可以从通知的 `toMail` 方法返回完整的[mailable 对象](/topic/Laravel%2013.x/d6vro0rv3g.html)。返回 `Mailable` 而不是 `MailMessage` 时，你需要使用 mailable 对象的 `to` 方法指定消息收件人：
 
 ```php
 use App\Mail\InvoicePaid as InvoicePaidMailable;
@@ -753,7 +753,7 @@ public function toMail(object $notifiable): Mailable
 
 #### Mailables 和按需通知
 
-如果正在发送[按需通知](#on-demand-notifications)，传递给 `toMail` 方法的 `$notifiable` 实例将是 `Illuminate\Notifications\AnonymousNotifiable` 的实例，它提供了一个 `routeNotificationFor` 方法，可用于检索按需通知应发送到的电子邮箱地址：
+如果正在发送按需通知，传递给 `toMail` 方法的 `$notifiable` 实例将是 `Illuminate\Notifications\AnonymousNotifiable` 的实例，它提供了一个 `routeNotificationFor` 方法，可用于检索按需通知应发送到的电子邮箱地址：
 
 ```php
 use App\Mail\InvoicePaid as InvoicePaidMailable;
@@ -910,7 +910,7 @@ public function toMail(object $notifiable): MailMessage
 
 `database` 通知频道将通知信息存储在数据库表中。该表将包含通知类型以及描述通知的 JSON 数据结构等信息。
 
-你可以查询该表以在应用的用户界面中显示通知。但是，在执行此操作之前，需要创建一个数据库表来保存通知。可以使用 `make:notifications-table` 命令生成带有正确表架构的[migration](/docs/{{version}}/migrations)：
+你可以查询该表以在应用的用户界面中显示通知。但是，在执行此操作之前，需要创建一个数据库表来保存通知。可以使用 `make:notifications-table` 命令生成带有正确表架构的[migration](/topic/Laravel%2013.x/x3vo0g4vm1.html)：
 
 ```shell
 php artisan make:notifications-table
@@ -919,7 +919,7 @@ php artisan migrate
 ```
 
 > [!NOTE]
-> 如果你的可通知模型正在使用 [UUID 或 ULID 主键](/docs/{{version}}/eloquent#uuid-and-ulid-keys)，则应在通知表 migration 中将 `morphs` 方法替换为 [uuidMorphs](/docs/{{version}}/migrations#column-method-uuidMorphs) 或 [ulidMorphs](/docs/{{version}}/migrations#column-method-ulidMorphs)。
+> 如果你的可通知模型正在使用 [UUID 或 ULID 主键](/topic/Laravel%2013.x/rwyl2kxvz8.html)，则应在通知表 migration 中将 `morphs` 方法替换为 [uuidMorphs](/topic/Laravel%2013.x/x3vo0g4vm1.html) 或 [ulidMorphs](/topic/Laravel%2013.x/x3vo0g4vm1.html)。
 
 ### 格式化数据库通知
 
@@ -968,7 +968,7 @@ public function initialDatabaseReadAtValue(): ?Carbon
 
 ### 访问通知
 
-通知存储在数据库中后，需要一种便捷的方法从可通知实体访问它们。`Illuminate\Notifications\Notifiable` Trait 包含在 Laravel 的默认 `App\Models\User` 模型中，它包含一个 `notifications` [Eloquent 关联](/docs/{{version}}/eloquent-relationships)，用于返回实体的通知。要获取通知，可以像访问任何其他 Eloquent 关联一样访问此方法。默认情况下，通知将按 `created_at` 时间戳排序，最新的通知位于集合的开头：
+通知存储在数据库中后，需要一种便捷的方法从可通知实体访问它们。`Illuminate\Notifications\Notifiable` Trait 包含在 Laravel 的默认 `App\Models\User` 模型中，它包含一个 `notifications` [Eloquent 关联](/topic/Laravel%2013.x/kpv13d298w.html)，用于返回实体的通知。要获取通知，可以像访问任何其他 Eloquent 关联一样访问此方法。默认情况下，通知将按 `created_at` 时间戳排序，最新的通知位于集合的开头：
 
 ```php
 $user = App\Models\User::find(1);
@@ -1037,11 +1037,11 @@ $user->notifications()->delete();
 
 ### 前提条件
 
-在广播通知之前，应配置并熟悉 Laravel 的[事件广播](/docs/{{version}}/broadcasting)服务。事件广播提供了一种从 JavaScript 前端对服务端 Laravel 事件做出反应的方法。
+在广播通知之前，应配置并熟悉 Laravel 的[事件广播](/topic/Laravel%2013.x/enyd5w197d.html)服务。事件广播提供了一种从 JavaScript 前端对服务端 Laravel 事件做出反应的方法。
 
 ### 格式化广播通知
 
-`broadcast` 频道使用 Laravel 的[事件广播](/docs/{{version}}/broadcasting)服务广播通知，使你的 JavaScript 前端能够实时捕获通知。如果通知支持广播，可以在通知类上定义 `toBroadcast` 方法。此方法将接收一个 `$notifiable` 实体，并应返回一个 `BroadcastMessage` 实例。如果 `toBroadcast` 方法不存在，则将使用 `toArray` 方法来收集应广播的数据。返回的数据将被编码为 JSON 并广播到你的 JavaScript 前端。让我们看一下 `toBroadcast` 方法的示例：
+`broadcast` 频道使用 Laravel 的[事件广播](/topic/Laravel%2013.x/enyd5w197d.html)服务广播通知，使你的 JavaScript 前端能够实时捕获通知。如果通知支持广播，可以在通知类上定义 `toBroadcast` 方法。此方法将接收一个 `$notifiable` 实体，并应返回一个 `BroadcastMessage` 实例。如果 `toBroadcast` 方法不存在，则将使用 `toArray` 方法来收集应广播的数据。返回的数据将被编码为 JSON 并广播到你的 JavaScript 前端。让我们看一下 `toBroadcast` 方法的示例：
 
 ```php
 use Illuminate\Notifications\Messages\BroadcastMessage;
@@ -1084,7 +1084,7 @@ public function broadcastType(): string
 
 ### 监听通知
 
-通知将在使用 `{notifiable}.{id}` 约定格式化的私有频道上广播。因此，如果要向 ID 为 `1` 的 `App\Models\User` 实例发送通知，则通知将在 `App.Models.User.1` 私有频道上广播。在使用 [Laravel Echo](/docs/{{version}}/broadcasting#client-side-installation) 时，可以使用 `notification` 方法轻松监听频道上的通知：
+通知将在使用 `{notifiable}.{id}` 约定格式化的私有频道上广播。因此，如果要向 ID 为 `1` 的 `App\Models\User` 实例发送通知，则通知将在 `App.Models.User.1` 私有频道上广播。在使用 [Laravel Echo](/topic/Laravel%2013.x/enyd5w197d.html) 时，可以使用 `notification` 方法轻松监听频道上的通知：
 
 ```js
 Echo.private('App.Models.User.' + userId)
@@ -1365,7 +1365,7 @@ composer require laravel/slack-notification-channel
 
 #### App 分发
 
-如果你的应用将向应用用户拥有的外部 Slack workspace 发送通知，则需要通过 Slack「分发」你的 App。可以从 Slack 中 App 的「Manage Distribution」选项卡管理 App 分发。一旦你的 App 被分发，你可以使用 [Socialite](/docs/{{version}}/socialite) [获取 Slack Bot 令牌](/docs/{{version}}/socialite#slack-bot-scopes)，以代表你的应用用户。
+如果你的应用将向应用用户拥有的外部 Slack workspace 发送通知，则需要通过 Slack「分发」你的 App。可以从 Slack 中 App 的「Manage Distribution」选项卡管理 App 分发。一旦你的 App 被分发，你可以使用 [Socialite](/topic/Laravel%2013.x/3dykq5oyl0.html) [获取 Slack Bot 令牌](/topic/Laravel%2013.x/3dykq5oyl0.html)，以代表你的应用用户。
 
 ### 格式化 Slack 通知
 
@@ -1560,9 +1560,9 @@ class User extends Authenticatable
 ### 通知外部 Slack Workspace
 
 > [!NOTE]
-> 在向外部 Slack workspace 发送通知之前，你的 Slack App 必须被[分发](#slack-app-distribution)。
+> 在向外部 Slack workspace 发送通知之前，你的 Slack App 必须被分发。
 
-当然，你通常希望向应用用户拥有的 Slack workspace 发送通知。为此，首先需要为用户获取 Slack OAuth 令牌。值得庆幸的是，[Laravel Socialite](/docs/{{version}}/socialite) 包含一个 Slack 驱动程序，可让你轻松地通过 Slack 对应用用户进行身份验证并[获取 bot 令牌](/docs/{{version}}/socialite#slack-bot-scopes)。
+当然，你通常希望向应用用户拥有的 Slack workspace 发送通知。为此，首先需要为用户获取 Slack OAuth 令牌。值得庆幸的是，[Laravel Socialite](/topic/Laravel%2013.x/3dykq5oyl0.html) 包含一个 Slack 驱动程序，可让你轻松地通过 Slack 对应用用户进行身份验证并[获取 bot 令牌](/topic/Laravel%2013.x/3dykq5oyl0.html)。
 
 获取 bot 令牌并将其存储在应用的数据库中后，可以使用 `SlackRoute::make` 方法将通知路由到用户的 workspace。此外，你的应用可能需要为用户提供机会指定通知应发送到哪个频道：
 
@@ -1723,7 +1723,7 @@ Notification::assertSentTo(
 
 #### 按需通知
 
-如果正在测试的代码发送[按需通知](#on-demand-notifications)，则可以通过 `assertSentOnDemand` 方法测试按需通知是否已发送：
+如果正在测试的代码发送按需通知，则可以通过 `assertSentOnDemand` 方法测试按需通知是否已发送：
 
 ```php
 Notification::assertSentOnDemand(OrderShipped::class);
@@ -1744,7 +1744,7 @@ Notification::assertSentOnDemand(
 
 #### 通知发送事件
 
-当通知正在发送时，通知系统会分发 `Illuminate\Notifications\Events\NotificationSending` 事件。它包含「notifiable」实体和通知实例本身。你可以在应用中为此事件创建[事件监听器](/docs/{{version}}/events)：
+当通知正在发送时，通知系统会分发 `Illuminate\Notifications\Events\NotificationSending` 事件。它包含「notifiable」实体和通知实例本身。你可以在应用中为此事件创建[事件监听器](/topic/Laravel%2013.x/x3vo0l4vm1.html)：
 
 ```php
 use Illuminate\Notifications\Events\NotificationSending;
@@ -1789,7 +1789,7 @@ public function handle(NotificationSending $event): void
 
 #### 通知已发送事件
 
-当通知已发送时，通知系统会分发 `Illuminate\Notifications\Events\NotificationSent` [事件](/docs/{{version}}/events)。它包含「notifiable」实体和通知实例本身。你可以在应用中为此事件创建[事件监听器](/docs/{{version}}/events)：
+当通知已发送时，通知系统会分发 `Illuminate\Notifications\Events\NotificationSent` [事件](/topic/Laravel%2013.x/x3vo0l4vm1.html)。它包含「notifiable」实体和通知实例本身。你可以在应用中为此事件创建[事件监听器](/topic/Laravel%2013.x/x3vo0l4vm1.html)：
 
 ```php
 use Illuminate\Notifications\Events\NotificationSent;

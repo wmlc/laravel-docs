@@ -4,10 +4,10 @@
 
 [Laravel Prompts](https://github.com/laravel/prompts) 是一个 PHP 包，用于为命令行应用添加美观且易用的表单。它支持占位文本和验证等浏览器特性。
 
-Laravel Prompts 非常适合在 [Artisan 控制台命令](/docs/{{version}}/artisan#writing-commands) 中接收用户输入，但也可用于任何命令行 PHP 项目。
+Laravel Prompts 非常适合在 [Artisan 控制台命令](/topic/Laravel%2013.x/3dykqdoyl0.html) 中接收用户输入，但也可用于任何命令行 PHP 项目。
 
 > [!NOTE]
-> Laravel Prompts 支持 macOS、Linux 和 Windows（WSL 环境）。更多信息，请参阅文档中 [不支持的环境与回退方案](#fallbacks) 一节。
+> Laravel Prompts 支持 macOS、Linux 和 Windows（WSL 环境）。更多信息，请参阅文档中 不支持的环境与回退方案 一节。
 
 ## 安装
 
@@ -79,7 +79,7 @@ $name = text(
 
 闭包接收用户输入的字符串，并应返回验证错误消息；若通过验证则返回 `null`。
 
-你也可以利用 Laravel 提供的 [` Validator`](/docs/{{version}}/validation) 功能：
+你也可以利用 Laravel 提供的 [` Validator`](/topic/Laravel%2013.x/e296oew9q7.html) 功能：
 
 ```php
 $name = text(

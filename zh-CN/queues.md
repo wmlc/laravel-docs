@@ -9,7 +9,7 @@ Laravel 队列在各种不同的队列后端（例如 [Amazon SQS](https://aws.a
 Laravel 的队列配置选项存储在你的应用程序的 `config/queue.php` 配置文件中。在此文件中，你将找到框架包含的每个队列驱动的连接配置，包括 database、[Amazon SQS](https://aws.amazon.com/sqs/)、[Redis](https://redis.io) 和 [Beanstalkd](https://beanstalkd.github.io/) 驱动，以及一个会立即执行任务的 `sync` 驱动（供开发或测试期间使用）。还包含一个 `null` 队列驱动，它会丢弃队列任务。
 
 > [!NOTE]
-> Laravel Horizon 是一个美观的仪表盘和配置系统，用于你的 Redis 驱动的队列。请查看完整的 [Horizon 文档](/docs/{{version}}/horizon) 以获取更多信息。
+> Laravel Horizon 是一个美观的仪表盘和配置系统，用于你的 Redis 驱动的队列。请查看完整的 [Horizon 文档](/topic/Laravel%2013.x/rwyl28xvz8.html) 以获取更多信息。
 
 ### 连接 vs. 队列
 
@@ -37,7 +37,7 @@ php artisan queue:work --queue=high,default
 
 #### Database
 
-为了使用 `database` 队列驱动，你需要一个数据库表来保存任务。通常，这包含在 Laravel 默认的 `0001_01_01_000002_create_jobs_table.php` [数据库迁移](/docs/{{version}}/migrations) 中；但是，如果你的应用程序不包含此迁移，你可以使用 `make:queue-table` Artisan 命令来创建它：
+为了使用 `database` 队列驱动，你需要一个数据库表来保存任务。通常，这包含在 Laravel 默认的 `0001_01_01_000002_create_jobs_table.php` [数据库迁移](/topic/Laravel%2013.x/x3vo0g4vm1.html) 中；但是，如果你的应用程序不包含此迁移，你可以使用 `make:queue-table` Artisan 命令来创建它：
 
 ```shell
 php artisan make:queue-table
@@ -141,7 +141,7 @@ php artisan make:job ProcessPodcast
 生成的类将实现 `Illuminate\Contracts\Queue\ShouldQueue` 接口，向 Laravel 表明该任务应该被推送到队列上以异步运行。
 
 > [!NOTE]
-> 任务桩可以通过 [桩发布](/docs/{{version}}/artisan#stub-customization) 进行自定义。
+> 任务桩可以通过 [桩发布](/topic/Laravel%2013.x/3dykqdoyl0.html) 进行自定义。
 
 ### 类结构
 
@@ -178,15 +178,15 @@ class ProcessPodcast implements ShouldQueue
 }
 ```
 
-在此示例中，请注意我们能够将一个 [Eloquent 模型](/docs/{{version}}/eloquent) 直接传递给队列任务的构造函数。由于任务使用了 `Queueable` trait，Eloquent 模型及其加载的关系将在任务处理时被优雅地序列化和反序列化。
+在此示例中，请注意我们能够将一个 [Eloquent 模型](/topic/Laravel%2013.x/rwyl2kxvz8.html) 直接传递给队列任务的构造函数。由于任务使用了 `Queueable` trait，Eloquent 模型及其加载的关系将在任务处理时被优雅地序列化和反序列化。
 
 如果你的队列任务在其构造函数中接受一个 Eloquent 模型，则只有模型的标识符会被序列化到队列上。当任务实际被处理时，队列系统将自动从数据库中重新检索完整的模型实例及其加载的关系。这种模型序列化方法允许将更小的任务负载发送到你的队列驱动。
 
 #### `handle` 方法依赖注入
 
-`handle` 方法在队列处理任务时被调用。请注意，我们能够在任务的 `handle` 方法上类型提示依赖项。Laravel [服务容器](/docs/{{version}}/container) 会自动注入这些依赖项。
+`handle` 方法在队列处理任务时被调用。请注意，我们能够在任务的 `handle` 方法上类型提示依赖项。Laravel [服务容器](/topic/Laravel%2013.x/x3vo054vm1.html) 会自动注入这些依赖项。
 
-如果你想完全控制容器如何将依赖项注入到 `handle` 方法中，你可以使用容器的 `bindMethod` 方法。`bindMethod` 方法接受一个回调，该回调接收任务和容器。在回调中，你可以自由地以任何你喜欢的方式调用 `handle` 方法。通常，你应该从你的 `App\Providers\AppServiceProvider` [服务提供者](/docs/{{version}}/providers) 的 `boot` 方法中调用此方法：
+如果你想完全控制容器如何将依赖项注入到 `handle` 方法中，你可以使用容器的 `bindMethod` 方法。`bindMethod` 方法接受一个回调，该回调接收任务和容器。在回调中，你可以自由地以任何你喜欢的方式调用 `handle` 方法。通常，你应该从你的 `App\Providers\AppServiceProvider` [服务提供者](/topic/Laravel%2013.x/qk942kovw1.html) 的 `boot` 方法中调用此方法：
 
 ```php
 use App\Jobs\ProcessPodcast;
@@ -271,7 +271,7 @@ class ProcessPodcast implements ShouldQueue
 ### 唯一任务
 
 > [!WARNING]
-> 唯一任务需要支持 [锁](/docs/{{version}}/cache#atomic-locks) 的缓存驱动。目前，`memcached`、`redis`、`dynamodb`、`database`、`file` 和 `array` 缓存驱动支持原子锁。
+> 唯一任务需要支持 [锁](/topic/Laravel%2013.x/5dve2w3v4x.html) 的缓存驱动。目前，`memcached`、`redis`、`dynamodb`、`database`、`file` 和 `array` 缓存驱动支持原子锁。
 
 > [!WARNING]
 > 唯一任务约束不适用于批次内的任务。
@@ -345,7 +345,7 @@ class UpdateSearchIndex implements ShouldQueue, ShouldBeUniqueUntilProcessing
 
 #### 唯一任务锁
 
-在幕后，当一个 `ShouldBeUnique` 任务被分发时，Laravel 会尝试使用 `uniqueId` 键获取一个 [锁](/docs/{{version}}/cache#atomic-locks)。如果锁已被持有，该任务将不会被分发。当任务完成处理或所有重试尝试失败时，此锁会被释放。默认情况下，Laravel 将使用默认缓存驱动来获取此锁。但是，如果你希望使用另一个驱动来获取锁，你可以定义一个返回应使用的缓存驱动的 `uniqueVia` 方法：
+在幕后，当一个 `ShouldBeUnique` 任务被分发时，Laravel 会尝试使用 `uniqueId` 键获取一个 [锁](/topic/Laravel%2013.x/5dve2w3v4x.html)。如果锁已被持有，该任务将不会被分发。当任务完成处理或所有重试尝试失败时，此锁会被释放。默认情况下，Laravel 将使用默认缓存驱动来获取此锁。但是，如果你希望使用另一个驱动来获取锁，你可以定义一个返回应使用的缓存驱动的 `uniqueVia` 方法：
 
 ```php
 use Illuminate\Contracts\Cache\Repository;
@@ -366,7 +366,7 @@ class UpdateSearchIndex implements ShouldQueue, ShouldBeUnique
 ```
 
 > [!NOTE]
-> 如果你只需要限制任务的并发处理，请改用 [WithoutOverlapping](/docs/{{version}}/queues#preventing-job-overlaps) 任务中间件。
+> 如果你只需要限制任务的并发处理，请改用 [WithoutOverlapping](/topic/Laravel%2013.x/wevwmkz9l2.html) 任务中间件。
 
 ### 防抖任务
 
@@ -439,7 +439,7 @@ public function debounceVia(): Repository
 
 ### 加密任务
 
-Laravel 允许你通过 [加密](/docs/{{version}}/encryption) 确保任务数据的隐私性和完整性。要开始使用，只需将 `ShouldBeEncrypted` 接口添加到任务类。一旦此接口被添加到类中，Laravel 将在把任务推送到队列之前自动加密你的任务：
+Laravel 允许你通过 [加密](/topic/Laravel%2013.x/enyd5k197d.html) 确保任务数据的隐私性和完整性。要开始使用，只需将 `ShouldBeEncrypted` 接口添加到任务类。一旦此接口被添加到类中，Laravel 将在把任务推送到队列之前自动加密你的任务：
 
 ```php
 <?php
@@ -511,7 +511,7 @@ class RateLimited
 }
 ```
 
-如你所见，与 [路由中间件](/docs/{{version}}/middleware) 一样，任务中间件接收正在处理的任务以及一个应被调用以继续处理任务的回调。
+如你所见，与 [路由中间件](/topic/Laravel%2013.x/rwyl2exvz8.html) 一样，任务中间件接收正在处理的任务以及一个应被调用以继续处理任务的回调。
 
 你可以使用 `make:job-middleware` Artisan 命令生成一个新的任务中间件类。创建任务中间件后，可以通过从任务的 `middleware` 方法返回它们来将它们附加到任务上。此方法不存在于由 `make:job` Artisan 命令脚手架生成的任务上，因此你需要手动将其添加到你的任务类中：
 
@@ -530,11 +530,11 @@ public function middleware(): array
 ```
 
 > [!NOTE]
-> 任务中间件也可以分配给 [队列化事件监听器](/docs/{{version}}/events#queued-event-listeners)、[mailables](/docs/{{version}}/mail#queueing-mail) 和 [通知](/docs/{{version}}/notifications#queueing-notifications)。
+> 任务中间件也可以分配给 [队列化事件监听器](/topic/Laravel%2013.x/x3vo0l4vm1.html)、[mailables](/topic/Laravel%2013.x/d6vro0rv3g.html) 和 [通知](/topic/Laravel%2013.x/2ky045l9z8.html)。
 
 ### 限流
 
-尽管我们刚刚演示了如何编写你自己的限流任务中间件，但 Laravel 实际上包含一个你可以用来对任务进行限流的限流中间件。与 [路由限流器](/docs/{{version}}/routing#defining-rate-limiters) 一样，任务限流器使用 `RateLimiter` 门面的 `for` 方法来定义。
+尽管我们刚刚演示了如何编写你自己的限流任务中间件，但 Laravel 实际上包含一个你可以用来对任务进行限流的限流中间件。与 [路由限流器](/topic/Laravel%2013.x/dgy7xg5vw2.html) 一样，任务限流器使用 `RateLimiter` 门面的 `for` 方法来定义。
 
 例如，你可能希望允许用户每小时备份一次数据，而不对高级客户施加此类限制。要实现这一点，你可以在你的 `AppServiceProvider` 的 `boot` 方法中定义一个 `RateLimiter`：
 
@@ -577,7 +577,7 @@ public function middleware(): array
 }
 ```
 
-将限流的任务释放回队列仍会增加任务的总 `attempts` 次数。你可能希望相应地调整任务类上的 `Tries` 和 `MaxExceptions` 属性。或者，你可能希望使用 [retryUntil 方法](#time-based-attempts) 来定义任务不应再被尝试之前的时间。
+将限流的任务释放回队列仍会增加任务的总 `attempts` 次数。你可能希望相应地调整任务类上的 `Tries` 和 `MaxExceptions` 属性。或者，你可能希望使用 retryUntil 方法 来定义任务不应再被尝试之前的时间。
 
 使用 `releaseAfter` 方法，你还可以指定在释放的任务再次被尝试之前必须经过的秒数：
 
@@ -691,7 +691,7 @@ public function middleware(): array
 ```
 
 > [!WARNING]
-> `WithoutOverlapping` 中间件需要支持 [锁](/docs/{{version}}/cache#atomic-locks) 的缓存驱动。目前，`memcached`、`redis`、`dynamodb`、`database`、`file` 和 `array` 缓存驱动支持原子锁。
+> `WithoutOverlapping` 中间件需要支持 [锁](/topic/Laravel%2013.x/5dve2w3v4x.html) 的缓存驱动。目前，`memcached`、`redis`、`dynamodb`、`database`、`file` 和 `array` 缓存驱动支持原子锁。
 
 #### 跨任务类共享锁键
 
@@ -729,7 +729,7 @@ class ProviderIsUp
 
 Laravel 包含一个 `Illuminate\Queue\Middleware\ThrottlesExceptions` 中间件，允许你对异常进行节流。一旦任务抛出给定数量的异常，所有进一步执行任务的尝试都将被延迟，直到指定的时间间隔过去。此中间件对于与不稳定的第三方服务交互的任务特别有用。
 
-例如，让我们假设一个队列任务与一个开始抛出异常的第三方 API 交互。要对异常进行节流，你可以从你的任务的 `middleware` 方法返回 `ThrottlesExceptions` 中间件。通常，此中间件应与实现 [基于时间的尝试](#time-based-attempts) 的任务配对：
+例如，让我们假设一个队列任务与一个开始抛出异常的第三方 API 交互。要对异常进行节流，你可以从你的任务的 `middleware` 方法返回 `ThrottlesExceptions` 中间件。通常，此中间件应与实现 基于时间的尝试 的任务配对：
 
 ```php
 use DateTime;
@@ -1082,7 +1082,7 @@ class PodcastController extends Controller
 RecordDelivery::dispatch($order)->onConnection('deferred');
 ```
 
-`deferred` 连接还充当默认的 [故障转移队列](#queue-failover)。
+`deferred` 连接还充当默认的 故障转移队列。
 
 类似地，`background` 连接在 HTTP 响应已发送给用户之后处理任务；但是，任务是在单独生成的 PHP 进程中处理的，从而允许 PHP-FPM / 应用程序工作进程可用于处理另一个传入的 HTTP 请求：
 
@@ -1092,7 +1092,7 @@ RecordDelivery::dispatch($order)->onConnection('background');
 
 ### 批量分发
 
-如果你需要一次分发许多独立的任务，并且不需要 [批次](#job-batching) 跟踪或回调，你可以使用 `Bus` 门面的 `bulk` 方法。Laravel 将按它们配置的队列连接和队列名称对任务进行分组，并将每个组批量推送到适当的队列：
+如果你需要一次分发许多独立的任务，并且不需要 批次 跟踪或回调，你可以使用 `Bus` 门面的 `bulk` 方法。Laravel 将按它们配置的队列连接和队列名称对任务进行分组，并将每个组批量推送到适当的队列：
 
 ```php
 use App\Jobs\ProcessUser;
@@ -1475,7 +1475,7 @@ Queue::forward([
 php artisan queue:work --tries=3
 ```
 
-如果任务超过其最大尝试次数，它将被视为一个"失败"的任务。有关处理失败任务的更多信息，请查阅 [失败任务文档](#dealing-with-failed-jobs)。如果向 `queue:work` 命令提供了 `--tries=0`，则该任务将被无限期重试。
+如果任务超过其最大尝试次数，它将被视为一个"失败"的任务。有关处理失败任务的更多信息，请查阅 失败任务文档。如果向 `queue:work` 命令提供了 `--tries=0`，则该任务将被无限期重试。
 
 你可以通过使用 `Tries` 属性在任务类本身上定义任务可以被尝试的最大次数来采取更细粒度的方法。如果在任务上指定了最大尝试次数，它将优先于命令行上提供的 `--tries` 值：
 
@@ -1524,7 +1524,7 @@ public function retryUntil(): DateTime
 如果同时定义了 `retryUntil` 和 `tries`，Laravel 优先考虑 `retryUntil` 方法。
 
 > [!NOTE]
-> 你也可以在你的 [队列化事件监听器](/docs/{{version}}/events#queued-event-listeners) 和 [队列化通知](/docs/{{version}}/notifications#queueing-notifications) 上定义 `Tries` 属性或 `retryUntil` 方法。
+> 你也可以在你的 [队列化事件监听器](/topic/Laravel%2013.x/x3vo0l4vm1.html) 和 [队列化通知](/topic/Laravel%2013.x/2ky045l9z8.html) 上定义 `Tries` 属性或 `retryUntil` 方法。
 
 #### 最大异常数
 
@@ -1594,7 +1594,7 @@ use Illuminate\Foundation\Configuration\Exceptions;
 
 #### 超时
 
-通常，你大致知道你的队列任务预计需要多长时间。出于这个原因，Laravel 允许你指定一个"超时"值。默认情况下，超时值为 60 秒。如果任务处理的时间超过超时值指定的秒数，处理该任务的工作进程将退出并报错。通常，工作进程将由 [配置在你的服务器上的进程管理器](#supervisor-configuration) 自动重启。
+通常，你大致知道你的队列任务预计需要多长时间。出于这个原因，Laravel 允许你指定一个"超时"值。默认情况下，超时值为 60 秒。如果任务处理的时间超过超时值指定的秒数，处理该任务的工作进程将退出并报错。通常，工作进程将由 配置在你的服务器上的进程管理器 自动重启。
 
 任务可以运行的最大秒数可以使用 Artisan 命令行上的 `--timeout` 开关指定：
 
@@ -1623,11 +1623,11 @@ class ProcessPodcast implements ShouldQueue
 有时，诸如套接字或传出 HTTP 连接之类的 IO 阻塞进程可能不遵守你指定的超时。因此，在使用这些功能时，你应该始终尝试也使用它们的 API 指定超时。例如，在使用 [Guzzle](https://docs.guzzlephp.org) 时，你应该始终指定连接和请求超时值。
 
 > [!WARNING]
-> 必须安装 [PCNTL](https://www.php.net/manual/en/book.pcntl.php) PHP 扩展才能指定任务超时。此外，任务的"超时"值应始终小于它的["重试后"](#job-expiration)值。否则，任务可能在实际完成执行或超时之前就被重新尝试。当 `queue:work` 命令与 `--once` 选项一起调用时，`--timeout` 选项无效。
+> 必须安装 [PCNTL](https://www.php.net/manual/en/book.pcntl.php) PHP 扩展才能指定任务超时。此外，任务的"超时"值应始终小于它的"重试后"值。否则，任务可能在实际完成执行或超时之前就被重新尝试。当 `queue:work` 命令与 `--once` 选项一起调用时，`--timeout` 选项无效。
 
 #### 超时失败
 
-如果你想指示任务应在超时时被标记为 [失败](#dealing-with-failed-jobs)，你可以在任务类上使用 `FailOnTimeout` 属性：
+如果你想指示任务应在超时时被标记为 失败，你可以在任务类上使用 `FailOnTimeout` 属性：
 
 ```php
 <?php
@@ -1719,7 +1719,7 @@ class ProcessOrder implements ShouldQueue
 
 使用 FIFO 队列时，你还需要在监听器、邮件和通知上定义消息组。或者，你可以将这些对象的队列化实例分发到非 FIFO 队列。
 
-要为 [队列化事件监听器](/docs/{{version}}/events#queued-event-listeners) 定义消息组，请在监听器上定义一个 `messageGroup` 方法。你还可以可选地定义一个 `deduplicationId` 方法：
+要为 [队列化事件监听器](/topic/Laravel%2013.x/x3vo0l4vm1.html) 定义消息组，请在监听器上定义一个 `messageGroup` 方法。你还可以可选地定义一个 `deduplicationId` 方法：
 
 ```php
 <?php
@@ -1748,7 +1748,7 @@ class SendShipmentNotification
 }
 ```
 
-当发送将在 FIFO 队列上队列化的 [邮件消息](/docs/{{version}}/mail) 时，你应该在发送通知时调用 `onGroup` 方法，并可选择性地调用 `withDeduplicator` 方法：
+当发送将在 FIFO 队列上队列化的 [邮件消息](/topic/Laravel%2013.x/d6vro0rv3g.html) 时，你应该在发送通知时调用 `onGroup` 方法，并可选择性地调用 `withDeduplicator` 方法：
 
 ```php
 use App\Mail\InvoicePaid;
@@ -1761,7 +1761,7 @@ $invoicePaid = (new InvoicePaid($invoice))
 Mail::to($request->user())->send($invoicePaid);
 ```
 
-当发送将在 FIFO 队列上队列化的 [通知](/docs/{{version}}/notifications) 时，你应该在发送通知时调用 `onGroup` 方法，并可选择性地调用 `withDeduplicator` 方法：
+当发送将在 FIFO 队列上队列化的 [通知](/topic/Laravel%2013.x/2ky045l9z8.html) 时，你应该在发送通知时调用 `onGroup` 方法，并可选择性地调用 `withDeduplicator` 方法：
 
 ```php
 use App\Notifications\InvoicePaid;
@@ -1813,7 +1813,7 @@ php artisan queue:work database
 
 ### 错误处理
 
-如果在处理任务时抛出异常，任务将自动被释放回队列，以便可以再次尝试。任务将继续被释放，直到它已被尝试你应用程序允许的最大次数。最大尝试次数由 `queue:work` Artisan 命令上使用的 `--tries` 开关定义。或者，最大尝试次数可以在任务类本身上定义。有关运行队列工作进程的更多信息 [可以在下面找到](#running-the-queue-worker)。
+如果在处理任务时抛出异常，任务将自动被释放回队列，以便可以再次尝试。任务将继续被释放，直到它已被尝试你应用程序允许的最大次数。最大尝试次数由 `queue:work` Artisan 命令上使用的 `--tries` 开关定义。或者，最大尝试次数可以在任务类本身上定义。有关运行队列工作进程的更多信息 可以在下面找到。
 
 #### 手动释放任务
 
@@ -1864,11 +1864,11 @@ $this->fail('Something went wrong.');
 ```
 
 > [!NOTE]
-> 有关失败任务的更多信息，请查看 [处理任务失败的文档](#dealing-with-failed-jobs)。
+> 有关失败任务的更多信息，请查看 处理任务失败的文档。
 
 #### 在特定异常上失败任务
 
-`FailOnException` [任务中间件](#job-middleware) 允许你在抛出特定异常时短路重试。这允许在瞬时异常（例如外部 API 错误）时重试，但在持久异常（例如用户权限被撤销）时永久失败任务：
+`FailOnException` 任务中间件 允许你在抛出特定异常时短路重试。这允许在瞬时异常（例如外部 API 错误）时重试，但在持久异常（例如用户权限被撤销）时永久失败任务：
 
 ```php
 <?php
@@ -1935,7 +1935,7 @@ php artisan migrate
 
 ### 定义可批处理的任务
 
-要定义可批处理的任务，你应该像往常一样 [创建可队列化任务](#creating-jobs)；但是，你应该将 `Illuminate\Bus\Batchable` trait 添加到任务类。此 trait 提供对 `batch` 方法的访问，该方法可用于检索任务正在其中执行的当前批次：
+要定义可批处理的任务，你应该像往常一样 创建可队列化任务；但是，你应该将 `Illuminate\Bus\Batchable` trait 添加到任务类。此 trait 提供对 `batch` 方法的访问，该方法可用于检索任务正在其中执行的当前批次：
 
 ```php
 <?php
@@ -1970,7 +1970,7 @@ class ImportCsv implements ShouldQueue
 
 要分发一批任务，你应该使用 `Bus` 门面的 `batch` 方法。当然，批处理在与完成回调结合使用时最有用。因此，你可以使用 `then`、`catch` 和 `finally` 方法为批次定义完成回调。这些回调在被调用时都会接收一个 `Illuminate\Bus\Batch` 实例。
 
-当运行多个队列工作进程时，批次中的任务将被并行处理。因此，任务完成的顺序可能与它们被添加到批次的顺序不同。请查阅我们关于 [任务链和批次](#chains-and-batches) 的文档，了解如何按顺序运行一系列任务。
+当运行多个队列工作进程时，批次中的任务将被并行处理。因此，任务完成的顺序可能与它们被添加到批次的顺序不同。请查阅我们关于 任务链和批次 的文档，了解如何按顺序运行一系列任务。
 
 在此示例中，我们将假设我们正在队列化一批任务，每个任务处理 CSV 文件中给定数量的行：
 
@@ -2001,14 +2001,14 @@ $batch = Bus::batch([
 return $batch->id;
 ```
 
-批次的 ID 可以通过 `$batch->id` 属性访问，可用于在批次分发后 [查询 Laravel 命令总线](#inspecting-batches) 以获取有关批次的信息。
+批次的 ID 可以通过 `$batch->id` 属性访问，可用于在批次分发后 查询 Laravel 命令总线 以获取有关批次的信息。
 
 > [!WARNING]
 > 由于批次回调被序列化并由 Laravel 队列在稍后时间执行，因此你不应在回调中使用 `$this` 变量。此外，由于批次任务被包装在数据库事务中，因此触发隐式提交的数据库语句不应在任务中执行。
 
 #### 命名批次
 
-如果批次被命名，诸如 [Laravel Horizon](/docs/{{version}}/horizon) 和 [Laravel Telescope](/docs/{{version}}/telescope) 之类的工具可能会为批次提供更友好的调试信息。要为批次分配任意名称，你可以在定义批次时调用 `name` 方法：
+如果批次被命名，诸如 [Laravel Horizon](/topic/Laravel%2013.x/rwyl28xvz8.html) 和 [Laravel Telescope](/topic/Laravel%2013.x/e296opq9q7.html) 之类的工具可能会为批次提供更友好的调试信息。要为批次分配任意名称，你可以在定义批次时调用 `name` 方法：
 
 ```php
 $batch = Bus::batch([
@@ -2032,7 +2032,7 @@ $batch = Bus::batch([
 
 ### 链和批次
 
-你可以通过将链式任务放入数组中来在批次内定义一组 [链式任务](#job-chaining)。例如，我们可以并行执行两个任务链，并在两个任务链都完成处理后执行回调：
+你可以通过将链式任务放入数组中来在批次内定义一组 链式任务。例如，我们可以并行执行两个任务链，并在两个任务链都完成处理后执行回调：
 
 ```php
 use App\Jobs\ReleasePodcast;
@@ -2054,7 +2054,7 @@ Bus::batch([
 })->dispatch();
 ```
 
-相反，你可以通过在链中定义批次来在 [链](#job-chaining) 中运行任务批次。例如，你可以先运行一批任务来发布多个播客，然后运行一批任务来发送发布通知：
+相反，你可以通过在链中定义批次来在 链 中运行任务批次。例如，你可以先运行一批任务来发布多个播客，然后运行一批任务来发送发布通知：
 
 ```php
 use App\Jobs\FlushPodcastCache;
@@ -2186,7 +2186,7 @@ public function handle(): void
 }
 ```
 
-正如你可能在前面的示例中注意到的，批次任务通常应在继续执行之前确定其对应的批次是否已被取消。但是，为方便起见，你可以将 `SkipIfBatchCancelled` [中间件](#job-middleware) 分配给任务。如其名称所示，此中间件将指示 Laravel 在其对应的批次已被取消时不处理该任务：
+正如你可能在前面的示例中注意到的，批次任务通常应在继续执行之前确定其对应的批次是否已被取消。但是，为方便起见，你可以将 `SkipIfBatchCancelled` 中间件 分配给任务。如其名称所示，此中间件将指示 Laravel 在其对应的批次已被取消时不处理该任务：
 
 ```php
 use Illuminate\Queue\Middleware\SkipIfBatchCancelled;
@@ -2236,7 +2236,7 @@ php artisan queue:retry-batch 32dbc76c-4f82-4749-b610-a639fe0099b5
 
 ### 修剪批次
 
-如果不进行修剪，`job_batches` 表可能会非常快地积累记录。为了缓解这种情况，你应该 [调度](/docs/{{version}}/scheduling) `queue:prune-batches` Artisan 命令每天运行：
+如果不进行修剪，`job_batches` 表可能会非常快地积累记录。为了缓解这种情况，你应该 [调度](/topic/Laravel%2013.x/e296olw9q7.html) `queue:prune-batches` Artisan 命令每天运行：
 
 ```php
 use Illuminate\Support\Facades\Schedule;
@@ -2278,7 +2278,7 @@ Laravel 还支持将批次元信息存储在 [DynamoDB](https://aws.amazon.com/d
 
 `job_batches` 表应该有一个名为 `application` 的字符串主分区键和一个名为 `id` 的字符串主排序键。键的 `application` 部分将包含你的应用程序的 `app` 配置文件中 `name` 配置值定义的应用程序名称。由于应用程序名称是 DynamoDB 表键的一部分，你可以使用同一个表为多个 Laravel 应用程序存储任务批次。
 
-此外，如果你希望利用 [自动批次修剪](#pruning-batches-in-dynamodb)，你可以为你的表定义 `ttl` 属性。
+此外，如果你希望利用 自动批次修剪，你可以为你的表定义 `ttl` 属性。
 
 #### DynamoDB 配置
 
@@ -2340,7 +2340,7 @@ dispatch(function () {
 })->name('Publish Podcast');
 ```
 
-使用 `catch` 方法，你可以提供一个闭包，如果队列化闭包在耗尽队列的 [配置重试尝试](#max-job-attempts-and-timeout) 后未能成功完成，则应执行该闭包：
+使用 `catch` 方法，你可以提供一个闭包，如果队列化闭包在耗尽队列的 配置重试尝试 后未能成功完成，则应执行该闭包：
 
 ```php
 use Throwable;
@@ -2366,7 +2366,7 @@ php artisan queue:work
 ```
 
 > [!NOTE]
-> 要让 `queue:work` 进程在后台永久运行，你应该使用诸如 [Supervisor](#supervisor-configuration) 之类的进程监视器来确保队列工作进程不会停止运行。
+> 要让 `queue:work` 进程在后台永久运行，你应该使用诸如 Supervisor 之类的进程监视器来确保队列工作进程不会停止运行。
 
 如果你希望处理的任务 ID、连接名称和队列名称包含在命令的输出中，你可以在调用 `queue:work` 命令时包含 `-v` 标志：
 
@@ -2374,7 +2374,7 @@ php artisan queue:work
 php artisan queue:work -v
 ```
 
-请记住，队列工作进程是长生命周期进程，并将引导的应用程序状态存储在内存中。因此，它们在启动后不会注意到代码库中的更改。所以，在你的部署过程中，请务必 [重启你的队列工作进程](#queue-workers-and-deployment)。此外，请记住，你的应用程序创建或修改的任何静态状态都不会在任务之间自动重置。
+请记住，队列工作进程是长生命周期进程，并将引导的应用程序状态存储在内存中。因此，它们在启动后不会注意到代码库中的更改。所以，在你的部署过程中，请务必 重启你的队列工作进程。此外，请记住，你的应用程序创建或修改的任何静态状态都不会在任务之间自动重置。
 
 或者，你可以运行 `queue:listen` 命令。使用 `queue:listen` 命令时，当你想要重新加载更新后的代码或重置应用程序状态时，你不需要手动重启工作进程；但是，此命令的效率明显低于 `queue:work` 命令：
 
@@ -2384,7 +2384,7 @@ php artisan queue:listen
 
 #### 运行多个队列工作进程
 
-要向队列分配多个工作进程并并发处理任务，你应该简单地启动多个 `queue:work` 进程。这可以在本地通过终端的多个标签页完成，也可以在生产环境中使用你的进程管理器的配置设置完成。[使用 Supervisor 时](#supervisor-configuration)，你可以使用 `numprocs` 配置值。
+要向队列分配多个工作进程并并发处理任务，你应该简单地启动多个 `queue:work` 进程。这可以在本地通过终端的多个标签页完成，也可以在生产环境中使用你的进程管理器的配置设置完成。使用 Supervisor 时，你可以使用 `numprocs` 配置值。
 
 #### 指定连接和队列
 
@@ -2408,7 +2408,7 @@ php artisan queue:work redis --queue=emails
 php artisan queue:work --once
 ```
 
-`--max-jobs` 选项可用于指示工作进程处理给定数量的任务，然后退出。此选项在与 [Supervisor](#supervisor-configuration) 结合使用时可能很有用，这样你的工作进程在处理给定数量的任务后会自动重启，释放它们可能积累的任何内存：
+`--max-jobs` 选项可用于指示工作进程处理给定数量的任务，然后退出。此选项在与 Supervisor 结合使用时可能很有用，这样你的工作进程在处理给定数量的任务后会自动重启，释放它们可能积累的任何内存：
 
 ```shell
 php artisan queue:work --max-jobs=1000
@@ -2424,7 +2424,7 @@ php artisan queue:work --stop-when-empty
 
 #### 处理任务给定秒数
 
-`--max-time` 选项可用于指示工作进程处理任务给定秒数，然后退出。此选项在与 [Supervisor](#supervisor-configuration) 结合使用时可能很有用，这样你的工作进程在处理任务一段时间后会自动重启，释放它们可能积累的任何内存：
+`--max-time` 选项可用于指示工作进程处理任务给定秒数，然后退出。此选项在与 Supervisor 结合使用时可能很有用，这样你的工作进程在处理任务一段时间后会自动重启，释放它们可能积累的任何内存：
 
 ```shell
 # 处理任务一小时然后退出...
@@ -2441,7 +2441,7 @@ php artisan queue:work --sleep=3
 
 #### 维护模式和队列
 
-当你的应用程序处于 [维护模式](/docs/{{version}}/configuration#maintenance-mode) 时，将不会处理任何队列任务。一旦应用程序退出维护模式，任务将继续正常处理。
+当你的应用程序处于 [维护模式](/topic/Laravel%2013.x/3dykqpoyl0.html) 时，将不会处理任何队列任务。一旦应用程序退出维护模式，任务将继续正常处理。
 
 要强制你的队列工作进程即使在启用维护模式时也处理任务，你可以使用 `--force` 选项：
 
@@ -2451,7 +2451,7 @@ php artisan queue:work --force
 
 #### 资源注意事项
 
-守护进程队列工作进程在处理每个任务之前不会"重启"框架。因此，你应该在每个任务完成后释放任何重资源。例如，如果你使用 [GD 库](https://www.php.net/manual/en/book.image.php) 进行 [图像处理](/docs/{{version}}/images)，你应该在处理完图像后用 `imagedestroy` 释放内存。
+守护进程队列工作进程在处理每个任务之前不会"重启"框架。因此，你应该在每个任务完成后释放任何重资源。例如，如果你使用 [GD 库](https://www.php.net/manual/en/book.image.php) 进行 [图像处理](/topic/Laravel%2013.x/rwyl24xvz8.html)，你应该在处理完图像后用 `imagedestroy` 释放内存。
 
 ### 队列优先级
 
@@ -2475,10 +2475,10 @@ php artisan queue:work --queue=high,low
 php artisan queue:restart
 ```
 
-此命令将指示所有队列工作进程在完成处理当前任务后优雅退出，以便不会丢失任何现有任务。由于队列工作进程将在 `queue:restart` 命令执行时退出，因此你应该运行诸如 [Supervisor](#supervisor-configuration) 之类的进程管理器来自动重启队列工作进程。
+此命令将指示所有队列工作进程在完成处理当前任务后优雅退出，以便不会丢失任何现有任务。由于队列工作进程将在 `queue:restart` 命令执行时退出，因此你应该运行诸如 Supervisor 之类的进程管理器来自动重启队列工作进程。
 
 > [!NOTE]
-> 队列使用 [缓存](/docs/{{version}}/cache) 来存储重启信号，因此你应该在使用此功能之前验证是否为你的应用程序正确配置了缓存驱动。
+> 队列使用 [缓存](/topic/Laravel%2013.x/5dve2w3v4x.html) 来存储重启信号，因此你应该在使用此功能之前验证是否为你的应用程序正确配置了缓存驱动。
 
 ### 响应工作进程信号
 
@@ -2535,7 +2535,7 @@ class ImportProducts implements ShouldQueue, Interruptible
 }
 ```
 
-`interrupted` 方法仅在工作进程在任务当前运行时收到进程信号时被调用。它不是 [超时](#worker-timeouts) 或任务的 [`failed` 方法](#cleaning-up-after-failed-jobs) 的替代品。
+`interrupted` 方法仅在工作进程在任务当前运行时收到进程信号时被调用。它不是 超时 或任务的 `failed` 方法 的替代品。
 
 ### 任务过期和超时
 
@@ -2548,7 +2548,7 @@ class ImportProducts implements ShouldQueue, Interruptible
 
 #### 工作进程超时
 
-`queue:work` Artisan 命令暴露了一个 `--timeout` 选项。默认情况下，`--timeout` 值为 60 秒。如果任务处理的时间超过超时值指定的秒数，处理该任务的工作进程将退出并报错。通常，工作进程将由 [配置在你的服务器上的进程管理器](#supervisor-configuration) 自动重启：
+`queue:work` Artisan 命令暴露了一个 `--timeout` 选项。默认情况下，`--timeout` 值为 60 秒。如果任务处理的时间超过超时值指定的秒数，处理该任务的工作进程将退出并报错。通常，工作进程将由 配置在你的服务器上的进程管理器 自动重启：
 
 ```shell
 php artisan queue:work --timeout=60
@@ -2684,7 +2684,7 @@ sudo supervisorctl start "laravel-worker:*"
 
 ## 处理失败的任务
 
-有时你的队列任务会失败。别担心，事情并不总是按计划进行！Laravel 包含一种方便的方法来 [指定任务应尝试的最大次数](#max-job-attempts-and-timeout)。在异步任务超过此尝试次数后，它将被插入到 `failed_jobs` 数据库表中。[同步分发的任务](/docs/{{version}}/queues#synchronous-dispatching) 失败时不存储在此表中，其异常会立即由应用程序处理。
+有时你的队列任务会失败。别担心，事情并不总是按计划进行！Laravel 包含一种方便的方法来 指定任务应尝试的最大次数。在异步任务超过此尝试次数后，它将被插入到 `failed_jobs` 数据库表中。[同步分发的任务](/topic/Laravel%2013.x/wevwmkz9l2.html) 失败时不存储在此表中，其异常会立即由应用程序处理。
 
 创建 `failed_jobs` 表的迁移通常已存在于新的 Laravel 应用程序中。但是，如果你的应用程序不包含此表的迁移，你可以使用 `make:queue-failed-table` 命令创建迁移：
 
@@ -2694,7 +2694,7 @@ php artisan make:queue-failed-table
 php artisan migrate
 ```
 
-运行 [队列工作进程](#running-the-queue-worker) 进程时，你可以使用 `queue:work` 命令上的 `--tries` 开关指定任务应尝试的最大次数。如果你没有为 `--tries` 选项指定值，任务将只会被尝试一次，或者按照任务类的 `Tries` 属性指定的次数尝试：
+运行 队列工作进程 进程时，你可以使用 `queue:work` 命令上的 `--tries` 开关指定任务应尝试的最大次数。如果你没有为 `--tries` 选项指定值，任务将只会被尝试一次，或者按照任务类的 `Tries` 属性指定的次数尝试：
 
 ```shell
 php artisan queue:work redis --tries=3
@@ -2848,7 +2848,7 @@ php artisan queue:forget 91401d2c-0784-4f43-824c-34f94a33c24d
 ```
 
 > [!NOTE]
-> 使用 [Horizon](/docs/{{version}}/horizon) 时，你应该使用 `horizon:forget` 命令删除失败的任务，而不是 `queue:forget` 命令。
+> 使用 [Horizon](/topic/Laravel%2013.x/rwyl28xvz8.html) 时，你应该使用 `horizon:forget` 命令删除失败的任务，而不是 `queue:forget` 命令。
 
 要从 `failed_jobs` 表中删除所有失败的任务，你可以使用 `queue:flush` 命令：
 
@@ -2968,7 +2968,7 @@ class AppServiceProvider extends ServiceProvider
 ## 从队列中清除任务
 
 > [!NOTE]
-> 使用 [Horizon](/docs/{{version}}/horizon) 时，你应该使用 `horizon:clear` 命令从队列中清除任务，而不是 `queue:clear` 命令。
+> 使用 [Horizon](/topic/Laravel%2013.x/rwyl28xvz8.html) 时，你应该使用 `horizon:clear` 命令从队列中清除任务，而不是 `queue:clear` 命令。
 
 如果你想从默认连接的默认队列中删除所有任务，你可以使用 `queue:clear` Artisan 命令：
 
@@ -2989,7 +2989,7 @@ php artisan queue:clear redis --queue=emails
 
 如果你的队列突然涌入任务，它可能会不堪重负，导致任务完成的等待时间过长。如果你愿意，当你的队列任务数量超过指定阈值时，Laravel 可以提醒你。
 
-要开始使用，你应该调度 `queue:monitor` 命令 [每分钟运行一次](/docs/{{version}}/scheduling)。该命令接受你希望监视的队列名称以及你所需的任务数量阈值：
+要开始使用，你应该调度 `queue:monitor` 命令 [每分钟运行一次](/topic/Laravel%2013.x/e296olw9q7.html)。该命令接受你希望监视的队列名称以及你所需的任务数量阈值：
 
 ```shell
 php artisan queue:monitor redis:default,redis:deployments --max=100
@@ -3169,7 +3169,7 @@ Queue::fake()->except([
 
 ### 测试任务链
 
-要测试任务链，你将需要利用 `Bus` 门面的伪造能力。`Bus` 门面的 `assertChained` 方法可用于断言 [任务链](/docs/{{version}}/queues#job-chaining) 被分发。`assertChained` 方法接受一个链式任务数组作为其第一个参数：
+要测试任务链，你将需要利用 `Bus` 门面的伪造能力。`Bus` 门面的 `assertChained` 方法可用于断言 [任务链](/topic/Laravel%2013.x/wevwmkz9l2.html) 被分发。`assertChained` 方法接受一个链式任务数组作为其第一个参数：
 
 ```php
 use App\Jobs\RecordShipment;
@@ -3206,7 +3206,7 @@ Bus::assertDispatchedWithoutChain(ShipOrder::class);
 
 #### 测试链修改
 
-如果链式任务 [向现有链前置或追加任务](#adding-jobs-to-the-chain)，你可以使用任务的 `assertHasChain` 方法断言该任务具有预期的剩余任务链：
+如果链式任务 向现有链前置或追加任务，你可以使用任务的 `assertHasChain` 方法断言该任务具有预期的剩余任务链：
 
 ```php
 $job = new ProcessPodcast;
@@ -3228,7 +3228,7 @@ $job->assertDoesntHaveChain();
 
 #### 测试链式批次
 
-如果你的任务链 [包含一批任务](#chains-and-batches)，你可以通过在链断言中插入 `Bus::chainedBatch` 定义来断言链式批次符合你的预期：
+如果你的任务链 包含一批任务，你可以通过在链断言中插入 `Bus::chainedBatch` 定义来断言链式批次符合你的预期：
 
 ```php
 use App\Jobs\ShipOrder;
@@ -3247,7 +3247,7 @@ Bus::assertChained([
 
 ### 测试任务批次
 
-`Bus` 门面的 `assertBatched` 方法可用于断言 [一批任务](/docs/{{version}}/queues#job-batching) 被分发。提供给 `assertBatched` 方法的闭包接收一个 `Illuminate\Bus\PendingBatch` 实例，该实例可用于检查批次中的任务：
+`Bus` 门面的 `assertBatched` 方法可用于断言 [一批任务](/topic/Laravel%2013.x/wevwmkz9l2.html) 被分发。提供给 `assertBatched` 方法的闭包接收一个 `Illuminate\Bus\PendingBatch` 实例，该实例可用于检查批次中的任务：
 
 ```php
 use Illuminate\Bus\PendingBatch;
@@ -3314,7 +3314,7 @@ $this->assertEmpty($batch->added);
 
 ### 测试任务 / 队列交互
 
-有时，你可能需要测试队列任务 [将其自身释放回队列](#manually-releasing-a-job)。或者，你可能需要测试任务删除了自身。你可以通过实例化任务并调用 `withFakeQueueInteractions` 方法来测试这些队列交互。
+有时，你可能需要测试队列任务 将其自身释放回队列。或者，你可能需要测试任务删除了自身。你可以通过实例化任务并调用 `withFakeQueueInteractions` 方法来测试这些队列交互。
 
 一旦任务的队列交互被伪造，你就可以在任务上调用 `handle` 方法。调用任务后，可以使用各种断言方法来验证任务的队列交互：
 
@@ -3336,7 +3336,7 @@ $job->assertNotFailed();
 
 ## 任务事件
 
-使用 `Queue` [门面](/docs/{{version}}/facades) 上的 `before` 和 `after` 方法，你可以指定在队列任务处理之前或之后执行的回调。这些回调是执行额外日志记录或为仪表盘增加统计数据的绝佳机会。通常，你应该从 [服务提供者](/docs/{{version}}/providers) 的 `boot` 方法中调用这些方法。例如，我们可以使用 Laravel 附带的 `AppServiceProvider`：
+使用 `Queue` [门面](/topic/Laravel%2013.x/569x508yep.html) 上的 `before` 和 `after` 方法，你可以指定在队列任务处理之前或之后执行的回调。这些回调是执行额外日志记录或为仪表盘增加统计数据的绝佳机会。通常，你应该从 [服务提供者](/topic/Laravel%2013.x/qk942kovw1.html) 的 `boot` 方法中调用这些方法。例如，我们可以使用 Laravel 附带的 `AppServiceProvider`：
 
 ```php
 <?php
@@ -3378,7 +3378,7 @@ class AppServiceProvider extends ServiceProvider
 }
 ```
 
-使用 `Queue` [门面](/docs/{{version}}/facades) 上的 `looping` 方法，你可以指定在工作进程尝试从队列获取任务之前执行的回调。例如，你可能会注册一个闭包来回滚先前失败任务遗留的任何打开事务：
+使用 `Queue` [门面](/topic/Laravel%2013.x/569x508yep.html) 上的 `looping` 方法，你可以指定在工作进程尝试从队列获取任务之前执行的回调。例如，你可能会注册一个闭包来回滚先前失败任务遗留的任何打开事务：
 
 ```php
 use Illuminate\Support\Facades\DB;

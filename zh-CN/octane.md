@@ -26,7 +26,7 @@ php artisan octane:install
 
 #### 通过 Laravel Sail 使用 FrankenPHP
 
-如果你计划使用 [Laravel Sail](/docs/{{version}}/sail) 开发应用，应当运行以下命令来安装 Octane 和 FrankenPHP：
+如果你计划使用 [Laravel Sail](/topic/Laravel%2013.x/e296opw9q7.html) 开发应用，应当运行以下命令来安装 Octane 和 FrankenPHP：
 
 ```shell
 ./vendor/bin/sail up
@@ -122,7 +122,7 @@ php artisan octane:start --server=frankenphp --caddyfile=/path/to/your/Caddyfile
 
 #### 通过 Laravel Sail 使用 RoadRunner
 
-如果你计划使用 [Laravel Sail](/docs/{{version}}/sail) 开发应用，应当运行以下命令来安装 Octane 和 RoadRunner：
+如果你计划使用 [Laravel Sail](/topic/Laravel%2013.x/e296opw9q7.html) 开发应用，应当运行以下命令来安装 Octane 和 RoadRunner：
 
 ```shell
 ./vendor/bin/sail up
@@ -179,7 +179,7 @@ pecl install openswoole
 > [!WARNING]
 > 在通过 Sail 提供 Octane 应用之前，请确保你拥有最新版本的 Laravel Sail，并在应用根目录中执行 `./vendor/bin/sail build --no-cache`。
 
-或者，你可以使用 [Laravel Sail](/docs/{{version}}/sail)（Laravel 官方的基于 Docker 的开发环境）来开发基于 Swoole 的 Octane 应用。Laravel Sail 默认包含了 Swoole 扩展。不过，你仍然需要调整 Sail 使用的 `docker-compose.yml` 文件。
+或者，你可以使用 [Laravel Sail](/topic/Laravel%2013.x/e296opw9q7.html)（Laravel 官方的基于 Docker 的开发环境）来开发基于 Swoole 的 Octane 应用。Laravel Sail 默认包含了 Swoole 扩展。不过，你仍然需要调整 Sail 使用的 `docker-compose.yml` 文件。
 
 首先，在你的应用 `docker-compose.yml` 文件中，向 `laravel.test` 服务定义添加 `SUPERVISOR_PHP_COMMAND` 环境变量。该环境变量将包含 Sail 用于通过 Octane 而非 PHP 开发服务器来提供应用的命令：
 
@@ -330,7 +330,7 @@ npm install --save-dev chokidar
 php artisan octane:start --workers=4
 ```
 
-如果你使用的是 Swoole 应用服务器，还可以指定要启动的 ["task workers"](#concurrent-tasks)（任务 worker）数量：
+如果你使用的是 Swoole 应用服务器，还可以指定要启动的 "task workers"（任务 worker）数量：
 
 ```shell
 php artisan octane:start --workers=4 --task-workers=6
@@ -539,7 +539,7 @@ public function index(Request $request): array
 ## 并发任务
 
 > [!WARNING]
-> 此功能需要 [Swoole](#swoole)。
+> 此功能需要 Swoole。
 
 使用 Swoole 时，你可以通过轻量级后台任务并发执行操作。可以使用 Octane 的 `concurrently` 方法完成此操作。你可以将该方法与 PHP 数组解构结合使用，以检索每个操作的结果：
 
@@ -565,7 +565,7 @@ php artisan octane:start --workers=4 --task-workers=6
 ## 刻度与间隔
 
 > [!WARNING]
-> 此功能需要 [Swoole](#swoole)。
+> 此功能需要 Swoole。
 
 使用 Swoole 时，你可以注册每隔指定秒数执行的"tick"（计时）操作。你可以通过 `tick` 方法注册"tick"回调。`tick` 方法的第一个参数应为一个字符串，表示计时器的名称。第二个参数应为一个会在指定间隔被调用的可调用对象。
 
@@ -587,7 +587,7 @@ Octane::tick('simple-ticker', fn () => ray('Ticking...'))
 ## Octane 缓存
 
 > [!WARNING]
-> 此功能需要 [Swoole](#swoole)。
+> 此功能需要 Swoole。
 
 使用 Swoole 时，你可以利用 Octane 缓存驱动，它提供高达每秒 200 万次操作的读写速度。因此，对于需要缓存层提供极高读/写速度的应用而言，此缓存驱动是一个绝佳选择。
 
@@ -615,7 +615,7 @@ Cache::store('octane')->interval('random', function () {
 ## 表
 
 > [!WARNING]
-> 此功能需要 [Swoole](#swoole)。
+> 此功能需要 Swoole。
 
 使用 Swoole 时，你可以定义并交互使用自己的任意 [Swoole tables](https://www.swoole.co.uk/docs/modules/swoole-table)。Swoole 表提供极高的性能吞吐，并且这些表中的数据可以被服务器上的所有 worker 访问。但是，表中的数据在服务器重启时会丢失。
 

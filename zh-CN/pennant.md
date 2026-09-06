@@ -117,7 +117,7 @@ $instance = Feature::instance(NewApi::class);
 ```
 
 > [!NOTE]
-> 功能（feature）类是通过[容器（container）](/docs/{{version}}/container)解析的，因此你可以在需要时将依赖注入到功能（feature）类的构造函数中。
+> 功能（feature）类是通过[容器（container）](/topic/Laravel%2013.x/x3vo054vm1.html)解析的，因此你可以在需要时将依赖注入到功能（feature）类的构造函数中。
 
 #### 自定义存储的功能名称
 
@@ -166,7 +166,7 @@ class PodcastController
 }
 ```
 
-尽管默认情况下功能（feature）是针对当前已认证的用户检查的，你也可以轻松针对另一个用户或[作用域（scope）](#scope)检查功能（feature）。为此，请使用 `Feature` Facade 提供的 `for` 方法：
+尽管默认情况下功能（feature）是针对当前已认证的用户检查的，你也可以轻松针对另一个用户或作用域（scope）检查功能（feature）。为此，请使用 `Feature` Facade 提供的 `for` 方法：
 
 ```php
 return Feature::for($user)->active('new-api')
@@ -194,7 +194,7 @@ Feature::someAreInactive(['new-api', 'site-redesign']);
 ```
 
 > [!NOTE]
-> 在 HTTP 上下文之外使用 Pennant 时（例如在 Artisan 命令或队列任务中），通常应当[显式指定功能（feature）的作用域（scope）](#specifying-the-scope)。或者，你可以定义一个同时兼顾已认证 HTTP 上下文和未认证上下文的[默认作用域（scope）](#default-scope)。
+> 在 HTTP 上下文之外使用 Pennant 时（例如在 Artisan 命令或队列任务中），通常应当显式指定功能（feature）的作用域（scope）。或者，你可以定义一个同时兼顾已认证 HTTP 上下文和未认证上下文的默认作用域（scope）。
 
 #### 检查基于类的功能
 
@@ -340,7 +340,7 @@ $user->features()->unless('new-api',
 
 ### 中间件
 
-Pennant 还包含一个[中间件（middleware）](/docs/{{version}}/middleware)，可在路由被调用之前用来验证当前已认证的用户是否有权访问某功能（feature）。你可以将中间件（middleware）分配给路由，并指定访问该路由所需的功能（feature）。如果当前已认证的用户有任何指定的功能（feature）处于停用状态，路由会返回 `400 Bad Request` HTTP 响应。可以向静态的 `using` 方法传入多个功能（feature）。
+Pennant 还包含一个[中间件（middleware）](/topic/Laravel%2013.x/rwyl2exvz8.html)，可在路由被调用之前用来验证当前已认证的用户是否有权访问某功能（feature）。你可以将中间件（middleware）分配给路由，并指定访问该路由所需的功能（feature）。如果当前已认证的用户有任何指定的功能（feature）处于停用状态，路由会返回 `400 Bad Request` HTTP 响应。可以向静态的 `using` 方法传入多个功能（feature）。
 
 ```php
 use Illuminate\Support\Facades\Route;
@@ -379,7 +379,7 @@ public function boot(): void
 
 有时，在获取某功能（feature）的存储值之前执行一些内存检查会很有用。想象你正在一个功能开关（feature flag）后开发一个新 API，并希望能够在不会丢失存储中任何已解析功能（feature）值的情况下禁用新 API。如果你注意到新 API 中存在 bug，可以轻松地为除内部团队成员以外的所有人禁用它，修复 bug，然后为之前有权访问该功能（feature）的用户重新启用新 API。
 
-你可以通过[基于类的功能（feature）](#class-based-features)的 `before` 方法实现这一点。当存在时，`before` 方法总是在从存储获取值之前在内存中运行。如果该方法返回了非 `null` 的值，那么在请求的持续期间，它会代替该功能（feature）的存储值被使用：
+你可以通过基于类的功能（feature）的 `before` 方法实现这一点。当存在时，`before` 方法总是在从存储获取值之前在内存中运行。如果该方法返回了非 `null` 的值，那么在请求的持续期间，它会代替该功能（feature）的存储值被使用：
 
 ```php
 <?php
@@ -552,7 +552,7 @@ Feature::for($user->team)->active('billing-v2');
 
 因此，如果你传给功能（feature）的作用域（scope）可能为 `null`，并且你希望功能（feature）的值解析器被调用，你应当在功能（feature）定义中考虑到这一点。如果你在 Artisan 命令、队列任务或未认证路由中检查功能（feature），就可能出现 `null` 作用域（scope）。由于在这些上下文中通常没有已认证的用户，默认作用域（scope）会是 `null`。
 
-如果你并非总是[显式指定功能（feature）的作用域（scope）](#specifying-the-scope)，那么你应该确保作用域（scope）的类型是"可空的"，并在功能（feature）定义逻辑中处理 `null` 作用域（scope）值：
+如果你并非总是显式指定功能（feature）的作用域（scope），那么你应该确保作用域（scope）的类型是"可空的"，并在功能（feature）定义逻辑中处理 `null` 作用域（scope）值：
 
 ```php
 use App\Models\User;
@@ -602,7 +602,7 @@ class User extends Model implements FeatureScopeable
 
 ### 序列化作用域
 
-默认情况下，Pennant 在存储与 Eloquent 模型关联的功能（feature）时会使用完全限定类名。如果你已经在使用 [Eloquent 多态映射（morph map）](/docs/{{version}}/eloquent-relationships#custom-polymorphic-types)，你可以选择让 Pennant 也使用多态映射（morph map）来将存储的功能（feature）与应用结构解耦。
+默认情况下，Pennant 在存储与 Eloquent 模型关联的功能（feature）时会使用完全限定类名。如果你已经在使用 [Eloquent 多态映射（morph map）](/topic/Laravel%2013.x/kpv13d298w.html)，你可以选择让 Pennant 也使用多态映射（morph map）来将存储的功能（feature）与应用结构解耦。
 
 为此，在服务提供者（Service Provider）中定义 Eloquent 多态映射（morph map）之后，你可以调用 `Feature` Facade 的 `useMorphMap` 方法：
 
@@ -656,7 +656,7 @@ Pennant 内置的 Blade 指令也让根据功能（feature）的当前值有条�
 > [!NOTE]
 > 使用富值（rich value）时，很重要的一点是，当功能（feature）具有除 `false` 之外的任何值时，它就被视为"启用"。
 
-调用条件 [`when`](#conditional-execution) 方法时，功能（feature）的富值（rich value）会被提供给第一个闭包：
+调用条件 `when` 方法时，功能（feature）的富值（rich value）会被提供给第一个闭包：
 
 ```php
 Feature::when('purchase-button',
@@ -935,7 +935,7 @@ public function test_it_can_control_feature_values()
 }
 ```
 
-如果你的功能（feature）返回的是 `Lottery` 实例，有一系列有用的[测试辅助函数可用](/docs/{{version}}/helpers#testing-lotteries)。
+如果你的功能（feature）返回的是 `Lottery` 实例，有一系列有用的[测试辅助函数可用](/topic/Laravel%2013.x/569x5d8yep.html)。
 
 #### 存储配置
 
@@ -985,7 +985,7 @@ class RedisFeatureDriver implements Driver
 
 #### 注册驱动
 
-一旦你的驱动实现完成，就可以将其注册到 Laravel 中。要向 Pennant 添加额外的驱动，可以使用 `Feature` Facade 提供的 `extend` 方法。你应当从一个应用[服务提供者（Service Provider）](/docs/{{version}}/providers)的 `boot` 方法中调用 `extend` 方法：
+一旦你的驱动实现完成，就可以将其注册到 Laravel 中。要向 Pennant 添加额外的驱动，可以使用 `Feature` Facade 提供的 `extend` 方法。你应当从一个应用[服务提供者（Service Provider）](/topic/Laravel%2013.x/qk942kovw1.html)的 `boot` 方法中调用 `extend` 方法：
 
 ```php
 <?php
@@ -1065,7 +1065,7 @@ Pennant 会派发各种事件，在跟踪应用中的功能开关（feature flag
 
 ### `Laravel\Pennant\Events\FeatureRetrieved`
 
-每当[检查功能（feature）](#checking-features)时都会派发此事件。在创建和跟踪应用内功能开关（feature flag）的使用指标时，此事件可能很有用。
+每当检查功能（feature）时都会派发此事件。在创建和跟踪应用内功能开关（feature flag）的使用指标时，此事件可能很有用。
 
 ### `Laravel\Pennant\Events\FeatureResolved`
 
@@ -1101,11 +1101,11 @@ class AppServiceProvider extends ServiceProvider
 
 ### `Laravel\Pennant\Events\DynamicallyRegisteringFeatureClass`
 
-当[基于类的功能（feature）](#class-based-features)在请求期间首次被动态检查时派发此事件。
+当基于类的功能（feature）在请求期间首次被动态检查时派发此事件。
 
 ### `Laravel\Pennant\Events\UnexpectedNullScopeEncountered`
 
-当向一个[不支持 null](#nullable-scope)的功能（feature）定义传入 `null` 作用域（scope）时派发此事件。
+当向一个不支持 null的功能（feature）定义传入 `null` 作用域（scope）时派发此事件。
 
 这种情况会被优雅地处理，功能（feature）会返回 `false`。但是，如果你希望退出该功能（feature）默认的优雅行为，可以在应用的 `AppServiceProvider` 的 `boot` 方法中为此事件注册一个监听器：
 

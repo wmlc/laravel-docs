@@ -9,9 +9,9 @@
 
 ### Passport 还是 Sanctum？
 
-在开始之前，你可能希望先判断应用更适合使用 Laravel Passport 还是 [Laravel Sanctum](/docs/{{version}}/sanctum)。如果应用确实需要支持 OAuth2，那么应该使用 Laravel Passport。
+在开始之前，你可能希望先判断应用更适合使用 Laravel Passport 还是 [Laravel Sanctum](/topic/Laravel%2013.x/xq9zr3jvdo.html)。如果应用确实需要支持 OAuth2，那么应该使用 Laravel Passport。
 
-不过，如果你要对单页应用、移动应用进行身份验证，或者签发 API 令牌，那么应该使用 [Laravel Sanctum](/docs/{{version}}/sanctum)。Laravel Sanctum 不支持 OAuth2，但它提供了一种更简单的 API 身份验证开发体验。
+不过，如果你要对单页应用、移动应用进行身份验证，或者签发 API 令牌，那么应该使用 [Laravel Sanctum](/topic/Laravel%2013.x/xq9zr3jvdo.html)。Laravel Sanctum 不支持 OAuth2，但它提供了一种更简单的 API 身份验证开发体验。
 
 ## 安装
 
@@ -123,7 +123,7 @@ public function boot(): void
 ```
 
 > [!WARNING]
-> Passport 数据库表中的 `expires_at` 列是只读的，仅用于显示。签发令牌时，Passport 将过期信息存储在已签名和加密的令牌内。如果需要使令牌失效，应[撤销它](#revoking-tokens)。
+> Passport 数据库表中的 `expires_at` 列是只读的，仅用于显示。签发令牌时，Passport 将过期信息存储在已签名和加密的令牌内。如果需要使令牌失效，应撤销它。
 
 ### 覆盖默认模型
 
@@ -306,7 +306,7 @@ Route::get('/redirect', function (Request $request) {
 
 收到授权请求时，Passport 将根据 `prompt` 参数的值（如果存在）自动响应，并可能向用户显示一个模板，允许他们批准或拒绝授权请求。如果用户批准该请求，他们将被重定向回到调用方应用指定的 `redirect_uri`。`redirect_uri` 必须与创建客户端时指定的 `redirect` URL 相匹配。
 
-有时你可能希望跳过授权提示，例如在授权第一方客户端时。可以通过[扩展 `Client` 模型](#overriding-default-models)并定义一个 `skipsAuthorization` 方法来实现。如果 `skipsAuthorization` 返回 `true`，则客户端将被批准，并且用户将立即被重定向回到 `redirect_uri`，除非调用方应用在重定向以进行授权时明确设置了 `prompt` 参数：
+有时你可能希望跳过授权提示，例如在授权第一方客户端时。可以通过扩展 `Client` 模型并定义一个 `skipsAuthorization` 方法来实现。如果 `skipsAuthorization` 返回 `true`，则客户端将被批准，并且用户将立即被重定向回到 `redirect_uri`，除非调用方应用在重定向以进行授权时明确设置了 `prompt` 参数：
 
 ```php
 <?php
@@ -455,7 +455,7 @@ php artisan passport:purge --revoked
 php artisan passport:purge --expired
 ```
 
-你也可以在应用的 `routes/console.php` 文件中配置一个[定时任务](/docs/{{version}}/scheduling)，按计划自动清理令牌：
+你也可以在应用的 `routes/console.php` 文件中配置一个[定时任务](/topic/Laravel%2013.x/e296olw9q7.html)，按计划自动清理令牌：
 
 ```php
 use Illuminate\Support\Facades\Schedule;
@@ -727,7 +727,7 @@ return $response->json();
 ```
 
 > [!NOTE]
-> 请记住，默认情况下访问令牌是长期有效的。不过，你可以根据需要[配置最长访问令牌生命周期](#configuration)。
+> 请记住，默认情况下访问令牌是长期有效的。不过，你可以根据需要配置最长访问令牌生命周期。
 
 ### 请求所有作用域
 
@@ -748,7 +748,7 @@ $response = Http::asForm()->post('https://passport-app.test/oauth/token', [
 
 ### 自定义用户提供者
 
-如果应用使用了多个[身份认证用户提供者](/docs/{{version}}/authentication#introduction)，则可以通过在通过 `artisan passport:client --password` 命令创建客户端时提供 `--provider` 选项，来指定密码模式客户端所使用的用户提供者。给定的提供者名称应与应用 `config/auth.php` 配置文件中定义的有效提供者匹配。然后可以[使用中间件保护路由](#multiple-authentication-guards)，以确保只有 guard 指定提供者的用户被授权。
+如果应用使用了多个[身份认证用户提供者](/topic/Laravel%2013.x/xq9zrgjvdo.html)，则可以通过在通过 `artisan passport:client --password` 命令创建客户端时提供 `--provider` 选项，来指定密码模式客户端所使用的用户提供者。给定的提供者名称应与应用 `config/auth.php` 配置文件中定义的有效提供者匹配。然后可以使用中间件保护路由，以确保只有 guard 指定提供者的用户被授权。
 
 ### 自定义用户名字段
 
@@ -908,7 +908,7 @@ return $response->json()['access_token'];
 有时，你的用户可能希望自行签发访问令牌，而不经过典型的授权码重定向流程。通过应用 UI 允许用户自行签发令牌对于让用户试验你的 API 非常有用，或者可以作为签发访问令牌的一种更简单的方式。
 
 > [!NOTE]
-> 如果应用主要使用 Passport 签发个人访问令牌，请考虑使用 [Laravel Sanctum](/docs/{{version}}/sanctum)，它是 Laravel 用于签发 API 访问令牌的轻量级第一方库。
+> 如果应用主要使用 Passport 签发个人访问令牌，请考虑使用 [Laravel Sanctum](/topic/Laravel%2013.x/xq9zr3jvdo.html)，它是 Laravel 用于签发 API 访问令牌的轻量级第一方库。
 
 ### 创建个人访问客户端
 
@@ -920,11 +920,11 @@ php artisan passport:client --personal
 
 ### 自定义用户提供者
 
-如果应用使用了多个[身份认证用户提供者](/docs/{{version}}/authentication#introduction)，则可以通过在通过 `artisan passport:client --personal` 命令创建客户端时提供 `--provider` 选项，来指定个人访问模式客户端所使用的用户提供者。给定的提供者名称应与应用 `config/auth.php` 配置文件中定义的有效提供者匹配。然后可以[使用中间件保护路由](#multiple-authentication-guards)，以确保只有 guard 指定提供者的用户被授权。
+如果应用使用了多个[身份认证用户提供者](/topic/Laravel%2013.x/xq9zrgjvdo.html)，则可以通过在通过 `artisan passport:client --personal` 命令创建客户端时提供 `--provider` 选项，来指定个人访问模式客户端所使用的用户提供者。给定的提供者名称应与应用 `config/auth.php` 配置文件中定义的有效提供者匹配。然后可以使用中间件保护路由，以确保只有 guard 指定提供者的用户被授权。
 
 ### 管理个人访问令牌
 
-创建个人访问客户端后，可以使用 `App\Models\User` 模型实例上的 `createToken` 方法为指定用户签发令牌。`createToken` 方法接受令牌名称作为第一个参数，可选的[作用域](#token-scopes)数组作为第二个参数：
+创建个人访问客户端后，可以使用 `App\Models\User` 模型实例上的 `createToken` 方法为指定用户签发令牌。`createToken` 方法接受令牌名称作为第一个参数，可选的作用域数组作为第二个参数：
 
 ```php
 use App\Models\User;
@@ -955,7 +955,7 @@ $tokens = $user->tokens()
 
 ### 通过中间件
 
-Passport 包含一个[身份认证 guard](/docs/{{version}}/authentication#adding-custom-guards)，它会验证传入请求上的访问令牌。将 `api` guard 配置为使用 `passport` driver 后，只需在需要有效访问令牌的路由上指定 `auth:api` 中间件：
+Passport 包含一个[身份认证 guard](/topic/Laravel%2013.x/xq9zrgjvdo.html)，它会验证传入请求上的访问令牌。将 `api` guard 配置为使用 `passport` driver 后，只需在需要有效访问令牌的路由上指定 `auth:api` 中间件：
 
 ```php
 Route::get('/user', function () {
@@ -964,7 +964,7 @@ Route::get('/user', function () {
 ```
 
 > [!WARNING]
-> 如果你使用的是[客户端凭据模式](#client-credentials-grant)，则应使用 [`Laravel\Passport\Http\Middleware\EnsureClientIsResourceOwner` 中间件](#client-credentials-grant)来保护路由，而不是 `auth:api` 中间件。
+> 如果你使用的是客户端凭据模式，则应使用 `Laravel\Passport\Http\Middleware\EnsureClientIsResourceOwner` 中间件来保护路由，而不是 `auth:api` 中间件。
 
 #### 多个身份认证 Guard
 
@@ -993,7 +993,7 @@ Route::get('/customer', function () {
 ```
 
 > [!NOTE]
-> 有关在 Passport 中使用多个用户提供者的更多信息，请参阅[个人访问令牌文档](#customizing-the-user-provider-for-pat)和[密码模式文档](#customizing-the-user-provider)。
+> 有关在 Passport 中使用多个用户提供者的更多信息，请参阅个人访问令牌文档和密码模式文档。
 
 ### 传递访问令牌
 
@@ -1108,7 +1108,7 @@ Route::get('/orders', function () {
 
 #### 作用域属性
 
-如果应用使用了[控制器中间件属性](/docs/{{version}}/controllers#middleware-attributes)，则可以使用 `Laravel\Passport\Attributes\AuthorizeToken` 属性作为 Passport 作用域中间件的便捷简写：
+如果应用使用了[控制器中间件属性](/topic/Laravel%2013.x/d6vro4rv3g.html)，则可以使用 `Laravel\Passport\Attributes\AuthorizeToken` 属性作为 Passport 作用域中间件的便捷简写：
 
 ```php
 <?php
@@ -1229,7 +1229,7 @@ public function boot(): void
 
 ## 事件
 
-Passport 在签发访问令牌和刷新令牌时会触发事件。你可以[监听这些事件](/docs/{{version}}/events)以清理或撤销数据库中的其他访问令牌：
+Passport 在签发访问令牌和刷新令牌时会触发事件。你可以[监听这些事件](/topic/Laravel%2013.x/x3vo0l4vm1.html)以清理或撤销数据库中的其他访问令牌：
 
 | Event Name                                    |
 | --------------------------------------------- |

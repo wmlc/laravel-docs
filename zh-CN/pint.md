@@ -42,7 +42,7 @@ composer require laravel/pint --dev
 ./vendor/bin/pint app/Models/User.php
 ```
 
-默认情况下，Pint 不会格式化 Blade 模板。如果希望同时格式化 `.blade.php` 文件，可以使用 `--blade` 选项——它会在本次运行中启用 [`Pint/laravel_blade`](#laravel-blade) 规则，而不会修改 `pint.json`：
+默认情况下，Pint 不会格式化 Blade 模板。如果希望同时格式化 `.blade.php` 文件，可以使用 `--blade` 选项——它会在本次运行中启用 `Pint/laravel_blade` 规则，而不会修改 `pint.json`：
 
 ```shell
 ./vendor/bin/pint --blade

@@ -50,7 +50,7 @@ foreach ($users as $user) {
 ```
 
 > [!NOTE]
-> Laravel 集合提供了许多非常强大的方法用于映射与归约数据。更多信息请查阅 [集合文档](/docs/{{version}}/collections)。
+> Laravel 集合提供了许多非常强大的方法用于映射与归约数据。更多信息请查阅 [集合文档](/topic/Laravel%2013.x/4rvgn63ydj.html)。
 
 #### 从表中检索单行 / 单列
 
@@ -142,7 +142,7 @@ DB::table('users')->where('active', false)
     });
 ```
 
-由于 `chunkById` 和 `lazyById` 方法会在执行的查询上添加它们自己的「where」条件，你通常应将自己的条件 [逻辑分组](#logical-grouping) 到一个闭包内：
+由于 `chunkById` 和 `lazyById` 方法会在执行的查询上添加它们自己的「where」条件，你通常应将自己的条件 逻辑分组 到一个闭包内：
 
 ```php
 DB::table('users')->where(function ($query) {
@@ -161,7 +161,7 @@ DB::table('users')->where(function ($query) {
 
 ### 惰性流式拉取结果
 
-`lazy` 方法在以分块方式执行查询这一点上与 [chunk 方法](#chunking-results) 类似。不同之处在于，`lazy()` 方法会返回一个 [LazyCollection](/docs/{{version}}/collections#lazy-collections)，让你像操作单一数据流一样处理结果：
+`lazy` 方法在以分块方式执行查询这一点上与 chunk 方法 类似。不同之处在于，`lazy()` 方法会返回一个 [LazyCollection](/topic/Laravel%2013.x/4rvgn63ydj.html)，让你像操作单一数据流一样处理结果：
 
 ```php
 use Illuminate\Support\Facades\DB;
@@ -1077,7 +1077,7 @@ $incomes = Income::where('amount', '<', function (Builder $query) {
 > [!WARNING]
 > 全文检索 where 子句目前由 MariaDB、MySQL 和 PostgreSQL 支持。
 
-`whereFullText` 和 `orWhereFullText` 方法可用于为已经建有 [全文索引](/docs/{{version}}/migrations#available-index-types) 的列添加全文「where」子句。Laravel 会自动将这些方法转换为底层数据库系统所支持的 SQL。例如，使用 MariaDB 或 MySQL 的应用会生成 `MATCH AGAINST` 子句：
+`whereFullText` 和 `orWhereFullText` 方法可用于为已经建有 [全文索引](/topic/Laravel%2013.x/x3vo0g4vm1.html) 的列添加全文「where」子句。Laravel 会自动将这些方法转换为底层数据库系统所支持的 SQL。例如，使用 MariaDB 或 MySQL 的应用会生成 `MATCH AGAINST` 子句：
 
 ```php
 $users = DB::table('users')
@@ -1088,7 +1088,7 @@ $users = DB::table('users')
 ### 向量相似度子句
 
 > [!NOTE]
-> 向量相似度子句目前在使用 `pgvector` 扩展的 PostgreSQL 连接以及 MariaDB 11.7 或更高版本上受支持。有关定义向量列与索引的信息，请查阅 [迁移文档](/docs/{{version}}/migrations#available-column-types)。
+> 向量相似度子句目前在使用 `pgvector` 扩展的 PostgreSQL 连接以及 MariaDB 11.7 或更高版本上受支持。有关定义向量列与索引的信息，请查阅 [迁移文档](/topic/Laravel%2013.x/x3vo0g4vm1.html)。
 
 `whereVectorSimilarTo` 方法按与给定向量的余弦相似度过滤结果，并按相关度排序。`minSimilarity` 阈值应为 `0.0` 到 `1.0` 之间的值，`1.0` 表示完全相同：
 
@@ -1099,7 +1099,7 @@ $documents = DB::table('documents')
     ->get();
 ```
 
-当以普通字符串作为向量参数时，Laravel 会使用 [Laravel AI SDK](/docs/{{version}}/ai-sdk#embeddings) 自动为其生成嵌入向量：
+当以普通字符串作为向量参数时，Laravel 会使用 [Laravel AI SDK](/topic/Laravel%2013.x/ndvm3dj93j.html) 自动为其生成嵌入向量：
 
 ```php
 $documents = DB::table('documents')
@@ -1254,7 +1254,7 @@ $users = DB::table('users')
     ->get();
 ```
 
-要构造更高级的 `having` 语句，请参阅 [havingRaw](#raw-methods) 方法。
+要构造更高级的 `having` 语句，请参阅 havingRaw 方法。
 
 ### Limit 与 Offset
 
@@ -1478,7 +1478,7 @@ DB::table('users')
     ->get();
 ```
 
-虽然不是必须的，但建议将悲观锁包在 [事务](/docs/{{version}}/database#database-transactions) 内使用。这样可以保证所取出的数据在整个操作过程中始终不被未修改——若出现问题，事务会回滚所有更改并自动释放锁：
+虽然不是必须的，但建议将悲观锁包在 [事务](/topic/Laravel%2013.x/kl9no87vz4.html) 内使用。这样可以保证所取出的数据在整个操作过程中始终不被未修改——若出现问题，事务会回滚所有更改并自动释放锁：
 
 ```php
 DB::transaction(function () {
@@ -1595,7 +1595,7 @@ DB::table('flights')
 
 `tap` 方法始终会返回查询构造器。如果你希望提取一个会执行查询并返回另一个值的对象，可以使用 `pipe` 方法。
 
-考虑以下查询对象，它包含整个应用中共享的 [分页](/docs/{{version}}/pagination) 逻辑。与 `DestinationFilter` 不同的是（`DestinationFilter` 给查询添加查询条件），`Paginate` 对象会执行查询并返回一个分页器实例：
+考虑以下查询对象，它包含整个应用中共享的 [分页](/topic/Laravel%2013.x/3xyq454vmq.html) 逻辑。与 `DestinationFilter` 不同的是（`DestinationFilter` 给查询添加查询条件），`Paginate` 对象会执行查询并返回一个分页器实例：
 
 ```php
 <?php
