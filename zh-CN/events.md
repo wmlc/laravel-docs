@@ -81,7 +81,7 @@ php artisan event:list
 
 #### 生产环境中的事件发现
 
-为了让应用运行得更快，应该使用 `optimize` 或 `event:cache` 这两个 Artisan 命令缓存一份包含所有应用监听器的清单。通常，该命令应当作为应用[部署流程](/docs/{{version}}/deployment#optimization)的一部分来运行。框架会使用这份清单来加速事件注册过程。可以使用 `event:clear` 命令来清除事件缓存。
+为了让应用运行得更快，应该使用 `optimize` 或 `event:cache` 这两个 Artisan 命令缓存一份包含所有应用监听器的清单。通常，该命令应当作为应用[部署流程](/topic/Laravel%2013.x/xpv52dgv86.html)的一部分来运行。框架会使用这份清单来加速事件注册过程。可以使用 `event:clear` 命令来清除事件缓存。
 
 #### 动态事件发现
 
@@ -158,7 +158,7 @@ public function boot(): void
 
 #### 可排队的匿名事件监听器
 
-在注册基于闭包的监听器时，可以把监听闭包包裹在 `Illuminate\Events\queueable` 函数中，指示 Laravel 使用[队列](/docs/{{version}}/queues)来执行该监听器：
+在注册基于闭包的监听器时，可以把监听闭包包裹在 `Illuminate\Events\queueable` 函数中，指示 Laravel 使用[队列](/topic/Laravel%2013.x/wevwmkz9l2.html)来执行该监听器：
 
 ```php
 use App\Events\PodcastProcessed;
@@ -211,7 +211,7 @@ Event::listen('event.*', function (string $eventName, array $data) {
 
 ## 定义事件
 
-事件类本质上是一个数据容器，用来保存与事件相关的信息。例如，假设 `App\Events\OrderShipped` 事件接收一个 [Eloquent ORM](/docs/{{version}}/eloquent) 对象：
+事件类本质上是一个数据容器，用来保存与事件相关的信息。例如，假设 `App\Events\OrderShipped` 事件接收一个 [Eloquent ORM](/topic/Laravel%2013.x/rwyl2kxvz8.html) 对象：
 
 ```php
 <?php
@@ -236,7 +236,7 @@ class OrderShipped
 }
 ```
 
-如你所见，这个事件类不包含任何逻辑。它只是一个保存已购买 `App\Models\Order` 实例的容器。事件使用的 `SerializesModels` Trait 会在事件对象通过 PHP 的 `serialize` 函数序列化时（例如使用[队列监听器](#queued-event-listeners)时），优雅地序列化任意 Eloquent 模型。
+如你所见，这个事件类不包含任何逻辑。它只是一个保存已购买 `App\Models\Order` 实例的容器。事件使用的 `SerializesModels` Trait 会在事件对象通过 PHP 的 `serialize` 函数序列化时（例如使用队列监听器时），优雅地序列化任意 Eloquent 模型。
 
 ## 定义监听器
 
@@ -267,7 +267,7 @@ class SendShipmentNotification
 ```
 
 > [!NOTE]
-> 你的事件监听器也可以在构造函数中类型提示所需的任何依赖。所有事件监听器都通过 Laravel 的[服务容器](/docs/{{version}}/container)解析，因此依赖会被自动注入。
+> 你的事件监听器也可以在构造函数中类型提示所需的任何依赖。所有事件监听器都通过 Laravel 的[服务容器](/topic/Laravel%2013.x/x3vo054vm1.html)解析，因此依赖会被自动注入。
 
 #### 阻止事件的传播
 
@@ -275,7 +275,7 @@ class SendShipmentNotification
 
 ## 队列事件监听器
 
-当监听器需要执行诸如发送邮件或发起 HTTP 请求这类较慢的任务时，将监听器排队会很有帮助。在使用队列监听器之前，请确保已[配置好队列](/docs/{{version}}/queues)，并在服务器或本地开发环境中启动一个队列 Worker。
+当监听器需要执行诸如发送邮件或发起 HTTP 请求这类较慢的任务时，将监听器排队会很有帮助。在使用队列监听器之前，请确保已[配置好队列](/topic/Laravel%2013.x/wevwmkz9l2.html)，并在服务器或本地开发环境中启动一个队列 Worker。
 
 要指定某个监听器应当被排队，只需给监听器类加上 `ShouldQueue` 接口。由 `make:listener` Artisan 命令生成的监听器已经将该接口导入当前命名空间，因此你可以立即使用：
 
@@ -293,7 +293,7 @@ class SendShipmentNotification implements ShouldQueue
 }
 ```
 
-就是这样！现在，当这个监听器所处理的事件被派发时，事件调度器会通过 Laravel 的[队列系统](/docs/{{version}}/queues)自动将该监听器排队。如果队列执行监听器时没有抛出异常，那么排队的任务在完成后会被自动删除。
+就是这样！现在，当这个监听器所处理的事件被派发时，事件调度器会通过 Laravel 的[队列系统](/topic/Laravel%2013.x/wevwmkz9l2.html)自动将该监听器排队。如果队列执行监听器时没有抛出异常，那么排队的任务在完成后会被自动删除。
 
 #### 自定义队列连接、名称与延迟
 
@@ -429,11 +429,11 @@ class SendShipmentNotification implements ShouldQueueAfterCommit
 ```
 
 > [!NOTE]
-> 想了解更多应对这些问题的方法，请查阅关于[队列任务与数据库事务](/docs/{{version}}/queues#jobs-and-database-transactions)的文档。
+> 想了解更多应对这些问题的方法，请查阅关于[队列任务与数据库事务](/topic/Laravel%2013.x/wevwmkz9l2.html)的文档。
 
 ### 队列监听器中间件
 
-队列监听器也可以使用[任务中间件](/docs/{{version}}/queues#job-middleware)。任务中间件让你可以在排队监听器的执行逻辑外层包裹自定义逻辑，从而减少监听器自身的样板代码。创建任务中间件之后，可以在监听器的 `middleware` 方法中将其返回，从而将其附加到监听器上：
+队列监听器也可以使用[任务中间件](/topic/Laravel%2013.x/wevwmkz9l2.html)。任务中间件让你可以在排队监听器的执行逻辑外层包裹自定义逻辑，从而减少监听器自身的样板代码。创建任务中间件之后，可以在监听器的 `middleware` 方法中将其返回，从而将其附加到监听器上：
 
 ```php
 <?php
@@ -468,7 +468,7 @@ class SendShipmentNotification implements ShouldQueue
 
 ### 加密的队列监听器
 
-Laravel 允许你通过[加密](/docs/{{version}}/encryption)来保证队列监听器数据的私密性与完整性。要开始使用，只需给监听器类加上 `ShouldBeEncrypted` 接口。一旦该类加上这个接口，Laravel 就会在将其推入队列之前自动加密你的监听器：
+Laravel 允许你通过[加密](/topic/Laravel%2013.x/enyd5k197d.html)来保证队列监听器数据的私密性与完整性。要开始使用，只需给监听器类加上 `ShouldBeEncrypted` 接口。一旦该类加上这个接口，Laravel 就会在将其推入队列之前自动加密你的监听器：
 
 ```php
 <?php
@@ -488,7 +488,7 @@ class SendShipmentNotification implements ShouldQueue, ShouldBeEncrypted
 ### 唯一事件监听器
 
 > [!WARNING]
-> 唯一监听器需要一个支持[锁](/docs/{{version}}/cache#atomic-locks)的缓存驱动。目前，`memcached`、`redis`、`dynamodb`、`database`、`file` 和 `array` 这些缓存驱动都支持原子锁。
+> 唯一监听器需要一个支持[锁](/topic/Laravel%2013.x/5dve2w3v4x.html)的缓存驱动。目前，`memcached`、`redis`、`dynamodb`、`database`、`file` 和 `array` 这些缓存驱动都支持原子锁。
 
 有时你可能希望确保某个特定监听器在任意时刻只有一个实例位于队列中。要这样做，可以在监听器类上实现 `ShouldBeUnique` 接口：
 
@@ -573,7 +573,7 @@ class AcquireProductKey implements ShouldQueue, ShouldBeUniqueUntilProcessing
 
 #### 唯一监听器锁
 
-在底层，当 `ShouldBeUnique` 监听器被派发时，Laravel 会尝试以 `uniqueId` 为键获取一个[锁](/docs/{{version}}/cache#atomic-locks)。如果该锁已被持有，监听器就不会被派发。当监听器处理完成或所有重试失败后，该锁会被释放。默认情况下，Laravel 会使用默认的缓存驱动来获取这个锁。不过，如果你想使用其他驱动来获取锁，可以定义一个 `uniqueVia` 方法，返回应当使用的缓存驱动：
+在底层，当 `ShouldBeUnique` 监听器被派发时，Laravel 会尝试以 `uniqueId` 为键获取一个[锁](/topic/Laravel%2013.x/5dve2w3v4x.html)。如果该锁已被持有，监听器就不会被派发。当监听器处理完成或所有重试失败后，该锁会被释放。默认情况下，Laravel 会使用默认的缓存驱动来获取这个锁。不过，如果你想使用其他驱动来获取锁，可以定义一个 `uniqueVia` 方法，返回应当使用的缓存驱动：
 
 ```php
 <?php
@@ -599,7 +599,7 @@ class AcquireProductKey implements ShouldQueue, ShouldBeUnique
 ```
 
 > [!NOTE]
-> 如果你只是想限制监听器的并发处理，请改用 [WithoutOverlapping](/docs/{{version}}/queues#preventing-job-overlaps) 任务中间件。
+> 如果你只是想限制监听器的并发处理，请改用 [WithoutOverlapping](/topic/Laravel%2013.x/wevwmkz9l2.html) 任务中间件。
 
 ### 防抖事件监听器
 
@@ -898,7 +898,7 @@ OrderShipped::dispatchUnless($condition, $order);
 ```
 
 > [!NOTE]
-> 在测试时，断言某些事件已被派发而实际上并不触发其监听器，往往很有帮助。Laravel 的[内置测试辅助函数](#testing)让这一切变得轻而易举。
+> 在测试时，断言某些事件已被派发而实际上并不触发其监听器，往往很有帮助。Laravel 的内置测试辅助函数让这一切变得轻而易举。
 
 ### 在数据库事务提交后派发事件
 
@@ -1047,7 +1047,7 @@ class UserEventSubscriber
 
 ### 注册事件订阅器
 
-编写好订阅器之后，如果订阅器内部的处理方法遵循 Laravel 的[事件发现约定](#event-discovery)，Laravel 会自动注册它们。否则，你可以使用 `Event` Facade 的 `subscribe` 方法来手动注册订阅器。通常，这应当在应用的 `AppServiceProvider` 的 `boot` 方法中完成：
+编写好订阅器之后，如果订阅器内部的处理方法遵循 Laravel 的事件发现约定，Laravel 会自动注册它们。否则，你可以使用 `Event` Facade 的 `subscribe` 方法来手动注册订阅器。通常，这应当在应用的 `AppServiceProvider` 的 `boot` 方法中完成：
 
 ```php
 <?php

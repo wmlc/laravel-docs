@@ -7,31 +7,31 @@
 由于 Fortify 并不提供自己的用户界面，因此需要与你自己的用户界面配合使用，由它来向这些路由发起请求。本文档后面会详细说明如何向这些路由发起请求。
 
 > [!NOTE]
-> 请记住，Fortify 是一个用于帮助你实现 Laravel 认证功能的包。**你并非必须使用它。** 你完全可以按照 [用户认证](/docs/{{version}}/authentication)、[密码重置](/docs/{{version}}/passwords) 和 [邮箱验证](/docs/{{version}}/verification) 文档中的说明，手动使用 Laravel 的认证服务。
+> 请记住，Fortify 是一个用于帮助你实现 Laravel 认证功能的包。**你并非必须使用它。** 你完全可以按照 [用户认证](/topic/Laravel%2013.x/xq9zrgjvdo.html)、[密码重置](/topic/Laravel%2013.x/4rvgng3ydj.html) 和 [邮箱验证](/topic/Laravel%2013.x/3dykqooyl0.html) 文档中的说明，手动使用 Laravel 的认证服务。
 
 ### Fortify 是什么？
 
 如前所述，Laravel Fortify 是一个针对 Laravel 的、与前端无关的认证后端实现。Fortify 注册了实现 Laravel 所有认证功能所需的路由和控制器，包括登录、注册、密码重置、邮箱验证等。
 
-**即使不使用 Fortify，也可以使用 Laravel 的认证功能。** 你完全可以按照 [用户认证](/docs/{{version}}/authentication)、[密码重置](/docs/{{version}}/passwords) 和 [邮箱验证](/docs/{{version}}/verification) 文档中的说明，手动使用 Laravel 的认证服务。
+**即使不使用 Fortify，也可以使用 Laravel 的认证功能。** 你完全可以按照 [用户认证](/topic/Laravel%2013.x/xq9zrgjvdo.html)、[密码重置](/topic/Laravel%2013.x/4rvgng3ydj.html) 和 [邮箱验证](/topic/Laravel%2013.x/3dykqooyl0.html) 文档中的说明，手动使用 Laravel 的认证服务。
 
-如果你是 Laravel 新手，可以参考 [我们的应用入门套件](/docs/{{version}}/starter-kits)。Laravel 的应用入门套件内部就使用了 Fortify 来提供认证脚手架，并附带基于 [Tailwind CSS](https://tailwindcss.com) 的用户界面。这便于你边学边熟悉 Laravel 的认证功能。
+如果你是 Laravel 新手，可以参考 [我们的应用入门套件](/topic/Laravel%2013.x/kl9nop7vz4.html)。Laravel 的应用入门套件内部就使用了 Fortify 来提供认证脚手架，并附带基于 [Tailwind CSS](https://tailwindcss.com) 的用户界面。这便于你边学边熟悉 Laravel 的认证功能。
 
 Laravel Fortify 实质上是把我们应用入门套件里的路由和控制器抽出为一个不包含用户界面的包。这让你可以快速搭建应用认证层的后端实现，而无需被任何特定的前端选型所束缚。
 
 ### 什么时候应该使用 Fortify？
 
-你可能想知道 Laravel Fortify 的适用场景。首先，如果你正在使用 Laravel 的某个 [应用入门套件](/docs/{{version}}/starter-kits)，就不必再单独安装 Laravel Fortify，因为这些套件都使用了 Fortify 并已经提供了完整的认证实现。
+你可能想知道 Laravel Fortify 的适用场景。首先，如果你正在使用 Laravel 的某个 [应用入门套件](/topic/Laravel%2013.x/kl9nop7vz4.html)，就不必再单独安装 Laravel Fortify，因为这些套件都使用了 Fortify 并已经提供了完整的认证实现。
 
 如果你没有使用应用入门套件，而你的应用又需要认证功能，那你有两个选择：自行实现认证功能，或者使用 Laravel Fortify 来提供这些功能的后端实现。
 
 如果你选择安装 Fortify，你的用户界面将按照本文档的说明向 Fortify 的认证路由发起请求，以完成用户认证和注册。
 
-如果你选择绕过 Fortify，直接手动使用 Laravel 的认证服务，可以按照 [用户认证](/docs/{{version}}/authentication)、[密码重置](/docs/{{version}}/passwords) 和 [邮箱验证](/docs/{{version}}/verification) 文档中的说明进行操作。
+如果你选择绕过 Fortify，直接手动使用 Laravel 的认证服务，可以按照 [用户认证](/topic/Laravel%2013.x/xq9zrgjvdo.html)、[密码重置](/topic/Laravel%2013.x/4rvgng3ydj.html) 和 [邮箱验证](/topic/Laravel%2013.x/3dykqooyl0.html) 文档中的说明进行操作。
 
 #### Laravel Fortify 与 Laravel Sanctum
 
-一些开发者会混淆 [Laravel Sanctum](/docs/{{version}}/sanctum) 与 Laravel Fortify。由于这两个包解决的是不同但又相关的问题，它们并不是互斥或竞争的关系。
+一些开发者会混淆 [Laravel Sanctum](/topic/Laravel%2013.x/xq9zr3jvdo.html) 与 Laravel Fortify。由于这两个包解决的是不同但又相关的问题，它们并不是互斥或竞争的关系。
 
 Laravel Sanctum 只关注 API Token 管理以及使用 Session Cookie 或 Token 对现有用户进行认证。它不提供处理用户注册、密码重置等操作的路由。
 
@@ -85,7 +85,7 @@ php artisan migrate
 
 ## 用户认证
 
-首先，我们需要告诉 Fortify 如何返回"登录"视图。请记住，Fortify 是一个无头（headless）的认证库。如果你想要一套开箱即用、已经完成的前端认证实现，应当使用 [应用入门套件](/docs/{{version}}/starter-kits)。
+首先，我们需要告诉 Fortify 如何返回"登录"视图。请记住，Fortify 是一个无头（headless）的认证库。如果你想要一套开箱即用、已经完成的前端认证实现，应当使用 [应用入门套件](/topic/Laravel%2013.x/kl9nop7vz4.html)。
 
 所有"登录"视图的渲染逻辑都可以通过 `Laravel\Fortify\Fortify` 类上的相应方法来自定义。通常应在应用的 `App\Providers\FortifyServiceProvider` 类的 `boot` 方法里调用该方法。Fortify 会负责定义返回该视图的 `/login` 路由：
 
@@ -109,7 +109,7 @@ public function boot(): void
 
 如果登录尝试成功，Fortify 会把你重定向到应用 `fortify` 配置文件中通过 `home` 配置项配置的 URI。如果登录请求是 XHR 请求，则会返回 200 HTTP 响应。
 
-如果登录失败，会被重定向回登录页面，校验错误可以通过共享的 Blade 模板变量 [Blade 模板变量 `$errors`](/docs/{{version}}/validation#quick-displaying-the-validation-errors) 获取；如果请求是 XHR 请求，校验错误会随 422 HTTP 响应一同返回。
+如果登录失败，会被重定向回登录页面，校验错误可以通过共享的 Blade 模板变量 [Blade 模板变量 `$errors`](/topic/Laravel%2013.x/e296oew9q7.html) 获取；如果请求是 XHR 请求，校验错误会随 422 HTTP 响应一同返回。
 
 ### 自定义用户认证
 
@@ -147,7 +147,7 @@ public function boot(): void
 
 ### 自定义认证管道
 
-Laravel Fortify 通过一组可调用类组成的管道来完成登录请求的认证。如果你愿意，可以定义一个由多个类组成、自定义顺序的管道，让登录请求依次穿过这些类。每个类都需要提供一个 `__invoke` 方法，接收传入的 `Illuminate\Http\Request` 实例，并像 [中间件](/docs/{{version}}/middleware) 一样接收一个 `$next` 变量，调用它即可将请求传递给管道中的下一个类。
+Laravel Fortify 通过一组可调用类组成的管道来完成登录请求的认证。如果你愿意，可以定义一个由多个类组成、自定义顺序的管道，让登录请求依次穿过这些类。每个类都需要提供一个 `__invoke` 方法，接收传入的 `Illuminate\Http\Request` 实例，并像 [中间件](/topic/Laravel%2013.x/rwyl2exvz8.html) 一样接收一个 `$next` 变量，调用它即可将请求传递给管道中的下一个类。
 
 要定义自定义管道，可以使用 `Fortify::authenticateThrough` 方法。该方法接收一个闭包，闭包应返回登录请求要依次穿过的类数组。通常应在 `App\Providers\FortifyServiceProvider` 类的 `boot` 方法里调用它。
 
@@ -178,16 +178,16 @@ Fortify::authenticateThrough(function (Request $request) {
 
 默认情况下，Fortify 会使用 `EnsureLoginIsNotThrottled` 中间件对登录尝试进行限流。该中间件按照用户名与 IP 地址的组合作为唯一维度来限流。
 
-某些应用可能需要不同的限流策略，例如仅按 IP 地址进行限流。为此，Fortify 允许你通过 `fortify.limiters.login` 配置项指定自己的 [限流器](/docs/{{version}}/routing#rate-limiting)。当然，这个配置项位于应用的 `config/fortify.php` 配置文件中。
+某些应用可能需要不同的限流策略，例如仅按 IP 地址进行限流。为此，Fortify 允许你通过 `fortify.limiters.login` 配置项指定自己的 [限流器](/topic/Laravel%2013.x/dgy7xg5vw2.html)。当然，这个配置项位于应用的 `config/fortify.php` 配置文件中。
 
 > [!NOTE]
-> 将限流、[双重身份认证](/docs/{{version}}/fortify#two-factor-authentication) 和外部 Web 应用防火墙（WAF）结合使用，可以为合法应用用户提供最稳健的防御。
+> 将限流、[双重身份认证](/topic/Laravel%2013.x/x3vo0x4vm1.html) 和外部 Web 应用防火墙（WAF）结合使用，可以为合法应用用户提供最稳健的防御。
 
 ### 自定义重定向
 
 如果登录尝试成功，Fortify 会把你重定向到应用 `fortify` 配置文件中通过 `home` 配置项配置的 URI。如果登录请求是 XHR 请求，则会返回 200 HTTP 响应。用户登出应用后，将被重定向到 `/` URI。
 
-如果你需要更高级的自定义行为，可以把 `LoginResponse` 和 `LogoutResponse` 契约的实现绑定到 Laravel [服务容器](/docs/{{version}}/container) 中。通常应在 `App\Providers\FortifyServiceProvider` 类的 `register` 方法里完成：
+如果你需要更高级的自定义行为，可以把 `LoginResponse` 和 `LogoutResponse` 契约的实现绑定到 Laravel [服务容器](/topic/Laravel%2013.x/x3vo054vm1.html) 中。通常应在 `App\Providers\FortifyServiceProvider` 类的 `register` 方法里完成：
 
 ```php
 use Laravel\Fortify\Contracts\LogoutResponse;
@@ -229,7 +229,7 @@ class User extends Authenticatable
 
 接下来，应当在应用内构建一个页面，让用户管理双重身份认证的相关设置。该页面应允许用户启用和关闭双重身份认证，以及重新生成恢复码。
 
-> 默认情况下，`fortify` 配置文件的 `features` 数组指示 Fortify 在修改双重身份认证设置前要求密码确认。因此，在继续之前，你的应用应当先实现 Fortify 的 [密码确认](#password-confirmation) 功能。
+> 默认情况下，`fortify` 配置文件的 `features` 数组指示 Fortify 在修改双重身份认证设置前要求密码确认。因此，在继续之前，你的应用应当先实现 Fortify 的 密码确认 功能。
 
 ### 启用双重身份认证
 
@@ -307,11 +307,11 @@ Fortify 会负责定义返回该视图的 `/two-factor-challenge` 路由。你�
 
 如果登录成功，Fortify 会把用户重定向到应用 `fortify` 配置文件中通过 `home` 配置项配置的 URI。如果登录请求是 XHR 请求，则会返回 204 HTTP 响应。
 
-如果登录失败，用户将被重定向回双重身份认证挑战页面，校验错误可以通过共享的 [Blade 模板变量 `$errors`](/docs/{{version}}/validation#quick-displaying-the-validation-errors) 获取。如果请求是 XHR 请求，校验错误会随 422 HTTP 响应一同返回。
+如果登录失败，用户将被重定向回双重身份认证挑战页面，校验错误可以通过共享的 [Blade 模板变量 `$errors`](/topic/Laravel%2013.x/e296oew9q7.html) 获取。如果请求是 XHR 请求，校验错误会随 422 HTTP 响应一同返回。
 
 ### 关闭双重身份认证
 
-要关闭双重身份认证，应用应向 `/user/two-factor-authentication` 端点发起 DELETE 请求。请注意，Fortify 的双重身份认证相关端点在被调用前需要进行 [密码确认](#password-confirmation)。
+要关闭双重身份认证，应用应向 `/user/two-factor-authentication` 端点发起 DELETE 请求。请注意，Fortify 的双重身份认证相关端点在被调用前需要进行 密码确认。
 
 ## 通行密钥
 
@@ -332,7 +332,7 @@ use Laravel\Fortify\Features;
 ],
 ```
 
-`confirmPassword` 选项决定 Fortify 是否在注册或删除通行密钥前要求进行 [密码确认](#password-confirmation)。
+`confirmPassword` 选项决定 Fortify 是否在注册或删除通行密钥前要求进行 密码确认。
 
 接下来，确保应用的 `App\Models\User` 模型实现了 `Laravel\Fortify\Contracts\PasskeyUser` 接口，并使用了 `Laravel\Fortify\PasskeyAuthenticatable` trait：
 
@@ -472,7 +472,7 @@ await Passkeys.register({
 
 ## 用户注册
 
-要开始实现用户注册功能，我们需要告诉 Fortify 如何返回"register"视图。请记住，Fortify 是一个无头（headless）的认证库。如果你想要一套开箱即用、已经完成的前端认证实现，应当使用 [应用入门套件](/docs/{{version}}/starter-kits)。
+要开始实现用户注册功能，我们需要告诉 Fortify 如何返回"register"视图。请记住，Fortify 是一个无头（headless）的认证库。如果你想要一套开箱即用、已经完成的前端认证实现，应当使用 [应用入门套件](/topic/Laravel%2013.x/kl9nop7vz4.html)。
 
 所有 Fortify 的视图渲染逻辑都可以通过 `Laravel\Fortify\Fortify` 类上的相应方法进行自定义。通常应在 `App\Providers\FortifyServiceProvider` 类的 `boot` 方法里调用它：
 
@@ -498,7 +498,7 @@ Fortify 会负责定义返回该视图的 `/register` 路由。你的 `register`
 
 如果注册请求成功，Fortify 会把用户重定向到应用 `fortify` 配置文件中通过 `home` 配置项配置的 URI。如果注册请求是 XHR 请求，则会返回 201 HTTP 响应。
 
-如果注册请求失败，用户将被重定向回注册页面，校验错误可以通过共享的 [Blade 模板变量 `$errors`](/docs/{{version}}/validation#quick-displaying-the-validation-errors) 获取。如果请求是 XHR 请求，校验错误会随 422 HTTP 响应一同返回。
+如果注册请求失败，用户将被重定向回注册页面，校验错误可以通过共享的 [Blade 模板变量 `$errors`](/topic/Laravel%2013.x/e296oew9q7.html) 获取。如果请求是 XHR 请求，校验错误会随 422 HTTP 响应一同返回。
 
 ### 自定义注册
 
@@ -508,7 +508,7 @@ Fortify 会负责定义返回该视图的 `/register` 路由。你的 `register`
 
 ### 请求重置密码链接
 
-要开始实现密码重置功能，我们需要告诉 Fortify 如何返回"忘记密码（forgot password）"视图。请记住，Fortify 是一个无头（headless）的认证库。如果你想要一套开箱即用、已经完成的前端认证实现，应当使用 [应用入门套件](/docs/{{version}}/starter-kits)。
+要开始实现密码重置功能，我们需要告诉 Fortify 如何返回"忘记密码（forgot password）"视图。请记住，Fortify 是一个无头（headless）的认证库。如果你想要一套开箱即用、已经完成的前端认证实现，应当使用 [应用入门套件](/topic/Laravel%2013.x/kl9nop7vz4.html)。
 
 所有 Fortify 的视图渲染逻辑都可以通过 `Laravel\Fortify\Fortify` 类上的相应方法进行自定义。通常应在 `App\Providers\FortifyServiceProvider` 类的 `boot` 方法里调用它：
 
@@ -538,7 +538,7 @@ Fortify 会负责定义返回该视图的 `/forgot-password` 端点。你的 `fo
 
 请求成功后被重定向回 `/forgot-password` 端点时，可以使用 `status` Session 变量来显示重置密码链接请求的状态。
 
-`$status` Session 变量的值将与应用 [语言文件](/docs/{{version}}/localization) `passwords` 中定义的某条翻译字符串匹配。如果你想自定义这一值但还没有发布 Laravel 的语言文件，可以通过 `lang:publish` Artisan 命令发布后再修改：
+`$status` Session 变量的值将与应用 [语言文件](/topic/Laravel%2013.x/kpv13q298w.html) `passwords` 中定义的某条翻译字符串匹配。如果你想自定义这一值但还没有发布 Laravel 的语言文件，可以通过 `lang:publish` Artisan 命令发布后再修改：
 
 ```html
 @if (session('status'))
@@ -548,7 +548,7 @@ Fortify 会负责定义返回该视图的 `/forgot-password` 端点。你的 `fo
 @endif
 ```
 
-如果请求失败，用户将被重定向回"请求重置密码链接"页面，校验错误可以通过共享的 [Blade 模板变量 `$errors`](/docs/{{version}}/validation#quick-displaying-the-validation-errors) 获取。如果请求是 XHR 请求，校验错误会随 422 HTTP 响应一同返回。
+如果请求失败，用户将被重定向回"请求重置密码链接"页面，校验错误可以通过共享的 [Blade 模板变量 `$errors`](/topic/Laravel%2013.x/e296oew9q7.html) 获取。如果请求是 XHR 请求，校验错误会随 422 HTTP 响应一同返回。
 
 ### 重置密码
 
@@ -591,7 +591,7 @@ Fortify 会负责定义用于显示该视图的路由。你的 `reset-password` 
 
 如果请求是 XHR 请求，则会返回 200 HTTP 响应。
 
-如果请求失败，用户将被重定向回"重置密码"页面，校验错误可以通过共享的 [Blade 模板变量 `$errors`](/docs/{{version}}/validation#quick-displaying-the-validation-errors) 获取。如果请求是 XHR 请求，校验错误会随 422 HTTP 响应一同返回。
+如果请求失败，用户将被重定向回"重置密码"页面，校验错误可以通过共享的 [Blade 模板变量 `$errors`](/topic/Laravel%2013.x/e296oew9q7.html) 获取。如果请求是 XHR 请求，校验错误会随 422 HTTP 响应一同返回。
 
 ### 自定义密码重置
 
@@ -653,7 +653,7 @@ Route::get('/dashboard', function () {
 
 在构建应用时，偶尔会遇到这样的情形：某些操作在执行前需要用户先确认自己的密码。通常这些路由会使用 Laravel 内置的 `password.confirm` 中间件来保护。
 
-要开始实现密码确认功能，我们需要告诉 Fortify 如何返回应用的"密码确认"视图。请记住，Fortify 是一个无头（headless）的认证库。如果你想要一套开箱即用、已经完成的前端认证实现，应当使用 [应用入门套件](/docs/{{version}}/starter-kits)。
+要开始实现密码确认功能，我们需要告诉 Fortify 如何返回应用的"密码确认"视图。请记住，Fortify 是一个无头（headless）的认证库。如果你想要一套开箱即用、已经完成的前端认证实现，应当使用 [应用入门套件](/topic/Laravel%2013.x/kl9nop7vz4.html)。
 
 所有 Fortify 的视图渲染逻辑都可以通过 `Laravel\Fortify\Fortify` 类上的相应方法进行自定义。通常应在 `App\Providers\FortifyServiceProvider` 类的 `boot` 方法里调用它：
 

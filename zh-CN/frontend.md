@@ -2,7 +2,7 @@
 
 ## 简介
 
-Laravel 是一个后端框架，提供了构建现代 Web 应用所需的全部功能，例如 [路由](/docs/{{version}}/routing)、[验证](/docs/{{version}}/validation)、[缓存](/docs/{{version}}/cache)、[队列](/docs/{{version}}/queues)、[文件存储](/docs/{{version}}/filesystem) 等。但我们一直认为，为开发者提供完整的全栈体验同样重要——包括构建应用前端时所需的强大方案。
+Laravel 是一个后端框架，提供了构建现代 Web 应用所需的全部功能，例如 [路由](/topic/Laravel%2013.x/dgy7xg5vw2.html)、[验证](/topic/Laravel%2013.x/e296oew9q7.html)、[缓存](/topic/Laravel%2013.x/5dve2w3v4x.html)、[队列](/topic/Laravel%2013.x/wevwmkz9l2.html)、[文件存储](/topic/Laravel%2013.x/qk9428ovw1.html) 等。但我们一直认为，为开发者提供完整的全栈体验同样重要——包括构建应用前端时所需的强大方案。
 
 使用 Laravel 构建应用时，有两种主要的前端开发方式——选择哪种取决于你希望用 PHP 构建前端，还是使用 React、Svelte 和 Vue 等 JavaScript 框架。下面我们会分别介绍这两种方案，方便你做出最符合应用需求的选择。
 
@@ -20,7 +20,7 @@ Laravel 是一个后端框架，提供了构建现代 Web 应用所需的全部�
 </div>
 ```
 
-在 Laravel 中，依然可以使用 [视图](/docs/{{version}}/views) 和 [Blade](/docs/{{version}}/blade) 实现这种渲染方式。Blade 是一种非常轻量的模板语言，用简洁的语法完成数据展示、迭代等操作：
+在 Laravel 中，依然可以使用 [视图](/topic/Laravel%2013.x/m892gz6y01.html) 和 [Blade](/topic/Laravel%2013.x/wevwmrz9l2.html) 实现这种渲染方式。Blade 是一种非常轻量的模板语言，用简洁的语法完成数据展示、迭代等操作：
 
 ```blade
 <div>
@@ -73,11 +73,11 @@ new class extends Component
 
 对很多人来说，Livewire 革新了 Laravel 的前端开发——保持 Laravel 的熟悉度，又能构建现代化、动态化的 Web 应用。通常，使用 Livewire 的开发者还会使用 [Alpine.js](https://alpinejs.dev/)，在仅需要的地方"点缀"JavaScript——例如渲染一个对话框。
 
-如果你是 Laravel 新手，建议先熟悉 [视图](/docs/{{version}}/views) 与 [Blade](/docs/{{version}}/blade) 的基础用法，再查阅 [Laravel Livewire 官方文档](https://livewire.laravel.com/docs)，学会用交互式 Livewire 组件让应用达到新的高度。
+如果你是 Laravel 新手，建议先熟悉 [视图](/topic/Laravel%2013.x/m892gz6y01.html) 与 [Blade](/topic/Laravel%2013.x/wevwmrz9l2.html) 的基础用法，再查阅 [Laravel Livewire 官方文档](https://livewire.laravel.com/docs)，学会用交互式 Livewire 组件让应用达到新的高度。
 
 ### 入门套件
 
-如果你想用 PHP 和 Livewire 构建前端，可以使用 [Livewire 入门套件](/docs/{{version}}/starter-kits) 来快速启动应用开发。
+如果你想用 PHP 和 Livewire 构建前端，可以使用 [Livewire 入门套件](/topic/Laravel%2013.x/kl9nop7vz4.html) 来快速启动应用开发。
 
 ## 使用 React、Svelte 或 Vue
 
@@ -141,15 +141,15 @@ export default function Show({ user }) {
 
 ### 入门套件
 
-如果你想用 Inertia + React / Svelte / Vue 构建前端，可以使用我们的 [React、Svelte 或 Vue 入门套件](/docs/{{version}}/starter-kits) 来快速启动应用开发。这些套件会基于 Inertia、React / Svelte / Vue、[Tailwind](https://tailwindcss.com) 与 [Vite](https://vitejs.dev)，为你搭建好前后端认证流程，方便你立即着手实现下一个创意。
+如果你想用 Inertia + React / Svelte / Vue 构建前端，可以使用我们的 [React、Svelte 或 Vue 入门套件](/topic/Laravel%2013.x/kl9nop7vz4.html) 来快速启动应用开发。这些套件会基于 Inertia、React / Svelte / Vue、[Tailwind](https://tailwindcss.com) 与 [Vite](https://vitejs.dev)，为你搭建好前后端认证流程，方便你立即着手实现下一个创意。
 
 ## 打包资源
 
 无论选择 Blade + Livewire 还是 React / Svelte / Vue + Inertia 来构建前端，几乎都需要把应用 CSS 打包成可直接上线的资源。当然，如果选用 React、Svelte 或 Vue，还需要把组件打包成可在浏览器中直接运行的 JavaScript 资源。
 
-Laravel 默认使用 [Vite](https://vitejs.dev) 来打包资源。Vite 提供闪电般的构建速度，以及在本地开发中近乎即时的模块热替换（HMR）。在所有全新的 Laravel 应用（包括使用我们的 [入门套件](/docs/{{version}}/starter-kits) 的应用）中，都会有一个 `vite.config.js` 文件，它会加载我们轻量级的 Laravel Vite 插件，让 Vite 与 Laravel 协作更顺畅。
+Laravel 默认使用 [Vite](https://vitejs.dev) 来打包资源。Vite 提供闪电般的构建速度，以及在本地开发中近乎即时的模块热替换（HMR）。在所有全新的 Laravel 应用（包括使用我们的 [入门套件](/topic/Laravel%2013.x/kl9nop7vz4.html) 的应用）中，都会有一个 `vite.config.js` 文件，它会加载我们轻量级的 Laravel Vite 插件，让 Vite 与 Laravel 协作更顺畅。
 
-最快的入门方法是直接使用 [应用入门套件](/docs/{{version}}/starter-kits) 启动你的应用开发，它通过预置的前后端认证脚手架，让你的应用一上来就具备完整形态。
+最快的入门方法是直接使用 [应用入门套件](/topic/Laravel%2013.x/kl9nop7vz4.html) 启动你的应用开发，它通过预置的前后端认证脚手架，让你的应用一上来就具备完整形态。
 
 > [!NOTE]
-> 关于如何在 Laravel 中使用 Vite 的更多细节，请参考我们的 [资源打包与编译专项文档](/docs/{{version}}/vite)。
+> 关于如何在 Laravel 中使用 Vite 的更多细节，请参考我们的 [资源打包与编译专项文档](/topic/Laravel%2013.x/ndvm3gj93j.html)。

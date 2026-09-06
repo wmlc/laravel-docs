@@ -4,18 +4,18 @@
 
 数据库表之间通常相互关联。例如，一篇博客文章可能有许多评论，或者一个订单可能与下单的用户相关联。Eloquent 让管理和处理这些关联关系变得简单，并支持多种常见的关联关系：
 
-- [一对一](#one-to-one)
-- [一对多](#one-to-many)
-- [多对多](#many-to-many)
-- [Has One Through](#has-one-through)
-- [Has Many Through](#has-many-through)
-- [一对一（多态）](#one-to-one-polymorphic-relations)
-- [一对多（多态）](#one-to-many-polymorphic-relations)
-- [多对多（多态）](#many-to-many-polymorphic-relations)
+- 一对一
+- 一对多
+- 多对多
+- Has One Through
+- Has Many Through
+- 一对一（多态）
+- 一对多（多态）
+- 多对多（多态）
 
 ## 定义关联关系
 
-Eloquent 关联关系以方法的形式定义在你的 Eloquent 模型类上。由于关联关系同时也充当 [查询构造器](/docs/{{version}}/queries)，将关联关系定义为方法可以提供强大的方法链式调用和查询能力。例如，我们可以对 `posts` 关联关系链式添加其他查询约束：
+Eloquent 关联关系以方法的形式定义在你的 Eloquent 模型类上。由于关联关系同时也充当 [查询构造器](/topic/Laravel%2013.x/xpv525gv86.html)，将关联关系定义为方法可以提供强大的方法链式调用和查询能力。例如，我们可以对 `posts` 关联关系链式添加其他查询约束：
 
 ```php
 $user->posts()->where('active', 1)->get();
@@ -141,7 +141,7 @@ class Post extends Model
 
 请记住，Eloquent 将自动确定 `Comment` 模型的适当外键列。按照约定，Eloquent 将采用父模型的「snake case」名称，并在其后追加 `_id`。因此，在此示例中，Eloquent 将假定 `Comment` 模型上的外键列为 `post_id`。
 
-一旦定义了关联关系方法，我们就可以通过访问 `comments` 属性来访问相关评论的 [集合](/docs/{{version}}/eloquent-collections)。请记住，由于 Eloquent 提供了「动态关联关系属性」，我们可以像访问模型上定义的属性一样访问关联关系方法：
+一旦定义了关联关系方法，我们就可以通过访问 `comments` 属性来访问相关评论的 [集合](/topic/Laravel%2013.x/d6vroqrv3g.html)。请记住，由于 Eloquent 提供了「动态关联关系属性」，我们可以像访问模型上定义的属性一样访问关联关系方法：
 
 ```php
 use App\Models\Post;
@@ -333,7 +333,7 @@ $posts = Post::where('user_id', $user->id)->get();
 $posts = Post::whereBelongsTo($user)->get();
 ```
 
-你还可以向 `whereBelongsTo` 方法提供一个 [集合](/docs/{{version}}/eloquent-collections) 实例。提供时，Laravel 将检索属于集合中任何父模型的模型：
+你还可以向 `whereBelongsTo` 方法提供一个 [集合](/topic/Laravel%2013.x/d6vroqrv3g.html) 实例。提供时，Laravel 将检索属于集合中任何父模型的模型：
 
 ```php
 $users = User::where('vip', true)->get();
@@ -1243,7 +1243,7 @@ public function bestImage(): MorphOne
 ```
 
 > [!NOTE]
-> 可以构造更高级的「one of many」关系。有关更多信息，请参阅 [has one of many 文档](#advanced-has-one-of-many-relationships)。
+> 可以构造更高级的「one of many」关系。有关更多信息，请参阅 has one of many 文档。
 
 ### 多对多（多态）
 
@@ -1271,7 +1271,7 @@ taggables
 ```
 
 > [!NOTE]
-> 在深入研究多态多对多关系之前，你可能会受益于阅读关于典型[多对多关系](#many-to-many)的文档。
+> 在深入研究多态多对多关系之前，你可能会受益于阅读关于典型多对多关系的文档。
 
 #### 模型结构
 
@@ -1397,7 +1397,7 @@ $class = Relation::getMorphedModel($alias);
 
 你可以使用 `resolveRelationUsing` 方法在运行时定义 Eloquent 模型之间的关系。虽然通常不建议在正常的应用开发中使用此方法，但在开发 Laravel 包时偶尔会有用。
 
-`resolveRelationUsing` 方法接受所需的关系名称作为其第一个参数。传递给该方法的第二个参数应该是一个闭包，该闭包接受模型实例并返回有效的 Eloquent 关系定义。通常，你应该在 [服务提供者](/docs/{{version}}/providers) 的 `boot` 方法中配置动态关系：
+`resolveRelationUsing` 方法接受所需的关系名称作为其第一个参数。传递给该方法的第二个参数应该是一个闭包，该闭包接受模型实例并返回有效的 Eloquent 关系定义。通常，你应该在 [服务提供者](/topic/Laravel%2013.x/qk942kovw1.html) 的 `boot` 方法中配置动态关系：
 
 ```php
 use App\Models\Order;
@@ -1413,7 +1413,7 @@ Order::resolveRelationUsing('customer', function (Order $orderModel) {
 
 ## 查询关联关系
 
-由于所有 Eloquent 关联关系都是通过方法定义的，因此你可以调用这些方法来获取关系的实例，而无需实际执行查询来加载相关模型。此外，所有类型的 Eloquent 关联关系也充当 [查询构造器](/docs/{{version}}/queries)，允许你在最终对数据库执行 SQL 查询之前，继续将约束链接到到查询上。
+由于所有 Eloquent 关联关系都是通过方法定义的，因此你可以调用这些方法来获取关系的实例，而无需实际执行查询来加载相关模型。此外，所有类型的 Eloquent 关联关系也充当 [查询构造器](/topic/Laravel%2013.x/xpv525gv86.html)，允许你在最终对数据库执行 SQL 查询之前，继续将约束链接到到查询上。
 
 例如，假设一个博客应用中 `User` 模型有许多关联的 `Post` 模型：
 
@@ -1447,7 +1447,7 @@ $user = User::find(1);
 $user->posts()->where('active', 1)->get();
 ```
 
-你可以在关系上使用任何 Laravel [查询构造器](/docs/{{version}}/queries) 方法，因此请务必浏览查询构造器文档以了解所有可用的方法。
+你可以在关系上使用任何 Laravel [查询构造器](/topic/Laravel%2013.x/xpv525gv86.html) 方法，因此请务必浏览查询构造器文档以了解所有可用的方法。
 
 #### 在关系之后链式调用 `orWhere` 子句
 
@@ -1469,7 +1469,7 @@ from posts
 where user_id = ? and active = 1 or votes >= 100
 ```
 
-在大多数情况下，你应该使用 [逻辑分组](/docs/{{version}}/queries#logical-grouping) 在括号内对条件检查进行分组：
+在大多数情况下，你应该使用 [逻辑分组](/topic/Laravel%2013.x/xpv525gv86.html) 在括号内对条件检查进行分组：
 
 ```php
 use Illuminate\Database\Eloquent\Builder;
@@ -1505,7 +1505,7 @@ foreach ($user->posts as $post) {
 }
 ```
 
-动态关联关系属性执行「懒加载」，这意味着它们只会在你实际访问它们时才加载其关系数据。因此，开发人员经常使用 [预加载](#eager-loading) 来预加载他们知道将在加载模型后访问的关联关系。预加载可以显著减少加载模型关系所必须执行的 SQL 查询。
+动态关联关系属性执行「懒加载」，这意味着它们只会在你实际访问它们时才加载其关系数据。因此，开发人员经常使用 预加载 来预加载他们知道将在加载模型后访问的关联关系。预加载可以显著减少加载模型关系所必须执行的 SQL 查询。
 
 ### 查询关系存在性
 
@@ -1559,7 +1559,7 @@ $posts = Post::whereHas('comments', function (Builder $query) {
 $users = User::whereAttachedTo($role)->get();
 ```
 
-你还可以向 `whereAttachedTo` 方法提供一个 [集合](/docs/{{version}}/eloquent-collections) 实例。提供时，Laravel 将检索与集合中任何模型相关联的模型：
+你还可以向 `whereAttachedTo` 方法提供一个 [集合](/topic/Laravel%2013.x/d6vroqrv3g.html) 实例。提供时，Laravel 将检索与集合中任何模型相关联的模型：
 
 ```php
 $tags = Tag::whereLike('name', '%laravel%')->get();
@@ -2024,7 +2024,7 @@ $users = User::with(['posts' => function ($query) {
 }])->get();
 ```
 
-在此示例中，Eloquent 将仅预加载帖子的 `title` 列包含单词 `code` 的帖子。你可以调用其他 [查询构造器](/docs/{{version}}/queries) 方法以进一步自定义预加载操作：
+在此示例中，Eloquent 将仅预加载帖子的 `title` 列包含单词 `code` 的帖子。你可以调用其他 [查询构造器](/topic/Laravel%2013.x/xpv525gv86.html) 方法以进一步自定义预加载操作：
 
 ```php
 $users = User::with(['posts' => function ($query) {
@@ -2165,7 +2165,7 @@ foreach ($users as $user) {
 }
 ```
 
-通常，上面的代码将对每个用户执行一个查询以检索他们的帖子，以及对每个帖子执行一个查询以检索其评论。但是，当启用了 `automaticallyEagerLoadRelationships` 功能时，当你尝试访问任何已检索用户上的帖子时，Laravel 将自动 [延迟预加载](#lazy-eager-loading) 用户集合中所有用户的帖子。同样，当你尝试访问任何已检索帖子的评论时，将为最初检索的所有帖子延迟预加载所有评论。
+通常，上面的代码将对每个用户执行一个查询以检索他们的帖子，以及对每个帖子执行一个查询以检索其评论。但是，当启用了 `automaticallyEagerLoadRelationships` 功能时，当你尝试访问任何已检索用户上的帖子时，Laravel 将自动 延迟预加载 用户集合中所有用户的帖子。同样，当你尝试访问任何已检索帖子的评论时，将为最初检索的所有帖子延迟预加载所有评论。
 
 如果你不想全局启用自动预加载，仍然可以通过在集合上调用 `withRelationshipAutoloading` 方法来为单个 Eloquent 集合实例启用此功能：
 
@@ -2305,10 +2305,10 @@ $user->posts()->createManyQuietly([
 ]);
 ```
 
-你还可以使用 `findOrNew`、`firstOrNew`、`firstOrCreate` 和 `updateOrCreate` 方法来 [在关联关系上创建和更新模型](/docs/{{version}}/eloquent#upserts)。
+你还可以使用 `findOrNew`、`firstOrNew`、`firstOrCreate` 和 `updateOrCreate` 方法来 [在关联关系上创建和更新模型](/topic/Laravel%2013.x/rwyl2kxvz8.html)。
 
 > [!NOTE]
-> 在使用 `create` 方法之前，请务必查看 [批量赋值](/docs/{{version}}/eloquent#mass-assignment) 文档。
+> 在使用 `create` 方法之前，请务必查看 [批量赋值](/topic/Laravel%2013.x/rwyl2kxvz8.html) 文档。
 
 ### Belongs To 关系
 

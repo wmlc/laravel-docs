@@ -261,7 +261,7 @@ class UserCollection extends ResourceCollection
 ## 编写资源
 
 > [!NOTE]
-> 如果你还没有阅读 [概念概览](#concept-overview)，我们强烈建议你在继续阅读本文档之前先阅读它。
+> 如果你还没有阅读 概念概览，我们强烈建议你在继续阅读本文档之前先阅读它。
 
 资源只需要将给定的模型转换为一个数组。因此，每个资源都包含一个 `toArray` 方法，该方法将模型的属性转换为一组对 API 友好的数组，可由应用的路由或控制器返回：
 
@@ -330,7 +330,7 @@ public function toArray(Request $request): array
 ```
 
 > [!NOTE]
-> 如果你希望仅在关联已被加载时才包含它们，请查阅 [条件关联](#conditional-relationships) 文档。
+> 如果你希望仅在关联已被加载时才包含它们，请查阅 条件关联 文档。
 
 #### 资源集合
 
@@ -413,7 +413,7 @@ return User::all()->toResourceCollection();
 }
 ```
 
-如果你希望禁用最外层资源的包裹，应该在基础的 `Illuminate\Http\Resources\Json\JsonResource` 类上调用 `withoutWrapping` 方法。通常，你应该在 `AppServiceProvider` 或在每次请求你的应用时都会加载的其他 [服务提供者（Service Provider）](/docs/{{version}}/providers) 中调用此方法：
+如果你希望禁用最外层资源的包裹，应该在基础的 `Illuminate\Http\Resources\Json\JsonResource` 类上调用 `withoutWrapping` 方法。通常，你应该在 `AppServiceProvider` 或在每次请求你的应用时都会加载的其他 [服务提供者（Service Provider）](/topic/Laravel%2013.x/qk942kovw1.html) 中调用此方法：
 
 ```php
 <?php
@@ -750,7 +750,7 @@ public function toArray(Request $request): array
 }
 ```
 
-如果你的关联使用了 [自定义中间表模型](/docs/{{version}}/eloquent-relationships#defining-custom-intermediate-table-models)，可以将中间表模型的实例作为第一个参数传给 `whenPivotLoaded` 方法：
+如果你的关联使用了 [自定义中间表模型](/topic/Laravel%2013.x/kpv13d298w.html)，可以将中间表模型的实例作为第一个参数传给 `whenPivotLoaded` 方法：
 
 ```php
 'expires_at' => $this->whenPivotLoaded(new Membership, function () {

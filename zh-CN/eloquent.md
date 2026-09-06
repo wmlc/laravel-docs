@@ -5,17 +5,17 @@
 Laravel 内置了 Eloquent，这是一个对象关系映射器（ORM），让你与数据库交互成为一种享受。使用 Eloquent 时，每个数据库表都有一个对应的"模型（Model）"，用于与该表交互。除了从数据库表中检索记录外，Eloquent 模型还允许你向表中插入、更新和删除记录。
 
 > [!NOTE]
-> 在开始之前，请确保在应用的 `config/database.php` 配置文件中配置好数据库连接。有关配置数据库的更多信息，请查阅 [数据库配置文档](/docs/{{version}}/database#configuration)。
+> 在开始之前，请确保在应用的 `config/database.php` 配置文件中配置好数据库连接。有关配置数据库的更多信息，请查阅 [数据库配置文档](/topic/Laravel%2013.x/kl9no87vz4.html)。
 
 ## 生成模型类
 
-首先，我们来创建一个 Eloquent 模型。模型通常位于 `app\Models` 目录中，并继承自 `Illuminate\Database\Eloquent\Model` 类。你可以使用 `make:model` [Artisan 命令](/docs/{{version}}/artisan) 来生成新模型：
+首先，我们来创建一个 Eloquent 模型。模型通常位于 `app\Models` 目录中，并继承自 `Illuminate\Database\Eloquent\Model` 类。你可以使用 `make:model` [Artisan 命令](/topic/Laravel%2013.x/3dykqdoyl0.html) 来生成新模型：
 
 ```shell
 php artisan make:model Flight
 ```
 
-如果你想在生成模型的同时生成一份 [数据库迁移](/docs/{{version}}/migrations)，可以使用 `--migration` 或 `-m` 选项：
+如果你想在生成模型的同时生成一份 [数据库迁移](/topic/Laravel%2013.x/x3vo0g4vm1.html)，可以使用 `--migration` 或 `-m` 选项：
 
 ```shell
 php artisan make:model Flight --migration
@@ -159,7 +159,7 @@ Eloquent 要求每个模型至少有一个可唯一标识、能作为其主键�
 
 除了使用自增整数作为 Eloquent 模型的主键外，你也可以选择使用 UUID。UUID 是 36 个字符长的、全球唯一的字母数字标识符。
 
-如果你希望模型使用 UUID 键而不是自增整数键，可以在模型上使用 `Illuminate\Database\Eloquent\Concerns\HasUuids` trait。当然，你应该确保模型拥有一个 [等价于 UUID 的主键列](/docs/{{version}}/migrations#column-method-uuid)：
+如果你希望模型使用 UUID 键而不是自增整数键，可以在模型上使用 `Illuminate\Database\Eloquent\Concerns\HasUuids` trait。当然，你应该确保模型拥有一个 [等价于 UUID 的主键列](/topic/Laravel%2013.x/x3vo0g4vm1.html)：
 
 ```php
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
@@ -177,7 +177,7 @@ $article = Article::create(['title' => 'Traveling to Europe']);
 $article->id; // "018f2b5c-6a7f-7b12-9d6f-2f8a4e0c9c11"
 ```
 
-默认情况下，`HasUuids` trait 会为你的模型生成 [UUIDv7](/docs/{{version}}/strings#method-str-uuid7) 标识符。这些 UUID 在索引数据库存储方面更高效，因为它们可以按字典序排序。
+默认情况下，`HasUuids` trait 会为你的模型生成 [UUIDv7](/topic/Laravel%2013.x/2ev86royor.html) 标识符。这些 UUID 在索引数据库存储方面更高效，因为它们可以按字典序排序。
 
 你可以通过在模型上定义 `newUniqueId` 方法，来覆盖给定模型的 UUID 生成过程。此外，你还可以通过在模型上定义 `uniqueIds` 方法，指定哪些列应接收 UUID：
 
@@ -203,7 +203,7 @@ public function uniqueIds(): array
 }
 ```
 
-如果你愿意，也可以不使用 UUID 而改用"ULID"。ULID 与 UUID 类似；不过，它们只有 26 个字符长。与有序 UUID 一样，ULID 可字典序排序，便于高效地进行数据库索引。要使用 ULID，你应该在模型上使用 `Illuminate\Database\Eloquent\Concerns\HasUlids` trait。你还应该确保模型拥有一个 [等价于 ULID 的主键列](/docs/{{version}}/migrations#column-method-ulid)：
+如果你愿意，也可以不使用 UUID 而改用"ULID"。ULID 与 UUID 类似；不过，它们只有 26 个字符长。与有序 UUID 一样，ULID 可字典序排序，便于高效地进行数据库索引。要使用 ULID，你应该在模型上使用 `Illuminate\Database\Eloquent\Concerns\HasUlids` trait。你还应该确保模型拥有一个 [等价于 ULID 的主键列](/topic/Laravel%2013.x/x3vo0g4vm1.html)：
 
 ```php
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
@@ -390,7 +390,7 @@ Model::preventSilentlyDiscardingAttributes(! $this->app->isProduction());
 
 ## 检索模型
 
-一旦你创建了模型以及 [其关联的数据库表](/docs/{{version}}/migrations#generating-migrations)，就可以开始从数据库中检索数据了。你可以将每个 Eloquent 模型视为一个强大的 [查询构造器（Query Builder）](/docs/{{version}}/queries)，让你能够流畅地查询与该模型关联的数据库表。模型的 `all` 方法会检索模型关联数据库表中的所有记录：
+一旦你创建了模型以及 [其关联的数据库表](/topic/Laravel%2013.x/x3vo0g4vm1.html)，就可以开始从数据库中检索数据了。你可以将每个 Eloquent 模型视为一个强大的 [查询构造器（Query Builder）](/topic/Laravel%2013.x/xpv525gv86.html)，让你能够流畅地查询与该模型关联的数据库表。模型的 `all` 方法会检索模型关联数据库表中的所有记录：
 
 ```php
 use App\Models\Flight;
@@ -402,7 +402,7 @@ foreach (Flight::all() as $flight) {
 
 #### 构建查询
 
-Eloquent 的 `all` 方法会返回模型表中的所有结果。不过，由于每个 Eloquent 模型都是一个 [查询构造器](/docs/{{version}}/queries)，你可以向查询添加额外的约束，然后调用 `get` 方法来检索结果：
+Eloquent 的 `all` 方法会返回模型表中的所有结果。不过，由于每个 Eloquent 模型都是一个 [查询构造器](/topic/Laravel%2013.x/xpv525gv86.html)，你可以向查询添加额外的约束，然后调用 `get` 方法来检索结果：
 
 ```php
 $flights = Flight::where('active', 1)
@@ -412,7 +412,7 @@ $flights = Flight::where('active', 1)
 ```
 
 > [!NOTE]
-> 由于 Eloquent 模型就是查询构造器，你应该查阅 Laravel [查询构造器](/docs/{{version}}/queries) 提供的所有方法。在编写 Eloquent 查询时，你可以使用其中任意方法。
+> 由于 Eloquent 模型就是查询构造器，你应该查阅 Laravel [查询构造器](/topic/Laravel%2013.x/xpv525gv86.html) 提供的所有方法。在编写 Eloquent 查询时，你可以使用其中任意方法。
 
 #### 刷新模型
 
@@ -450,7 +450,7 @@ DB::transaction(function () use ($flight) {
 
 正如我们所见，`all` 和 `get` 等 Eloquent 方法会从数据库中检索多条记录。不过，这些方法返回的并非普通的 PHP 数组。相反，它们返回的是 `Illuminate\Database\Eloquent\Collection` 的一个实例。
 
-Eloquent 的 `Collection` 类继承自 Laravel 基础的 `Illuminate\Support\Collection` 类，后者提供了 [一系列实用方法](/docs/{{version}}/collections#available-methods) 用于处理数据集合。例如，`reject` 方法可用于根据被调用闭包的结果，从集合中移除模型：
+Eloquent 的 `Collection` 类继承自 Laravel 基础的 `Illuminate\Support\Collection` 类，后者提供了 [一系列实用方法](/topic/Laravel%2013.x/4rvgn63ydj.html) 用于处理数据集合。例如，`reject` 方法可用于根据被调用闭包的结果，从集合中移除模型：
 
 ```php
 $flights = Flight::where('destination', 'Paris')->get();
@@ -460,7 +460,7 @@ $flights = $flights->reject(function (Flight $flight) {
 });
 ```
 
-除了 Laravel 基础集合类提供的方法外，Eloquent 集合类还提供了 [一些额外的方法](/docs/{{version}}/eloquent-collections#available-methods)，这些方法专门用于处理 Eloquent 模型的集合。
+除了 Laravel 基础集合类提供的方法外，Eloquent 集合类还提供了 [一些额外的方法](/topic/Laravel%2013.x/d6vroqrv3g.html)，这些方法专门用于处理 Eloquent 模型的集合。
 
 由于 Laravel 的所有集合都实现了 PHP 的可迭代接口，你可以像遍历数组一样遍历集合：
 
@@ -498,7 +498,7 @@ Flight::where('departed', true)
     }, column: 'id');
 ```
 
-由于 `chunkById` 和 `lazyById` 方法会向所执行的查询添加它们自己的"where"条件，你通常应该 [逻辑分组](/docs/{{version}}/queries#logical-grouping) 你自己的条件，将它们放在一个闭包内：
+由于 `chunkById` 和 `lazyById` 方法会向所执行的查询添加它们自己的"where"条件，你通常应该 [逻辑分组](/topic/Laravel%2013.x/xpv525gv86.html) 你自己的条件，将它们放在一个闭包内：
 
 ```php
 Flight::where(function ($query) {
@@ -513,7 +513,7 @@ Flight::where(function ($query) {
 
 ### 使用惰性集合分块
 
-`lazy` 方法的工作方式类似于 [`chunk` 方法](#chunking-results)，因为其在底层也是分块执行查询。不过，`lazy` 方法并非将每个块直接传入回调，而是返回一个扁平化的 Eloquent 模型 [LazyCollection](/docs/{{version}}/collections#lazy-collections)，让你能够像处理单个流一样与结果交互：
+`lazy` 方法的工作方式类似于 `chunk` 方法，因为其在底层也是分块执行查询。不过，`lazy` 方法并非将每个块直接传入回调，而是返回一个扁平化的 Eloquent 模型 [LazyCollection](/topic/Laravel%2013.x/4rvgn63ydj.html)，让你能够像处理单个流一样与结果交互：
 
 ```php
 use App\Models\Flight;
@@ -540,7 +540,7 @@ Flight::where('departed', true)
 `cursor` 方法只会执行一次数据库查询；不过，各个 Eloquent 模型在真正被遍历到之前并不会被"水合（hydrate）"。因此，在遍历游标时，任意时刻内存中只保留一个 Eloquent 模型。
 
 > [!WARNING]
-> 由于 `cursor` 方法任意时刻在内存中只持有一个 Eloquent 模型，它无法预加载关联。如果你需要预加载关联，请考虑改用 [`lazy` 方法](#chunking-using-lazy-collections)。
+> 由于 `cursor` 方法任意时刻在内存中只持有一个 Eloquent 模型，它无法预加载关联。如果你需要预加载关联，请考虑改用 `lazy` 方法。
 
 在内部，`cursor` 方法使用 PHP [生成器（generators）](https://www.php.net/manual/en/language.generators.overview.php) 来实现这个功能：
 
@@ -552,7 +552,7 @@ foreach (Flight::where('destination', 'Zurich')->cursor() as $flight) {
 }
 ```
 
-`cursor` 返回一个 `Illuminate\Support\LazyCollection` 实例。[惰性集合](/docs/{{version}}/collections#lazy-collections) 让你能够使用典型 Laravel 集合提供的许多集合方法，同时任意时刻只在内存中加载单个模型：
+`cursor` 返回一个 `Illuminate\Support\LazyCollection` 实例。[惰性集合](/topic/Laravel%2013.x/4rvgn63ydj.html) 让你能够使用典型 Laravel 集合提供的许多集合方法，同时任意时刻只在内存中加载单个模型：
 
 ```php
 use App\Models\User;
@@ -566,7 +566,7 @@ foreach ($users as $user) {
 }
 ```
 
-尽管 `cursor` 方法使用的内存远少于常规查询（因为它任意时刻只在内存中保留一个 Eloquent 模型），但它最终仍会耗尽内存。这是 [由于 PHP 的 PDO 驱动会在其内部缓冲区中缓存所有原始查询结果](https://www.php.net/manual/en/mysqlinfo.concepts.buffering.php)。如果你要处理数量非常庞大的 Eloquent 记录，请考虑改用 [`lazy` 方法](#chunking-using-lazy-collections)。
+尽管 `cursor` 方法使用的内存远少于常规查询（因为它任意时刻只在内存中保留一个 Eloquent 模型），但它最终仍会耗尽内存。这是 [由于 PHP 的 PDO 驱动会在其内部缓冲区中缓存所有原始查询结果](https://www.php.net/manual/en/mysqlinfo.concepts.buffering.php)。如果你要处理数量非常庞大的 Eloquent 记录，请考虑改用 `lazy` 方法。
 
 ### 高级子查询
 
@@ -683,7 +683,7 @@ $flight = Flight::firstOrNew(
 
 ### 检索聚合值
 
-在与 Eloquent 模型交互时，你还可以使用 Laravel [查询构造器](/docs/{{version}}/queries) 提供的 `count`、`sum`、`max` 等 [聚合方法](/docs/{{version}}/queries#aggregates)。正如你所预期的，这些方法返回的是标量值，而不是 Eloquent 模型实例：
+在与 Eloquent 模型交互时，你还可以使用 Laravel [查询构造器](/topic/Laravel%2013.x/xpv525gv86.html) 提供的 `count`、`sum`、`max` 等 [聚合方法](/topic/Laravel%2013.x/xpv525gv86.html)。正如你所预期的，这些方法返回的是标量值，而不是 Eloquent 模型实例：
 
 ```php
 $count = Flight::where('active', 1)->count();
@@ -744,7 +744,7 @@ $flight = Flight::create([
 ]);
 ```
 
-不过，在使用 `create` 方法之前，你需要在模型类上指定 `Fillable` 或 `Guarded` 属性。这些属性是必需的，因为默认情况下，所有 Eloquent 模型都受到保护，以防范批量赋值漏洞。要了解更多关于批量赋值的内容，请参阅 [批量赋值文档](#mass-assignment)。
+不过，在使用 `create` 方法之前，你需要在模型类上指定 `Fillable` 或 `Guarded` 属性。这些属性是必需的，因为默认情况下，所有 Eloquent 模型都受到保护，以防范批量赋值漏洞。要了解更多关于批量赋值的内容，请参阅 批量赋值文档。
 
 ### 更新
 
@@ -1034,7 +1034,7 @@ $flight->deleteOrFail();
 
 #### 通过其主键删除已有模型
 
-在上面的示例中，我们在调用 `delete` 方法之前，先从数据库中检索了模型。不过，如果你知道模型的主键，可以在不显式检索模型的情况下，通过调用 `destroy` 方法来删除它。`destroy` 方法除了接受单个主键外，还会接受多个主键、一个主键数组或一组主键的 [集合](/docs/{{version}}/collections)：
+在上面的示例中，我们在调用 `delete` 方法之前，先从数据库中检索了模型。不过，如果你知道模型的主键，可以在不显式检索模型的情况下，通过调用 `destroy` 方法来删除它。`destroy` 方法除了接受单个主键外，还会接受多个主键、一个主键数组或一组主键的 [集合](/topic/Laravel%2013.x/4rvgn63ydj.html)：
 
 ```php
 Flight::destroy(1);
@@ -1046,7 +1046,7 @@ Flight::destroy([1, 2, 3]);
 Flight::destroy(collect([1, 2, 3]));
 ```
 
-如果你正在使用 [软删除模型](#soft-deleting)，可以通过 `forceDestroy` 方法永久删除模型：
+如果你正在使用 软删除模型，可以通过 `forceDestroy` 方法永久删除模型：
 
 ```php
 Flight::forceDestroy(1);
@@ -1093,7 +1093,7 @@ class Flight extends Model
 > [!NOTE]
 > `SoftDeletes` trait 会自动将 `deleted_at` 属性为你转换为 `DateTime` / `Carbon` 实例。
 
-你还应该向数据库表中添加 `deleted_at` 列。Laravel 的 [结构构建器（schema builder）](/docs/{{version}}/migrations) 包含了一个创建该列的辅助方法：
+你还应该向数据库表中添加 `deleted_at` 列。Laravel 的 [结构构建器（schema builder）](/topic/Laravel%2013.x/x3vo0g4vm1.html) 包含了一个创建该列的辅助方法：
 
 ```php
 use Illuminate\Database\Schema\Blueprint;
@@ -1134,7 +1134,7 @@ Flight::withTrashed()
     ->restore();
 ```
 
-在构建 [关联](/docs/{{version}}/eloquent-relationships) 查询时，也可以使用 `restore` 方法：
+在构建 [关联](/topic/Laravel%2013.x/kpv13d298w.html) 查询时，也可以使用 `restore` 方法：
 
 ```php
 $flight->history()->restore();
@@ -1168,7 +1168,7 @@ $flights = Flight::withTrashed()
     ->get();
 ```
 
-在构建 [关联](/docs/{{version}}/eloquent-relationships) 查询时，也可以调用 `withTrashed` 方法：
+在构建 [关联](/topic/Laravel%2013.x/kpv13d298w.html) 查询时，也可以调用 `withTrashed` 方法：
 
 ```php
 $flight->history()->withTrashed()->get();
@@ -1325,7 +1325,7 @@ $flight = $flight->replicate([
 
 ### 全局作用域
 
-全局作用域允许你为给定模型的所有查询添加约束。Laravel 自身的 [软删除](#soft-deleting) 功能就利用了全局作用域，以只从数据库中检索"未删除"的模型。编写你自己的全局作用域，可以方便地确保对给定模型的每个查询都收到某些约束。
+全局作用域允许你为给定模型的所有查询添加约束。Laravel 自身的 软删除 功能就利用了全局作用域，以只从数据库中检索"未删除"的模型。编写你自己的全局作用域，可以方便地确保对给定模型的每个查询都收到某些约束。
 
 #### 生成作用域
 
@@ -1514,7 +1514,7 @@ use App\Models\User;
 $users = User::popular()->active()->orderBy('created_at')->get();
 ```
 
-通过 `or` 查询运算符组合多个 Eloquent 模型作用域，可能需要使用闭包才能实现正确的 [逻辑分组](/docs/{{version}}/queries#logical-grouping)：
+通过 `or` 查询运算符组合多个 Eloquent 模型作用域，可能需要使用闭包才能实现正确的 [逻辑分组](/topic/Laravel%2013.x/xpv525gv86.html)：
 
 ```php
 $users = User::popular()->orWhere(function (Builder $query) {
@@ -1620,7 +1620,7 @@ if ($post->isNot($anotherPost)) {
 }
 ```
 
-`is` 和 `isNot` 方法在使用 `belongsTo`、`hasOne`、`morphTo` 和 `morphOne` [关联](/docs/{{version}}/eloquent-relationships) 时也可用。当你希望在不发起查询检索该模型的情况下，比较一个关联模型时，这个方法尤其有用：
+`is` 和 `isNot` 方法在使用 `belongsTo`、`hasOne`、`morphTo` 和 `morphOne` [关联](/topic/Laravel%2013.x/kpv13d298w.html) 时也可用。当你希望在不发起查询检索该模型的情况下，比较一个关联模型时，这个方法尤其有用：
 
 ```php
 if ($post->author()->is($user)) {
@@ -1631,13 +1631,13 @@ if ($post->author()->is($user)) {
 ## 事件
 
 > [!NOTE]
-> 想要将你的 Eloquent 事件直接广播到客户端应用？请查阅 Laravel 的 [模型事件广播](/docs/{{version}}/broadcasting#model-broadcasting)。
+> 想要将你的 Eloquent 事件直接广播到客户端应用？请查阅 Laravel 的 [模型事件广播](/topic/Laravel%2013.x/enyd5w197d.html)。
 
 Eloquent 模型会派发若干事件，让你可以挂接到模型生命周期中的以下时刻：`retrieved`、`creating`、`created`、`updating`、`updated`、`saving`、`saved`、`deleting`、`deleted`、`trashed`、`forceDeleting`、`forceDeleted`、`restoring`、`restored` 和 `replicating`。
 
 当从数据库中检索到一个已有模型时，会派发 `retrieved` 事件。当一个新模型首次被保存时，会派发 `creating` 和 `created` 事件。当已有模型被修改并调用 `save` 方法时，会派发 `updating` / `updated` 事件。当模型被创建或更新时（即使模型的属性没有发生变化），会派发 `saving` / `saved` 事件。以 `-ing` 结尾的事件名在模型的任何更改被持久化之前派发，而以 `-ed` 结尾的事件名在模型的更改被持久化之后派发。
 
-要开始监听模型事件，请在你的 Eloquent 模型上定义一个 `$dispatchesEvents` 属性。该属性将 Eloquent 模型生命周期的各个节点映射到你自己定义的 [事件类](/docs/{{version}}/events)。每个模型事件类都应预期通过其构造函数接收一个受影响模型的实例：
+要开始监听模型事件，请在你的 Eloquent 模型上定义一个 `$dispatchesEvents` 属性。该属性将 Eloquent 模型生命周期的各个节点映射到你自己定义的 [事件类](/topic/Laravel%2013.x/x3vo0l4vm1.html)。每个模型事件类都应预期通过其构造函数接收一个受影响模型的实例：
 
 ```php
 <?php
@@ -1665,7 +1665,7 @@ class User extends Authenticatable
 }
 ```
 
-在定义并映射好你的 Eloquent 事件后，你可以使用 [事件监听器](/docs/{{version}}/events#defining-listeners) 来处理这些事件。
+在定义并映射好你的 Eloquent 事件后，你可以使用 [事件监听器](/topic/Laravel%2013.x/x3vo0l4vm1.html) 来处理这些事件。
 
 > [!WARNING]
 > 当通过 Eloquent 执行批量更新或删除查询时，受影响的模型不会派发 `saved`、`updated`、`deleting` 和 `deleted` 模型事件。这是因为在执行批量更新或删除时，模型实际上从未被检索到。
@@ -1695,7 +1695,7 @@ class User extends Model
 }
 ```
 
-如有需要，在注册模型事件时，你可以使用 [可排队匿名事件监听器](/docs/{{version}}/events#queueable-anonymous-event-listeners)。这会指示 Laravel 使用应用的 [队列](/docs/{{version}}/queues) 在后台执行该模型事件监听器：
+如有需要，在注册模型事件时，你可以使用 [可排队匿名事件监听器](/topic/Laravel%2013.x/x3vo0l4vm1.html)。这会指示 Laravel 使用应用的 [队列](/topic/Laravel%2013.x/wevwmkz9l2.html) 在后台执行该模型事件监听器：
 
 ```php
 use function Illuminate\Events\queueable;
@@ -1797,7 +1797,7 @@ public function boot(): void
 ```
 
 > [!NOTE]
-> 观察者还可以监听其它事件，例如 `saving` 和 `retrieved`。这些事件在 [事件](#events) 文档中有描述。
+> 观察者还可以监听其它事件，例如 `saving` 和 `retrieved`。这些事件在 事件 文档中有描述。
 
 #### 观察者数据库事务
 

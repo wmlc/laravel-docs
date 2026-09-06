@@ -6,7 +6,7 @@ Laravel 的加密服务提供了一个简单、便捷的接口，用于通过 Op
 
 ## 配置
 
-在使用 Laravel 的加密器之前，你必须在 `config/app.php` 配置文件中设置 `key` 配置项。该配置值由 `APP_KEY` 环境变量驱动。你应该使用 `php artisan key:generate` 命令来生成该变量的值，因为 `key:generate` 命令会使用 PHP 的安全随机字节生成器，为你的应用生成一个密码学安全的密钥。通常情况下，`APP_KEY` 环境变量的值会在 [Laravel 安装](/docs/{{version}}/installation) 过程中自动为你生成。
+在使用 Laravel 的加密器之前，你必须在 `config/app.php` 配置文件中设置 `key` 配置项。该配置值由 `APP_KEY` 环境变量驱动。你应该使用 `php artisan key:generate` 命令来生成该变量的值，因为 `key:generate` 命令会使用 PHP 的安全随机字节生成器，为你的应用生成一个密码学安全的密钥。通常情况下，`APP_KEY` 环境变量的值会在 [Laravel 安装](/topic/Laravel%2013.x/2wy3lj3ykm.html) 过程中自动为你生成。
 
 ### 优雅地轮换加密密钥
 

@@ -2,7 +2,7 @@
 
 ## 简介
 
-几乎每个现代 Web 应用都会与数据库交互。Laravel 借助原生 SQL、[流畅的查询构造器](/docs/{{version}}/queries)以及 [Eloquent ORM](/docs/{{version}}/eloquent)，让使用各种受支持的数据库进行交互变得极其简单。目前，Laravel 为五种数据库提供第一方支持：
+几乎每个现代 Web 应用都会与数据库交互。Laravel 借助原生 SQL、[流畅的查询构造器](/topic/Laravel%2013.x/xpv525gv86.html)以及 [Eloquent ORM](/topic/Laravel%2013.x/rwyl2kxvz8.html)，让使用各种受支持的数据库进行交互变得极其简单。目前，Laravel 为五种数据库提供第一方支持：
 
 - MariaDB 10.3+ ([版本策略](https://mariadb.org/about/#maintenance-policy))
 - MySQL 5.7+ ([版本策略](https://en.wikipedia.org/wiki/MySQL#Release_history))
@@ -16,7 +16,7 @@
 
 Laravel 数据库服务的配置位于应用的 `config/database.php` 配置文件中。在该文件中，你可以定义所有的数据库连接，并指定默认使用哪个连接。该文件中的大多数配置选项都由应用环境变量的值驱动。文件中提供了 Laravel 大多数受支持数据库系统的示例。
 
-默认情况下，Laravel 的示例[环境配置](/docs/{{version}}/configuration#environment-configuration)已准备好与 [Laravel Sail](/docs/{{version}}/sail)（一个用于在本地机器上开发 Laravel 应用的 Docker 配置）配合使用。不过，你可以根据本地数据库的需要自由修改数据库配置。
+默认情况下，Laravel 的示例[环境配置](/topic/Laravel%2013.x/3dykqpoyl0.html)已准备好与 [Laravel Sail](/topic/Laravel%2013.x/e296opw9q7.html)（一个用于在本地机器上开发 Laravel 应用的 Docker 配置）配合使用。不过，你可以根据本地数据库的需要自由修改数据库配置。
 
 #### SQLite 配置
 
@@ -34,7 +34,7 @@ DB_FOREIGN_KEYS=false
 ```
 
 > [!NOTE]
-> 如果你使用 [Laravel 安装器](/docs/{{version}}/installation#creating-a-laravel-project)创建 Laravel 应用并选择 SQLite 作为数据库，Laravel 会自动创建一个 `database/database.sqlite` 文件并为你运行默认的[数据库迁移](/docs/{{version}}/migrations)。
+> 如果你使用 [Laravel 安装器](/topic/Laravel%2013.x/2wy3lj3ykm.html)创建 Laravel 应用并选择 SQLite 作为数据库，Laravel 会自动创建一个 `database/database.sqlite` 文件并为你运行默认的[数据库迁移](/topic/Laravel%2013.x/x3vo0g4vm1.html)。
 
 #### Microsoft SQL Server 配置
 
@@ -293,7 +293,7 @@ $pdo = DB::connection()->getPdo();
 
 ### 监听查询事件
 
-如果你希望指定一个为应用执行的每个 SQL 查询调用的闭包，可以使用 `DB` facade 的 `listen` 方法。该方法可用于记录查询或进行调试。你可以在[服务提供者](/docs/{{version}}/providers)的 `boot` 方法中注册你的查询监听器闭包：
+如果你希望指定一个为应用执行的每个 SQL 查询调用的闭包，可以使用 `DB` facade 的 `listen` 方法。该方法可用于记录查询或进行调试。你可以在[服务提供者](/topic/Laravel%2013.x/qk942kovw1.html)的 `boot` 方法中注册你的查询监听器闭包：
 
 ```php
 <?php
@@ -331,7 +331,7 @@ class AppServiceProvider extends ServiceProvider
 
 ### 监控累计查询时间
 
-现代 Web 应用的一个常见性能瓶颈是查询数据库所花费的时间。值得庆幸的是，当 Laravel 在单次请求中查询数据库的时间过长时，它可以调用你选择的闭包或回调。首先，为 `whenQueryingForLongerThan` 方法提供一个查询时间阈值（以毫秒为单位）和闭包。你可以在[服务提供者](/docs/{{version}}/providers)的 `boot` 方法中调用该方法：
+现代 Web 应用的一个常见性能瓶颈是查询数据库所花费的时间。值得庆幸的是，当 Laravel 在单次请求中查询数据库的时间过长时，它可以调用你选择的闭包或回调。首先，为 `whenQueryingForLongerThan` 方法提供一个查询时间阈值（以毫秒为单位）和闭包。你可以在[服务提供者](/topic/Laravel%2013.x/qk942kovw1.html)的 `boot` 方法中调用该方法：
 
 ```php
 <?php
@@ -416,7 +416,7 @@ DB::commit();
 ```
 
 > [!NOTE]
-> `DB` facade 的事务方法控制着[查询构造器](/docs/{{version}}/queries)和 [Eloquent ORM](/docs/{{version}}/eloquent) 的事务。
+> `DB` facade 的事务方法控制着[查询构造器](/topic/Laravel%2013.x/xpv525gv86.html)和 [Eloquent ORM](/topic/Laravel%2013.x/rwyl2kxvz8.html) 的事务。
 
 ## 连接数据库 CLI
 
@@ -482,7 +482,7 @@ php artisan db:table users
 
 使用 `db:monitor` Artisan 命令，你可以指示 Laravel 在数据库管理的打开连接数超过指定数量时派发一个 `Illuminate\Database\Events\DatabaseBusy` 事件。
 
-首先，你应当安排 `db:monitor` 命令[每分钟运行一次](/docs/{{version}}/scheduling)。该命令接受你希望监控的数据库连接配置名称，以及在派发事件之前可容忍的最大打开连接数：
+首先，你应当安排 `db:monitor` 命令[每分钟运行一次](/topic/Laravel%2013.x/e296olw9q7.html)。该命令接受你希望监控的数据库连接配置名称，以及在派发事件之前可容忍的最大打开连接数：
 
 ```shell
 php artisan db:monitor --databases=mysql,pgsql --max=100

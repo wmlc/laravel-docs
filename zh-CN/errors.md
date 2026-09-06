@@ -19,7 +19,7 @@
 
 ### 报告异常
 
-在 Laravel 中，异常报告用于将异常记录到日志，或发送到外部服务，例如 [Laravel Nightwatch](https://nightwatch.laravel.com)、[Sentry](https://github.com/getsentry/sentry-laravel) 或 [Flare](https://flareapp.io)。默认情况下，异常会根据你的 [日志](/docs/{{version}}/logging) 配置进行记录。不过，你可以按自己的意愿自由记录异常。
+在 Laravel 中，异常报告用于将异常记录到日志，或发送到外部服务，例如 [Laravel Nightwatch](https://nightwatch.laravel.com)、[Sentry](https://github.com/getsentry/sentry-laravel) 或 [Flare](https://flareapp.io)。默认情况下，异常会根据你的 [日志](/topic/Laravel%2013.x/2wy3l33ykm.html) 配置进行记录。不过，你可以按自己的意愿自由记录异常。
 
 如果你需要以不同的方式报告不同类型的异常，可以在应用的 `bootstrap/app.php` 中使用 `report` 异常方法，注册一个闭包，当某给定类型的异常需要被报告时执行该闭包。Laravel 会通过检查闭包的类型提示来确定该闭包报告的是哪种类型的异常：
 
@@ -50,7 +50,7 @@ use App\Exceptions\InvalidOrderException;
 ```
 
 > [!NOTE]
-> 要为给定异常自定义异常报告，你也可以利用 [可报告异常](/docs/{{version}}/errors#renderable-exceptions)。
+> 要为给定异常自定义异常报告，你也可以利用 [可报告异常](/topic/Laravel%2013.x/xq9zrzjvdo.html)。
 
 #### 全局日志上下文
 
@@ -139,7 +139,7 @@ report($caught); // 已忽略
 
 ### 异常日志级别
 
-当消息被写入应用的 [日志](/docs/{{version}}/logging) 时，消息会以指定的 [日志级别](/docs/{{version}}/logging#log-levels) 写入，该级别表示被记录消息的严重性或重要性。
+当消息被写入应用的 [日志](/topic/Laravel%2013.x/2wy3l33ykm.html) 时，消息会以指定的 [日志级别](/topic/Laravel%2013.x/2wy3l33ykm.html) 写入，该级别表示被记录消息的严重性或重要性。
 
 如上所述，即使你使用 `report` 方法注册了自定义异常报告回调，Laravel 仍会使用应用的默认日志配置来记录异常；然而，由于日志级别有时会影响消息被记录到的通道，你可能会希望配置某些异常记录时的日志级别。
 
@@ -351,7 +351,7 @@ public function report(): bool
 ```
 
 > [!NOTE]
-> 你可以对 `report` 方法所需的任何依赖进行类型提示，Laravel 的 [服务容器](/docs/{{version}}/container) 会自动将它们注入到该方法中。
+> 你可以对 `report` 方法所需的任何依赖进行类型提示，Laravel 的 [服务容器](/topic/Laravel%2013.x/x3vo054vm1.html) 会自动将它们注入到该方法中。
 
 ### 限制报告异常的频率
 

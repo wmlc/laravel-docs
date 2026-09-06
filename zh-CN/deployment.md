@@ -78,7 +78,7 @@ server {
 frankenphp php-server -r public/
 ```
 
-要利用 FrankenPHP 支持的更强大的特性，例如其 [Laravel Octane](/docs/{{version}}/octane) 集成、HTTP/3、现代压缩，或者将 Laravel 应用打包为独立二进制文件的能力，请参阅 FrankenPHP 的 [Laravel 文档](https://frankenphp.dev/docs/laravel/)。
+要利用 FrankenPHP 支持的更强大的特性，例如其 [Laravel Octane](/topic/Laravel%2013.x/d6vro1rv3g.html) 集成、HTTP/3、现代压缩，或者将 Laravel 应用打包为独立二进制文件的能力，请参阅 FrankenPHP 的 [Laravel 文档](https://frankenphp.dev/docs/laravel/)。
 
 ### 目录权限
 
@@ -176,7 +176,7 @@ Laravel 内置了一个健康检查路由，可用于监控应用的状态。在
 )
 ```
 
-当向该路由发起 HTTP 请求时，Laravel 还会派发一个 `Illuminate\Foundation\Events\DiagnosingHealth` 事件，让你可以执行与应用相关的额外健康检查。在该事件的[监听器](/docs/{{version}}/events)中，你可以检查应用的数据库或缓存状态。如果你检测到应用存在问题，只需从该监听器中抛出一个异常即可。
+当向该路由发起 HTTP 请求时，Laravel 还会派发一个 `Illuminate\Foundation\Events\DiagnosingHealth` 事件，让你可以执行与应用相关的额外健康检查。在该事件的[监听器](/topic/Laravel%2013.x/x3vo0l4vm1.html)中，你可以检查应用的数据库或缓存状态。如果你检测到应用存在问题，只需从该监听器中抛出一个异常即可。
 
 ## 使用 Laravel Cloud 或 Forge 部署
 

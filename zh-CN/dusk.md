@@ -27,7 +27,7 @@ php artisan dusk:install
 接下来，在你的应用程序的 `.env` 文件中设置 `APP_URL` 环境变量。该值应与你在浏览器中访问应用程序所用的 URL 相匹配。
 
 > [!NOTE]
-> 如果你使用 [Laravel Sail](/docs/{{version}}/sail) 来管理你的本地开发环境，也请查阅 Sail 文档中关于 [配置和运行 Dusk 测试](/docs/{{version}}/sail#laravel-dusk) 的部分。
+> 如果你使用 [Laravel Sail](/topic/Laravel%2013.x/e296opw9q7.html) 来管理你的本地开发环境，也请查阅 Sail 文档中关于 [配置和运行 Dusk 测试](/topic/Laravel%2013.x/e296opw9q7.html) 的部分。
 
 ### 管理 ChromeDriver 安装
 
@@ -241,7 +241,7 @@ php artisan dusk --group=foo
 ```
 
 > [!NOTE]
-> 如果你使用 [Laravel Sail](/docs/{{version}}/sail) 来管理你的本地开发环境，请查阅 Sail 文档中关于 [配置和运行 Dusk 测试](/docs/{{version}}/sail#laravel-dusk) 的部分。
+> 如果你使用 [Laravel Sail](/topic/Laravel%2013.x/e296opw9q7.html) 来管理你的本地开发环境，请查阅 Sail 文档中关于 [配置和运行 Dusk 测试](/topic/Laravel%2013.x/e296opw9q7.html) 的部分。
 
 #### 手动启动 ChromeDriver
 
@@ -375,7 +375,7 @@ $this->browse(function (Browser $first, Browser $second) {
 $browser->visit('/login');
 ```
 
-你可以使用 `visitRoute` 方法导航到 [命名路由](/docs/{{version}}/routing#named-routes)：
+你可以使用 `visitRoute` 方法导航到 [命名路由](/topic/Laravel%2013.x/dgy7xg5vw2.html)：
 
 ```php
 $browser->visitRoute($routeName, $parameters);
@@ -429,7 +429,7 @@ $browser->move($x = 100, $y = 100);
 
 ### 浏览器宏
 
-如果你想定义一个可在各种测试中重复使用的自定义浏览器方法，你可以使用 `Browser` 类上的 `macro` 方法。通常，你应该从 [服务提供者](/docs/{{version}}/providers) 的 `boot` 方法中调用此方法：
+如果你想定义一个可在各种测试中重复使用的自定义浏览器方法，你可以使用 `Browser` 类上的 `macro` 方法。通常，你应该从 [服务提供者](/topic/Laravel%2013.x/qk942kovw1.html) 的 `boot` 方法中调用此方法：
 
 ```php
 <?php
@@ -797,7 +797,7 @@ $browser->withKeyboard(function (Keyboard $keyboard) {
 
 #### 键盘宏
 
-如果你想定义可轻松在整个测试套件中重复使用的自定义键盘交互，你可以使用 `Keyboard` 类提供的 `macro` 方法。通常，你应该从 [服务提供者](/docs/{{version}}/providers) 的 `boot` 方法中调用此方法：
+如果你想定义可轻松在整个测试套件中重复使用的自定义键盘交互，你可以使用 `Keyboard` 类提供的 `macro` 方法。通常，你应该从 [服务提供者](/topic/Laravel%2013.x/qk942kovw1.html) 的 `boot` 方法中调用此方法：
 
 ```php
 <?php
@@ -1155,7 +1155,7 @@ $browser->waitForLocation('/secret');
 $browser->waitForLocation('https://example.com/path');
 ```
 
-你还可以等待 [命名路由](/docs/{{version}}/routing#named-routes) 的位置：
+你还可以等待 [命名路由](/topic/Laravel%2013.x/dgy7xg5vw2.html) 的位置：
 
 ```php
 $browser->waitForRoute($routeName, $parameters);
@@ -1276,85 +1276,85 @@ Dusk 提供了多种你可以对你的应用程序进行的断言。所有可用
 
 <div class="collection-method-list" markdown="1">
 
-[assertTitle](#assert-title)
-[assertTitleContains](#assert-title-contains)
-[assertUrlIs](#assert-url-is)
-[assertSchemeIs](#assert-scheme-is)
-[assertSchemeIsNot](#assert-scheme-is-not)
-[assertHostIs](#assert-host-is)
-[assertHostIsNot](#assert-host-is-not)
-[assertPortIs](#assert-port-is)
-[assertPortIsNot](#assert-port-is-not)
-[assertPathBeginsWith](#assert-path-begins-with)
-[assertPathEndsWith](#assert-path-ends-with)
-[assertPathContains](#assert-path-contains)
-[assertPathIs](#assert-path-is)
-[assertPathIsNot](#assert-path-is-not)
-[assertRouteIs](#assert-route-is)
-[assertQueryStringHas](#assert-query-string-has)
-[assertQueryStringMissing](#assert-query-string-missing)
-[assertFragmentIs](#assert-fragment-is)
-[assertFragmentBeginsWith](#assert-fragment-begins-with)
-[assertFragmentIsNot](#assert-fragment-is-not)
-[assertHasCookie](#assert-has-cookie)
-[assertHasPlainCookie](#assert-has-plain-cookie)
-[assertCookieMissing](#assert-cookie-missing)
-[assertPlainCookieMissing](#assert-plain-cookie-missing)
-[assertCookieValue](#assert-cookie-value)
-[assertPlainCookieValue](#assert-plain-cookie-value)
-[assertSee](#assert-see)
-[assertDontSee](#assert-dont-see)
-[assertSeeIn](#assert-see-in)
-[assertDontSeeIn](#assert-dont-see-in)
-[assertSeeAnythingIn](#assert-see-anything-in)
-[assertSeeNothingIn](#assert-see-nothing-in)
-[assertCount](#assert-count)
-[assertScript](#assert-script)
-[assertSourceHas](#assert-source-has)
-[assertSourceMissing](#assert-source-missing)
-[assertSeeLink](#assert-see-link)
-[assertDontSeeLink](#assert-dont-see-link)
-[assertInputValue](#assert-input-value)
-[assertInputValueIsNot](#assert-input-value-is-not)
-[assertChecked](#assert-checked)
-[assertNotChecked](#assert-not-checked)
-[assertIndeterminate](#assert-indeterminate)
-[assertRadioSelected](#assert-radio-selected)
-[assertRadioNotSelected](#assert-radio-not-selected)
-[assertSelected](#assert-selected)
-[assertNotSelected](#assert-not-selected)
-[assertSelectHasOptions](#assert-select-has-options)
-[assertSelectMissingOptions](#assert-select-missing-options)
-[assertSelectHasOption](#assert-select-has-option)
-[assertSelectMissingOption](#assert-select-missing-option)
-[assertValue](#assert-value)
-[assertValueIsNot](#assert-value-is-not)
-[assertAttribute](#assert-attribute)
-[assertAttributeMissing](#assert-attribute-missing)
-[assertAttributeContains](#assert-attribute-contains)
-[assertAttributeDoesntContain](#assert-attribute-doesnt-contain)
-[assertAriaAttribute](#assert-aria-attribute)
-[assertDataAttribute](#assert-data-attribute)
-[assertVisible](#assert-visible)
-[assertPresent](#assert-present)
-[assertNotPresent](#assert-not-present)
-[assertMissing](#assert-missing)
-[assertInputPresent](#assert-input-present)
-[assertInputMissing](#assert-input-missing)
-[assertDialogOpened](#assert-dialog-opened)
-[assertEnabled](#assert-enabled)
-[assertDisabled](#assert-disabled)
-[assertButtonEnabled](#assert-button-enabled)
-[assertButtonDisabled](#assert-button-disabled)
-[assertFocused](#assert-focused)
-[assertNotFocused](#assert-not-focused)
-[assertAuthenticated](#assert-authenticated)
-[assertGuest](#assert-guest)
-[assertAuthenticatedAs](#assert-authenticated-as)
-[assertVue](#assert-vue)
-[assertVueIsNot](#assert-vue-is-not)
-[assertVueContains](#assert-vue-contains)
-[assertVueDoesntContain](#assert-vue-doesnt-contain)
+assertTitle
+assertTitleContains
+assertUrlIs
+assertSchemeIs
+assertSchemeIsNot
+assertHostIs
+assertHostIsNot
+assertPortIs
+assertPortIsNot
+assertPathBeginsWith
+assertPathEndsWith
+assertPathContains
+assertPathIs
+assertPathIsNot
+assertRouteIs
+assertQueryStringHas
+assertQueryStringMissing
+assertFragmentIs
+assertFragmentBeginsWith
+assertFragmentIsNot
+assertHasCookie
+assertHasPlainCookie
+assertCookieMissing
+assertPlainCookieMissing
+assertCookieValue
+assertPlainCookieValue
+assertSee
+assertDontSee
+assertSeeIn
+assertDontSeeIn
+assertSeeAnythingIn
+assertSeeNothingIn
+assertCount
+assertScript
+assertSourceHas
+assertSourceMissing
+assertSeeLink
+assertDontSeeLink
+assertInputValue
+assertInputValueIsNot
+assertChecked
+assertNotChecked
+assertIndeterminate
+assertRadioSelected
+assertRadioNotSelected
+assertSelected
+assertNotSelected
+assertSelectHasOptions
+assertSelectMissingOptions
+assertSelectHasOption
+assertSelectMissingOption
+assertValue
+assertValueIsNot
+assertAttribute
+assertAttributeMissing
+assertAttributeContains
+assertAttributeDoesntContain
+assertAriaAttribute
+assertDataAttribute
+assertVisible
+assertPresent
+assertNotPresent
+assertMissing
+assertInputPresent
+assertInputMissing
+assertDialogOpened
+assertEnabled
+assertDisabled
+assertButtonEnabled
+assertButtonDisabled
+assertFocused
+assertNotFocused
+assertAuthenticated
+assertGuest
+assertAuthenticatedAs
+assertVue
+assertVueIsNot
+assertVueContains
+assertVueDoesntContain
 
 </div>
 
@@ -1472,7 +1472,7 @@ $browser->assertPathIsNot('/home');
 
 #### assertRouteIs
 
-断言当前 URL 与给定的 [命名路由](/docs/{{version}}/routing#named-routes) URL 匹配：
+断言当前 URL 与给定的 [命名路由](/topic/Laravel%2013.x/dgy7xg5vw2.html) URL 匹配：
 
 ```php
 $browser->assertRouteIs($name, $parameters);
@@ -2061,7 +2061,7 @@ php artisan dusk:page Login
 
 ### 配置页面
 
-默认情况下，页面有三个方法：`url`、`assert` 和 `elements`。我们现在讨论 `url` 和 `assert` 方法。`elements` 方法将在 [下面详细讨论](#shorthand-selectors)。
+默认情况下，页面有三个方法：`url`、`assert` 和 `elements`。我们现在讨论 `url` 和 `assert` 方法。`elements` 方法将在 下面详细讨论。
 
 #### `url` 方法
 

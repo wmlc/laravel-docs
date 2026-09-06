@@ -2,7 +2,7 @@
 
 ## 简介
 
-在测试应用或填充数据库时，你可能需要向数据库中插入几条记录。Laravel 允许你使用模型工厂（model factories）为每个 [Eloquent 模型](/docs/{{version}}/eloquent) 定义一组默认属性，而不必手动指定每一列的值。
+在测试应用或填充数据库时，你可能需要向数据库中插入几条记录。Laravel 允许你使用模型工厂（model factories）为每个 [Eloquent 模型](/topic/Laravel%2013.x/rwyl2kxvz8.html) 定义一组默认属性，而不必手动指定每一列的值。
 
 要查看如何编写工厂的示例，请查看应用中的 `database/factories/UserFactory.php` 文件。该工厂包含在所有新的 Laravel 应用中，并包含以下工厂定义：
 
@@ -62,7 +62,7 @@ class UserFactory extends Factory
 
 ### 生成工厂
 
-要创建一个工厂，请执行 `make:factory` [Artisan 命令](/docs/{{version}}/artisan)：
+要创建一个工厂，请执行 `make:factory` [Artisan 命令](/topic/Laravel%2013.x/3dykqdoyl0.html)：
 
 ```shell
 php artisan make:factory PostFactory
@@ -139,7 +139,7 @@ public function suspended(): Factory
 
 #### "Trashed" 状态
 
-如果你的 Eloquent 模型可以被 [软删除](/docs/{{version}}/eloquent#soft-deleting)，你可以调用内置的 `trashed` 状态方法，指示创建的模型应已处于"软删除"状态。你无需手动定义 `trashed` 状态，因为它对所有工厂自动可用：
+如果你的 Eloquent 模型可以被 [软删除](/topic/Laravel%2013.x/rwyl2kxvz8.html)，你可以调用内置的 `trashed` 状态方法，指示创建的模型应已处于"软删除"状态。你无需手动定义 `trashed` 状态，因为它对所有工厂自动可用：
 
 ```php
 use App\Models\User;
@@ -218,7 +218,7 @@ $users = User::factory()->count(3)->make();
 
 #### 应用状态
 
-你还可以将任意 [状态](#factory-states) 应用到模型上。如果你希望对模型应用多个状态转换，可以直接调用状态转换方法：
+你还可以将任意 状态 应用到模型上。如果你希望对模型应用多个状态转换，可以直接调用状态转换方法：
 
 ```php
 $users = User::factory()->count(5)->suspended()->make();
@@ -243,7 +243,7 @@ $user = User::factory()->state([
 ```
 
 > [!NOTE]
-> 使用工厂创建模型时，[批量赋值保护](/docs/{{version}}/eloquent#mass-assignment) 会自动被禁用。
+> 使用工厂创建模型时，[批量赋值保护](/topic/Laravel%2013.x/rwyl2kxvz8.html) 会自动被禁用。
 
 ### 持久化模型
 
@@ -443,7 +443,7 @@ $posts = Post::factory()
 
 ### Many to Many 关联
 
-与 [has many 关联](#has-many-relationships) 类似，"many to many" 关联也可以使用 `has` 方法创建：
+与 has many 关联 类似，"many to many" 关联也可以使用 `has` 方法创建：
 
 ```php
 use App\Models\Role;
@@ -524,7 +524,7 @@ $user = User::factory()
 
 ### 多态关联
 
-[多态关联](/docs/{{version}}/eloquent-relationships#polymorphic-relationships) 也可以使用工厂创建。多态的"morph many"关联创建方式与典型的"has many"关联相同。例如，如果 `App\Models\Post` 模型与 `App\Models\Comment` 模型存在 `morphMany` 关联：
+[多态关联](/topic/Laravel%2013.x/kpv13d298w.html) 也可以使用工厂创建。多态的"morph many"关联创建方式与典型的"has many"关联相同。例如，如果 `App\Models\Post` 模型与 `App\Models\Comment` 模型存在 `morphMany` 关联：
 
 ```php
 use App\Models\Post;

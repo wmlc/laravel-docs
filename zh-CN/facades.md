@@ -2,7 +2,7 @@
 
 ## 简介
 
-在 Laravel 文档各处，你都会看到通过"facades"（Facade）与 Laravel 功能交互的代码示例。Facade 为应用[服务容器](/docs/{{version}}/container)中可用的类提供了一个"静态"接口。Laravel 自带了许多 Facade，提供了对 Laravel 几乎所有功能的访问。
+在 Laravel 文档各处，你都会看到通过"facades"（Facade）与 Laravel 功能交互的代码示例。Facade 为应用[服务容器](/topic/Laravel%2013.x/x3vo054vm1.html)中可用的类提供了一个"静态"接口。Laravel 自带了许多 Facade，提供了对 Laravel 几乎所有功能的访问。
 
 Laravel 的 Facade 充当服务容器中底层类的"静态代理"（static proxies），在提供更简洁、更具表现力的语法优势的同时，比传统的静态方法更具可测试性与灵活性。如果你还不完全理解 Facade 的工作原理，完全不必担心——先跟着往下学，继续了解 Laravel 即可。
 
@@ -21,7 +21,7 @@ Route::get('/cache', function () {
 
 #### 辅助函数
 
-为了配合 Facade，Laravel 还提供了多种全局"辅助函数"（helper functions），让你与 Laravel 常用功能交互时更加轻松。你可能会用到的常见辅助函数有 `view`、`response`、`url`、`config` 等。Laravel 提供的每个辅助函数都在其对应功能的文档中有说明；不过，完整的列表可以在专门的[辅助函数文档](/docs/{{version}}/helpers)中查看。
+为了配合 Facade，Laravel 还提供了多种全局"辅助函数"（helper functions），让你与 Laravel 常用功能交互时更加轻松。你可能会用到的常见辅助函数有 `view`、`response`、`url`、`config` 等。Laravel 提供的每个辅助函数都在其对应功能的文档中有说明；不过，完整的列表可以在专门的[辅助函数文档](/topic/Laravel%2013.x/569x5d8yep.html)中查看。
 
 例如，与其使用 `Illuminate\Support\Facades\Response` Facade 来生成 JSON 响应，我们可以直接使用 `response` 函数。由于辅助函数是全局可用的，你无需导入任何类即可使用它们：
 
@@ -178,7 +178,7 @@ class Cache extends Facade
 }
 ```
 
-相反，`Cache` Facade 继承了基础的 `Facade` 类，并定义了 `getFacadeAccessor()` 方法。这个方法的作用是返回一个服务容器绑定的名称。当用户引用 `Cache` Facade 上的任意静态方法时，Laravel 会从[服务容器](/docs/{{version}}/container)中解析出 `cache` 绑定，并对该对象运行所请求的方法（在本例中是 `get`）。
+相反，`Cache` Facade 继承了基础的 `Facade` 类，并定义了 `getFacadeAccessor()` 方法。这个方法的作用是返回一个服务容器绑定的名称。当用户引用 `Cache` Facade 上的任意静态方法时，Laravel 会从[服务容器](/topic/Laravel%2013.x/x3vo054vm1.html)中解析出 `cache` 绑定，并对该对象运行所请求的方法（在本例中是 `get`）。
 
 ## 实时 Facade
 
@@ -283,7 +283,7 @@ class PodcastTest extends TestCase
 
 ## Facade 类参考
 
-下面列出了每个 Facade 及其底层类。这是一个很有用的工具，可以快速深入某个 Facade 根的 API 文档。在适用的情况下，还包含了[服务容器绑定](/docs/{{version}}/container)的键。
+下面列出了每个 Facade 及其底层类。这是一个很有用的工具，可以快速深入某个 Facade 根的 API 文档。在适用的情况下，还包含了[服务容器绑定](/topic/Laravel%2013.x/x3vo054vm1.html)的键。
 
 | Facade | 类 | 服务容器绑定 |
 | --- | --- | --- |

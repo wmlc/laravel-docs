@@ -309,4 +309,4 @@ Folio::path(resource_path('views/pages'))->middleware([
 
 ## 路由缓存
 
-使用 Folio 时，你应当始终利用 [Laravel 的路由缓存能力](/docs/{{version}}/routing#route-caching)。Folio 会监听 `route:cache` 这个 Artisan 命令，以确保 Folio 的页面定义与路由名称被正确缓存，从而获得最佳性能。
+使用 Folio 时，你应当始终利用 [Laravel 的路由缓存能力](/topic/Laravel%2013.x/dgy7xg5vw2.html)。Folio 会监听 `route:cache` 这个 Artisan 命令，以确保 Folio 的页面定义与路由名称被正确缓存，从而获得最佳性能。

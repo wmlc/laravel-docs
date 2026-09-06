@@ -279,7 +279,7 @@ use Illuminate\Support\Facades\Storage;
 $url = Storage::url('file.jpg');
 ```
 
-使用 `local` 驱动时，所有需要公开访问的文件都应放在 `storage/app/public` 目录中。此外，你还应当在 `public/storage` 处[创建符号链接](#the-public-disk)，指向 `storage/app/public` 目录。
+使用 `local` 驱动时，所有需要公开访问的文件都应放在 `storage/app/public` 目录中。此外，你还应当在 `public/storage` 处创建符号链接，指向 `storage/app/public` 目录。
 
 > [!WARNING]
 > 使用 `local` 驱动时，`url` 的返回值并未经过 URL 编码。因此，我们建议始终使用能够生成有效 URL 的名称来存储文件。
@@ -624,7 +624,7 @@ $path = $request->file('avatar')->storePubliclyAs(
 
 ### 图像处理
 
-如果你需要在存储上传的图片之前对其调整大小、裁剪或转换格式，可以使用 Laravel 的[图像处理功能](/docs/{{version}}/images)：
+如果你需要在存储上传的图片之前对其调整大小、裁剪或转换格式，可以使用 Laravel 的[图像处理功能](/topic/Laravel%2013.x/rwyl24xvz8.html)：
 
 ```php
 $path = $request->image('avatar')
@@ -641,7 +641,7 @@ $image = Storage::disk('public')->image('avatars/photo.jpg');
 
 #### 本地文件与可见性
 
-使用 `local` 驱动时，`public` [可见性](#file-visibility)会转换为目录的 `0755` 权限与文件的 `0644` 权限。你可以在应用的 `filesystems` 配置文件中修改这些权限映射：
+使用 `local` 驱动时，`public` 可见性会转换为目录的 `0755` 权限与文件的 `0644` 权限。你可以在应用的 `filesystems` 配置文件中修改这些权限映射：
 
 ```php
 'local' => [
@@ -798,7 +798,7 @@ class ExampleTest extends TestCase
 }
 ```
 
-默认情况下，`fake` 方法会删除其临时目录中的所有文件。如果你想保留这些文件，可以使用 "persistentFake" 方法。关于文件上传测试的更多信息，可以查阅 [HTTP 测试文档中关于文件上传的章节](/docs/{{version}}/http-tests#testing-file-uploads)。
+默认情况下，`fake` 方法会删除其临时目录中的所有文件。如果你想保留这些文件，可以使用 "persistentFake" 方法。关于文件上传测试的更多信息，可以查阅 [HTTP 测试文档中关于文件上传的章节](/topic/Laravel%2013.x/xq9zr0jvdo.html)。
 
 > [!WARNING]
 > `image` 方法需要 [GD 扩展](https://www.php.net/manual/en/book.image.php)。
@@ -813,7 +813,7 @@ Laravel 的 Flysystem 集成开箱即用地支持多种"驱动"（drivers）；�
 composer require spatie/flysystem-dropbox
 ```
 
-接下来，可以在应用某个[服务提供者](/docs/{{version}}/providers)的 `boot` 方法中注册该驱动。为此，应当使用 `Storage` Facade 的 `extend` 方法：
+接下来，可以在应用某个[服务提供者](/topic/Laravel%2013.x/qk942kovw1.html)的 `boot` 方法中注册该驱动。为此，应当使用 `Storage` Facade 的 `extend` 方法：
 
 ```php
 <?php

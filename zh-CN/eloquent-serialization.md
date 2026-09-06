@@ -5,13 +5,13 @@
 在使用 Laravel 构建 API 时，你经常需要将模型和关联转换为数组或 JSON。Eloquent 提供了便捷的方法来完成这些转换，并控制模型的序列化表示中包含哪些属性。
 
 > [!NOTE]
-> 如需更强大的方式来处理 Eloquent 模型和集合的 JSON 序列化，请查阅 [Eloquent API 资源](/docs/{{version}}/eloquent-resources) 文档。
+> 如需更强大的方式来处理 Eloquent 模型和集合的 JSON 序列化，请查阅 [Eloquent API 资源](/topic/Laravel%2013.x/2qvpxnz93m.html) 文档。
 
 ## 序列化模型和集合
 
 ### 序列化为数组
 
-要将一个模型及其已加载的 [关联](/docs/{{version}}/eloquent-relationships) 转换为数组，你应该使用 `toArray` 方法。该方法是递归的，因此所有属性和所有关联（包括关联的关联）都会被转换为数组：
+要将一个模型及其已加载的 [关联](/topic/Laravel%2013.x/kpv13d298w.html) 转换为数组，你应该使用 `toArray` 方法。该方法是递归的，因此所有属性和所有关联（包括关联的关联）都会被转换为数组：
 
 ```php
 use App\Models\User;
@@ -29,7 +29,7 @@ $user = User::first();
 return $user->attributesToArray();
 ```
 
-你也可以通过调用集合实例上的 `toArray` 方法，将整个模型 [集合](/docs/{{version}}/eloquent-collections) 转换为数组：
+你也可以通过调用集合实例上的 `toArray` 方法，将整个模型 [集合](/topic/Laravel%2013.x/d6vroqrv3g.html) 转换为数组：
 
 ```php
 $users = User::all();
@@ -136,7 +136,7 @@ return $user->setHidden(['email', 'password', 'remember_token'])->toArray();
 
 ## 向 JSON 追加值
 
-有时，在将模型转换为数组或 JSON 时，你可能希望添加一些在数据库中没有对应列的属性。要做到这一点，首先为该值定义一个 [访问器](/docs/{{version}}/eloquent-mutators)：
+有时，在将模型转换为数组或 JSON 时，你可能希望添加一些在数据库中没有对应列的属性。要做到这一点，首先为该值定义一个 [访问器](/topic/Laravel%2013.x/2ky04kl9z8.html)：
 
 ```php
 <?php
@@ -215,7 +215,7 @@ protected function serializeDate(DateTimeInterface $date): string
 
 #### 为每个属性自定义日期格式
 
-你可以通过在模型的 [类型转换声明](/docs/{{version}}/eloquent-mutators#attribute-casting) 中指定日期格式，来自定义各个 Eloquent 日期属性的序列化格式：
+你可以通过在模型的 [类型转换声明](/topic/Laravel%2013.x/2ky04kl9z8.html) 中指定日期格式，来自定义各个 Eloquent 日期属性的序列化格式：
 
 ```php
 protected function casts(): array

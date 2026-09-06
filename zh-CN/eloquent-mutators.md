@@ -2,7 +2,7 @@
 
 ## 简介
 
-访问器、修改器和属性转换（attribute casting）允许你在模型实例上获取或设置 Eloquent 属性值时，对属性值进行转换。例如，你可能希望使用 [Laravel 加密器](/docs/{{version}}/encryption) 将某个值在存入数据库时进行加密，然后在 Eloquent 模型上访问该属性时自动解密。或者，你可能希望将数据库中存储的 JSON 字符串，通过 Eloquent 模型访问时转换为数组。
+访问器、修改器和属性转换（attribute casting）允许你在模型实例上获取或设置 Eloquent 属性值时，对属性值进行转换。例如，你可能希望使用 [Laravel 加密器](/topic/Laravel%2013.x/enyd5k197d.html) 将某个值在存入数据库时进行加密，然后在 Eloquent 模型上访问该属性时自动解密。或者，你可能希望将数据库中存储的 JSON 字符串，通过 Eloquent 模型访问时转换为数组。
 
 ## 访问器与修改器
 
@@ -47,7 +47,7 @@ $firstName = $user->first_name;
 ```
 
 > [!NOTE]
-> 如果你希望这些计算值被添加到模型的数组 / JSON 表示中，[你需要将它们追加进去](/docs/{{version}}/eloquent-serialization#appending-values-to-json)。
+> 如果你希望这些计算值被添加到模型的数组 / JSON 表示中，[你需要将它们追加进去](/topic/Laravel%2013.x/m892ge6y01.html)。
 
 #### 从多个属性构建值对象
 
@@ -259,7 +259,7 @@ $user->mergeCasts([
 
 #### Stringable 转换
 
-你可以使用 `Illuminate\Database\Eloquent\Casts\AsStringable` 转换类，将模型属性转换为 [流畅的 Illuminate\Support\Stringable 对象](/docs/{{version}}/strings#fluent-strings-method-list)：
+你可以使用 `Illuminate\Database\Eloquent\Casts\AsStringable` 转换类，将模型属性转换为 [流畅的 Illuminate\Support\Stringable 对象](/topic/Laravel%2013.x/2ev86royor.html)：
 
 ```php
 <?php
@@ -328,7 +328,7 @@ $user->options = $options;
 $user->save();
 ```
 
-要以更简洁的语法更新 JSON 属性的单个字段，你可以 [使该属性可批量赋值](/docs/{{version}}/eloquent#mass-assignment-json-columns)，并在调用 `update` 方法时使用 `->` 运算符：
+要以更简洁的语法更新 JSON 属性的单个字段，你可以 [使该属性可批量赋值](/topic/Laravel%2013.x/rwyl2kxvz8.html)，并在调用 `update` 方法时使用 `->` 运算符：
 
 ```php
 $user = User::find(1);
@@ -364,7 +364,7 @@ $user = User::find(1);
 $user->options['key'] = $value;
 ```
 
-为了解决这个问题，Laravel 提供了 `AsArrayObject` 转换，它将你的 JSON 属性转换为 [ArrayObject](https://www.php.net/manual/en/class.arrayobject.php) 类。该特性是通过 Laravel 的 [自定义转换](#custom-casts) 实现来完成的，这让 Laravel 能够智能地缓存并转换被修改的对象，从而可以在不触发 PHP 错误的情况下修改单个偏移量。要使用 `AsArrayObject` 转换，只需将它赋值给某个属性：
+为了解决这个问题，Laravel 提供了 `AsArrayObject` 转换，它将你的 JSON 属性转换为 [ArrayObject](https://www.php.net/manual/en/class.arrayobject.php) 类。该特性是通过 Laravel 的 自定义转换 实现来完成的，这让 Laravel 能够智能地缓存并转换被修改的对象，从而可以在不触发 PHP 错误的情况下修改单个偏移量。要使用 `AsArrayObject` 转换，只需将它赋值给某个属性：
 
 ```php
 use Illuminate\Database\Eloquent\Casts\AsArrayObject;
@@ -382,7 +382,7 @@ protected function casts(): array
 }
 ```
 
-类似地，Laravel 提供了 `AsCollection` 转换，它将你的 JSON 属性转换为 Laravel [集合（Collection）](/docs/{{version}}/collections) 实例：
+类似地，Laravel 提供了 `AsCollection` 转换，它将你的 JSON 属性转换为 Laravel [集合（Collection）](/topic/Laravel%2013.x/4rvgn63ydj.html) 实例：
 
 ```php
 use Illuminate\Database\Eloquent\Casts\AsCollection;
@@ -419,7 +419,7 @@ protected function casts(): array
 }
 ```
 
-`of` 方法可用于指示集合项应通过集合的 [mapInto 方法](/docs/{{version}}/collections#method-mapinto) 映射到一个给定类：
+`of` 方法可用于指示集合项应通过集合的 [mapInto 方法](/topic/Laravel%2013.x/4rvgn63ydj.html) 映射到一个给定类：
 
 ```php
 use App\ValueObjects\Option;
@@ -514,7 +514,7 @@ protected function casts(): array
 
 ### 二进制转换
 
-如果你的 Eloquent 模型除了自增 ID 列之外，还有一个 [二进制类型](/docs/{{version}}/migrations#column-method-binary) 的 `uuid` 或 `ulid` 列，你可以使用 `AsBinary` 转换，自动将值在其二进制表示形式之间进行转换：
+如果你的 Eloquent 模型除了自增 ID 列之外，还有一个 [二进制类型](/topic/Laravel%2013.x/x3vo0g4vm1.html) 的 `uuid` 或 `ulid` 列，你可以使用 `AsBinary` 转换，自动将值在其二进制表示形式之间进行转换：
 
 ```php
 use Illuminate\Database\Eloquent\Casts\AsBinary;
@@ -549,7 +549,7 @@ return $user->uuid;
 
 默认情况下，Eloquent 会将 `created_at` 和 `updated_at` 列转换为 [Carbon](https://github.com/briannesbitt/Carbon) 的实例，它继承自 PHP 的 `DateTime` 类，并提供一系列实用方法。你可以通过在模型的 `casts` 方法中定义额外的日期转换，来转换其他日期属性。通常，日期应使用 `datetime` 或 `immutable_datetime` 转换类型进行转换。
 
-在定义 `date` 或 `datetime` 转换时，你还可以指定日期的格式。当 [模型被序列化为数组或 JSON](/docs/{{version}}/eloquent-serialization) 时，会使用该格式：
+在定义 `date` 或 `datetime` 转换时，你还可以指定日期的格式。当 [模型被序列化为数组或 JSON](/topic/Laravel%2013.x/m892ge6y01.html) 时，会使用该格式：
 
 ```php
 /**
@@ -650,13 +650,13 @@ protected function casts(): array
 
 ### 加密转换
 
-`encrypted` 转换会使用 Laravel 内置的 [加密](/docs/{{version}}/encryption) 功能对模型属性值进行加密。此外，`encrypted:array`、`encrypted:collection`、`encrypted:object`、`AsEncryptedArrayObject` 和 `AsEncryptedCollection` 转换与其未加密的对应转换工作方式相同；不过正如你所料，底层值在存入数据库时会被加密。
+`encrypted` 转换会使用 Laravel 内置的 [加密](/topic/Laravel%2013.x/enyd5k197d.html) 功能对模型属性值进行加密。此外，`encrypted:array`、`encrypted:collection`、`encrypted:object`、`AsEncryptedArrayObject` 和 `AsEncryptedCollection` 转换与其未加密的对应转换工作方式相同；不过正如你所料，底层值在存入数据库时会被加密。
 
 由于加密文本的最终长度不可预测，且比其明文对应物更长，请确保相关的数据库列是 `TEXT` 类型或更大的类型。此外，由于这些值在数据库中是加密的，你将无法查询或搜索已加密的属性值。
 
 #### 密钥轮换
 
-如你所知，Laravel 使用应用 `app` 配置文件中指定的 `key` 配置值来加密字符串。通常，该值对应于 `APP_KEY` 环境变量的值。如果你需要轮换应用的加密密钥，可以 [优雅地进行](/docs/{{version}}/encryption#gracefully-rotating-encryption-keys)。
+如你所知，Laravel 使用应用 `app` 配置文件中指定的 `key` 配置值来加密字符串。通常，该值对应于 `APP_KEY` 环境变量的值。如果你需要轮换应用的加密密钥，可以 [优雅地进行](/topic/Laravel%2013.x/enyd5k197d.html)。
 
 ### 查询时转换
 

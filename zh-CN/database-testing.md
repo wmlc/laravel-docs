@@ -52,9 +52,9 @@ class ExampleTest extends TestCase
 
 ## 模型工厂
 
-在测试时，你可能需要在执行测试之前向数据库中插入几条记录。Laravel 允许你使用[模型工厂](/docs/{{version}}/eloquent-factories)，为你的每个 [Eloquent 模型](/docs/{{version}}/eloquent)定义一组默认属性，而无需在创建测试数据时手动指定每个列的值。
+在测试时，你可能需要在执行测试之前向数据库中插入几条记录。Laravel 允许你使用[模型工厂](/topic/Laravel%2013.x/wevwmlz9l2.html)，为你的每个 [Eloquent 模型](/topic/Laravel%2013.x/rwyl2kxvz8.html)定义一组默认属性，而无需在创建测试数据时手动指定每个列的值。
 
-要了解如何创建并使用模型工厂来创建模型，请参阅完整的[模型工厂文档](/docs/{{version}}/eloquent-factories)。一旦定义了模型工厂，你就可以在测试中利用工厂来创建模型：
+要了解如何创建并使用模型工厂来创建模型，请参阅完整的[模型工厂文档](/topic/Laravel%2013.x/wevwmlz9l2.html)。一旦定义了模型工厂，你就可以在测试中利用工厂来创建模型：
 
 ```php tab=Pest
 use App\Models\User;
@@ -79,7 +79,7 @@ public function test_models_can_be_instantiated(): void
 
 ## 运行数据填充
 
-如果你想在功能测试期间使用[数据库填充器](/docs/{{version}}/seeding)来填充数据库，可以调用 `seed` 方法。默认情况下，`seed` 方法会执行 `DatabaseSeeder`，而它应当执行你所有的其他填充器。或者，你也可以向 `seed` 方法传入一个特定的填充器类名：
+如果你想在功能测试期间使用[数据库填充器](/topic/Laravel%2013.x/qk942novw1.html)来填充数据库，可以调用 `seed` 方法。默认情况下，`seed` 方法会执行 `DatabaseSeeder`，而它应当执行你所有的其他填充器。或者，你也可以向 `seed` 方法传入一个特定的填充器类名：
 
 ```php tab=Pest
 <?php
