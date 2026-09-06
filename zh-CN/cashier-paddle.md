@@ -34,7 +34,7 @@ php artisan migrate
 ```
 
 > [!WARNING]
-> 为确保 Cashier 能正确处理所有 Paddle 事件，请记得 [配置 Cashier 的 Webhook 处理](#handling-paddle-webhooks)。
+> 为确保 Cashier 能正确处理所有 Paddle 事件，请记得 配置 Cashier 的 Webhook 处理。
 
 ### Paddle 沙箱
 
@@ -87,7 +87,7 @@ PADDLE_WEBHOOK_SECRET="your-paddle-webhook-secret"
 PADDLE_SANDBOX=true
 ```
 
-当你使用 [Paddle 的 Sandbox 环境](#paddle-sandbox) 时，`PADDLE_SANDBOX` 环境变量应设置为 `true`。如果你将应用程序部署到生产环境并使用 Paddle 的线上供应商环境，则应将 `PADDLE_SANDBOX` 变量设置为 `false`。
+当你使用 Paddle 的 Sandbox 环境 时，`PADDLE_SANDBOX` 环境变量应设置为 `true`。如果你将应用程序部署到生产环境并使用 Paddle 的线上供应商环境，则应将 `PADDLE_SANDBOX` 变量设置为 `false`。
 
 `PADDLE_RETAIN_KEY` 是可选的，仅当你将 Paddle 与 [Retain](https://developer.paddle.com/concepts/retain/overview) 配合使用时才需要设置。
 
@@ -148,7 +148,7 @@ public function boot(): void
 ### 销售商品
 
 > [!NOTE]
-> 在使用 Paddle Checkout 之前，你应在 Paddle 仪表盘中定义具有固定价格的产品。此外，你还应 [配置 Paddle 的 Webhook 处理](#handling-paddle-webhooks)。
+> 在使用 Paddle Checkout 之前，你应在 Paddle 仪表盘中定义具有固定价格的产品。此外，你还应 配置 Paddle 的 Webhook 处理。
 
 通过你的应用程序提供商品和订阅计费可能让人望而生畏。不过，借助 Cashier 和 [Paddle 的 Checkout Overlay](https://developer.paddle.com/concepts/sell/overlay-checkout)，你可以轻松构建现代、健壮的支付集成。
 
@@ -169,7 +169,7 @@ Route::get('/buy', function (Request $request) {
 
 如有必要，`checkout` 方法会自动在 Paddle 中创建一个客户，并将该 Paddle 客户记录与应用程序数据库中对应的用户关联起来。完成结账会话后，客户会被重定向到一个专用的成功页面，你可以在那里向客户显示提示信息。
 
-在 `buy` 视图中，我们会包含一个按钮来显示 Checkout Overlay。Cashier Paddle 自带 `paddle-button` Blade 组件；不过，你也可以 [手动渲染一个 Overlay 结账](#manually-rendering-an-overlay-checkout)：
+在 `buy` 视图中，我们会包含一个按钮来显示 Checkout Overlay。Cashier Paddle 自带 `paddle-button` Blade 组件；不过，你也可以 手动渲染一个 Overlay 结账：
 
 ```html
 <x-paddle-button :checkout="$checkout" class="px-8 py-4">
@@ -252,7 +252,7 @@ class CompleteOrder
 ### 销售订阅
 
 > [!NOTE]
-> 在使用 Paddle Checkout 之前，你应在 Paddle 仪表盘中定义具有固定价格的产品。此外，你还应 [配置 Paddle 的 Webhook 处理](#handling-paddle-webhooks)。
+> 在使用 Paddle Checkout 之前，你应在 Paddle 仪表盘中定义具有固定价格的产品。此外，你还应 配置 Paddle 的 Webhook 处理。
 
 通过你的应用程序提供商品和订阅计费可能让人望而生畏。不过，借助 Cashier 和 [Paddle 的 Checkout Overlay](https://developer.paddle.com/concepts/sell/overlay-checkout)，你可以轻松构建现代、健壮的支付集成。
 
@@ -271,7 +271,7 @@ Route::get('/subscribe', function (Request $request) {
 })->name('subscribe');
 ```
 
-在 `subscribe` 视图中，我们会包含一个按钮来显示 Checkout Overlay。Cashier Paddle 自带 `paddle-button` Blade 组件；不过，你也可以 [手动渲染一个 Overlay 结账](#manually-rendering-an-overlay-checkout)：
+在 `subscribe` 视图中，我们会包含一个按钮来显示 Checkout Overlay。Cashier Paddle 自带 `paddle-button` Blade 组件；不过，你也可以 手动渲染一个 Overlay 结账：
 
 ```html
 <x-paddle-button :checkout="$checkout" class="px-8 py-4">
@@ -279,7 +279,7 @@ Route::get('/subscribe', function (Request $request) {
 </x-paddle-button>
 ```
 
-现在，当点击"订阅"按钮时，客户就能输入支付信息并发起订阅。要了解其订阅何时真正开始（因为某些支付方式需要几秒钟来处理），你还应该 [配置 Cashier 的 Webhook 处理](#handling-paddle-webhooks)。
+现在，当点击"订阅"按钮时，客户就能输入支付信息并发起订阅。要了解其订阅何时真正开始（因为某些支付方式需要几秒钟来处理），你还应该 配置 Cashier 的 Webhook 处理。
 
 既然客户可以开始订阅，我们需要限制应用程序的某些部分，以便只有已订阅的用户才能访问。当然，我们可以随时通过 Cashier 的 `Billable` trait 提供的 `subscribed` 方法判断用户当前的订阅状态：
 
@@ -303,7 +303,7 @@ Route::get('/subscribe', function (Request $request) {
 
 #### 构建一个 Subscribed 中间件
 
-为了方便，你可能希望创建一个 [中间件（Middleware）](/docs/{{version}}/middleware)，用于判断传入请求是否来自已订阅用户。定义好该中间件后，你可以轻松地将其分配给一个路由，以防止未订阅的用户访问该路由：
+为了方便，你可能希望创建一个 [中间件（Middleware）](/topic/Laravel%2013.x/rwyl2exvz8.html)，用于判断传入请求是否来自已订阅用户。定义好该中间件后，你可以轻松地将其分配给一个路由，以防止未订阅的用户访问该路由：
 
 ```php
 <?php
@@ -393,7 +393,7 @@ Route::get('/buy', function (Request $request) {
 });
 ```
 
-Cashier 自带一个 `paddle-button` [Blade 组件](/docs/{{version}}/blade#components)。你可以将结账会话作为"prop"传给该组件。然后，当点击此按钮时，会显示 Paddle 的结账组件：
+Cashier 自带一个 `paddle-button` [Blade 组件](/topic/Laravel%2013.x/wevwmrz9l2.html)。你可以将结账会话作为"prop"传给该组件。然后，当点击此按钮时，会显示 Paddle 的结账组件：
 
 ```html
 <x-paddle-button :checkout="$checkout" class="px-8 py-4">
@@ -409,14 +409,14 @@ Cashier 自带一个 `paddle-button` [Blade 组件](/docs/{{version}}/blade#comp
 </x-paddle-button>
 ```
 
-Paddle 结账组件是异步的。一旦用户在组件内创建了订阅，Paddle 就会向你的应用程序发送一个 Webhook，以便你在应用程序数据库中正确更新订阅状态。因此，你必须正确 [设置 Webhook](#handling-paddle-webhooks) 以适应 Paddle 的状态变更，这很重要。
+Paddle 结账组件是异步的。一旦用户在组件内创建了订阅，Paddle 就会向你的应用程序发送一个 Webhook，以便你在应用程序数据库中正确更新订阅状态。因此，你必须正确 设置 Webhook 以适应 Paddle 的状态变更，这很重要。
 
 > [!WARNING]
 > 订阅状态变更后，收到相应 Webhook 的延迟通常很小，但你应该在应用程序中考虑到这一点：用户完成结账后，其订阅可能并不会立即可用。
 
 #### 手动渲染 Overlay 结账
 
-你也可以不使用 Laravel 内置的 Blade 组件来手动渲染 Overlay 结账。首先，生成结账会话 [如前面示例所示](#overlay-checkout)：
+你也可以不使用 Laravel 内置的 Blade 组件来手动渲染 Overlay 结账。首先，生成结账会话 如前面示例所示：
 
 ```php
 use Illuminate\Http\Request;
@@ -454,7 +454,7 @@ $custom = $checkout->getCustomData();
 
 如果你不想使用 Paddle 的"Overlay"风格结账组件，Paddle 也提供了将组件内联显示的选项。虽然这种方式不允许你调整结账的任何 HTML 字段，但它允许你将组件嵌入到你的应用程序中。
 
-为了让内联结账的起步更轻松，Cashier 自带一个 `paddle-checkout` Blade 组件。首先，你应该 [生成一个结账会话](#overlay-checkout)：
+为了让内联结账的起步更轻松，Cashier 自带一个 `paddle-checkout` Blade 组件。首先，你应该 生成一个结账会话：
 
 ```php
 use Illuminate\Http\Request;
@@ -483,7 +483,7 @@ Route::get('/buy', function (Request $request) {
 
 #### 手动渲染内联结账
 
-你也可以不使用 Laravel 内置的 Blade 组件来手动渲染内联结账。首先，生成结账会话 [如前面示例所示](#inline-checkout)：
+你也可以不使用 Laravel 内置的 Blade 组件来手动渲染内联结账。首先，生成结账会话 如前面示例所示：
 
 ```php
 use Illuminate\Http\Request;
@@ -528,7 +528,7 @@ Route::get('/buy', function (Request $request) {
 });
 ```
 
-然后，你可以将结账会话提供给 [Paddle 按钮](#overlay-checkout) 或 [内联结账](#inline-checkout) Blade 组件。
+然后，你可以将结账会话提供给 Paddle 按钮 或 内联结账 Blade 组件。
 
 ## 价格预览
 
@@ -631,7 +631,7 @@ public function paddleEmail(): string|null
 }
 ```
 
-这些默认值将用于 Cashier 中所有生成 [结账会话](#checkout-sessions) 的操作。
+这些默认值将用于 Cashier 中所有生成 结账会话 的操作。
 
 ### 检索客户
 
@@ -684,7 +684,7 @@ $checkout = $request->user()->subscribe($premium = 'pri_123', 'default')
     ->returnTo(route('home'));
 ```
 
-创建好订阅结账会话后，可以将该结账会话提供给 Cashier Paddle 自带的 `paddle-button` [Blade 组件](#overlay-checkout)：
+创建好订阅结账会话后，可以将该结账会话提供给 Cashier Paddle 自带的 `paddle-button` Blade 组件：
 
 ```blade
 <x-paddle-button :checkout="$checkout" class="px-8 py-4">
@@ -692,7 +692,7 @@ $checkout = $request->user()->subscribe($premium = 'pri_123', 'default')
 </x-paddle-button>
 ```
 
-用户完成结账后，Paddle 会派发一个 `subscription_created` Webhook。Cashier 会收到该 Webhook 并为客户设置好订阅。为确保你的应用程序能正确接收并处理所有 Webhook，请确保你已正确 [设置 Webhook 处理](#handling-paddle-webhooks)。
+用户完成结账后，Paddle 会派发一个 `subscription_created` Webhook。Cashier 会收到该 Webhook 并为客户设置好订阅。为确保你的应用程序能正确接收并处理所有 Webhook，请确保你已正确 设置 Webhook 处理。
 
 ### 检查订阅状态
 
@@ -712,7 +712,7 @@ if ($user->subscribed('default')) {
 }
 ```
 
-`subscribed` 方法也非常适合作为 [路由中间件](/docs/{{version}}/middleware) 使用，让你能够根据用户的订阅状态来过滤路由和控制器的访问：
+`subscribed` 方法也非常适合作为 [路由中间件](/topic/Laravel%2013.x/rwyl2exvz8.html) 使用，让你能够根据用户的订阅状态来过滤路由和控制器的访问：
 
 ```php
 <?php
@@ -794,7 +794,7 @@ if ($user->subscription()->pastDue()) {
 }
 ```
 
-当订阅逾期时，你应该引导客户 [更新其支付信息](#updating-payment-information)。
+当订阅逾期时，你应该引导客户 更新其支付信息。
 
 如果你希望订阅在处于 `past_due` 状态时仍被视为有效，可以使用 Cashier 提供的 `keepPastDueSubscriptionsActive` 方法。通常，该方法应在你的 `AppServiceProvider` 的 `register` 方法中调用：
 
@@ -953,7 +953,7 @@ $user->subscription()->noProrate()->updateQuantity(10);
 
 #### 含多个产品的订阅数量
 
-如果你的订阅是 [含多个产品的订阅](#subscriptions-with-multiple-products)，应将要递增或递减值的价格 ID 作为第二个参数传给递增/递减方法：
+如果你的订阅是 含多个产品的订阅，应将要递增或递减值的价格 ID 作为第二个参数传给递增/递减方法：
 
 ```php
 $user->subscription()->incrementQuantity(1, 'price_chat');
@@ -1251,11 +1251,11 @@ Paddle 可以通过 Webhook 通知你的应用程序各种事件。默认情况�
 - Subscription Canceled
 
 > [!WARNING]
-> 请确保使用 Cashier 自带的 [Webhook 签名验证](/docs/{{version}}/cashier-paddle#verifying-webhook-signatures) 中间件来保护传入请求。
+> 请确保使用 Cashier 自带的 [Webhook 签名验证](/topic/Laravel%2013.x/kl9noe7vz4.html) 中间件来保护传入请求。
 
 #### Webhook 与 CSRF 保护
 
-由于 Paddle Webhook 需要绕过 Laravel 的 [CSRF 保护](/docs/{{version}}/csrf)，你应该确保 Laravel 不会尝试验证传入 Paddle Webhook 的 CSRF 令牌。为此，你应在应用程序的 `bootstrap/app.php` 文件中将 `paddle/*` 排除在 CSRF 保护之外：
+由于 Paddle Webhook 需要绕过 Laravel 的 [CSRF 保护](/topic/Laravel%2013.x/kpv136298w.html)，你应该确保 Laravel 不会尝试验证传入 Paddle Webhook 的 CSRF 令牌。为此，你应在应用程序的 `bootstrap/app.php` 文件中将 `paddle/*` 排除在 CSRF 保护之外：
 
 ```php
 ->withMiddleware(function (Middleware $middleware): void {
@@ -1267,7 +1267,7 @@ Paddle 可以通过 Webhook 通知你的应用程序各种事件。默认情况�
 
 #### Webhook 与本地开发
 
-为了让 Paddle 能够在本地开发期间向你的应用程序发送 Webhook，你需要通过一个站点共享服务（如 [Ngrok](https://ngrok.com/) 或 [Expose](https://expose.dev/docs/introduction)）将你的应用程序暴露出来。如果你使用 [Laravel Sail](/docs/{{version}}/sail) 在本地开发应用程序，可以使用 Sail 的 [站点共享命令](/docs/{{version}}/sail#sharing-your-site)。
+为了让 Paddle 能够在本地开发期间向你的应用程序发送 Webhook，你需要通过一个站点共享服务（如 [Ngrok](https://ngrok.com/) 或 [Expose](https://expose.dev/docs/introduction)）将你的应用程序暴露出来。如果你使用 [Laravel Sail](/topic/Laravel%2013.x/e296opw9q7.html) 在本地开发应用程序，可以使用 Sail 的 [站点共享命令](/topic/Laravel%2013.x/e296opw9q7.html)。
 
 ### 定义 Webhook 事件处理器
 
@@ -1276,7 +1276,7 @@ Cashier 会自动处理因扣费失败导致的订阅取消以及其他常见的
 - `Laravel\Paddle\Events\WebhookReceived`
 - `Laravel\Paddle\Events\WebhookHandled`
 
-这两个事件都包含 Paddle Webhook 的完整载荷。例如，如果你想处理 `transaction.billed` Webhook，可以注册一个 [监听器](/docs/{{version}}/events#defining-listeners) 来处理该事件：
+这两个事件都包含 Paddle Webhook 的完整载荷。例如，如果你想处理 `transaction.billed` Webhook，可以注册一个 [监听器](/topic/Laravel%2013.x/x3vo0l4vm1.html) 来处理该事件：
 
 ```php
 <?php
@@ -1337,7 +1337,7 @@ Route::get('/buy', function (Request $request) {
 });
 ```
 
-生成结账会话后，你可以使用 Cashier 提供的 `paddle-button` [Blade 组件](#overlay-checkout)，让客户查看 Paddle 结账组件并完成购买：
+生成结账会话后，你可以使用 Cashier 提供的 `paddle-button` Blade 组件，让客户查看 Paddle 结账组件并完成购买：
 
 ```blade
 <x-paddle-button :checkout="$checkout" class="px-8 py-4">
@@ -1465,4 +1465,4 @@ Next payment: {{ $nextPayment->amount() }} due on {{ $nextPayment->date()->forma
 
 在测试时，你应该手动测试你的计费流程，以确保集成按预期工作。
 
-对于自动化测试，包括那些在 CI 环境中执行的测试，你可以使用 [Laravel 的 HTTP Client](/docs/{{version}}/http-client#testing) 来伪造对 Paddle 发起的 HTTP 调用。虽然这不会测试来自 Paddle 的实际响应，但它确实提供了一种在不实际调用 Paddle API 的情况下测试你应用程序的方式。
+对于自动化测试，包括那些在 CI 环境中执行的测试，你可以使用 [Laravel 的 HTTP Client](/topic/Laravel%2013.x/dgy7x15vw2.html) 来伪造对 Paddle 发起的 HTTP 调用。虽然这不会测试来自 Paddle 的实际响应，但它确实提供了一种在不实际调用 Paddle API 的情况下测试你应用程序的方式。

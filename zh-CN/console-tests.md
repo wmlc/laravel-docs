@@ -2,7 +2,7 @@
 
 ## 简介
 
-除了简化 HTTP 测试，Laravel 还提供了一个简洁的 API，用于测试应用的 [自定义控制台命令](/docs/{{version}}/artisan)。
+除了简化 HTTP 测试，Laravel 还提供了一个简洁的 API，用于测试应用的 [自定义控制台命令](/topic/Laravel%2013.x/3dykqdoyl0.html)。
 
 ## 成功 / 失败预期
 
@@ -84,7 +84,7 @@ public function test_console_command(): void
 }
 ```
 
-如果你使用的是 [Laravel Prompts](/docs/{{version}}/prompts) 提供的 `search` 或 `multisearch` 函数，可以用 `expectsSearch` 断言来 Mock 用户的输入、搜索结果以及选项：
+如果你使用的是 [Laravel Prompts](/topic/Laravel%2013.x/ndvm3oj93j.html) 提供的 `search` 或 `multisearch` 函数，可以用 `expectsSearch` 断言来 Mock 用户的输入、搜索结果以及选项：
 
 ```php tab=Pest
 test('console command', function () {

@@ -22,10 +22,10 @@ $collection = collect(['Taylor', 'Abigail', null])->map(function (?string $name)
 $collection = collect([1, 2, 3]);
 ```
 
-你也可以使用 [make](#method-make) 和 [fromJson](#method-fromjson) 方法来创建集合。
+你也可以使用 make 和 fromJson 方法来创建集合。
 
 > [!NOTE]
-> [Eloquent](/docs/{{version}}/eloquent) 查询的结果总是以 `Collection` 实例的形式返回。
+> [Eloquent](/topic/Laravel%2013.x/rwyl2kxvz8.html) 查询的结果总是以 `Collection` 实例的形式返回。
 
 ### 扩展集合
 
@@ -48,7 +48,7 @@ $upper = $collection->toUpper();
 // ['FIRST', 'SECOND']
 ```
 
-通常，你应该在 [服务提供者](/docs/{{version}}/providers) 的 `boot` 方法中声明集合宏。
+通常，你应该在 [服务提供者](/topic/Laravel%2013.x/qk942kovw1.html) 的 `boot` 方法中声明集合宏。
 
 #### 宏参数
 
@@ -88,163 +88,163 @@ $translated = $collection->toLocale('es');
     }
 </style>
 
-[after](#method-after)
-[all](#method-all)
-[average](#method-average)
-[avg](#method-avg)
-[before](#method-before)
-[chunk](#method-chunk)
-[chunkBy](#method-chunkby)
-[chunkWhile](#method-chunkwhile)
-[collapse](#method-collapse)
-[collapseWithKeys](#method-collapsewithkeys)
-[collect](#method-collect)
-[combine](#method-combine)
-[concat](#method-concat)
-[contains](#method-contains)
-[containsStrict](#method-containsstrict)
-[count](#method-count)
-[countBy](#method-countBy)
-[crossJoin](#method-crossjoin)
-[dd](#method-dd)
-[diff](#method-diff)
-[diffAssoc](#method-diffassoc)
-[diffAssocUsing](#method-diffassocusing)
-[diffKeys](#method-diffkeys)
-[doesntContain](#method-doesntcontain)
-[doesntContainStrict](#method-doesntcontainstrict)
-[dot](#method-dot)
-[dump](#method-dump)
-[duplicates](#method-duplicates)
-[duplicatesStrict](#method-duplicatesstrict)
-[each](#method-each)
-[eachSpread](#method-eachspread)
-[ensure](#method-ensure)
-[every](#method-every)
-[except](#method-except)
-[filter](#method-filter)
-[first](#method-first)
-[firstOrFail](#method-first-or-fail)
-[firstWhere](#method-first-where)
-[flatMap](#method-flatmap)
-[flatten](#method-flatten)
-[flip](#method-flip)
-[forget](#method-forget)
-[forPage](#method-forpage)
-[fromJson](#method-fromjson)
-[get](#method-get)
-[groupBy](#method-groupby)
-[has](#method-has)
-[hasAny](#method-hasany)
-[hasMany](#method-hasmany)
-[hasSole](#method-hassole)
-[implode](#method-implode)
-[intersect](#method-intersect)
-[intersectUsing](#method-intersectusing)
-[intersectAssoc](#method-intersectAssoc)
-[intersectAssocUsing](#method-intersectassocusing)
-[intersectByKeys](#method-intersectbykeys)
-[isEmpty](#method-isempty)
-[isNotEmpty](#method-isnotempty)
-[join](#method-join)
-[keyBy](#method-keyby)
-[keys](#method-keys)
-[last](#method-last)
-[lazy](#method-lazy)
-[macro](#method-macro)
-[make](#method-make)
-[map](#method-map)
-[mapInto](#method-mapinto)
-[mapSpread](#method-mapspread)
-[mapToGroups](#method-maptogroups)
-[mapWithKeys](#method-mapwithkeys)
-[max](#method-max)
-[median](#method-median)
-[merge](#method-merge)
-[mergeRecursive](#method-mergerecursive)
-[min](#method-min)
-[mode](#method-mode)
-[multiply](#method-multiply)
-[nth](#method-nth)
-[only](#method-only)
-[pad](#method-pad)
-[partition](#method-partition)
-[percentage](#method-percentage)
-[pipe](#method-pipe)
-[pipeInto](#method-pipeinto)
-[pipeThrough](#method-pipethrough)
-[pluck](#method-pluck)
-[pop](#method-pop)
-[prepend](#method-prepend)
-[pull](#method-pull)
-[push](#method-push)
-[put](#method-put)
-[random](#method-random)
-[range](#method-range)
-[reduce](#method-reduce)
-[reduceInto](#method-reduce-into)
-[reduceSpread](#method-reduce-spread)
-[reject](#method-reject)
-[replace](#method-replace)
-[replaceRecursive](#method-replacerecursive)
-[reverse](#method-reverse)
-[search](#method-search)
-[select](#method-select)
-[shift](#method-shift)
-[shuffle](#method-shuffle)
-[skip](#method-skip)
-[skipUntil](#method-skipuntil)
-[skipWhile](#method-skipwhile)
-[slice](#method-slice)
-[sliding](#method-sliding)
-[sole](#method-sole)
-[some](#method-some)
-[sort](#method-sort)
-[sortBy](#method-sortby)
-[sortByDesc](#method-sortbydesc)
-[sortDesc](#method-sortdesc)
-[sortKeys](#method-sortkeys)
-[sortKeysDesc](#method-sortkeysdesc)
-[sortKeysUsing](#method-sortkeysusing)
-[splice](#method-splice)
-[split](#method-split)
-[splitIn](#method-splitin)
-[sum](#method-sum)
-[take](#method-take)
-[takeUntil](#method-takeuntil)
-[takeWhile](#method-takewhile)
-[tap](#method-tap)
-[times](#method-times)
-[toArray](#method-toarray)
-[toJson](#method-tojson)
-[toPrettyJson](#method-to-pretty-json)
-[transform](#method-transform)
-[undot](#method-undot)
-[union](#method-union)
-[unique](#method-unique)
-[uniqueStrict](#method-uniquestrict)
-[unless](#method-unless)
-[unlessEmpty](#method-unlessempty)
-[unlessNotEmpty](#method-unlessnotempty)
-[unwrap](#method-unwrap)
-[value](#method-value)
-[values](#method-values)
-[when](#method-when)
-[whenEmpty](#method-whenempty)
-[whenNotEmpty](#method-whennotempty)
-[where](#method-where)
-[whereStrict](#method-wherestrict)
-[whereBetween](#method-wherebetween)
-[whereIn](#method-wherein)
-[whereInStrict](#method-whereinstrict)
-[whereInstanceOf](#method-whereinstanceof)
-[whereNotBetween](#method-wherenotbetween)
-[whereNotIn](#method-wherenotin)
-[whereNotInStrict](#method-wherenotinstrict)
-[whereNotNull](#method-wherenotnull)
-[whereNull](#method-wherenull)
-[wrap](#method-wrap)
-[zip](#method-zip)
+after
+all
+average
+avg
+before
+chunk
+chunkBy
+chunkWhile
+collapse
+collapseWithKeys
+collect
+combine
+concat
+contains
+containsStrict
+count
+countBy
+crossJoin
+dd
+diff
+diffAssoc
+diffAssocUsing
+diffKeys
+doesntContain
+doesntContainStrict
+dot
+dump
+duplicates
+duplicatesStrict
+each
+eachSpread
+ensure
+every
+except
+filter
+first
+firstOrFail
+firstWhere
+flatMap
+flatten
+flip
+forget
+forPage
+fromJson
+get
+groupBy
+has
+hasAny
+hasMany
+hasSole
+implode
+intersect
+intersectUsing
+intersectAssoc
+intersectAssocUsing
+intersectByKeys
+isEmpty
+isNotEmpty
+join
+keyBy
+keys
+last
+lazy
+macro
+make
+map
+mapInto
+mapSpread
+mapToGroups
+mapWithKeys
+max
+median
+merge
+mergeRecursive
+min
+mode
+multiply
+nth
+only
+pad
+partition
+percentage
+pipe
+pipeInto
+pipeThrough
+pluck
+pop
+prepend
+pull
+push
+put
+random
+range
+reduce
+reduceInto
+reduceSpread
+reject
+replace
+replaceRecursive
+reverse
+search
+select
+shift
+shuffle
+skip
+skipUntil
+skipWhile
+slice
+sliding
+sole
+some
+sort
+sortBy
+sortByDesc
+sortDesc
+sortKeys
+sortKeysDesc
+sortKeysUsing
+splice
+split
+splitIn
+sum
+take
+takeUntil
+takeWhile
+tap
+times
+toArray
+toJson
+toPrettyJson
+transform
+undot
+union
+unique
+uniqueStrict
+unless
+unlessEmpty
+unlessNotEmpty
+unwrap
+value
+values
+when
+whenEmpty
+whenNotEmpty
+where
+whereStrict
+whereBetween
+whereIn
+whereInStrict
+whereInstanceOf
+whereNotBetween
+whereNotIn
+whereNotInStrict
+whereNotNull
+whereNull
+wrap
+zip
 
 ## 方法列表
 
@@ -304,7 +304,7 @@ collect([1, 2, 3])->all();
 
 #### `average()` {.collection-method}
 
-[avg](#method-avg) 方法的别名。
+avg 方法的别名。
 
 #### `avg()` {.collection-method}
 
@@ -327,7 +327,7 @@ $average = collect([1, 1, 2, 4])->avg();
 
 #### `before()` {.collection-method}
 
-`before` 方法与 [after](#method-after) 方法相反。它返回给定条目之前的那个条目。如果给定的条目未找到或是第一个条目，则返回 `null`：
+`before` 方法与 after 方法相反。它返回给定条目之前的那个条目。如果给定的条目未找到或是第一个条目，则返回 `null`：
 
 ```php
 $collection = collect([1, 2, 3, 4, 5]);
@@ -365,7 +365,7 @@ $chunks->all();
 // [[1, 2, 3, 4], [5, 6, 7]]
 ```
 
-该方法在配合 [Bootstrap](https://getbootstrap.com/docs/5.3/layout/grid/) 等网格系统使用 [视图](/docs/{{version}}/views) 时特别有用。例如，想象你有一个 [Eloquent](/docs/{{version}}/eloquent) 模型集合想要在网格中显示：
+该方法在配合 [Bootstrap](https://getbootstrap.com/docs/5.3/layout/grid/) 等网格系统使用 [视图](/topic/Laravel%2013.x/m892gz6y01.html) 时特别有用。例如，想象你有一个 [Eloquent](/topic/Laravel%2013.x/rwyl2kxvz8.html) 模型集合想要在网格中显示：
 
 ```blade
 @foreach ($products->chunk(3) as $chunk)
@@ -467,7 +467,7 @@ $collectionB->all();
 // [1, 2, 3]
 ```
 
-`collect` 方法主要用于将 [惰性集合](#lazy-collections) 转换为标准的 `Collection` 实例：
+`collect` 方法主要用于将 惰性集合 转换为标准的 `Collection` 实例：
 
 ```php
 $lazyCollection = LazyCollection::make(function () {
@@ -518,7 +518,7 @@ $concatenated->all();
 // ['John Doe', 'Jane Doe', 'Johnny Doe']
 ```
 
-`concat` 方法会对追加到原始集合上的条目的键进行数字重新索引。要在关联集合中保留键，请参阅 [merge](#method-merge) 方法。
+`concat` 方法会对追加到原始集合上的条目的键进行数字重新索引。要在关联集合中保留键，请参阅 merge 方法。
 
 #### `contains()` {.collection-method}
 
@@ -561,16 +561,16 @@ $collection->contains('product', 'Bookcase');
 // false
 ```
 
-`contains` 方法在检查条目值时使用"宽松"比较，意味着包含整数值的字符串会被视为与相同值的整数相等。使用 [containsStrict](#method-containsstrict) 方法以"严格"比较进行筛选。
+`contains` 方法在检查条目值时使用"宽松"比较，意味着包含整数值的字符串会被视为与相同值的整数相等。使用 containsStrict 方法以"严格"比较进行筛选。
 
-有关 `contains` 的反向操作，请参阅 [doesntContain](#method-doesntcontain) 方法。
+有关 `contains` 的反向操作，请参阅 doesntContain 方法。
 
 #### `containsStrict()` {.collection-method}
 
-该方法的签名与 [contains](#method-contains) 方法相同；不过，所有值都使用"严格"比较进行比较。
+该方法的签名与 contains 方法相同；不过，所有值都使用"严格"比较进行比较。
 
 > [!NOTE]
-> 使用 [Eloquent Collections](/docs/{{version}}/eloquent-collections#method-contains) 时，该方法的行为会被修改。
+> 使用 [Eloquent Collections](/topic/Laravel%2013.x/d6vroqrv3g.html) 时，该方法的行为会被修改。
 
 #### `count()` {.collection-method}
 
@@ -669,7 +669,7 @@ $collection->dd();
 */
 ```
 
-如果你不想停止执行脚本，请改用 [dump](#method-dump) 方法。
+如果你不想停止执行脚本，请改用 dump 方法。
 
 #### `diff()` {.collection-method}
 
@@ -686,7 +686,7 @@ $diff->all();
 ```
 
 > [!NOTE]
-> 使用 [Eloquent Collections](/docs/{{version}}/eloquent-collections#method-diff) 时，该方法的行为会被修改。
+> 使用 [Eloquent Collections](/topic/Laravel%2013.x/d6vroqrv3g.html) 时，该方法的行为会被修改。
 
 #### `diffAssoc()` {.collection-method}
 
@@ -805,7 +805,7 @@ $collection->doesntContain('product', 'Bookcase');
 
 #### `doesntContainStrict()` {.collection-method}
 
-该方法的签名与 [doesntContain](#method-doesntcontain) 方法相同；不过，所有值都使用"严格"比较进行比较。
+该方法的签名与 doesntContain 方法相同；不过，所有值都使用"严格"比较进行比较。
 
 #### `dot()` {.collection-method}
 
@@ -838,7 +838,7 @@ $collection->dump();
 */
 ```
 
-如果你想在输出集合后停止执行脚本，请改用 [dd](#method-dd) 方法。
+如果你想在输出集合后停止执行脚本，请改用 dd 方法。
 
 #### `duplicates()` {.collection-method}
 
@@ -868,7 +868,7 @@ $employees->duplicates('position');
 
 #### `duplicatesStrict()` {.collection-method}
 
-该方法的签名与 [duplicates](#method-duplicates) 方法相同；不过，所有值都使用"严格"比较进行比较。
+该方法的签名与 duplicates 方法相同；不过，所有值都使用"严格"比较进行比较。
 
 #### `each()` {.collection-method}
 
@@ -969,10 +969,10 @@ $filtered->all();
 // ['product_id' => 1]
 ```
 
-有关 `except` 的反向操作，请参阅 [only](#method-only) 方法。
+有关 `except` 的反向操作，请参阅 only 方法。
 
 > [!NOTE]
-> 使用 [Eloquent Collections](/docs/{{version}}/eloquent-collections#method-except) 时，该方法的行为会被修改。
+> 使用 [Eloquent Collections](/topic/Laravel%2013.x/d6vroqrv3g.html) 时，该方法的行为会被修改。
 
 #### `filter()` {.collection-method}
 
@@ -1000,7 +1000,7 @@ $collection->filter()->all();
 // [1, 2, 3]
 ```
 
-有关 `filter` 的反向操作，请参阅 [reject](#method-reject) 方法。
+有关 `filter` 的反向操作，请参阅 reject 方法。
 
 #### `first()` {.collection-method}
 
@@ -1067,7 +1067,7 @@ $collection->firstWhere('age', '>=', 18);
 // ['name' => 'Diego', 'age' => 23]
 ```
 
-与 [where](#method-where) 方法一样，你可以向 `firstWhere` 方法传递一个参数。在这种情况下，`firstWhere` 方法将返回给定条目键的值为"真"的第一个条目：
+与 where 方法一样，你可以向 `firstWhere` 方法传递一个参数。在这种情况下，`firstWhere` 方法将返回给定条目键的值为"真"的第一个条目：
 
 ```php
 $collection->firstWhere('age');
@@ -1460,7 +1460,7 @@ $intersect->all();
 ```
 
 > [!NOTE]
-> 使用 [Eloquent Collections](/docs/{{version}}/eloquent-collections#method-intersect) 时，该方法的行为会被修改。
+> 使用 [Eloquent Collections](/topic/Laravel%2013.x/d6vroqrv3g.html) 时，该方法的行为会被修改。
 
 #### `intersectUsing()` {.collection-method}
 
@@ -1652,7 +1652,7 @@ collect([1, 2, 3, 4])->last();
 
 #### `lazy()` {.collection-method}
 
-`lazy` 方法从底层条目数组返回一个新的 [LazyCollection](#lazy-collections) 实例：
+`lazy` 方法从底层条目数组返回一个新的 LazyCollection 实例：
 
 ```php
 $lazyCollection = collect([1, 2, 3, 4])->lazy();
@@ -1680,11 +1680,11 @@ $count = $hugeCollection
 
 #### `macro()` {.collection-method}
 
-静态 `macro` 方法允许你在运行时向 `Collection` 类添加方法。有关更多信息，请参阅关于 [扩展集合](#extending-collections) 的文档。
+静态 `macro` 方法允许你在运行时向 `Collection` 类添加方法。有关更多信息，请参阅关于 扩展集合 的文档。
 
 #### `make()` {.collection-method}
 
-静态 `make` 方法创建一个新的集合实例。请参阅 [创建集合](#creating-collections) 一节。
+静态 `make` 方法创建一个新的集合实例。请参阅 创建集合 一节。
 
 ```php
 use Illuminate\Support\Collection;
@@ -1709,7 +1709,7 @@ $multiplied->all();
 ```
 
 > [!WARNING]
-> 与大多数其他集合方法一样，`map` 返回一个新的集合实例；它不会修改被调用的集合。如果你想转换原始集合，请使用 [transform](#method-transform) 方法。
+> 与大多数其他集合方法一样，`map` 返回一个新的集合实例；它不会修改被调用的集合。如果你想转换原始集合，请使用 transform 方法。
 
 #### `mapInto()` {.collection-method}
 
@@ -2004,10 +2004,10 @@ $filtered->all();
 // ['product_id' => 1, 'name' => 'Desk']
 ```
 
-有关 `only` 的反向操作，请参阅 [except](#method-except) 方法。
+有关 `only` 的反向操作，请参阅 except 方法。
 
 > [!NOTE]
-> 使用 [Eloquent Collections](/docs/{{version}}/eloquent-collections#method-only) 时，该方法的行为会被修改。
+> 使用 [Eloquent Collections](/topic/Laravel%2013.x/d6vroqrv3g.html) 时，该方法的行为会被修改。
 
 #### `pad()` {.collection-method}
 
@@ -2052,7 +2052,7 @@ $equalOrAboveThree->all();
 ```
 
 > [!NOTE]
-> 与 [Eloquent collections](/docs/{{version}}/eloquent-collections#method-partition) 交互时，该方法的行为会被修改。
+> 与 [Eloquent collections](/topic/Laravel%2013.x/d6vroqrv3g.html) 交互时，该方法的行为会被修改。
 
 #### `percentage()` {.collection-method}
 
@@ -2484,7 +2484,7 @@ $filtered->all();
 // [1, 2]
 ```
 
-有关 `reject` 方法的反向操作，请参阅 [filter](#method-filter) 方法。
+有关 `reject` 方法的反向操作，请参阅 filter 方法。
 
 #### `replace()` {.collection-method}
 
@@ -2729,7 +2729,7 @@ $slice->all();
 // [5, 6]
 ```
 
-默认情况下，返回的切片会保留键。如果你不希望保留原始键，可以使用 [values](#method-values) 方法重新索引它们。
+默认情况下，返回的切片会保留键。如果你不希望保留原始键，可以使用 values 方法重新索引它们。
 
 #### `sliding()` {.collection-method}
 
@@ -2745,7 +2745,7 @@ $chunks->toArray();
 // [[1, 2], [2, 3], [3, 4], [4, 5]]
 ```
 
-这与 [eachSpread](#method-eachspread) 方法结合使用时特别有用：
+这与 eachSpread 方法结合使用时特别有用：
 
 ```php
 $transactions->sliding(2)->eachSpread(function (Collection $previous, Collection $current) {
@@ -2806,11 +2806,11 @@ $collection->sole();
 
 #### `some()` {.collection-method}
 
-[contains](#method-contains) 方法的别名。
+contains 方法的别名。
 
 #### `sort()` {.collection-method}
 
-`sort` 方法对集合进行排序。排序后的集合保留原始数组键，因此在下面的示例中我们将使用 [values](#method-values) 方法将键重置为连续编号的索引：
+`sort` 方法对集合进行排序。排序后的集合保留原始数组键，因此在下面的示例中我们将使用 values 方法将键重置为连续编号的索引：
 
 ```php
 $collection = collect([5, 3, 1, 2, 4]);
@@ -2825,11 +2825,11 @@ $sorted->values()->all();
 如果你的排序需求更高级，可以向 `sort` 传入一个带有你自己算法的回调。请参阅 PHP 关于 [uasort](https://secure.php.net/manual/en/function.uasort.php#refsect1-function.uasort-parameters) 的文档，这是集合的 `sort` 方法内部调用的函数。
 
 > [!NOTE]
-> 如果你需要对嵌套数组或对象的集合进行排序，请参阅 [sortBy](#method-sortby) 和 [sortByDesc](#method-sortbydesc) 方法。
+> 如果你需要对嵌套数组或对象的集合进行排序，请参阅 sortBy 和 sortByDesc 方法。
 
 #### `sortBy()` {.collection-method}
 
-`sortBy` 方法按给定键对集合进行排序。排序后的集合保留原始数组键，因此在下面的示例中我们将使用 [values](#method-values) 方法将键重置为连续编号的索引：
+`sortBy` 方法按给定键对集合进行排序。排序后的集合保留原始数组键，因此在下面的示例中我们将使用 values 方法将键重置为连续编号的索引：
 
 ```php
 $collection = collect([
@@ -2953,11 +2953,11 @@ $sorted->values()->all();
 
 #### `sortByDesc()` {.collection-method}
 
-该方法的签名与 [sortBy](#method-sortby) 方法相同，但会以相反的顺序对集合进行排序。
+该方法的签名与 sortBy 方法相同，但会以相反的顺序对集合进行排序。
 
 #### `sortDesc()` {.collection-method}
 
-该方法将以与 [sort](#method-sort) 方法相反的顺序对集合进行排序：
+该方法将以与 sort 方法相反的顺序对集合进行排序：
 
 ```php
 $collection = collect([5, 3, 1, 2, 4]);
@@ -2969,7 +2969,7 @@ $sorted->values()->all();
 // [5, 4, 3, 2, 1]
 ```
 
-与 `sort` 不同，你不能向 `sortDesc` 传入闭包。相反，你应该使用 [sort](#method-sort) 方法并反转你的比较。
+与 `sort` 不同，你不能向 `sortDesc` 传入闭包。相反，你应该使用 sort 方法并反转你的比较。
 
 #### `sortKeys()` {.collection-method}
 
@@ -2997,7 +2997,7 @@ $sorted->all();
 
 #### `sortKeysDesc()` {.collection-method}
 
-该方法的签名与 [sortKeys](#method-sortkeys) 方法相同，但会以相反的顺序对集合进行排序。
+该方法的签名与 sortKeys 方法相同，但会以相反的顺序对集合进行排序。
 
 #### `sortKeysUsing()` {.collection-method}
 
@@ -3249,7 +3249,7 @@ $collection->all();
 
 #### `toArray()` {.collection-method}
 
-`toArray` 方法将集合转换为普通的 PHP `array`。如果集合的值是 [Eloquent](/docs/{{version}}/eloquent) 模型，这些模型也会被转换为数组：
+`toArray` 方法将集合转换为普通的 PHP `array`。如果集合的值是 [Eloquent](/topic/Laravel%2013.x/rwyl2kxvz8.html) 模型，这些模型也会被转换为数组：
 
 ```php
 $collection = collect(['name' => 'Desk', 'price' => 200]);
@@ -3264,7 +3264,7 @@ $collection->toArray();
 ```
 
 > [!WARNING]
-> `toArray` 还会将集合中所有作为 `Arrayable` 实例的嵌套对象转换为数组。如果你想获取集合底层的原始数组，请改用 [all](#method-all) 方法。
+> `toArray` 还会将集合中所有作为 `Arrayable` 实例的嵌套对象转换为数组。如果你想获取集合底层的原始数组，请改用 all 方法。
 
 #### `toJson()` {.collection-method}
 
@@ -3305,7 +3305,7 @@ $collection->all();
 ```
 
 > [!WARNING]
-> 与大多数其他集合方法不同，`transform` 会修改集合本身。如果你想创建一个新的集合，请使用 [map](#method-map) 方法。
+> 与大多数其他集合方法不同，`transform` 会修改集合本身。如果你想创建一个新的集合，请使用 map 方法。
 
 #### `undot()` {.collection-method}
 
@@ -3359,7 +3359,7 @@ $union->all();
 
 #### `unique()` {.collection-method}
 
-`unique` 方法返回集合中所有唯一的条目。返回的集合保留原始数组键，因此在下面的示例中我们将使用 [values](#method-values) 方法将键重置为连续编号的索引：
+`unique` 方法返回集合中所有唯一的条目。返回的集合保留原始数组键，因此在下面的示例中我们将使用 values 方法将键重置为连续编号的索引：
 
 ```php
 $collection = collect([1, 1, 2, 2, 3, 4, 2]);
@@ -3413,14 +3413,14 @@ $unique->values()->all();
 */
 ```
 
-`unique` 方法在检查条目值时使用"宽松"比较，意味着包含整数值的字符串会被视为与相同值的整数相等。使用 [uniqueStrict](#method-uniquestrict) 方法以"严格"比较进行筛选。
+`unique` 方法在检查条目值时使用"宽松"比较，意味着包含整数值的字符串会被视为与相同值的整数相等。使用 uniqueStrict 方法以"严格"比较进行筛选。
 
 > [!NOTE]
-> 使用 [Eloquent Collections](/docs/{{version}}/eloquent-collections#method-unique) 时，该方法的行为会被修改。
+> 使用 [Eloquent Collections](/topic/Laravel%2013.x/d6vroqrv3g.html) 时，该方法的行为会被修改。
 
 #### `uniqueStrict()` {.collection-method}
 
-该方法的签名与 [unique](#method-unique) 方法相同；不过，所有值都使用"严格"比较进行比较。
+该方法的签名与 unique 方法相同；不过，所有值都使用"严格"比较进行比较。
 
 #### `unless()` {.collection-method}
 
@@ -3458,15 +3458,15 @@ $collection->all();
 // [1, 2, 3, 5]
 ```
 
-有关 `unless` 的反向操作，请参阅 [when](#method-when) 方法。
+有关 `unless` 的反向操作，请参阅 when 方法。
 
 #### `unlessEmpty()` {.collection-method}
 
-[whenNotEmpty](#method-whennotempty) 方法的别名。
+whenNotEmpty 方法的别名。
 
 #### `unlessNotEmpty()` {.collection-method}
 
-[whenEmpty](#method-whenempty) 方法的别名。
+whenEmpty 方法的别名。
 
 #### `unwrap()` {.collection-method}
 
@@ -3559,7 +3559,7 @@ $collection->all();
 // [1, 2, 3, 5]
 ```
 
-有关 `when` 的反向操作，请参阅 [unless](#method-unless) 方法。
+有关 `when` 的反向操作，请参阅 unless 方法。
 
 #### `whenEmpty()` {.collection-method}
 
@@ -3603,7 +3603,7 @@ $collection->all();
 // ['Michael', 'Tom', 'Taylor']
 ```
 
-有关 `whenEmpty` 的反向操作，请参阅 [whenNotEmpty](#method-whennotempty) 方法。
+有关 `whenEmpty` 的反向操作，请参阅 whenNotEmpty 方法。
 
 #### `whenNotEmpty()` {.collection-method}
 
@@ -3647,7 +3647,7 @@ $collection->all();
 // ['Taylor']
 ```
 
-有关 `whenNotEmpty` 的反向操作，请参阅 [whenEmpty](#method-whenempty) 方法。
+有关 `whenNotEmpty` 的反向操作，请参阅 whenEmpty 方法。
 
 #### `where()` {.collection-method}
 
@@ -3673,7 +3673,7 @@ $filtered->all();
 */
 ```
 
-`where` 方法在检查条目值时使用"宽松"比较，意味着包含整数值的字符串会被视为与相同值的整数相等。使用 [whereStrict](#method-wherestrict) 方法以"严格"比较进行筛选，或使用 [whereNull](#method-wherenull) 和 [whereNotNull](#method-wherenotnull) 方法来筛选 `null` 值。
+`where` 方法在检查条目值时使用"宽松"比较，意味着包含整数值的字符串会被视为与相同值的整数相等。使用 whereStrict 方法以"严格"比较进行筛选，或使用 whereNull 和 whereNotNull 方法来筛选 `null` 值。
 
 或者，你可以传入一个比较运算符作为第二个参数。支持的运算符有：'===', '!==', '!=', '==', '=', '<>', '>', '<', '>=', 和 '<='：
 
@@ -3698,7 +3698,7 @@ $filtered->all();
 
 #### `whereStrict()` {.collection-method}
 
-该方法的签名与 [where](#method-where) 方法相同；不过，所有值都使用"严格"比较进行比较。
+该方法的签名与 where 方法相同；不过，所有值都使用"严格"比较进行比较。
 
 #### `whereBetween()` {.collection-method}
 
@@ -3750,11 +3750,11 @@ $filtered->all();
 */
 ```
 
-`whereIn` 方法在检查条目值时使用"宽松"比较，意味着包含整数值的字符串会被视为与相同值的整数相等。使用 [whereInStrict](#method-whereinstrict) 方法以"严格"比较进行筛选。
+`whereIn` 方法在检查条目值时使用"宽松"比较，意味着包含整数值的字符串会被视为与相同值的整数相等。使用 whereInStrict 方法以"严格"比较进行筛选。
 
 #### `whereInStrict()` {.collection-method}
 
-该方法的签名与 [whereIn](#method-wherein) 方法相同；不过，所有值都使用"严格"比较进行比较。
+该方法的签名与 whereIn 方法相同；不过，所有值都使用"严格"比较进行比较。
 
 #### `whereInstanceOf()` {.collection-method}
 
@@ -3826,11 +3826,11 @@ $filtered->all();
 */
 ```
 
-`whereNotIn` 方法在检查条目值时使用"宽松"比较，意味着包含整数值的字符串会被视为与相同值的整数相等。使用 [whereNotInStrict](#method-wherenotinstrict) 方法以"严格"比较进行筛选。
+`whereNotIn` 方法在检查条目值时使用"宽松"比较，意味着包含整数值的字符串会被视为与相同值的整数相等。使用 whereNotInStrict 方法以"严格"比较进行筛选。
 
 #### `whereNotInStrict()` {.collection-method}
 
-该方法的签名与 [whereNotIn](#method-wherenotin) 方法相同；不过，所有值都使用"严格"比较进行比较。
+该方法的签名与 whereNotIn 方法相同；不过，所有值都使用"严格"比较进行比较。
 
 #### `whereNotNull()` {.collection-method}
 
@@ -3925,7 +3925,7 @@ $zipped->all();
 
 ## 高阶消息
 
-集合还支持"高阶消息"（higher order messages），这是对集合执行常见操作的快捷方式。提供高阶消息的集合方法有：[average](#method-average)、[avg](#method-avg)、[contains](#method-contains)、[each](#method-each)、[every](#method-every)、[filter](#method-filter)、[first](#method-first)、[flatMap](#method-flatmap)、[groupBy](#method-groupby)、[keyBy](#method-keyby)、[map](#method-map)、[max](#method-max)、[min](#method-min)、[partition](#method-partition)、[reject](#method-reject)、[skipUntil](#method-skipuntil)、[skipWhile](#method-skipwhile)、[some](#method-some)、[sortBy](#method-sortby)、[sortByDesc](#method-sortbydesc)、[sum](#method-sum)、[takeUntil](#method-takeuntil)、[takeWhile](#method-takewhile) 和 [unique](#method-unique)。
+集合还支持"高阶消息"（higher order messages），这是对集合执行常见操作的快捷方式。提供高阶消息的集合方法有：average、avg、contains、each、every、filter、first、flatMap、groupBy、keyBy、map、max、min、partition、reject、skipUntil、skipWhile、some、sortBy、sortByDesc、sum、takeUntil、takeWhile 和 unique。
 
 每个高阶消息都可以作为集合实例上的动态属性来访问。例如，让我们使用 `each` 高阶消息来调用集合内每个对象上的一个方法：
 
@@ -4034,119 +4034,119 @@ LazyCollection::make(function () {
     }
 </style>
 
-[all](#method-all)
-[average](#method-average)
-[avg](#method-avg)
-[chunk](#method-chunk)
-[chunkBy](#method-chunkby)
-[chunkWhile](#method-chunkwhile)
-[collapse](#method-collapse)
-[collect](#method-collect)
-[combine](#method-combine)
-[concat](#method-concat)
-[contains](#method-contains)
-[containsStrict](#method-containsstrict)
-[count](#method-count)
-[countBy](#method-countBy)
-[crossJoin](#method-crossjoin)
-[dd](#method-dd)
-[diff](#method-diff)
-[diffAssoc](#method-diffassoc)
-[diffKeys](#method-diffkeys)
-[dump](#method-dump)
-[duplicates](#method-duplicates)
-[duplicatesStrict](#method-duplicatesstrict)
-[each](#method-each)
-[eachSpread](#method-eachspread)
-[every](#method-every)
-[except](#method-except)
-[filter](#method-filter)
-[first](#method-first)
-[firstOrFail](#method-first-or-fail)
-[firstWhere](#method-first-where)
-[flatMap](#method-flatmap)
-[flatten](#method-flatten)
-[flip](#method-flip)
-[forPage](#method-forpage)
-[get](#method-get)
-[groupBy](#method-groupby)
-[has](#method-has)
-[implode](#method-implode)
-[intersect](#method-intersect)
-[intersectAssoc](#method-intersectAssoc)
-[intersectByKeys](#method-intersectbykeys)
-[isEmpty](#method-isempty)
-[isNotEmpty](#method-isnotempty)
-[join](#method-join)
-[keyBy](#method-keyby)
-[keys](#method-keys)
-[last](#method-last)
-[macro](#method-macro)
-[make](#method-make)
-[map](#method-map)
-[mapInto](#method-mapinto)
-[mapSpread](#method-mapspread)
-[mapToGroups](#method-maptogroups)
-[mapWithKeys](#method-mapwithkeys)
-[max](#method-max)
-[median](#method-median)
-[merge](#method-merge)
-[mergeRecursive](#method-mergerecursive)
-[min](#method-min)
-[mode](#method-mode)
-[nth](#method-nth)
-[only](#method-only)
-[pad](#method-pad)
-[partition](#method-partition)
-[pipe](#method-pipe)
-[pluck](#method-pluck)
-[random](#method-random)
-[reduce](#method-reduce)
-[reduceInto](#method-reduce-into)
-[reject](#method-reject)
-[replace](#method-replace)
-[replaceRecursive](#method-replacerecursive)
-[reverse](#method-reverse)
-[search](#method-search)
-[shuffle](#method-shuffle)
-[skip](#method-skip)
-[slice](#method-slice)
-[sole](#method-sole)
-[some](#method-some)
-[sort](#method-sort)
-[sortBy](#method-sortby)
-[sortByDesc](#method-sortbydesc)
-[sortKeys](#method-sortkeys)
-[sortKeysDesc](#method-sortkeysdesc)
-[split](#method-split)
-[sum](#method-sum)
-[take](#method-take)
-[tap](#method-tap)
-[times](#method-times)
-[toArray](#method-toarray)
-[toJson](#method-tojson)
-[union](#method-union)
-[unique](#method-unique)
-[uniqueStrict](#method-uniquestrict)
-[unless](#method-unless)
-[unlessEmpty](#method-unlessempty)
-[unlessNotEmpty](#method-unlessnotempty)
-[unwrap](#method-unwrap)
-[values](#method-values)
-[when](#method-when)
-[whenEmpty](#method-whenempty)
-[whenNotEmpty](#method-whennotempty)
-[where](#method-where)
-[whereStrict](#method-wherestrict)
-[whereBetween](#method-wherebetween)
-[whereIn](#method-wherein)
-[whereInStrict](#method-whereinstrict)
-[whereInstanceOf](#method-whereinstanceof)
-[whereNotBetween](#method-wherenotbetween)
-[whereNotIn](#method-wherenotin)
-[whereNotInStrict](#method-wherenotinstrict)
-[wrap](#method-wrap)
-[zip](#method-zip)
+all
+average
+avg
+chunk
+chunkBy
+chunkWhile
+collapse
+collect
+combine
+concat
+contains
+containsStrict
+count
+countBy
+crossJoin
+dd
+diff
+diffAssoc
+diffKeys
+dump
+duplicates
+duplicatesStrict
+each
+eachSpread
+every
+except
+filter
+first
+firstOrFail
+firstWhere
+flatMap
+flatten
+flip
+forPage
+get
+groupBy
+has
+implode
+intersect
+intersectAssoc
+intersectByKeys
+isEmpty
+isNotEmpty
+join
+keyBy
+keys
+last
+macro
+make
+map
+mapInto
+mapSpread
+mapToGroups
+mapWithKeys
+max
+median
+merge
+mergeRecursive
+min
+mode
+nth
+only
+pad
+partition
+pipe
+pluck
+random
+reduce
+reduceInto
+reject
+replace
+replaceRecursive
+reverse
+search
+shuffle
+skip
+slice
+sole
+some
+sort
+sortBy
+sortByDesc
+sortKeys
+sortKeysDesc
+split
+sum
+take
+tap
+times
+toArray
+toJson
+union
+unique
+uniqueStrict
+unless
+unlessEmpty
+unlessNotEmpty
+unwrap
+values
+when
+whenEmpty
+whenNotEmpty
+where
+whereStrict
+whereBetween
+whereIn
+whereInStrict
+whereInstanceOf
+whereNotBetween
+whereNotIn
+whereNotInStrict
+wrap
+zip
 
 > [!WARNING]
 > 会修改集合的方法（如 `shift`、`pop`、`prepend` 等）在 `LazyCollection` 类上**不可用**。
@@ -4176,7 +4176,7 @@ $lazyCollection->each(function (int $number) {
 // 59
 ```
 
-为了说明该方法的使用，想象一个应用程序使用游标从数据库提交发票。你可以定义一个 [计划任务](/docs/{{version}}/scheduling)，它每 15 分钟运行一次，并且最多只处理 14 分钟的发票：
+为了说明该方法的使用，想象一个应用程序使用游标从数据库提交发票。你可以定义一个 [计划任务](/topic/Laravel%2013.x/e296olw9q7.html)，它每 15 分钟运行一次，并且最多只处理 14 分钟的发票：
 
 ```php
 use App\Models\Invoice;

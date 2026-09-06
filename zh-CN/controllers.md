@@ -87,11 +87,11 @@ php artisan make:controller ProvisionServer --invokable
 ```
 
 > [!NOTE]
-> 控制器桩文件可以使用[桩文件发布](/docs/{{version}}/artisan#stub-customization)进行自定义。
+> 控制器桩文件可以使用[桩文件发布](/topic/Laravel%2013.x/3dykqdoyl0.html)进行自定义。
 
 ## 控制器中间件
 
-[中间件](/docs/{{version}}/middleware)可以在你的路由文件中分配给控制器的路由：
+[中间件](/topic/Laravel%2013.x/rwyl2exvz8.html)可以在你的路由文件中分配给控制器的路由：
 
 ```php
 Route::get('/profile', [UserController::class, 'show'])->middleware('auth');
@@ -223,7 +223,7 @@ class UserController
 }
 ```
 
-类级别的 `WithoutMiddleware` 属性会被子控制器继承。该属性只能移除路由中间件，不适用于[全局中间件](/docs/{{version}}/middleware#global-middleware)。
+类级别的 `WithoutMiddleware` 属性会被子控制器继承。该属性只能移除路由中间件，不适用于[全局中间件](/topic/Laravel%2013.x/rwyl2exvz8.html)。
 
 ### 授权属性
 
@@ -323,7 +323,7 @@ Route::resource('photos', PhotoController::class)
 
 #### 软删除模型
 
-通常，隐式模型绑定不会检索已被[软删除](/docs/{{version}}/eloquent#soft-deleting)的模型，而是返回 404 HTTP 响应。不过，你可以在定义资源路由时调用 `withTrashed` 方法，指示框架允许软删除的模型：
+通常，隐式模型绑定不会检索已被[软删除](/topic/Laravel%2013.x/rwyl2kxvz8.html)的模型，而是返回 404 HTTP 响应。不过，你可以在定义资源路由时调用 `withTrashed` 方法，指示框架允许软删除的模型：
 
 ```php
 use App\Http\Controllers\PhotoController;
@@ -339,7 +339,7 @@ Route::resource('photos', PhotoController::class)->withTrashed(['show']);
 
 #### 指定资源模型
 
-如果你正在使用[路由模型绑定](/docs/{{version}}/routing#route-model-binding)，并且希望资源控制器的方法对模型实例进行类型提示，可以在生成控制器时使用 `--model` 选项：
+如果你正在使用[路由模型绑定](/topic/Laravel%2013.x/dgy7xg5vw2.html)，并且希望资源控制器的方法对模型实例进行类型提示，可以在生成控制器时使用 `--model` 选项：
 
 ```shell
 php artisan make:controller PhotoController --model=Photo --resource
@@ -347,7 +347,7 @@ php artisan make:controller PhotoController --model=Photo --resource
 
 #### 生成表单请求
 
-在生成资源控制器时，你可以提供 `--requests` 选项，以指示 Artisan 为控制器的存储和更新方法生成[表单请求类](/docs/{{version}}/validation#form-request-validation)：
+在生成资源控制器时，你可以提供 `--requests` 选项，以指示 Artisan 为控制器的存储和更新方法生成[表单请求类](/topic/Laravel%2013.x/e296oew9q7.html)：
 
 ```shell
 php artisan make:controller PhotoController --model=Photo --resource --requests
@@ -415,7 +415,7 @@ Route::resource('photos.comments', PhotoCommentController::class);
 
 #### 限定嵌套资源范围
 
-Laravel 的[隐式模型绑定](/docs/{{version}}/routing#implicit-model-binding-scoping)特性可以自动限定嵌套绑定的范围，从而确认解析出的子模型确实属于父模型。通过在定义嵌套资源时使用 `scoped` 方法，你可以启用自动范围限定，并指示 Laravel 应当根据哪个字段来检索子资源。有关如何实现这一点，请参阅[限定资源路由范围](#restful-scoping-resource-routes)的文档。
+Laravel 的[隐式模型绑定](/topic/Laravel%2013.x/dgy7xg5vw2.html)特性可以自动限定嵌套绑定的范围，从而确认解析出的子模型确实属于父模型。通过在定义嵌套资源时使用 `scoped` 方法，你可以启用自动范围限定，并指示 Laravel 应当根据哪个字段来检索子资源。有关如何实现这一点，请参阅限定资源路由范围的文档。
 
 #### 浅层嵌套
 
@@ -471,7 +471,7 @@ Route::resource('users', AdminUserController::class)->parameters([
 
 ### 限定资源路由范围
 
-Laravel 的[限定范围的隐式模型绑定](/docs/{{version}}/routing#implicit-model-binding-scoping)特性可以自动限定嵌套绑定的范围，从而确认解析出的子模型确实属于父模型。通过在定义嵌套资源时使用 `scoped` 方法，你可以启用自动范围限定，并指示 Laravel 应当根据哪个字段来检索子资源：
+Laravel 的[限定范围的隐式模型绑定](/topic/Laravel%2013.x/dgy7xg5vw2.html)特性可以自动限定嵌套绑定的范围，从而确认解析出的子模型确实属于父模型。通过在定义嵌套资源时使用 `scoped` 方法，你可以启用自动范围限定，并指示 Laravel 应当根据哪个字段来检索子资源：
 
 ```php
 use App\Http\Controllers\PhotoCommentController;
@@ -506,7 +506,7 @@ public function boot(): void
 }
 ```
 
-Laravel 的复数化器支持[多种不同的语言，你可以根据需要自行配置](/docs/{{version}}/localization#pluralization-language)。一旦自定义了动词和复数化语言，像 `Route::resource('publicacion', PublicacionController::class)` 这样的资源路由注册就会生成以下 URI：
+Laravel 的复数化器支持[多种不同的语言，你可以根据需要自行配置](/topic/Laravel%2013.x/kpv13q298w.html)。一旦自定义了动词和复数化语言，像 `Route::resource('publicacion', PublicacionController::class)` 这样的资源路由注册就会生成以下 URI：
 
 ```text
 /publicacion/crear
@@ -553,7 +553,7 @@ Route::singleton('profile', ProfileController::class);
 Route::singleton('photos.thumbnail', ThumbnailController::class);
 ```
 
-在这个例子中，`photos` 资源会收到所有[标准资源路由](#actions-handled-by-resource-controllers)；而 `thumbnail` 资源则会是一个单例资源，拥有以下路由：
+在这个例子中，`photos` 资源会收到所有标准资源路由；而 `thumbnail` 资源则会是一个单例资源，拥有以下路由：
 
 | Verb      | URI                              | Action | Route Name              |
 | --------- | -------------------------------- | ------ | ----------------------- |
@@ -662,7 +662,7 @@ Route::middleware(['auth', 'verified', 'subscribed'])->group(function () {
 
 ### 构造函数注入
 
-Laravel [服务容器](/docs/{{version}}/container)负责解析所有 Laravel 控制器。因此，你可以在控制器的构造函数中类型提示控制器可能需要的任何依赖。声明的依赖会被自动解析并注入到控制器实例中：
+Laravel [服务容器](/topic/Laravel%2013.x/x3vo054vm1.html)负责解析所有 Laravel 控制器。因此，你可以在控制器的构造函数中类型提示控制器可能需要的任何依赖。声明的依赖会被自动解析并注入到控制器实例中：
 
 ```php
 <?php

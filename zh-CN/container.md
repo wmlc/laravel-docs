@@ -58,7 +58,7 @@ Route::get('/', function (Service $service) {
 
 在这个示例中，访问应用的 `/` 路由会自动解析 `Service` 类，并将其注入到路由处理器中。这具有变革性的意义：你可以一边开发应用，一边享受依赖注入的便利，而无需担心配置文件变得越来越臃肿。
 
-所幸，你在构建 Laravel 应用时编写的许多类都会自动经由容器获得它们的依赖，包括 [控制器](/docs/{{version}}/controllers)、[事件监听器](/docs/{{version}}/events)、[中间件](/docs/{{version}}/middleware) 等等。此外，你还可以在 [队列任务](/docs/{{version}}/queues) 的 `handle` 方法里类型提示依赖。一旦你体验过这种零配置的自动依赖注入，就再也不想回到过去那种写法了。
+所幸，你在构建 Laravel 应用时编写的许多类都会自动经由容器获得它们的依赖，包括 [控制器](/topic/Laravel%2013.x/d6vro4rv3g.html)、[事件监听器](/topic/Laravel%2013.x/x3vo0l4vm1.html)、[中间件](/topic/Laravel%2013.x/rwyl2exvz8.html) 等等。此外，你还可以在 [队列任务](/topic/Laravel%2013.x/wevwmkz9l2.html) 的 `handle` 方法里类型提示依赖。一旦你体验过这种零配置的自动依赖注入，就再也不想回到过去那种写法了。
 
 ### 何时使用容器
 
@@ -72,9 +72,9 @@ Route::get('/', function (Request $request) {
 });
 ```
 
-在很多情况下，依靠自动依赖注入与 [Facades](/docs/{{version}}/facades)，即便你完全不需要手动从容器中绑定或解析任何东西，也能构建出 Laravel 应用。**那么，什么时候才需要手动与容器交互呢？** 来看两种情况。
+在很多情况下，依靠自动依赖注入与 [Facades](/topic/Laravel%2013.x/569x508yep.html)，即便你完全不需要手动从容器中绑定或解析任何东西，也能构建出 Laravel 应用。**那么，什么时候才需要手动与容器交互呢？** 来看两种情况。
 
-第一种情况：你写的类实现了某个接口，而你希望在路由或类构造函数中类型提示该接口，此时就必须[告诉容器该如何解析这个接口](#binding-interfaces-to-implementations)。第二种情况：你正在[编写一个 Laravel 包](/docs/{{version}}/packages) 并希望分享给其他 Laravel 开发者，这时可能需要把包内的服务绑定到容器中。
+第一种情况：你写的类实现了某个接口，而你希望在路由或类构造函数中类型提示该接口，此时就必须告诉容器该如何解析这个接口。第二种情况：你正在[编写一个 Laravel 包](/topic/Laravel%2013.x/2qvpx1z93m.html) 并希望分享给其他 Laravel 开发者，这时可能需要把包内的服务绑定到容器中。
 
 ## 绑定
 
@@ -82,7 +82,7 @@ Route::get('/', function (Request $request) {
 
 #### 简单绑定
 
-几乎所有服务容器绑定都会注册在 [服务提供者](/docs/{{version}}/providers) 中，因此下面的示例都会演示在那种上下文里使用容器的方式。
+几乎所有服务容器绑定都会注册在 [服务提供者](/topic/Laravel%2013.x/qk942kovw1.html) 中，因此下面的示例都会演示在那种上下文里使用容器的方式。
 
 在服务提供者中，可以通过 `$this->app` 属性访问容器。我们可以使用 `bind` 方法来注册一个绑定，把想要注册的类或接口名，连同一个返回该类实例的闭包一起传入：
 
@@ -98,7 +98,7 @@ $this->app->bind(Transistor::class, function (Application $app) {
 
 请注意，我们把容器本身作为参数接收给了 resolver。接下来就可以用容器来解析我们正在构建对象的子依赖。
 
-如前所述，你通常会在服务提供者里与容器交互；不过，如果你想在服务提供者之外操作容器，也可以通过 `App` [Facade](/docs/{{version}}/facades) 来完成：
+如前所述，你通常会在服务提供者里与容器交互；不过，如果你想在服务提供者之外操作容器，也可以通过 `App` [Facade](/topic/Laravel%2013.x/569x508yep.html) 来完成：
 
 ```php
 use App\Services\Transistor;
@@ -171,7 +171,7 @@ class Transistor
 
 #### 绑定作用域单例
 
-`scoped` 方法将一个类或接口绑定到容器中，使其在一次 Laravel 请求 / 任务生命周期内只解析一次。虽然这个方法与 `singleton` 很像，但是 `scoped` 方法注册的实例会在 Laravel 应用开启新"生命周期"时被清空，例如 [Laravel Octane](/docs/{{version}}/octane) worker 处理新请求时，或 Laravel [队列 worker](/docs/{{version}}/queues) 处理新任务时：
+`scoped` 方法将一个类或接口绑定到容器中，使其在一次 Laravel 请求 / 任务生命周期内只解析一次。虽然这个方法与 `singleton` 很像，但是 `scoped` 方法注册的实例会在 Laravel 应用开启新"生命周期"时被清空，例如 [Laravel Octane](/topic/Laravel%2013.x/d6vro1rv3g.html) worker 处理新请求时，或 Laravel [队列 worker](/topic/Laravel%2013.x/wevwmkz9l2.html) 处理新任务时：
 
 ```php
 use App\Services\Transistor;
@@ -269,7 +269,7 @@ interface EventPusher
 }
 ```
 
-此外，还可以应用 [Singleton](#singleton-attribute) 与 [Scoped](#scoped-attribute) 属性来指明这些容器绑定是只解析一次，还是在每次请求 / 任务生命周期内只解析一次：
+此外，还可以应用 Singleton 与 Scoped 属性来指明这些容器绑定是只解析一次，还是在每次请求 / 任务生命周期内只解析一次：
 
 ```php
 use App\Services\RedisEventPusher;
@@ -303,7 +303,7 @@ interface EventPusher
 
 ### 上下文绑定
 
-有时你可能会有两个类使用同一个接口，但希望向它们分别注入不同的实现。例如，两个控制器可能会依赖 `Illuminate\Contracts\Filesystem\Filesystem` [契约](/docs/{{version}}/contracts) 的不同实现。Laravel 提供了一套简洁流畅的接口来定义这种行为：
+有时你可能会有两个类使用同一个接口，但希望向它们分别注入不同的实现。例如，两个控制器可能会依赖 `Illuminate\Contracts\Filesystem\Filesystem` [契约](/topic/Laravel%2013.x/3xyq4r4vmq.html) 的不同实现。Laravel 提供了一套简洁流畅的接口来定义这种行为：
 
 ```php
 use App\Http\Controllers\PhotoController;
@@ -329,7 +329,7 @@ $this->app->when([VideoController::class, UploadController::class])
 
 由于上下文绑定经常用来注入驱动实现或配置值，Laravel 提供了一系列上下文绑定属性，让你不必在服务提供者里手动定义上下文绑定，就能注入这些类型的值。
 
-例如，可以使用 `Storage` 属性注入一个指定的 [存储磁盘](/docs/{{version}}/filesystem)：
+例如，可以使用 `Storage` 属性注入一个指定的 [存储磁盘](/topic/Laravel%2013.x/qk9428ovw1.html)：
 
 ```php
 <?php
@@ -349,7 +349,7 @@ class PhotoController extends Controller
 }
 ```
 
-除了 `Storage` 属性外，Laravel 还提供了 `Auth`、`Cache`、`Config`、`Context`、`DB`、`Give`、`Log`、`RequestAttribute`、`RouteParameter` 以及 [Tag](#tagging) 属性：
+除了 `Storage` 属性外，Laravel 还提供了 `Auth`、`Cache`、`Config`、`Context`、`DB`、`Give`、`Log`、`RequestAttribute`、`RouteParameter` 以及 Tag 属性：
 
 ```php
 <?php
@@ -461,7 +461,7 @@ $this->app->when(UserController::class)
     ->give($value);
 ```
 
-有时一个类会依赖一组 [打了标签](#tagging) 的实例数组。借助 `giveTagged` 方法，你可以一次性注入所有带有该标签的容器绑定：
+有时一个类会依赖一组 打了标签 的实例数组。借助 `giveTagged` 方法，你可以一次性注入所有带有该标签的容器绑定：
 
 ```php
 $this->app->when(ReportAggregator::class)
@@ -537,7 +537,7 @@ $this->app->when(Firewall::class)
 
 #### 可变参数标签依赖
 
-有时类的可变参数会以某个具体类作为类型提示（如 `Report ...$reports`）。借助 `needs` 与 `giveTagged` 方法，可以轻松为该依赖注入所有具有该 [标签](#tagging) 的容器绑定：
+有时类的可变参数会以某个具体类作为类型提示（如 `Report ...$reports`）。借助 `needs` 与 `giveTagged` 方法，可以轻松为该依赖注入所有具有该 标签 的容器绑定：
 
 ```php
 $this->app->when(ReportAggregator::class)
@@ -607,7 +607,7 @@ if ($this->app->bound(Transistor::class)) {
 }
 ```
 
-如果你在服务提供者之外，某个无法访问 `$app` 变量的位置，也可以使用 `App` [Facade](/docs/{{version}}/facades) 或 `app` [辅助函数](/docs/{{version}}/helpers#method-app) 从容器中解析类实例：
+如果你在服务提供者之外，某个无法访问 `$app` 变量的位置，也可以使用 `App` [Facade](/topic/Laravel%2013.x/569x508yep.html) 或 `app` [辅助函数](/topic/Laravel%2013.x/569x5d8yep.html) 从容器中解析类实例：
 
 ```php
 use App\Services\Transistor;
@@ -633,7 +633,7 @@ public function __construct(
 
 ### 自动注入
 
-另一种更重要的方式是：在由容器解析的类（包括 [控制器](/docs/{{version}}/controllers)、[事件监听器](/docs/{{version}}/events)、[中间件](/docs/{{version}}/middleware) 等）的构造函数里直接类型提示依赖；此外，你也可以在 [队列任务](/docs/{{version}}/queues) 的 `handle` 方法里类型提示依赖。实践中，这正是容器解析绝大多数对象的方式。
+另一种更重要的方式是：在由容器解析的类（包括 [控制器](/topic/Laravel%2013.x/d6vro4rv3g.html)、[事件监听器](/topic/Laravel%2013.x/x3vo0l4vm1.html)、[中间件](/topic/Laravel%2013.x/rwyl2exvz8.html) 等）的构造函数里直接类型提示依赖；此外，你也可以在 [队列任务](/topic/Laravel%2013.x/wevwmkz9l2.html) 的 `handle` 方法里类型提示依赖。实践中，这正是容器解析绝大多数对象的方式。
 
 例如，你可以在某个控制器的构造函数里类型提示某个应用自定义服务。该服务会被自动解析并注入到这个类中：
 

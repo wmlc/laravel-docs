@@ -43,7 +43,7 @@ Laravel 默认的 `.env` 文件包含一些常见配置值——这些值会因�
 
 `.env` 文件不应提交到应用的源代码控制中——每位开发者 / 每台服务器使用应用时可能需要不同的环境配置。此外，如果入侵者获得源码仓库的访问权限，把敏感凭证暴露在 `.env` 里还会带来安全风险。
 
-不过，可以使用 Laravel 内置的 [环境文件加密](#encrypting-environment-files) 来加密环境文件。加密后的环境文件可以安全地提交到源码控制。
+不过，可以使用 Laravel 内置的 环境文件加密 来加密环境文件。加密后的环境文件可以安全地提交到源码控制。
 
 #### 额外的环境文件
 
@@ -82,7 +82,7 @@ APP_NAME="My Application"
 
 ### 判断当前环境
 
-当前应用环境由 `.env` 中的 `APP_ENV` 变量决定。可以通过 `App` [门面](/docs/{{version}}/facades) 的 `environment` 方法访问该值：
+当前应用环境由 `.env` 中的 `APP_ENV` 变量决定。可以通过 `App` [门面](/topic/Laravel%2013.x/569x508yep.html) 的 `environment` 方法访问该值：
 
 ```php
 use Illuminate\Support\Facades\App;
@@ -124,7 +124,7 @@ php artisan env:encrypt --key=3UVsEgGVK36XN82KKeyLFMhvosbZN1aF
 ```
 
 > [!NOTE]
-> 提供的密钥长度应与所用加密算法要求的密钥长度匹配。默认情况下，Laravel 使用 `AES-256-CBC` 算法，需要 32 位字符长度的密钥。可以传入 `--cipher` 选项来使用 Laravel [encrypter](/docs/{{version}}/encryption) 支持的任何算法。
+> 提供的密钥长度应与所用加密算法要求的密钥长度匹配。默认情况下，Laravel 使用 `AES-256-CBC` 算法，需要 32 位字符长度的密钥。可以传入 `--cipher` 选项来使用 Laravel [encrypter](/topic/Laravel%2013.x/enyd5k197d.html) 支持的任何算法。
 
 如果应用有多个环境文件（例如 `.env` 与 `.env.staging`），可以通过 `--env` 选项指定要加密的环境文件：
 
@@ -233,7 +233,7 @@ Config::collection('config-key');
 
 配置缓存后，应用的 `.env` 文件在请求或 Artisan 命令中不会再被框架加载；因此 `env` 函数只会返回外部的、系统级的环境变量。
 
-基于这个原因，你应确保 `env` 函数只在应用的配置（`config`）文件中被调用。查看 Laravel 默认的配置文件就能看到大量这样的例子。其他位置可以使用 [上文所述](#accessing-configuration-values) 的 `config` 函数访问配置值。
+基于这个原因，你应确保 `env` 函数只在应用的配置（`config`）文件中被调用。查看 Laravel 默认的配置文件就能看到大量这样的例子。其他位置可以使用 上文所述 的 `config` 函数访问配置值。
 
 `config:clear` 命令可以用来清除已缓存的配置：
 
@@ -352,7 +352,7 @@ php artisan up
 
 #### 维护模式与队列
 
-应用处于维护模式时，所有 [队列任务](/docs/{{version}}/queues) 都不会被处理。一旦应用脱离维护模式，任务会恢复正常处理。
+应用处于维护模式时，所有 [队列任务](/topic/Laravel%2013.x/wevwmkz9l2.html) 都不会被处理。一旦应用脱离维护模式，任务会恢复正常处理。
 
 #### 维护模式的替代方案
 

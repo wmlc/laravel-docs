@@ -26,13 +26,13 @@
 
 ## 阻止 CSRF 请求
 
-默认包含在 `web` 中间件组中的 `Illuminate\Foundation\Http\Middleware\PreventRequestForgery` [中间件](/docs/{{version}}/middleware)，采用两层防护策略来保护你的应用免受跨站请求伪造攻击。
+默认包含在 `web` 中间件组中的 `Illuminate\Foundation\Http\Middleware\PreventRequestForgery` [中间件](/topic/Laravel%2013.x/rwyl2exvz8.html)，采用两层防护策略来保护你的应用免受跨站请求伪造攻击。
 
 首先，该中间件会检查浏览器的 `Sec-Fetch-Site` 请求头。现代浏览器会在每个请求上自动设置这个请求头，指示请求是来自同源（same origin）、同站（same site）还是跨站（cross-site）来源。如果该请求头表明请求来自同源，则无需任何令牌验证即可立即放行。
 
 如果来源验证未通过——例如因为请求来自不发送 `Sec-Fetch-Site` 请求头的旧版浏览器，或者连接不安全——中间件会回退到传统的 CSRF 令牌验证。
 
-Laravel 会为应用管理的每个活跃[用户会话](/docs/{{version}}/session)自动生成一个 CSRF"令牌"。该令牌用于验证发出请求的用户就是真正在操作应用的用户。由于此令牌存储在用户的会话中，并在每次会话重新生成时随之改变，恶意应用无法访问它。
+Laravel 会为应用管理的每个活跃[用户会话](/topic/Laravel%2013.x/2ev86noyor.html)自动生成一个 CSRF"令牌"。该令牌用于验证发出请求的用户就是真正在操作应用的用户。由于此令牌存储在用户的会话中，并在每次会话重新生成时随之改变，恶意应用无法访问它。
 
 可以通过请求的会话或 `csrf_token` 辅助函数来获取当前会话的 CSRF 令牌：
 
@@ -61,7 +61,7 @@ Route::get('/token', function (Request $request) {
 
 #### CSRF 令牌与 SPA
 
-如果你正在构建一个以 Laravel 作为 API 后端的 SPA，应当查阅 [Laravel Sanctum 文档](/docs/{{version}}/sanctum)，了解如何通过 API 进行认证以及防范 CSRF 漏洞的相关信息。
+如果你正在构建一个以 Laravel 作为 API 后端的 SPA，应当查阅 [Laravel Sanctum 文档](/topic/Laravel%2013.x/xq9zr3jvdo.html)，了解如何通过 API 进行认证以及防范 CSRF 漏洞的相关信息。
 
 ### 来源校验
 
@@ -105,7 +105,7 @@ Route::get('/token', function (Request $request) {
 ```
 
 > [!NOTE]
-> 为方便起见，在[运行测试](/docs/{{version}}/testing)时，所有路由上的 CSRF 中间件都会自动禁用。
+> 为方便起见，在[运行测试](/topic/Laravel%2013.x/e296oqw9q7.html)时，所有路由上的 CSRF 中间件都会自动禁用。
 
 ## X-CSRF-TOKEN
 

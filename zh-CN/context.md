@@ -6,7 +6,7 @@ Laravel 的「上下文（context）」能力使你能在请求、任务和命�
 
 ### 工作原理
 
-理解 Laravel 上下文能力的最佳方式是结合内置的日志功能进行实战。可以使用 `Context` 门面的 [`add` 方法](#capturing-context) 向上下文添加信息。下面的示例中，我们用一个 [中间件](/docs/{{version}}/middleware) 在每次请求进入时，把请求 URL 和一个唯一的 trace ID 加入上下文：
+理解 Laravel 上下文能力的最佳方式是结合内置的日志功能进行实战。可以使用 `Context` 门面的 `add` 方法 向上下文添加信息。下面的示例中，我们用一个 [中间件](/topic/Laravel%2013.x/rwyl2exvz8.html) 在每次请求进入时，把请求 URL 和一个唯一的 trace ID 加入上下文：
 
 ```php
 <?php
@@ -34,7 +34,7 @@ class AddContext
 }
 ```
 
-添加到上下文的信息会自动作为元数据追加到本次请求期间写入的任何 [日志条目](/docs/{{version}}/logging) 中。把上下文作为元数据追加，可以让传入单条日志条目的信息与通过 `Context` 共享的信息区分开。例如，假设我们写入下面这条日志：
+添加到上下文的信息会自动作为元数据追加到本次请求期间写入的任何 [日志条目](/topic/Laravel%2013.x/2wy3l33ykm.html) 中。把上下文作为元数据追加，可以让传入单条日志条目的信息与通过 `Context` 共享的信息区分开。例如，假设我们写入下面这条日志：
 
 ```php
 Log::info('User authenticated.', ['auth_id' => Auth::id()]);
@@ -86,7 +86,7 @@ class ProcessPodcast implements ShouldQueue
 Processing podcast. {"podcast_id":95} {"url":"https://example.com/login","trace_id":"e04e1a11-e75c-4db3-b5b5-cfef4ef56697"}
 ```
 
-虽然上文重点介绍了 Laravel context 与内置日志相关的特性，下面的文档将进一步展示 context 如何让你在 HTTP 请求 / 队列任务的边界之间共享信息，甚至如何添加不会随日志条目写入的 [隐藏上下文数据](#hidden-context)。
+虽然上文重点介绍了 Laravel context 与内置日志相关的特性，下面的文档将进一步展示 context 如何让你在 HTTP 请求 / 队列任务的边界之间共享信息，甚至如何添加不会随日志条目写入的 隐藏上下文数据。
 
 ## 捕获上下文
 
@@ -262,7 +262,7 @@ $data = Context::except(['first_key']);
 $value = Context::pull('key');
 ```
 
-如果上下文数据存储在一个 [栈](#stacks) 中，可以使用 `pop` 方法从栈中弹出项：
+如果上下文数据存储在一个 栈 中，可以使用 `pop` 方法从栈中弹出项：
 
 ```php
 Context::push('breadcrumbs', 'first_value', 'second_value');
@@ -373,7 +373,7 @@ Context::forgetHidden(/* ... */);
 
 上下文会派发两个事件，允许你挂接 context 的水合与脱水过程。
 
-为了说明这些事件的用途，假设你在应用的某个中间件中根据传入 HTTP 请求的 `Accept-Language` 头来设置 `app.locale` 配置项。Context 的事件允许你在请求期间捕获这个值，并在队列中恢复它，从而确保队列上发送的通知具备正确的 `app.locale` 值。我们可以利用 context 的事件与 [隐藏](#hidden-context) 数据实现这一点，下面的文档将进行演示。
+为了说明这些事件的用途，假设你在应用的某个中间件中根据传入 HTTP 请求的 `Accept-Language` 头来设置 `app.locale` 配置项。Context 的事件允许你在请求期间捕获这个值，并在队列中恢复它，从而确保队列上发送的通知具备正确的 `app.locale` 值。我们可以利用 context 的事件与 隐藏 数据实现这一点，下面的文档将进行演示。
 
 ### 脱水（Dehydrating）
 
