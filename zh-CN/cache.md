@@ -16,7 +16,7 @@
 
 #### 数据库
 
-使用 `database` 缓存驱动时，你需要一张数据库表来存放缓存数据。通常，Laravel 默认的 `0001_01_01_000001_create_cache_table.php` [数据库迁移](/docs/{{version}}/migrations) 已包含该表；但如果你的应用程序不包含此迁移，可以使用 `make:cache-table` Artisan 命令来创建它：
+使用 `database` 缓存驱动时，你需要一张数据库表来存放缓存数据。通常，Laravel 默认的 `0001_01_01_000001_create_cache_table.php` [数据库迁移](/topic/Laravel%2013.x/x3vo0g4vm1.html) 已包含该表；但如果你的应用程序不包含此迁移，可以使用 `make:cache-table` Artisan 命令来创建它：
 
 ```shell
 php artisan make:cache-table
@@ -60,13 +60,13 @@ php artisan migrate
 
 #### Redis
 
-在 Laravel 中使用 Redis 缓存之前，你需要通过 PECL 安装 PhpRedis PHP 扩展，或通过 Composer 安装 `predis/predis` 包。[Laravel Sail](/docs/{{version}}/sail) 已包含该扩展。此外，官方的 Laravel 应用平台（如 [Laravel Cloud](https://cloud.laravel.com) 和 [Laravel Forge](https://forge.laravel.com)）默认已安装 PhpRedis 扩展。
+在 Laravel 中使用 Redis 缓存之前，你需要通过 PECL 安装 PhpRedis PHP 扩展，或通过 Composer 安装 `predis/predis` 包。[Laravel Sail](/topic/Laravel%2013.x/e296opw9q7.html) 已包含该扩展。此外，官方的 Laravel 应用平台（如 [Laravel Cloud](https://cloud.laravel.com) 和 [Laravel Forge](https://forge.laravel.com)）默认已安装 PhpRedis 扩展。
 
-有关配置 Redis 的更多信息，请参阅其 [Laravel 文档页面](/docs/{{version}}/redis#configuration)。
+有关配置 Redis 的更多信息，请参阅其 [Laravel 文档页面](/topic/Laravel%2013.x/569x518yep.html)。
 
 #### 存储
 
-`storage` 缓存驱动允许你将缓存值存储到应用程序已配置的任何 [文件系统磁盘](/docs/{{version}}/filesystem) 上。当你想使用现有磁盘（例如 S3 磁盘）作为键值缓存存储时，这会很有用：
+`storage` 缓存驱动允许你将缓存值存储到应用程序已配置的任何 [文件系统磁盘](/topic/Laravel%2013.x/qk9428ovw1.html) 上。当你想使用现有磁盘（例如 S3 磁盘）作为键值缓存存储时，这会很有用：
 
 ```php
 'storage' => [
@@ -225,7 +225,7 @@ $value = Cache::rememberForever('users', function () {
 
 `flexible` 方法接受一个数组，用于指定缓存值被视为"新鲜的"（fresh）的时长，以及它何时变为"过期的"（stale）。数组中的第一个值表示缓存被视为新鲜状态的秒数，第二个值定义了在必须重新计算之前，它可以作为旧数据返回的时长。
 
-如果在新鲜期内（第一个值之前）发起请求，将立即返回缓存，无需重新计算。如果在过期期内（两个值之间）发起请求，则向用户返回旧值，并注册一个 [延迟函数](/docs/{{version}}/helpers#deferred-functions)，以便在响应发送给用户之后刷新缓存值。如果在第二个值之后发起请求，则缓存被视为已过期，并立即重新计算该值，这可能会导致用户的响应变慢：
+如果在新鲜期内（第一个值之前）发起请求，将立即返回缓存，无需重新计算。如果在过期期内（两个值之间）发起请求，则向用户返回旧值，并注册一个 [延迟函数](/topic/Laravel%2013.x/569x5d8yep.html)，以便在响应发送给用户之后刷新缓存值。如果在第二个值之后发起请求，则缓存被视为已过期，并立即重新计算该值，这可能会导致用户的响应变慢：
 
 ```php
 $value = Cache::flexible('users', [5, 10], function () {
@@ -395,7 +395,7 @@ cache()->remember('users', $seconds, function () {
 ```
 
 > [!NOTE]
-> 在测试对全局 `cache` 函数的调用时，可以像 [测试 facade](/docs/{{version}}/mocking#mocking-facades) 那样使用 `Cache::shouldReceive` 方法。
+> 在测试对全局 `cache` 函数的调用时，可以像 [测试 facade](/topic/Laravel%2013.x/5dve2r3v4x.html) 那样使用 `Cache::shouldReceive` 方法。
 
 ## 缓存标签
 
@@ -635,7 +635,7 @@ CACHE_STORE=failover
 
 ### 编写驱动
 
-要创建自定义缓存驱动，首先需要实现 `Illuminate\Contracts\Cache\Store` [契约](/docs/{{version}}/contracts)。因此，一个 MongoDB 缓存实现可能如下所示：
+要创建自定义缓存驱动，首先需要实现 `Illuminate\Contracts\Cache\Store` [契约](/topic/Laravel%2013.x/3xyq4r4vmq.html)。因此，一个 MongoDB 缓存实现可能如下所示：
 
 ```php
 <?php
@@ -708,13 +708,13 @@ class AppServiceProvider extends ServiceProvider
 }
 ```
 
-传给 `extend` 方法的第一个参数是驱动的名称。它与 `config/cache.php` 配置文件中的 `driver` 选项相对应。第二个参数是一个闭包，应返回一个 `Illuminate\Cache\Repository` 实例。该闭包会接收到一个 `$app` 实例，它是 [服务容器](/docs/{{version}}/container) 的一个实例。
+传给 `extend` 方法的第一个参数是驱动的名称。它与 `config/cache.php` 配置文件中的 `driver` 选项相对应。第二个参数是一个闭包，应返回一个 `Illuminate\Cache\Repository` 实例。该闭包会接收到一个 `$app` 实例，它是 [服务容器](/topic/Laravel%2013.x/x3vo054vm1.html) 的一个实例。
 
 扩展注册完成后，将应用程序 `config/cache.php` 配置文件中的 `CACHE_STORE` 环境变量或 `default` 选项更新为你扩展的名称。
 
 ## 事件
 
-要在每次缓存操作时执行代码，可以监听缓存派发的各种 [事件](/docs/{{version}}/events)：
+要在每次缓存操作时执行代码，可以监听缓存派发的各种 [事件](/topic/Laravel%2013.x/x3vo0l4vm1.html)：
 
 | 事件名称                                          |
 |-------------------------------------------------|

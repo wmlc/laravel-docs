@@ -71,10 +71,10 @@ Cashier::useCurrencyAndLocale('eur', 'fr');
 
 ### 税务配置
 
-感谢 [Stripe Tax](https://stripe.com/docs/tax)，你可以在 [Stripe 仪表板](https://dashboard.stripe.com/tax-rates) 内自动计算和收取所有客户的税费。Cashier 提供了一个 `taxRates` 方法，让你可以在 [同步税率](#同步税率) 时手动指定税率。
+感谢 [Stripe Tax](https://stripe.com/docs/tax)，你可以在 [Stripe 仪表板](https://dashboard.stripe.com/tax-rates) 内自动计算和收取所有客户的税费。Cashier 提供了一个 `taxRates` 方法，让你可以在 同步税率 时手动指定税率。
 
 > [!WARNING]
-> 当你使用 [单次收费](#单次收费) 或 [单次 Checkout](#单次-charge-checkouts) 时，你仍然需要在 Cashier 之外手动设置税率。
+> 当你使用 单次收费 或 单次 Checkout 时，你仍然需要在 Cashier 之外手动设置税率。
 
 #### 使用 Stripe Tax
 
@@ -95,7 +95,7 @@ public function boot(): void
 ```
 
 > [!WARNING]
-> 当在 [Cashier 的数据填充脚本](#填充数据) 中创建订阅时，由于不会触发 Cashier 的事件，因此需要手动调用 `Customer::create` 来附加税务信息。
+> 当在 Cashier 的数据填充脚本 中创建订阅时，由于不会触发 Cashier 的事件，因此需要手动调用 `Customer::create` 来附加税务信息。
 
 #### 指定税率
 
@@ -141,11 +141,11 @@ public function priceTaxRates(): array
 $user->subscription('default')->syncTaxRates();
 ```
 
-这也会同步多产品订阅的任何项目税率。如果你的应用程序提供多产品订阅，你应该确保你的可计费模型实现了上面 [讨论](#订阅税务) 的 `priceTaxRates` 方法。
+这也会同步多产品订阅的任何项目税率。如果你的应用程序提供多产品订阅，你应该确保你的可计费模型实现了上面 讨论 的 `priceTaxRates` 方法。
 
 ### 使用 Stripe Checkout 与 Cashier
 
-当通过 Stripe Checkout 创建订阅时，Cashier 始终会通过 [使用 Stripe Tax](#使用-stripe-tax) 启用自动税务计算。
+当通过 Stripe Checkout 创建订阅时，Cashier 始终会通过 使用 Stripe Tax 启用自动税务计算。
 
 要了解如何在 Checkout 会话中手动指定税率，请 [查阅 Stripe 文档](https://stripe.com/docs/payments/checkout/taxes)。
 
@@ -191,7 +191,7 @@ php artisan cashier:webhook --api-version="2019-12-03"
 php artisan cashier:webhook --disabled
 ```
 
-确保用 Cashier 包含的 [Webhook 签名验证](#验证-webhook-签名) 中间件保护传入的 Stripe Webhook 请求。
+确保用 Cashier 包含的 Webhook 签名验证 中间件保护传入的 Stripe Webhook 请求。
 
 #### 验证 Webhook 签名
 
@@ -206,7 +206,7 @@ Cashier 自动处理失败的订阅取消和其他常见的 Stripe Webhook 事�
 - `Laravel\Cashier\Events\WebhookReceived`
 - `Laravel\Cashier\Events\WebhookHandled`
 
-这两个事件都包含 Stripe Webhook 的完整负载。例如，如果你希望处理 `invoice.payment_succeeded` Webhook，你可以注册一个 [监听器](/docs/{{version}}/events#defining-listeners) 来处理该事件：
+这两个事件都包含 Stripe Webhook 的完整负载。例如，如果你希望处理 `invoice.payment_succeeded` Webhook，你可以注册一个 [监听器](/topic/Laravel%2013.x/x3vo0l4vm1.html) 来处理该事件：
 
 ```php
 <?php
@@ -229,7 +229,7 @@ class StripeEventListener
 }
 ```
 
-Cashier 在本地开发期间自动将 Webhook 事件调度为 [队列任务](/docs/{{version}}/queues)。如果你想在本地开发中禁用此行为，请将 `CASHIER_WEBHOOK_DISABLE_QUEUE` 环境变量设置为 `true`。在你的生产环境中，你应该 [配置你的队列](/docs/{{version}}/queues#configuration)。
+Cashier 在本地开发期间自动将 Webhook 事件调度为 [队列任务](/topic/Laravel%2013.x/wevwmkz9l2.html)。如果你想在本地开发中禁用此行为，请将 `CASHIER_WEBHOOK_DISABLE_QUEUE` 环境变量设置为 `true`。在你的生产环境中，你应该 [配置你的队列](/topic/Laravel%2013.x/wevwmkz9l2.html)。
 
 ## 可计费模型
 
@@ -327,7 +327,7 @@ $taxId = $user->findTaxId('txi_belgium');
 $taxId = $user->createTaxId('eu_vat', 'BE0123456789');
 ```
 
-`createTaxId` 方法将立即将 VAT 税号添加到客户的账户。[VAT 税号的验证也由 Stripe 完成](https://stripe.com/docs/invoicing/customer/tax-ids#validation)；但是，这是一个异步过程。你可以通过订阅 `customer.tax_id.updated` Webhook 事件并检查 [VAT 税号的 `verification` 参数](https://stripe.com/docs/api/customer_tax_ids/object#tax_id_object-verification) 来获得验证更新的通知。有关处理 Webhook 的更多信息，请查阅 [定义 Webhook 处理程序](#处理-stripe-webhook) 的文档。
+`createTaxId` 方法将立即将 VAT 税号添加到客户的账户。[VAT 税号的验证也由 Stripe 完成](https://stripe.com/docs/invoicing/customer/tax-ids#validation)；但是，这是一个异步过程。你可以通过订阅 `customer.tax_id.updated` Webhook 事件并检查 [VAT 税号的 `verification` 参数](https://stripe.com/docs/api/customer_tax_ids/object#tax_id_object-verification) 来获得验证更新的通知。有关处理 Webhook 的更多信息，请查阅 定义 Webhook 处理程序 的文档。
 
 你可以使用 `deleteTaxId` 方法删除税号：
 
@@ -473,7 +473,7 @@ Route::get('/subscription/complete', function (Request $request) {
 })->name('subscription.complete');
 ```
 
-如果你使用 Payment Element 来更新客户的默认支付方式而不是创建订阅，则可以将支付方式标识符传递给 [`updateDefaultPaymentMethod`](#更新默认支付方式) 方法。
+如果你使用 Payment Element 来更新客户的默认支付方式而不是创建订阅，则可以将支付方式标识符传递给 `updateDefaultPaymentMethod` 方法。
 
 #### 单次收费的 Payment Element
 
@@ -640,7 +640,7 @@ $user->addPaymentMethod($paymentMethod);
 ```
 
 > [!NOTE]
-> 要了解如何检索支付方式标识符，请查看 [支付方式存储文档](#存储支付方式)。
+> 要了解如何检索支付方式标识符，请查看 支付方式存储文档。
 
 ### 删除支付方式
 
@@ -693,7 +693,7 @@ Route::post('/user/subscribe', function (Request $request) {
 
 传递给 `newSubscription` 方法的第一个参数应该是订阅的内部类型。如果你的应用程序只提供单个订阅，你可以将其称为 `default` 或 `primary`。此订阅类型仅用于内部应用程序使用，并非旨在向用户显示。此外，它不应包含空格，并且在创建订阅后永远不应更改。第二个参数是用户订阅的具体价格。此值应对应于 Stripe 中的价格标识符。
 
-接受 [Stripe 支付方式标识符](#存储支付方式) 或 Stripe `PaymentMethod` 对象的 `create` 方法将开始订阅，并使用可计费模型的 Stripe 客户 ID 和其他相关计费信息更新你的数据库。
+接受 Stripe 支付方式标识符 或 Stripe `PaymentMethod` 对象的 `create` 方法将开始订阅，并使用可计费模型的 Stripe 客户 ID 和其他相关计费信息更新你的数据库。
 
 > [!WARNING]
 > 直接将支付方式标识符传递给 `create` 订阅方法也会自动将其添加到用户的存储支付方式中。
@@ -822,7 +822,7 @@ $user->newSubscription('default', 'price_monthly')->add();
 
 #### 从 Stripe 仪表板创建订阅
 
-你还可以从 Stripe 仪表板本身创建订阅。这样做时，Cashier 将同步新添加的订阅，并将 `default` 类型分配给他们。要自定义分配给仪表板创建的订阅的订阅类型，请 [定义 Webhook 事件处理程序](#定义-webhook-事件处理程序)。
+你还可以从 Stripe 仪表板本身创建订阅。这样做时，Cashier 将同步新添加的订阅，并将 `default` 类型分配给他们。要自定义分配给仪表板创建的订阅的订阅类型，请 定义 Webhook 事件处理程序。
 
 此外，你只能通过 Stripe 仪表板创建一种类型的订阅。如果你的应用程序提供使用不同类型的多个订阅，则只能通过 Stripe 仪表板添加一种类型的订阅。
 
@@ -838,7 +838,7 @@ if ($user->subscribed('default')) {
 }
 ```
 
-`subscribed` 方法也是 [路由中间件](/docs/{{version}}/middleware) 的理想选择，允许你根据用户的订阅状态过滤对路由和控制器的访问：
+`subscribed` 方法也是 [路由中间件](/topic/Laravel%2013.x/rwyl2exvz8.html) 的理想选择，允许你根据用户的订阅状态过滤对路由和控制器的访问：
 
 ```php
 <?php
@@ -1086,7 +1086,7 @@ $user->subscription('default')->noProrate()->updateQuantity(10);
 
 #### 多产品订阅的数量
 
-如果你的订阅是 [多产品订阅](#多产品订阅)，则应将你希望增加或减少数量的价格的 ID 作为第二个参数传递给 increment / decrement 方法：
+如果你的订阅是 多产品订阅，则应将你希望增加或减少数量的价格的 ID 作为第二个参数传递给 increment / decrement 方法：
 
 ```php
 $user->subscription('default')->incrementQuantity(1, 'price_chat');
@@ -1197,7 +1197,7 @@ $user->subscription('default')->noProrate()->removePrice('price_chat');
 
 #### 数量
 
-如果你想更新各个订阅价格上的数量，可以通过使用 [现有数量方法](#订阅数量) 并将价格的 ID 作为附加参数传递给该方法来完成此操作：
+如果你想更新各个订阅价格上的数量，可以通过使用 现有数量方法 并将价格的 ID 作为附加参数传递给该方法来完成此操作：
 
 ```php
 $user = User::find(1);
@@ -1284,7 +1284,7 @@ Route::post('/user/subscribe', function (Request $request) {
 });
 ```
 
-你还可以通过 [Stripe Checkout](#checkout) 启动计量订阅：
+你还可以通过 Stripe Checkout 启动计量订阅：
 
 ```php
 $checkout = Auth::user()
@@ -1338,7 +1338,7 @@ $user->meters();
 ### 订阅税务
 
 > [!WARNING]
-> 你可以 [使用 Stripe Tax 自动计算税款](#税务配置)，而不是手动计算税率。
+> 你可以 使用 Stripe Tax 自动计算税款，而不是手动计算税率。
 
 要指定用户在订阅上支付的税率，你应该在可计费模型上实现 `taxRates` 方法，并返回一个包含 Stripe 税率 ID 的数组。你可以在 [你的 Stripe 仪表板](https://dashboard.stripe.com/test/tax-rates) 中定义这些税率：
 
@@ -1383,7 +1383,7 @@ public function priceTaxRates(): array
 $user->subscription('default')->syncTaxRates();
 ```
 
-这也会同步多产品订阅的任何项目税率。如果你的应用程序提供多产品订阅，你应该确保你的可计费模型实现了 [上面讨论](#订阅税务) 的 `priceTaxRates` 方法。
+这也会同步多产品订阅的任何项目税率。如果你的应用程序提供多产品订阅，你应该确保你的可计费模型实现了 上面讨论 的 `priceTaxRates` 方法。
 
 #### 免税
 
@@ -1561,7 +1561,7 @@ $user = User::create([
 ```
 
 > [!WARNING]
-> 确保在可计费模型的类定义中为 `trial_ends_at` 属性添加 [日期转换](/docs/{{version}}/eloquent-mutators#date-casting)。
+> 确保在可计费模型的类定义中为 `trial_ends_at` 属性添加 [日期转换](/topic/Laravel%2013.x/2ky04kl9z8.html)。
 
 Cashier 将此类试用称为"通用试用"，因为它未附加到任何现有订阅。如果当前日期未超过 `trial_ends_at` 的值，则可计费模型实例上的 `onTrial` 方法将返回 `true`：
 
@@ -1660,11 +1660,11 @@ php artisan cashier:webhook --disabled
 ```
 
 > [!WARNING]
-> 确保用 Cashier 包含的 [Webhook 签名验证](#验证-webhook-签名) 中间件保护传入的 Stripe Webhook 请求。
+> 确保用 Cashier 包含的 Webhook 签名验证 中间件保护传入的 Stripe Webhook 请求。
 
 #### Webhook 和 CSRF 保护
 
-由于 Stripe Webhook 需要绕过 Laravel 的 [CSRF 保护](/docs/{{version}}/csrf)，因此应确保 Laravel 不会尝试验证传入的 Stripe Webhook 的 CSRF 令牌。为此，你应在应用程序的 `bootstrap/app.php` 文件中将 `stripe/*` 从 CSRF 保护中排除：
+由于 Stripe Webhook 需要绕过 Laravel 的 [CSRF 保护](/topic/Laravel%2013.x/kpv136298w.html)，因此应确保 Laravel 不会尝试验证传入的 Stripe Webhook 的 CSRF 令牌。为此，你应在应用程序的 `bootstrap/app.php` 文件中将 `stripe/*` 从 CSRF 保护中排除：
 
 ```php
 ->withMiddleware(function (Middleware $middleware): void {
@@ -1681,7 +1681,7 @@ Cashier 自动处理失败的订阅取消和其他常见的 Stripe Webhook 事�
 - `Laravel\Cashier\Events\WebhookReceived`
 - `Laravel\Cashier\Events\WebhookHandled`
 
-这两个事件都包含 Stripe Webhook 的完整负载。例如，如果你希望处理 `invoice.payment_succeeded` Webhook，你可以注册一个 [监听器](/docs/{{version}}/events#defining-listeners) 来处理该事件：
+这两个事件都包含 Stripe Webhook 的完整负载。例如，如果你希望处理 `invoice.payment_succeeded` Webhook，你可以注册一个 [监听器](/topic/Laravel%2013.x/x3vo0l4vm1.html) 来处理该事件：
 
 ```php
 <?php
@@ -1714,7 +1714,7 @@ class StripeEventListener
 
 ### 简单收费
 
-如果你想使用支付方式标识符对客户进行一次性扣款，可以使用可计费模型实例上的 `charge` 方法。如果你需要在处理一次性扣款之前从客户那里收集支付详细信息，请参阅 [单次收费的 Payment Element](#单次收费的-payment-element) 文档：
+如果你想使用支付方式标识符对客户进行一次性扣款，可以使用可计费模型实例上的 `charge` 方法。如果你需要在处理一次性扣款之前从客户那里收集支付详细信息，请参阅 单次收费的 Payment Element 文档：
 
 ```php
 use Illuminate\Http\Request;
@@ -2137,7 +2137,7 @@ $checkout = $user->collectTaxIds()->checkout('price_tshirt');
 调用此方法后，将向客户提供一个新的复选框，使他们能够指明他们是否以公司身份购买。如果是这样，他们将有机会提供其税号。
 
 > [!WARNING]
-> 如果你已在应用程序的服务提供者中配置了 [自动税款收集](#税务配置)，则此功能将自动启用，无需调用 `collectTaxIds` 方法。
+> 如果你已在应用程序的服务提供者中配置了 自动税款收集，则此功能将自动启用，无需调用 `collectTaxIds` 方法。
 
 ### 访客 Checkout
 
@@ -2171,7 +2171,7 @@ Route::get('/product-checkout', function (Request $request) {
 });
 ```
 
-在访客 Checkout 完成后，Stripe 可以调度 `checkout.session.completed` Webhook 事件，因此请确保 [配置你的 Stripe Webhook](https://dashboard.stripe.com/webhooks) 以实际将此事件发送到你的应用程序。在 Stripe 仪表板中启用 Webhook 后，你可以 [使用 Cashier 处理 Webhook](#处理-stripe-webhook)。Webhook 有效负载中包含的对象将是 [Checkout 对象](https://stripe.com/docs/api/checkout/sessions/object)，你可以检查该对象以履行客户的订单。
+在访客 Checkout 完成后，Stripe 可以调度 `checkout.session.completed` Webhook 事件，因此请确保 [配置你的 Stripe Webhook](https://dashboard.stripe.com/webhooks) 以实际将此事件发送到你的应用程序。在 Stripe 仪表板中启用 Webhook 后，你可以 使用 Cashier 处理 Webhook。Webhook 有效负载中包含的对象将是 [Checkout 对象](https://stripe.com/docs/api/checkout/sessions/object)，你可以检查该对象以履行客户的订单。
 
 ## 处理失败的支付
 
@@ -2265,7 +2265,7 @@ $subscription->withPaymentConfirmationOptions([
 
 ### 需要额外确认的付款
 
-SCA 法规通常需要额外验证才能确认和处理付款。发生这种情况时，Cashier 将引发 `Laravel\Cashier\Exceptions\IncompletePayment` 异常，告知你需要额外验证。有关如何处理这些异常的更多信息，请参阅 [处理失败的付款](#处理失败的支付) 文档。
+SCA 法规通常需要额外验证才能确认和处理付款。发生这种情况时，Cashier 将引发 `Laravel\Cashier\Exceptions\IncompletePayment` 异常，告知你需要额外验证。有关如何处理这些异常的更多信息，请参阅 处理失败的付款 文档。
 
 Stripe 或 Cashier 提供的付款确认屏幕可能针对特定银行或发卡机构的付款流程量身定制，可能包括额外的卡确认、临时小额扣款、独立设备身份验证或其他形式的验证。
 
@@ -2273,7 +2273,7 @@ Stripe 或 Cashier 提供的付款确认屏幕可能针对特定银行或发卡�
 
 当付款需要额外确认时，订阅将保持 `incomplete` 或 `past_due` 状态，如其 `stripe_status` 数据库列所指示。Cashier 将在付款确认完成且你的应用程序通过 Webhook 收到完成通知后立即激活客户的订阅。
 
-有关 `incomplete` 和 `past_due` 状态的更多信息，请参阅 [有关这些状态的其他文档](#未完成和逾期状态)。
+有关 `incomplete` 和 `past_due` 状态的更多信息，请参阅 有关这些状态的其他文档。
 
 ### 非会话付款通知
 
@@ -2283,7 +2283,7 @@ Stripe 或 Cashier 提供的付款确认屏幕可能针对特定银行或发卡�
 CASHIER_PAYMENT_NOTIFICATION=Laravel\Cashier\Notifications\ConfirmPayment
 ```
 
-为确保非会话付款确认通知已传递，请验证是否已为你的应用程序配置 [Stripe Webhook](#处理-stripe-webhook)，并在 Stripe 仪表板中启用了 `invoice.payment_action_required` Webhook。此外，你的 `Billable` 模型还应使用 Laravel 的 `Illuminate\Notifications\Notifiable` trait。
+为确保非会话付款确认通知已传递，请验证是否已为你的应用程序配置 Stripe Webhook，并在 Stripe 仪表板中启用了 `invoice.payment_action_required` Webhook。此外，你的 `Billable` 模型还应使用 Laravel 的 `Illuminate\Notifications\Notifiable` trait。
 
 > [!WARNING]
 > 即使客户手动进行需要额外确认的付款，也会发送通知。不幸的是，Stripe 无法知道付款是手动进行还是"非会话"进行的。但是，如果客户在已经确认其付款后访问付款页面，他们将只会看到"付款成功"消息。客户不会被允许意外地再次确认同一笔付款并导致意外的二次扣款。

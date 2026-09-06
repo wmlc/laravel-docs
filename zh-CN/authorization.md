@@ -2,9 +2,9 @@
 
 ## 介绍
 
-除了内置的 [认证](/docs/{{version}}/authentication) 服务外，Laravel 还提供了一种简单的方式来针对给定资源对用户动作进行授权。例如，即便某个用户已认证，也未必被授权更新或删除应用中由 Eloquent 模型或数据库记录管理的某些资源。Laravel 的授权特性提供了一种简单、有序的方式来管理这些授权检查。
+除了内置的 [认证](/topic/Laravel%2013.x/xq9zrgjvdo.html) 服务外，Laravel 还提供了一种简单的方式来针对给定资源对用户动作进行授权。例如，即便某个用户已认证，也未必被授权更新或删除应用中由 Eloquent 模型或数据库记录管理的某些资源。Laravel 的授权特性提供了一种简单、有序的方式来管理这些授权检查。
 
-Laravel 主要通过两种方式提供授权：[Gates](#gates) 和 [Policies](#creating-policies)。你可以把 Gate 和 Policy 想象成路由与控制器：Gate 提供了一种基于闭包的简单授权方案，而 Policy 则像控制器一样，围绕某个特定的模型或资源组织授权逻辑。本文档将先介绍 Gate，再来看 Policy。
+Laravel 主要通过两种方式提供授权：Gates 和 Policies。你可以把 Gate 和 Policy 想象成路由与控制器：Gate 提供了一种基于闭包的简单授权方案，而 Policy 则像控制器一样，围绕某个特定的模型或资源组织授权逻辑。本文档将先介绍 Gate，再来看 Policy。
 
 构建应用时，并非只能在 Gate 或 Policy 之间二选一。大多数应用会同时混用 Gate 和 Policy，这完全没有问题！Gate 最适合用于那些与任何模型或资源无关的动作，例如查看管理员仪表盘；而当你希望针对某个特定模型或资源进行授权时，则应使用 Policy。
 
@@ -13,7 +13,7 @@ Laravel 主要通过两种方式提供授权：[Gates](#gates) 和 [Policies](#c
 ### 编写 Gate
 
 > [!WARNING]
-> Gate 是学习 Laravel 授权特性基础的好方式；不过在构建健壮的 Laravel 应用时，建议使用 [Policies](#creating-policies) 来组织授权规则。
+> Gate 是学习 Laravel 授权特性基础的好方式；不过在构建健壮的 Laravel 应用时，建议使用 Policies 来组织授权规则。
 
 Gate 本质上是用于判断用户是否被授权执行某个给定动作的闭包。通常 Gate 在 `App\Providers\AppServiceProvider` 类的 `boot` 方法里通过 `Gate` Facade 定义。Gate 总是接收一个用户实例作为第一个参数，并可以可选地接收其它参数（如相关的 Eloquent 模型）。
 
@@ -118,7 +118,7 @@ Gate::authorize('update-post', $post);
 
 #### 传入额外上下文
 
-用于授权能力的方法（`allows`、`denies`、`check`、`any`、`none`、`authorize`、`can`、`cannot`）以及授权相关 [Blade 指令](#via-blade-templates)（`@can`、`@cannot`、`@canany`）均可以接收一个数组作为第二个参数。这些数组元素会作为参数传给 Gate 闭包，用于在做授权决策时提供更多上下文：
+用于授权能力的方法（`allows`、`denies`、`check`、`any`、`none`、`authorize`、`can`、`cannot`）以及授权相关 Blade 指令（`@can`、`@cannot`、`@canany`）均可以接收一个数组作为第二个参数。这些数组元素会作为参数传给 Gate 闭包，用于在做授权决策时提供更多上下文：
 
 ```php
 use App\Models\Category;
@@ -239,7 +239,7 @@ Gate::after(function (User $user, string $ability, bool|null $result, mixed $arg
 
 ### 内联授权
 
-偶尔你需要判断当前已认证用户是否有权执行某个动作，但又不想为此专门写一个对应的 Gate。Laravel 允许你通过 `Gate::allowIf` 和 `Gate::denyIf` 方法执行这种"内联"授权检查。内联授权不会执行任何已定义的 ["before" 或 "after" 授权钩子](#intercepting-gate-checks)：
+偶尔你需要判断当前已认证用户是否有权执行某个动作，但又不想为此专门写一个对应的 Gate。Laravel 允许你通过 `Gate::allowIf` 和 `Gate::denyIf` 方法执行这种"内联"授权检查。内联授权不会执行任何已定义的 "before" 或 "after" 授权钩子：
 
 ```php
 use App\Models\User;
@@ -355,7 +355,7 @@ class PostPolicy
 如果你在通过 Artisan 控制台生成 Policy 时使用了 `--model` 选项，那么它已经包含了针对 `viewAny`、`view`、`create`、`update`、`delete`、`restore` 和 `forceDelete` 动作的方法。
 
 > [!NOTE]
-> 所有 Policy 都是通过 Laravel 的 [服务容器](/docs/{{version}}/container) 解析的，因此你可以在 Policy 的构造函数里类型提示所需的依赖，它们会被自动注入。
+> 所有 Policy 都是通过 Laravel 的 [服务容器](/topic/Laravel%2013.x/x3vo054vm1.html) 解析的，因此你可以在 Policy 的构造函数里类型提示所需的依赖，它们会被自动注入。
 
 ### Policy 响应
 
@@ -533,7 +533,7 @@ class PostController extends Controller
 }
 ```
 
-如果为给定模型 [注册了 Policy](#registering-policies)，那么 `can` 方法会自动调用相应的 Policy 并返回布尔结果。如果没有为该模型注册 Policy，`can` 方法会尝试调用与给定动作名同名的、基于闭包的 Gate。
+如果为给定模型 注册了 Policy，那么 `can` 方法会自动调用相应的 Policy 并返回布尔结果。如果没有为该模型注册 Policy，`can` 方法会尝试调用与给定动作名同名的、基于闭包的 Gate。
 
 #### 不需要模型的动作
 
@@ -627,7 +627,7 @@ public function create(Request $request): RedirectResponse
 
 ### 通过中间件
 
-Laravel 提供了一种中间件，它可以在请求到达路由或控制器之前就完成授权。默认情况下，可以通过 `can` [中间件别名](/docs/{{version}}/middleware#middleware-aliases) 把 `Illuminate\Auth\Middleware\Authorize` 中间件挂到一条路由上，该别名由 Laravel 自动注册。下面我们通过示例演示如何使用 `can` 中间件授权用户能否更新某篇文章：
+Laravel 提供了一种中间件，它可以在请求到达路由或控制器之前就完成授权。默认情况下，可以通过 `can` [中间件别名](/topic/Laravel%2013.x/rwyl2exvz8.html) 把 `Illuminate\Auth\Middleware\Authorize` 中间件挂到一条路由上，该别名由 Laravel 自动注册。下面我们通过示例演示如何使用 `can` 中间件授权用户能否更新某篇文章：
 
 ```php
 use App\Models\Post;
@@ -637,7 +637,7 @@ Route::put('/post/{post}', function (Post $post) {
 })->middleware('can:update,post');
 ```
 
-在这个示例中，我们给 `can` 中间件传入了两个参数：第一个是你希望授权的动作名，第二个是你希望传给 Policy 方法的路由参数。由于这里使用了 [隐式模型绑定](/docs/{{version}}/routing#implicit-binding)，`App\Models\Post` 模型会被传给 Policy 方法。如果用户未被授权执行该动作，中间件会返回一个状态码为 403 的 HTTP 响应。
+在这个示例中，我们给 `can` 中间件传入了两个参数：第一个是你希望授权的动作名，第二个是你希望传给 Policy 方法的路由参数。由于这里使用了 [隐式模型绑定](/topic/Laravel%2013.x/dgy7xg5vw2.html)，`App\Models\Post` 模型会被传给 Policy 方法。如果用户未被授权执行该动作，中间件会返回一个状态码为 403 的 HTTP 响应。
 
 为了使用方便，你也可以通过 `can` 方法把 `can` 中间件挂到路由上：
 
@@ -649,7 +649,7 @@ Route::put('/post/{post}', function (Post $post) {
 })->can('update', 'post');
 ```
 
-如果你正在使用 [控制器中间件属性](/docs/{{version}}/controllers#middleware-attributes)，可以通过 `Authorize` 属性应用 `can` 中间件：
+如果你正在使用 [控制器中间件属性](/topic/Laravel%2013.x/d6vro4rv3g.html)，可以通过 `Authorize` 属性应用 `can` 中间件：
 
 ```php
 use Illuminate\Routing\Attributes\Controllers\Authorize;
@@ -774,7 +774,7 @@ public function update(Request $request, Post $post): RedirectResponse
 
 虽然授权操作必须在服务端完成，但为前端应用提供授权数据通常会更便于正确渲染 UI。Laravel 并没有为 Inertia 前端暴露授权信息规定强制的约定。
 
-不过，如果你正在使用 Laravel 基于 Inertia 的某个 [入门套件](/docs/{{version}}/starter-kits)，那么你的应用已经包含一个 `HandleInertiaRequests` 中间件。可以在该中间件的 `share` 方法中返回一些共享数据，这些数据会被暴露给应用内的所有 Inertia 页面。这个共享数据就是为用户定义授权信息的便捷位置：
+不过，如果你正在使用 Laravel 基于 Inertia 的某个 [入门套件](/topic/Laravel%2013.x/kl9nop7vz4.html)，那么你的应用已经包含一个 `HandleInertiaRequests` 中间件。可以在该中间件的 `share` 方法中返回一些共享数据，这些数据会被暴露给应用内的所有 Inertia 页面。这个共享数据就是为用户定义授权信息的便捷位置：
 
 ```php
 <?php

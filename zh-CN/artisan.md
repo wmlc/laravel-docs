@@ -16,7 +16,7 @@ php artisan help migrate
 
 #### Laravel Sail
 
-如果使用 [Laravel Sail](/docs/{{version}}/sail) 作为本地开发环境，记得使用 `sail` 命令行工具来调用 Artisan 命令。Sail 会在应用的 Docker 容器内执行 Artisan 命令：
+如果使用 [Laravel Sail](/topic/Laravel%2013.x/e296opw9q7.html) 作为本地开发环境，记得使用 `sail` 命令行工具来调用 Artisan 命令。Sail 会在应用的 Docker 容器内执行 Artisan 命令：
 
 ```shell
 ./vendor/bin/sail artisan list
@@ -76,7 +76,7 @@ Tinker 使用「允许」列表（allow list）来确定哪些 Artisan 命令可
 
 ## 编写命令
 
-除了 Artisan 自带的命令外，你还可以构建自己的自定义命令。命令通常保存在 `app/Console/Commands` 目录下；但只要指示 Laravel [扫描其他目录以查找 Artisan 命令](#registering-commands)，就可以自由选择其他存储位置。
+除了 Artisan 自带的命令外，你还可以构建自己的自定义命令。命令通常保存在 `app/Console/Commands` 目录下；但只要指示 Laravel 扫描其他目录以查找 Artisan 命令，就可以自由选择其他存储位置。
 
 ### 生成命令
 
@@ -88,9 +88,9 @@ php artisan make:command SendEmails
 
 ### 命令结构
 
-生成命令后，应使用 `Signature` 与 `Description` 属性定义命令的签名（signature）和描述（description）。`Signature` 属性还允许定义[命令的输入期望](#defining-input-expectations)。当命令被执行时会调用 `handle` 方法，可以在该方法中编写命令逻辑。
+生成命令后，应使用 `Signature` 与 `Description` 属性定义命令的签名（signature）和描述（description）。`Signature` 属性还允许定义命令的输入期望。当命令被执行时会调用 `handle` 方法，可以在该方法中编写命令逻辑。
 
-来看一个示例命令。注意，我们可以通过命令的 `handle` 方法请求所需的任何依赖。Laravel 的[服务容器（Service Container）](/docs/{{version}}/container) 会自动注入该方法签名中类型提示的所有依赖：
+来看一个示例命令。注意，我们可以通过命令的 `handle` 方法请求所需的任何依赖。Laravel 的[服务容器（Service Container）](/topic/Laravel%2013.x/x3vo054vm1.html) 会自动注入该方法签名中类型提示的所有依赖：
 
 ```php
 <?php
@@ -140,7 +140,7 @@ $this->fail('Something went wrong.');
 
 基于闭包的命令为将控制台命令定义为类提供了另一种方式。正如路由闭包是控制器的一种替代形式，可以把命令闭包视为命令类的替代形式。
 
-尽管 `routes/console.php` 文件并不定义 HTTP 路由，但它定义了进入应用的基于控制台的入口点（路由）。在该文件中，可以使用 `Artisan::command` 方法定义所有基于闭包的控制台命令。`command` 方法接受两个参数：[命令签名](#defining-input-expectations) 与一个接收命令参数和选项的闭包：
+尽管 `routes/console.php` 文件并不定义 HTTP 路由，但它定义了进入应用的基于控制台的入口点（路由）。在该文件中，可以使用 `Artisan::command` 方法定义所有基于闭包的控制台命令。`command` 方法接受两个参数：命令签名 与一个接收命令参数和选项的闭包：
 
 ```php
 Artisan::command('mail:send {user}', function (string $user) {
@@ -152,7 +152,7 @@ Artisan::command('mail:send {user}', function (string $user) {
 
 #### 类型提示依赖
 
-除了接收命令的参数和选项外，命令闭包还可以类型提示希望从[服务容器](/docs/{{version}}/container) 解析的其他依赖：
+除了接收命令的参数和选项外，命令闭包还可以类型提示希望从[服务容器](/topic/Laravel%2013.x/x3vo054vm1.html) 解析的其他依赖：
 
 ```php
 use App\Models\User;
@@ -441,9 +441,9 @@ return [
 ```
 
 > [!NOTE]
-> 完整的 [Laravel Prompts](/docs/{{version}}/prompts) 文档包含有关可用提示及其用法的更多信息。
+> 完整的 [Laravel Prompts](/topic/Laravel%2013.x/ndvm3oj93j.html) 文档包含有关可用提示及其用法的更多信息。
 
-如果希望提示用户选择或输入[选项](#options)，可以在命令的 `handle` 方法中加入提示。但是，如果只希望在用户同时被自动提示缺失参数时才进行提示，可以实现 `afterPromptingForMissingArguments` 方法：
+如果希望提示用户选择或输入选项，可以在命令的 `handle` 方法中加入提示。但是，如果只希望在用户同时被自动提示缺失参数时才进行提示，可以实现 `afterPromptingForMissingArguments` 方法：
 
 ```php
 use Symfony\Component\Console\Input\InputInterface;
@@ -521,7 +521,7 @@ $queue = $this->input('queue', 'default');
 ### 提示输入
 
 > [!NOTE]
-> [Laravel Prompts](/docs/{{version}}/prompts) 是一个 PHP 包，用于为命令行应用添加美观且用户友好的表单，包含占位文本和验证等浏览器特性。
+> [Laravel Prompts](/topic/Laravel%2013.x/ndvm3oj93j.html) 是一个 PHP 包，用于为命令行应用添加美观且用户友好的表单，包含占位文本和验证等浏览器特性。
 
 除了显示输出外，还可以在命令执行期间要求用户提供输入。`ask` 方法会向用户展示给定问题，接受他们的输入，然后将用户的输入返回给命令：
 
@@ -716,7 +716,7 @@ use App\Domain\Orders\Commands\SendEmails;
 ])
 ```
 
-当 Artisan 启动时，应用中的所有命令都会通过[服务容器](/docs/{{version}}/container) 解析，并注册到 Artisan。
+当 Artisan 启动时，应用中的所有命令都会通过[服务容器](/topic/Laravel%2013.x/x3vo054vm1.html) 解析，并注册到 Artisan。
 
 ## 以编程方式执行命令
 
@@ -768,7 +768,7 @@ $exitCode = Artisan::call('migrate:refresh', [
 
 #### 队列化 Artisan 命令
 
-使用 `Artisan` Facade 上的 `queue` 方法，甚至可以将 Artisan 命令放入队列，以便由[队列工作进程](/docs/{{version}}/queues) 在后台处理。在使用此方法之前，请确保已配置队列并正在运行队列监听器：
+使用 `Artisan` Facade 上的 `queue` 方法，甚至可以将 Artisan 命令放入队列，以便由[队列工作进程](/topic/Laravel%2013.x/wevwmkz9l2.html) 在后台处理。在使用此方法之前，请确保已配置队列并正在运行队列监听器：
 
 ```php
 use Illuminate\Support\Facades\Artisan;
@@ -847,7 +847,7 @@ $this->trap([SIGTERM, SIGQUIT], function (int $signal) {
 
 ## `dev` 命令
 
-`dev` Artisan 命令会在单个终端窗口中启动本地开发所需的所有进程。默认情况下，它会同时运行 PHP 开发服务器、队列工作进程、通过 [Pail](/docs/{{version}}/logging#tailing-log-messages-using-pail) 进行的日志跟踪，以及 Vite 资源编译：
+`dev` Artisan 命令会在单个终端窗口中启动本地开发所需的所有进程。默认情况下，它会同时运行 PHP 开发服务器、队列工作进程、通过 [Pail](/topic/Laravel%2013.x/2wy3l33ykm.html) 进行的日志跟踪，以及 Vite 资源编译：
 
 ```shell
 php artisan dev

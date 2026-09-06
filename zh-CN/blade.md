@@ -4,7 +4,7 @@
 
 Blade 是 Laravel 内置的简洁而强大的模板引擎。与一些 PHP 模板引擎不同，Blade 不限制你在模板中使用原生 PHP 代码。事实上，所有 Blade 模板都会被编译为原生 PHP 代码并缓存起来，直到它们被修改，这意味着 Blade 基本上不会给你的应用带来任何额外开销。Blade 模板文件使用 `.blade.php` 文件扩展名，通常存放在 `resources/views` 目录中。
 
-你可以在路由或控制器中使用全局的 `view` 辅助函数返回 Blade 视图。当然，正如 [视图](/docs/{{version}}/views) 文档中提到的，你可以通过 `view` 辅助函数的第二个参数将数据传递给 Blade 视图：
+你可以在路由或控制器中使用全局的 `view` 辅助函数返回 Blade 视图。当然，正如 [视图](/topic/Laravel%2013.x/m892gz6y01.html) 文档中提到的，你可以通过 `view` 辅助函数的第二个参数将数据传递给 Blade 视图：
 
 ```php
 Route::get('/', function () {
@@ -179,7 +179,7 @@ Hello, @{{ name }}.
 
 #### 身份验证指令
 
-`@auth` 和 `@guest` 指令可用于快速判断当前用户是否[已通过身份验证](/docs/{{version}}/authentication)或是否为游客：
+`@auth` 和 `@guest` 指令可用于快速判断当前用户是否[已通过身份验证](/topic/Laravel%2013.x/xq9zrgjvdo.html)或是否为游客：
 
 ```blade
 @auth
@@ -251,7 +251,7 @@ Hello, @{{ name }}.
 
 #### session 指令
 
-`@session` 指令可用于判断 [session](/docs/{{version}}/session) 值是否存在。如果 session 值存在，则 `@session` 和 `@endsession` 指令之间的模板内容将被求值。在 `@session` 指令的内容中，你可以输出 `$value` 变量以显示 session 值：
+`@session` 指令可用于判断 [session](/topic/Laravel%2013.x/2ev86noyor.html) 值是否存在。如果 session 值存在，则 `@session` 和 `@endsession` 指令之间的模板内容将被求值。在 `@session` 指令的内容中，你可以输出 `$value` 变量以显示 session 值：
 
 ```blade
 @session('status')
@@ -263,7 +263,7 @@ Hello, @{{ name }}.
 
 #### context 指令
 
-`@context` 指令可用于判断 [context](/docs/{{version}}/context) 值是否存在。如果 context 值存在，则 `@context` 和 `@endcontext` 指令之间的模板内容将被求值。在 `@context` 指令的内容中，你可以输出 `$value` 变量以显示 context 值：
+`@context` 指令可用于判断 [context](/topic/Laravel%2013.x/xpv527gv86.html) 值是否存在。如果 context 值存在，则 `@context` 和 `@endcontext` 指令之间的模板内容将被求值。在 `@context` 指令的内容中，你可以输出 `$value` 变量以显示 context 值：
 
 ```blade
 @context('canonical')
@@ -315,7 +315,7 @@ Hello, @{{ name }}.
 ```
 
 > [!NOTE]
-> 在 `foreach` 循环中迭代时，你可以使用 [循环变量](#the-loop-variable) 来获取有关循环的有用信息，例如当前是循环的第一次还是最后一次迭代。
+> 在 `foreach` 循环中迭代时，你可以使用 循环变量 来获取有关循环的有用信息，例如当前是循环的第一次还是最后一次迭代。
 
 在使用循环时，你还可以使用 `@continue` 和 `@break` 指令跳过当前迭代或终止循环：
 
@@ -481,7 +481,7 @@ Hello, @{{ name }}.
 ### 包含子视图
 
 > [!NOTE]
-> 虽然你可以自由使用 `@include` 指令，但 Blade [组件](#components) 提供了类似功能，并在数据与属性绑定等方面比 `@include` 指令具有更多优势。
+> 虽然你可以自由使用 `@include` 指令，但 Blade 组件 提供了类似功能，并在数据与属性绑定等方面比 `@include` 指令具有更多优势。
 
 Blade 的 `@include` 指令允许你从一个视图内包含另一个 Blade 视图。所有在父视图中可用的变量在包含的视图中同样可用：
 
@@ -551,7 +551,7 @@ Blade 的 `@include` 指令允许你从一个视图内包含另一个 Blade 视�
 
 ### `@once` 指令
 
-`@once` 指令允许你定义一个仅在每次渲染周期内求值一次的模板片段。当需要使用 [stacks](#stacks) 将某段 JavaScript 推送到页面的 head 时，这非常有用。例如，如果你在循环中渲染某个给定的 [组件](#components)，你可能只希望在第一次渲染该组件时将该 JavaScript 推送到 head：
+`@once` 指令允许你定义一个仅在每次渲染周期内求值一次的模板片段。当需要使用 stacks 将某段 JavaScript 推送到页面的 head 时，这非常有用。例如，如果你在循环中渲染某个给定的 组件，你可能只希望在第一次渲染该组件时将该 JavaScript 推送到 head：
 
 ```blade
 @once
@@ -638,7 +638,7 @@ Blade 的 `@include` 指令允许你从一个视图内包含另一个 Blade 视�
 
 ### 字体
 
-当使用 [Laravel 的 Vite 字体优化](/docs/{{version}}/vite#working-with-fonts) 时，你可以使用 `@fonts` 指令在应用布局中渲染已配置的字体预加载链接与内联字体 CSS：
+当使用 [Laravel 的 Vite 字体优化](/topic/Laravel%2013.x/ndvm3gj93j.html) 时，你可以使用 `@fonts` 指令在应用布局中渲染已配置的字体预加载链接与内联字体 CSS：
 
 ```blade
 <!doctype html>
@@ -948,7 +948,7 @@ return function (array $data) {
 
 #### 附加依赖
 
-如果你的组件需要 Laravel [服务容器](/docs/{{version}}/container) 中的依赖，你可以在组件的任何数据属性之前列出它们，它们将由容器自动注入：
+如果你的组件需要 Laravel [服务容器](/topic/Laravel%2013.x/x3vo054vm1.html) 中的依赖，你可以在组件的任何数据属性之前列出它们，它们将由容器自动注入：
 
 ```php
 use App\Services\AlertCreator;
@@ -1054,7 +1054,7 @@ class Alert extends Component
 ```
 
 > [!NOTE]
-> 如果需要在不应接收合并属性的其他 HTML 元素上有条件地编译类，可以使用 [@class 指令](#conditional-classes)。
+> 如果需要在不应接收合并属性的其他 HTML 元素上有条件地编译类，可以使用 @class 指令。
 
 #### 非 class 属性的合并
 
@@ -1253,7 +1253,7 @@ class Alert extends Component
 
 #### 插槽属性
 
-与 Blade 组件一样，你也可以为插槽分配附加的[属性](#component-attributes)，例如 CSS 类名：
+与 Blade 组件一样，你也可以为插槽分配附加的属性，例如 CSS 类名：
 
 ```xml
 <x-card class="shadow-sm">
@@ -1269,7 +1269,7 @@ class Alert extends Component
 </x-card>
 ```
 
-要与插槽属性交互，你可以访问插槽变量的 `attributes` 属性。有关如何与属性交互的更多信息，请参阅[组件属性](#component-attributes)文档：
+要与插槽属性交互，你可以访问插槽变量的 `attributes` 属性。有关如何与属性交互的更多信息，请参阅组件属性文档：
 
 ```blade
 @props([
@@ -1431,7 +1431,7 @@ php artisan make:component forms.input --view
 
 ### 数据属性 / 属性
 
-由于匿名组件没有任何关联的类，你可能想知道如何区分哪些数据应作为变量传递给组件，哪些属性应放在组件的[属性包](#component-attributes)中。
+由于匿名组件没有任何关联的类，你可能想知道如何区分哪些数据应作为变量传递给组件，哪些属性应放在组件的属性包中。
 
 你可以使用 `@props` 指令在组件 Blade 模板的顶部指定应被视为数据变量的属性。组件上的所有其他属性可通过组件的属性包访问。如果希望为数据变量提供默认值，可以将变量名指定为数组键，将默认值指定为数组值：
 
@@ -1493,7 +1493,7 @@ php artisan make:component forms.input --view
 
 如前所述，匿名组件通常通过将 Blade 模板放在 `resources/views/components` 目录中来定义。但是，除了默认路径之外，你可能偶尔希望向 Laravel 注册其他匿名组件路径。
 
-`anonymousComponentPath` 方法的第一个参数接受匿名组件位置的「路径」，第二个参数是可选的「命名空间」，组件应放在该命名空间下。通常，应在某个应用[服务提供者](/docs/{{version}}/providers) 的 `boot` 方法中调用此方法：
+`anonymousComponentPath` 方法的第一个参数接受匿名组件位置的「路径」，第二个参数是可选的「命名空间」，组件应放在该命名空间下。通常，应在某个应用[服务提供者](/topic/Laravel%2013.x/qk942kovw1.html) 的 `boot` 方法中调用此方法：
 
 ```php
 /**
@@ -1527,7 +1527,7 @@ Blade::anonymousComponentPath(__DIR__.'/../components', 'dashboard');
 
 ### 使用组件构建布局
 
-大多数 Web 应用在各个页面之间保持相同的一般布局。如果我们必须在创建的每个视图中重复整个布局 HTML，那将非常繁琐且难以维护。值得庆幸的是，可以将此布局方便地定义为单个 [Blade 组件](#components)，然后在整个应用中使用它。
+大多数 Web 应用在各个页面之间保持相同的一般布局。如果我们必须在创建的每个视图中重复整个布局 HTML，那将非常繁琐且难以维护。值得庆幸的是，可以将此布局方便地定义为单个 Blade 组件，然后在整个应用中使用它。
 
 #### 定义布局组件
 
@@ -1562,7 +1562,7 @@ Blade::anonymousComponentPath(__DIR__.'/../components', 'dashboard');
 </x-layout>
 ```
 
-请记住，注入到组件中的内容将提供给 `layout` 组件内的默认 `$slot` 变量。你可能已经注意到，如果提供了 `$title` 插槽，我们的 layout 也会遵循它；否则，将显示默认标题。我们可以使用[组件文档](#components)中讨论的标准插槽语法从任务列表视图注入自定义标题：
+请记住，注入到组件中的内容将提供给 `layout` 组件内的默认 `$slot` 变量。你可能已经注意到，如果提供了 `$title` 插槽，我们的 layout 也会遵循它；否则，将显示默认标题。我们可以使用组件文档中讨论的标准插槽语法从任务列表视图注入自定义标题：
 
 ```blade
 <!-- resources/views/tasks.blade.php -->
@@ -1592,7 +1592,7 @@ Route::get('/tasks', function () {
 
 #### 定义布局
 
-布局也可以通过「模板继承」创建。这是[组件](#components) 出现之前构建应用的主要方式。
+布局也可以通过「模板继承」创建。这是组件 出现之前构建应用的主要方式。
 
 让我们从一个简单的示例开始。首先，我们将考察一个页面布局。由于大多数 Web 应用在各个页面之间保持相同的一般布局，因此将此布局定义为单个 Blade 视图非常方便：
 
@@ -1656,7 +1656,7 @@ Route::get('/tasks', function () {
 
 ### CSRF 字段
 
-每当你在应用中定义 HTML 表单时，都应在表单中包含一个隐藏的 CSRF 令牌字段，以便 [CSRF 保护](/docs/{{version}}/csrf) 中间件可以验证请求。你可以使用 `@csrf` Blade 指令来生成该令牌字段：
+每当你在应用中定义 HTML 表单时，都应在表单中包含一个隐藏的 CSRF 令牌字段，以便 [CSRF 保护](/topic/Laravel%2013.x/kpv136298w.html) 中间件可以验证请求。你可以使用 `@csrf` Blade 指令来生成该令牌字段：
 
 ```blade
 <form method="POST" action="/profile">
@@ -1680,7 +1680,7 @@ Route::get('/tasks', function () {
 
 ### 验证错误
 
-`@error` 指令可用于快速检查给定属性是否存在[验证错误消息](/docs/{{version}}/validation#quick-displaying-the-validation-errors)。在 `@error` 指令内，你可以输出 `$message` 变量来显示错误消息：
+`@error` 指令可用于快速检查给定属性是否存在[验证错误消息](/topic/Laravel%2013.x/e296oew9q7.html)。在 `@error` 指令内，你可以输出 `$message` 变量来显示错误消息：
 
 ```blade
 <!-- /resources/views/post/create.blade.php -->
@@ -1712,7 +1712,7 @@ Route::get('/tasks', function () {
 />
 ```
 
-你可以将[特定错误 bag 的名称](/docs/{{version}}/validation#named-error-bags) 作为第二个参数传递给 `@error` 指令，以在包含多个表单的页面中检索验证错误消息：
+你可以将[特定错误 bag 的名称](/topic/Laravel%2013.x/e296oew9q7.html) 作为第二个参数传递给 `@error` 指令，以在包含多个表单的页面中检索验证错误消息：
 
 ```blade
 <!-- /resources/views/auth.blade.php -->
@@ -1784,7 +1784,7 @@ Blade 允许你推送到具名 stacks，这些 stacks 可以在另一个视图�
 
 ## 服务注入
 
-`@inject` 指令可用于从 Laravel [服务容器](/docs/{{version}}/container) 中检索服务。传递给 `@inject` 的第一个参数是服务将要放入的变量名称，第二个参数是你希望解析的服务的类名或接口名：
+`@inject` 指令可用于从 Laravel [服务容器](/topic/Laravel%2013.x/x3vo054vm1.html) 中检索服务。传递给 `@inject` 的第一个参数是服务将要放入的变量名称，第二个参数是你希望解析的服务的类名或接口名：
 
 ```blade
 @inject('metrics', 'App\Services\MetricsService')

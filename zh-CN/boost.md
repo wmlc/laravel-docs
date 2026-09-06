@@ -109,7 +109,7 @@ Laravel Boost 提供了一个 MCP（Model Context Protocol）服务器，向 AI 
 | Get Absolute URL | 把相对路径 URI 转为绝对路径，方便 agent 生成合法 URL |
 | Last Error | 读取应用日志文件中最近一次错误 |
 | Read Log Entries | 读取最近的 N 条日志 |
-| Record Rule | 将一条持久的 [项目规则](#project-rules) 写入 `.ai/rules`，让未来的 agent 继承 |
+| Record Rule | 将一条持久的 项目规则 写入 `.ai/rules`，让未来的 agent 继承 |
 | Search Docs | 查询 Laravel 官方托管的文档 API 服务，获取基于已安装扩展包的文档 |
 
 ### 手动注册 MCP 服务器
@@ -165,7 +165,7 @@ Laravel Boost 为以下扩展包和框架提供 AI 准则。其中 `core` 准则
 | Wayfinder | core |
 | Enforce Tests | conditional |
 
-> **Note：** 若希望保持 AI 准则的持续更新，请参考 [保持 Boost 资源更新](#keeping-boost-resources-updated) 一节。
+> **Note：** 若希望保持 AI 准则的持续更新，请参考 保持 Boost 资源更新 一节。
 
 ### 添加自定义 AI 准则
 
@@ -224,7 +224,7 @@ $result = PackageName::featureTwo($param1, $param2);
 | volt-development | Volt |
 | wayfinder-development | Wayfinder |
 
-> **Note：** 若希望保持 skill 持续更新，请参考 [保持 Boost 资源更新](#keeping-boost-resources-updated) 一节。
+> **Note：** 若希望保持 skill 持续更新，请参考 保持 Boost 资源更新 一节。
 
 ### 自定义 Skill
 
@@ -283,7 +283,7 @@ Laravel Boost 提供了两种不同的方式向 AI agent 提供应用上下文�
 | **范围** | 广泛、基础 | 专注、任务相关 |
 | **目的** | 核心约定与最佳实践 | 详细的实现模式 |
 
-准则和 skill 都是用来描述 Laravel 生态体系的。要捕捉你自己的应用约定，应当使用 [项目规则](#project-rules)。
+准则和 skill 都是用来描述 Laravel 生态体系的。要捕捉你自己的应用约定，应当使用 项目规则。
 
 ## 项目规则
 

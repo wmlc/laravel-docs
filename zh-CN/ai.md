@@ -79,4 +79,4 @@ Boost 内置强大的文档 API，让 AI 智能体访问 Laravel 生态中 17,00
 
 ### 代理集成
 
-Boost 与支持模型上下文协议（Model Context Protocol）的流行 IDE 及 AI 工具集成。关于 Cursor、Claude Code、Codex、Gemini CLI、GitHub Copilot、Junie 的详细配置说明，请参阅 Boost 文档的 [配置你的智能体](/docs/{{version}}/boost#set-up-your-agents) 章节。
+Boost 与支持模型上下文协议（Model Context Protocol）的流行 IDE 及 AI 工具集成。关于 Cursor、Claude Code、Codex、Gemini CLI、GitHub Copilot、Junie 的详细配置说明，请参阅 Boost 文档的 [配置你的智能体](/topic/Laravel%2013.x/2ev864oyor.html) 章节。

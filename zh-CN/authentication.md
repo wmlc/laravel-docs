@@ -6,22 +6,22 @@
 
 从本质上讲，Laravel 的认证机制由"guards"和"providers"两部分组成。Guards 定义了在每个请求中如何对用户进行认证。例如，Laravel 自带一个 `session` guard，它使用会话存储和 Cookie 来维护状态。
 
-Providers 定义了如何从持久存储中检索用户。Laravel 自带支持使用 [Eloquent](/docs/{{version}}/eloquent) 和数据库查询构造器检索用户。不过你也可以根据应用需求自由定义其他 provider。
+Providers 定义了如何从持久存储中检索用户。Laravel 自带支持使用 [Eloquent](/topic/Laravel%2013.x/rwyl2kxvz8.html) 和数据库查询构造器检索用户。不过你也可以根据应用需求自由定义其他 provider。
 
 应用的认证配置文件位于 `config/auth.php`。该文件包含若干文档完备的选项，可用于微调 Laravel 认证服务的行为。
 
 > [!NOTE]
-> 不要把 guard 和 provider 与"角色（roles）"和"权限（permissions）"混淆。如需了解基于权限的用户操作授权，请参考 [授权](/docs/{{version}}/authorization) 文档。
+> 不要把 guard 和 provider 与"角色（roles）"和"权限（permissions）"混淆。如需了解基于权限的用户操作授权，请参考 [授权](/topic/Laravel%2013.x/2wy3l43ykm.html) 文档。
 
 ### 入门套件
 
-想快速上手？在一个全新的 Laravel 应用里安装一个 [Laravel 应用入门套件](/docs/{{version}}/starter-kits)。迁移数据库后，在浏览器里访问 `/register` 或分配给应用的其他 URL。入门套件会为你搭建好完整的认证系统！
+想快速上手？在一个全新的 Laravel 应用里安装一个 [Laravel 应用入门套件](/topic/Laravel%2013.x/kl9nop7vz4.html)。迁移数据库后，在浏览器里访问 `/register` 或分配给应用的其他 URL。入门套件会为你搭建好完整的认证系统！
 
-**即使你最终在 Laravel 应用里不打算使用入门套件，安装一个 [入门套件](/docs/{{version}}/starter-kits) 也是学习如何在真实 Laravel 项目中实现 Laravel 全部认证功能的好机会。** 由于 Laravel 入门套件已经为你准备好了认证相关的控制器、路由和视图，你可以查看这些文件中的代码来学习如何实现 Laravel 的认证特性。
+**即使你最终在 Laravel 应用里不打算使用入门套件，安装一个 [入门套件](/topic/Laravel%2013.x/kl9nop7vz4.html) 也是学习如何在真实 Laravel 项目中实现 Laravel 全部认证功能的好机会。** 由于 Laravel 入门套件已经为你准备好了认证相关的控制器、路由和视图，你可以查看这些文件中的代码来学习如何实现 Laravel 的认证特性。
 
 ### 数据库注意事项
 
-默认情况下，Laravel 会在 `app/Models` 目录中包含一个 `App\Models\User` [Eloquent 模型](/docs/{{version}}/eloquent)。该模型可以与默认的 Eloquent 认证驱动一起使用。
+默认情况下，Laravel 会在 `app/Models` 目录中包含一个 `App\Models\User` [Eloquent 模型](/topic/Laravel%2013.x/rwyl2kxvz8.html)。该模型可以与默认的 Eloquent 认证驱动一起使用。
 
 如果你的应用不使用 Eloquent，可以使用 `database` 认证 provider，它使用 Laravel 查询构造器。如果你的应用使用 MongoDB，请查看 MongoDB 官方的 [Laravel 用户认证文档](https://www.mongodb.com/docs/drivers/php/laravel-mongodb/current/user-authentication/)。
 
@@ -33,7 +33,7 @@ Providers 定义了如何从持久存储中检索用户。Laravel 自带支持�
 
 Laravel 提供了若干与认证相关的包。在继续之前，我们先来概览一下 Laravel 中的认证生态，并讨论每个包各自的定位。
 
-首先，想想认证是如何工作的。使用 Web 浏览器时，用户会通过登录表单提供用户名和密码。如果凭据正确，应用会把已认证用户的信息存到用户的 [会话](/docs/{{version}}/session) 中。颁发给浏览器的 Cookie 中包含会话 ID，以便后续请求可以把用户与正确的会话关联起来。收到会话 Cookie 后，应用会根据会话 ID 取出相应的会话数据，识别出已存放认证信息，并认为该用户处于"已认证"状态。
+首先，想想认证是如何工作的。使用 Web 浏览器时，用户会通过登录表单提供用户名和密码。如果凭据正确，应用会把已认证用户的信息存到用户的 [会话](/topic/Laravel%2013.x/2ev86noyor.html) 中。颁发给浏览器的 Cookie 中包含会话 ID，以便后续请求可以把用户与正确的会话关联起来。收到会话 Cookie 后，应用会根据会话 ID 取出相应的会话数据，识别出已存放认证信息，并认为该用户处于"已认证"状态。
 
 而当某个远程服务需要认证以访问 API 时，通常不会使用 Cookie，因为此时没有 Web 浏览器。这种情况下，远程服务会在每次请求时携带一个 API Token 发给 API。应用可以拿这个 Token 与"有效 API Token 表"中的记录比对，从而把该请求"认证"为属于关联到该 Token 的用户。
 
@@ -43,11 +43,11 @@ Laravel 自带认证和会话服务，通常通过 `Auth` 和 `Session` 两个 F
 
 **应用入门套件**
 
-正如本文所述，你可以手动与这些认证服务交互，以搭建应用自己的认证层。不过，为了帮助你更快起步，我们发布了 [免费入门套件](/docs/{{version}}/starter-kits)，它们能为整个认证层提供稳健、现代的脚手架。
+正如本文所述，你可以手动与这些认证服务交互，以搭建应用自己的认证层。不过，为了帮助你更快起步，我们发布了 [免费入门套件](/topic/Laravel%2013.x/kl9nop7vz4.html)，它们能为整个认证层提供稳健、现代的脚手架。
 
 #### Laravel 的 API 认证服务
 
-Laravel 提供了两个可选的包，用于帮助你管理 API Token 以及认证使用 API Token 发起的请求：[Passport](/docs/{{version}}/passport) 和 [Sanctum](/docs/{{version}}/sanctum)。请注意，这些库与 Laravel 内置的基于 Cookie 的认证库并不互斥。这些库主要关注 API Token 认证，而内置认证服务主要关注基于 Cookie 的浏览器认证。许多应用会同时使用 Laravel 内置的基于 Cookie 的认证服务和其中的某个 Laravel API 认证包。
+Laravel 提供了两个可选的包，用于帮助你管理 API Token 以及认证使用 API Token 发起的请求：[Passport](/topic/Laravel%2013.x/2ky04xl9z8.html) 和 [Sanctum](/topic/Laravel%2013.x/xq9zr3jvdo.html)。请注意，这些库与 Laravel 内置的基于 Cookie 的认证库并不互斥。这些库主要关注 API Token 认证，而内置认证服务主要关注基于 Cookie 的浏览器认证。许多应用会同时使用 Laravel 内置的基于 Cookie 的认证服务和其中的某个 Laravel API 认证包。
 
 **Passport**
 
@@ -55,30 +55,30 @@ Passport 是一个 OAuth2 认证 provider，提供多种 OAuth2"授权类型"，
 
 **Sanctum**
 
-针对 OAuth2 的复杂性和开发者的困惑，我们着手打造了一个更简单、更顺畅的认证包，它可以同时处理来自 Web 浏览器的第一方 Web 请求和基于 Token 的 API 请求。这一目标在 [Laravel Sanctum](/docs/{{version}}/sanctum) 发布时得以实现。对于既要提供第一方 Web UI 又要提供 API 的应用、或者由独立于后端 Laravel 应用之外的 SPA 驱动的应用、又或者要提供移动端的应用来说，Sanctum 应当被认为是首选且推荐的认证包。
+针对 OAuth2 的复杂性和开发者的困惑，我们着手打造了一个更简单、更顺畅的认证包，它可以同时处理来自 Web 浏览器的第一方 Web 请求和基于 Token 的 API 请求。这一目标在 [Laravel Sanctum](/topic/Laravel%2013.x/xq9zr3jvdo.html) 发布时得以实现。对于既要提供第一方 Web UI 又要提供 API 的应用、或者由独立于后端 Laravel 应用之外的 SPA 驱动的应用、又或者要提供移动端的应用来说，Sanctum 应当被认为是首选且推荐的认证包。
 
-Laravel Sanctum 是一个混合的 Web/API 认证包，可以管理应用的整个认证流程。这是可行的，因为当 Sanctum 应用收到一个请求时，Sanctum 会先判断该请求是否包含引用已认证会话的会话 Cookie。Sanctum 通过调用我们前面介绍的 Laravel 内置认证服务来实现这一点。如果请求并非通过会话 Cookie 完成认证，Sanctum 会再去检查请求是否携带 API Token。如果存在 API Token，Sanctum 将使用该 Token 完成认证。要了解这一过程的更多细节，请参考 Sanctum 的 ["how it works"](/docs/{{version}}/sanctum#how-it-works) 文档。
+Laravel Sanctum 是一个混合的 Web/API 认证包，可以管理应用的整个认证流程。这是可行的，因为当 Sanctum 应用收到一个请求时，Sanctum 会先判断该请求是否包含引用已认证会话的会话 Cookie。Sanctum 通过调用我们前面介绍的 Laravel 内置认证服务来实现这一点。如果请求并非通过会话 Cookie 完成认证，Sanctum 会再去检查请求是否携带 API Token。如果存在 API Token，Sanctum 将使用该 Token 完成认证。要了解这一过程的更多细节，请参考 Sanctum 的 ["how it works"](/topic/Laravel%2013.x/xq9zr3jvdo.html) 文档。
 
 #### 小结与选型建议
 
 简而言之，如果你的应用将通过浏览器访问并且构建的是单体 Laravel 应用，那么它将使用 Laravel 内置的认证服务。
 
-接下来，如果你的应用提供面向第三方的 API，那么可以在 [Passport](/docs/{{version}}/passport) 和 [Sanctum](/docs/{{version}}/sanctum) 之间二选一来为应用提供 API Token 认证。一般来说，应优先选择 Sanctum，因为它是一个完整、简单的 API 认证、SPA 认证与移动端认证方案，并且支持"作用域（scope）"或"能力（abilities）"。
+接下来，如果你的应用提供面向第三方的 API，那么可以在 [Passport](/topic/Laravel%2013.x/2ky04xl9z8.html) 和 [Sanctum](/topic/Laravel%2013.x/xq9zr3jvdo.html) 之间二选一来为应用提供 API Token 认证。一般来说，应优先选择 Sanctum，因为它是一个完整、简单的 API 认证、SPA 认证与移动端认证方案，并且支持"作用域（scope）"或"能力（abilities）"。
 
-如果你正在构建以 Laravel 后端为支撑的单页应用（SPA），那么应当使用 [Laravel Sanctum](/docs/{{version}}/sanctum)。使用 Sanctum 时，你既需要 [手动实现自己的后端认证路由](#authenticating-users)，也可以使用 [Laravel Fortify](/docs/{{version}}/fortify) 作为无头认证后端服务，由它来提供注册、密码重置、邮箱验证等特性的路由和控制器。
+如果你正在构建以 Laravel 后端为支撑的单页应用（SPA），那么应当使用 [Laravel Sanctum](/topic/Laravel%2013.x/xq9zr3jvdo.html)。使用 Sanctum 时，你既需要 手动实现自己的后端认证路由，也可以使用 [Laravel Fortify](/topic/Laravel%2013.x/x3vo0x4vm1.html) 作为无头认证后端服务，由它来提供注册、密码重置、邮箱验证等特性的路由和控制器。
 
-只有当应用确实需要 OAuth2 规范里提供的全部特性时，才选择 Passport。此外，如果你正在构建一个将由 AI 客户端访问的 [MCP 服务器](/docs/{{version}}/mcp)，则应当使用 Passport，因为 MCP 客户端通常期望 [通过 OAuth 进行认证](/docs/{{version}}/mcp#oauth)。
+只有当应用确实需要 OAuth2 规范里提供的全部特性时，才选择 Passport。此外，如果你正在构建一个将由 AI 客户端访问的 [MCP 服务器](/topic/Laravel%2013.x/3oyjdzxyp5.html)，则应当使用 Passport，因为 MCP 客户端通常期望 [通过 OAuth 进行认证](/topic/Laravel%2013.x/3oyjdzxyp5.html)。
 
-如果你想快速起步，我们非常推荐 [我们的应用入门套件](/docs/{{version}}/starter-kits)，它们使用我们推荐的 Laravel 内置认证服务栈，能让你快速启动一个新的 Laravel 应用。
+如果你想快速起步，我们非常推荐 [我们的应用入门套件](/topic/Laravel%2013.x/kl9nop7vz4.html)，它们使用我们推荐的 Laravel 内置认证服务栈，能让你快速启动一个新的 Laravel 应用。
 
 ## 认证快速入门
 
 > [!WARNING]
-> 本节文档介绍的是通过 [Laravel 应用入门套件](/docs/{{version}}/starter-kits) 进行用户认证的方式，其中包含 UI 脚手架便于你快速起步。如果你想直接与 Laravel 的认证系统集成，请参阅 [手动认证用户](#authenticating-users) 文档。
+> 本节文档介绍的是通过 [Laravel 应用入门套件](/topic/Laravel%2013.x/kl9nop7vz4.html) 进行用户认证的方式，其中包含 UI 脚手架便于你快速起步。如果你想直接与 Laravel 的认证系统集成，请参阅 手动认证用户 文档。
 
 ### 安装入门套件
 
-首先，你应当 [安装一个 Laravel 应用入门套件](/docs/{{version}}/starter-kits)。我们的入门套件提供了精美的设计起点，可以在你全新的 Laravel 应用中引入认证功能。
+首先，你应当 [安装一个 Laravel 应用入门套件](/topic/Laravel%2013.x/kl9nop7vz4.html)。我们的入门套件提供了精美的设计起点，可以在你全新的 Laravel 应用中引入认证功能。
 
 ### 获取已认证用户
 
@@ -133,11 +133,11 @@ if (Auth::check()) {
 ```
 
 > [!NOTE]
-> 即便可以用 `check` 方法判断用户是否已认证，你通常还是会用中间件在允许用户访问某些路由/控制器前先校验其已认证状态。相关内容请参阅 [保护路由](/docs/{{version}}/authentication#protecting-routes) 文档。
+> 即便可以用 `check` 方法判断用户是否已认证，你通常还是会用中间件在允许用户访问某些路由/控制器前先校验其已认证状态。相关内容请参阅 [保护路由](/topic/Laravel%2013.x/xq9zrgjvdo.html) 文档。
 
 ### 保护路由
 
-[路由中间件](/docs/{{version}}/middleware) 可用于仅允许已认证用户访问指定路由。Laravel 自带一个 `auth` 中间件，它是 `Illuminate\Auth\Middleware\Authenticate` 类的 [中间件别名](/docs/{{version}}/middleware#middleware-aliases)。由于该中间件已经在 Laravel 内部注册过别名，所以只需把它挂载到路由定义上即可：
+[路由中间件](/topic/Laravel%2013.x/rwyl2exvz8.html) 可用于仅允许已认证用户访问指定路由。Laravel 自带一个 `auth` 中间件，它是 `Illuminate\Auth\Middleware\Authenticate` 类的 [中间件别名](/topic/Laravel%2013.x/rwyl2exvz8.html)。由于该中间件已经在 Laravel 内部注册过别名，所以只需把它挂载到路由定义上即可：
 
 ```php
 Route::get('/flights', function () {
@@ -147,7 +147,7 @@ Route::get('/flights', function () {
 
 #### 重定向未认证用户
 
-当 `auth` 中间件检测到未认证用户时，会把用户重定向到名为 `login` 的 [命名路由](/docs/{{version}}/routing#named-routes)。你可以使用应用 `bootstrap/app.php` 文件里的 `redirectGuestsTo` 方法修改该行为：
+当 `auth` 中间件检测到未认证用户时，会把用户重定向到名为 `login` 的 [命名路由](/topic/Laravel%2013.x/dgy7xg5vw2.html)。你可以使用应用 `bootstrap/app.php` 文件里的 `redirectGuestsTo` 方法修改该行为：
 
 ```php
 use Illuminate\Http\Request;
@@ -187,16 +187,16 @@ Route::get('/flights', function () {
 
 ### 登录限流
 
-如果你正在使用我们的 [应用入门套件](/docs/{{version}}/starter-kits)，登录尝试会自动启用限流。默认情况下，用户如果多次输入错误凭据，将在一分钟内无法再次登录。该限流按用户名/邮箱与 IP 地址的组合作为唯一维度。
+如果你正在使用我们的 [应用入门套件](/topic/Laravel%2013.x/kl9nop7vz4.html)，登录尝试会自动启用限流。默认情况下，用户如果多次输入错误凭据，将在一分钟内无法再次登录。该限流按用户名/邮箱与 IP 地址的组合作为唯一维度。
 
 > [!NOTE]
-> 如果你想对应用内的其他路由进行限流，请参阅 [限流文档](/docs/{{version}}/routing#rate-limiting)。
+> 如果你想对应用内的其他路由进行限流，请参阅 [限流文档](/topic/Laravel%2013.x/dgy7xg5vw2.html)。
 
 ## 手动认证用户
 
-你并非必须使用 Laravel [应用入门套件](/docs/{{version}}/starter-kits) 自带的认证脚手架。如果你选择不使用这套脚手架，就需要直接使用 Laravel 认证类来管理用户认证。放心，非常简单！
+你并非必须使用 Laravel [应用入门套件](/topic/Laravel%2013.x/kl9nop7vz4.html) 自带的认证脚手架。如果你选择不使用这套脚手架，就需要直接使用 Laravel 认证类来管理用户认证。放心，非常简单！
 
-我们将通过 `Auth` [Facade](/docs/{{version}}/facades) 访问 Laravel 的认证服务，所以需要在类的顶部导入 `Auth` Facade。接下来，我们来看 `attempt` 方法。`attempt` 方法通常用于处理应用"登录"表单发起的认证请求。如果认证成功，应当重新生成用户的 [会话](/docs/{{version}}/session)，以防止 [会话固定（session fixation）](https://en.wikipedia.org/wiki/Session_fixation)：
+我们将通过 `Auth` [Facade](/topic/Laravel%2013.x/569x508yep.html) 访问 Laravel 的认证服务，所以需要在类的顶部导入 `Auth` Facade。接下来，我们来看 `attempt` 方法。`attempt` 方法通常用于处理应用"登录"表单发起的认证请求。如果认证成功，应当重新生成用户的 [会话](/topic/Laravel%2013.x/2ev86noyor.html)，以防止 [会话固定（session fixation）](https://en.wikipedia.org/wiki/Session_fixation)：
 
 ```php
 <?php
@@ -320,7 +320,7 @@ if (Auth::viaRemember()) {
 
 #### 通过用户实例进行认证
 
-如果你需要把一个已存在的用户实例设为当前已认证用户，可以把该用户实例传给 `Auth` Facade 的 `login` 方法。传入的用户实例必须是 `Illuminate\Contracts\Auth\Authenticatable` [契约](/docs/{{version}}/contracts) 的实现。Laravel 自带的 `App\Models\User` 模型已经实现了这个接口。这种认证方式在你已经有一个有效的用户实例时非常有用，例如用户刚刚在应用里完成注册之后：
+如果你需要把一个已存在的用户实例设为当前已认证用户，可以把该用户实例传给 `Auth` Facade 的 `login` 方法。传入的用户实例必须是 `Illuminate\Contracts\Auth\Authenticatable` [契约](/topic/Laravel%2013.x/3xyq4r4vmq.html) 的实现。Laravel 自带的 `App\Models\User` 模型已经实现了这个接口。这种认证方式在你已经有一个有效的用户实例时非常有用，例如用户刚刚在应用里完成注册之后：
 
 ```php
 use Illuminate\Support\Facades\Auth;
@@ -366,7 +366,7 @@ if (Auth::once($credentials)) {
 
 ## HTTP Basic 认证
 
-[HTTP Basic 认证](https://en.wikipedia.org/wiki/Basic_access_authentication) 提供了一种无需设置专门"登录"页就能让用户快速完成应用认证的方式。要开始使用，只需把 `auth.basic` [中间件](/docs/{{version}}/middleware) 挂到一条路由上即可。`auth.basic` 中间件随 Laravel 框架一起提供，无需自行定义：
+[HTTP Basic 认证](https://en.wikipedia.org/wiki/Basic_access_authentication) 提供了一种无需设置专门"登录"页就能让用户快速完成应用认证的方式。要开始使用，只需把 `auth.basic` [中间件](/topic/Laravel%2013.x/rwyl2exvz8.html) 挂到一条路由上即可。`auth.basic` 中间件随 Laravel 框架一起提供，无需自行定义：
 
 ```php
 Route::get('/profile', function () {
@@ -387,7 +387,7 @@ RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
 
 ### 无状态 HTTP Basic 认证
 
-你也可以使用 HTTP Basic 认证而又不在会话中设置用户标识 Cookie。当你选择使用 HTTP Basic 认证来认证对应用 API 的请求时，这会很有帮助。为此，需要 [定义一个中间件](/docs/{{version}}/middleware)，在里面调用 `onceBasic` 方法。如果 `onceBasic` 方法没有返回响应，请求就可以继续向应用内部传递：
+你也可以使用 HTTP Basic 认证而又不在会话中设置用户标识 Cookie。当你选择使用 HTTP Basic 认证来认证对应用 API 的请求时，这会很有帮助。为此，需要 [定义一个中间件](/topic/Laravel%2013.x/rwyl2exvz8.html)，在里面调用 `onceBasic` 方法。如果 `onceBasic` 方法没有返回响应，请求就可以继续向应用内部传递：
 
 ```php
 <?php
@@ -426,7 +426,7 @@ Route::get('/api/user', function () {
 
 要手动把用户退出应用，可以使用 `Auth` Facade 提供的 `logout` 方法。它会把认证信息从用户会话中清除，使后续请求不再处于已认证状态。
 
-除了调用 `logout` 方法之外，建议同时销毁用户的会话并重新生成其 [CSRF Token](/docs/{{version}}/csrf)。登出用户之后，通常会把用户重定向到应用的根路径：
+除了调用 `logout` 方法之外，建议同时销毁用户的会话并重新生成其 [CSRF Token](/topic/Laravel%2013.x/kpv136298w.html)。登出用户之后，通常会把用户重定向到应用的根路径：
 
 ```php
 use Illuminate\Http\Request;
@@ -452,7 +452,7 @@ public function logout(Request $request): RedirectResponse
 
 Laravel 还提供了一种机制，可以在不销毁当前设备会话的情况下，把用户在其它设备上仍然活跃的会话失效（"退出登录"）。该特性通常用于用户修改或更新密码的场景：你希望其它设备的会话失效，同时让当前设备保持已认证状态。
 
-开始之前，你应该确保 `Illuminate\Session\Middleware\AuthenticateSession` 中间件被添加到了需要 Session 认证的路由上。通常应当把它放到一个路由分组里，这样就可以覆盖到应用的大多数路由。默认情况下，可以通过 `auth.session` [中间件别名](/docs/{{version}}/middleware#middleware-aliases) 将 `AuthenticateSession` 中间件挂到一条路由上：
+开始之前，你应该确保 `Illuminate\Session\Middleware\AuthenticateSession` 中间件被添加到了需要 Session 认证的路由上。通常应当把它放到一个路由分组里，这样就可以覆盖到应用的大多数路由。默认情况下，可以通过 `auth.session` [中间件别名](/topic/Laravel%2013.x/rwyl2exvz8.html) 将 `AuthenticateSession` 中间件挂到一条路由上：
 
 ```php
 Route::middleware(['auth', 'auth.session'])->group(function () {
@@ -477,7 +477,7 @@ Auth::logoutOtherDevices($currentPassword);
 构建应用时，你偶尔会遇到这样的情形：某些操作在执行前，或在用户被重定向到应用的敏感区域前，需要用户先确认自己的密码。Laravel 自带了中间件，让这一流程变得轻而易举。实现该特性需要你定义两条路由：一条用于显示一个让用户确认密码的视图，另一条用于确认密码有效并将用户重定向到他们想去的目标。
 
 > [!NOTE]
-> 下面的文档说明如何直接与 Laravel 的密码确认特性集成；不过，如果你想更快起步，可以使用 [Laravel 应用入门套件](/docs/{{version}}/starter-kits)，它们已经内置了对该特性的支持！
+> 下面的文档说明如何直接与 Laravel 的密码确认特性集成；不过，如果你想更快起步，可以使用 [Laravel 应用入门套件](/topic/Laravel%2013.x/kl9nop7vz4.html)，它们已经内置了对该特性的支持！
 
 ### 配置
 
@@ -522,7 +522,7 @@ Route::post('/confirm-password', function (Request $request) {
 
 ### 保护路由
 
-你应当为任何执行"需要最近一次密码确认"操作的路由挂上 `password.confirm` 中间件。该中间件随 Laravel 默认安装提供，会自动把用户想要访问的目标 URL 存入会话，以便在用户确认密码后再重定向过去。目标 URL 存入会话之后，中间件会把用户重定向到名为 `password.confirm` 的 [命名路由](/docs/{{version}}/routing#named-routes)：
+你应当为任何执行"需要最近一次密码确认"操作的路由挂上 `password.confirm` 中间件。该中间件随 Laravel 默认安装提供，会自动把用户想要访问的目标 URL 存入会话，以便在用户确认密码后再重定向过去。目标 URL 存入会话之后，中间件会把用户重定向到名为 `password.confirm` 的 [命名路由](/topic/Laravel%2013.x/dgy7xg5vw2.html)：
 
 ```php
 Route::get('/settings', function () {
@@ -536,7 +536,7 @@ Route::post('/settings', function () {
 
 ## 添加自定义 Guard
 
-你可以使用 `Auth` Facade 的 `extend` 方法来定义自己的认证 Guard。`extend` 方法的调用应当放在一个 [服务提供者](/docs/{{version}}/providers) 中。由于 Laravel 已经自带 `AppServiceProvider`，我们可以把代码放在那里：
+你可以使用 `Auth` Facade 的 `extend` 方法来定义自己的认证 Guard。`extend` 方法的调用应当放在一个 [服务提供者](/topic/Laravel%2013.x/qk942kovw1.html) 中。由于 Laravel 已经自带 `AppServiceProvider`，我们可以把代码放在那里：
 
 ```php
 <?php
@@ -733,7 +733,7 @@ interface Authenticatable
 
 Laravel 默认的密码哈希算法是 bcrypt。可以通过应用 `config/hashing.php` 配置文件或 `BCRYPT_ROUNDS` 环境变量来调整 bcrypt 哈希的"工作因子"。
 
-通常，随着 CPU/GPU 算力的提升，应当逐步增大 bcrypt 的工作因子。如果你增大了应用的 bcrypt 工作因子，Laravel 会在用户通过入门套件或通过 `attempt` 方法 [手动认证](#authenticating-users) 时，优雅地、自动地为用户的密码重新哈希。
+通常，随着 CPU/GPU 算力的提升，应当逐步增大 bcrypt 的工作因子。如果你增大了应用的 bcrypt 工作因子，Laravel 会在用户通过入门套件或通过 `attempt` 方法 手动认证 时，优雅地、自动地为用户的密码重新哈希。
 
 通常，自动重新哈希密码不会对你的应用造成干扰；但如果你想禁用该行为，可以发布 `hashing` 配置文件：
 
@@ -749,7 +749,7 @@ php artisan config:publish hashing
 
 ## 事件
 
-Laravel 在认证过程中会派发多种 [事件](/docs/{{version}}/events)。你可以为以下任意事件 [定义监听器](/docs/{{version}}/events)：
+Laravel 在认证过程中会派发多种 [事件](/topic/Laravel%2013.x/x3vo0l4vm1.html)。你可以为以下任意事件 [定义监听器](/topic/Laravel%2013.x/x3vo0l4vm1.html)：
 
 | 事件名                                       |
 | -------------------------------------------- |

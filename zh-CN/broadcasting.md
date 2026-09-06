@@ -4,9 +4,9 @@
 
 在许多现代 Web 应用中，WebSockets 用于实现实时、动态更新的用户界面。当服务端某些数据更新时，通常会通过 WebSocket 连接向客户端发送消息进行处理。相较于持续轮询应用服务端来获取应在 UI 中反映的数据变更，WebSockets 提供了一种更高效的替代方案。
 
-例如，假设应用可以将用户的数据导出为 CSV 文件并通过电子邮件发送给他们。但创建该 CSV 文件需要几分钟，因此选择在[队列任务](/docs/{{version}}/queues)中创建并发送 CSV。当 CSV 创建并发送给用户后，我们可以使用事件广播来分发一个 `App\Events\UserDataExported` 事件，由应用的 JavaScript 接收。一旦接收到该事件，就可以向用户显示一条消息，告知他们的 CSV 已通过电子邮件发送，而无需刷新页面。
+例如，假设应用可以将用户的数据导出为 CSV 文件并通过电子邮件发送给他们。但创建该 CSV 文件需要几分钟，因此选择在[队列任务](/topic/Laravel%2013.x/wevwmkz9l2.html)中创建并发送 CSV。当 CSV 创建并发送给用户后，我们可以使用事件广播来分发一个 `App\Events\UserDataExported` 事件，由应用的 JavaScript 接收。一旦接收到该事件，就可以向用户显示一条消息，告知他们的 CSV 已通过电子邮件发送，而无需刷新页面。
 
-为了帮助你构建这类功能，Laravel 让通过 WebSocket 连接「广播」服务端 Laravel [事件](/docs/{{version}}/events)变得轻而易举。广播 Laravel 事件使你能够在服务端 Laravel 应用与客户端 JavaScript 应用之间共享相同的事件名称和数据。
+为了帮助你构建这类功能，Laravel 让通过 WebSocket 连接「广播」服务端 Laravel [事件](/topic/Laravel%2013.x/x3vo0l4vm1.html)变得轻而易举。广播 Laravel 事件使你能够在服务端 Laravel 应用与客户端 JavaScript 应用之间共享相同的事件名称和数据。
 
 广播背后的核心概念很简单：客户端在前端连接到命名频道，而 Laravel 应用在后端向这些频道广播事件。这些事件可以包含你希望提供给前端的任何附加数据。
 
@@ -15,7 +15,7 @@
 默认情况下，Laravel 包含三种服务端广播驱动供你选择：[Laravel Reverb](https://reverb.laravel.com)、[Pusher Channels](https://pusher.com/channels) 和 [Ably](https://ably.com)。
 
 > [!NOTE]
-> 在深入研究事件广播之前，请确保已阅读 Laravel 的[事件与监听器](/docs/{{version}}/events)文档。
+> 在深入研究事件广播之前，请确保已阅读 Laravel 的[事件与监听器](/topic/Laravel%2013.x/x3vo0l4vm1.html)文档。
 
 ## 快速入门
 
@@ -27,16 +27,16 @@ php artisan install:broadcasting
 
 `install:broadcasting` 命令会提示你选择要使用的事件广播服务。此外，它会创建 `config/broadcasting.php` 配置文件和 `routes/channels.php` 文件，你可以在其中注册应用的广播授权路由和回调。
 
-Laravel 开箱即支持几种广播驱动：[Laravel Reverb](/docs/{{version}}/reverb)、[Pusher Channels](https://pusher.com/channels)、[Ably](https://ably.com) 以及用于本地开发和调试的 `log` 驱动。此外，还包含一个 `null` 驱动，允许你在测试期间禁用广播。`config/broadcasting.php` 配置文件中包含了每个驱动的配置示例。
+Laravel 开箱即支持几种广播驱动：[Laravel Reverb](/topic/Laravel%2013.x/2ev868oyor.html)、[Pusher Channels](https://pusher.com/channels)、[Ably](https://ably.com) 以及用于本地开发和调试的 `log` 驱动。此外，还包含一个 `null` 驱动，允许你在测试期间禁用广播。`config/broadcasting.php` 配置文件中包含了每个驱动的配置示例。
 
 应用的所有事件广播配置都存储在 `config/broadcasting.php` 配置文件中。如果你的应用中不存在此文件，请不要担心——运行 `install:broadcasting` Artisan 命令时将创建该文件。
 
 #### 后续步骤
 
-启用事件广播后，你就可以了解有关[定义广播事件](#defining-broadcast-events)和[监听事件](#listening-for-events)的更多信息。如果你使用 Laravel 的 React、Vue 或 Svelte [starter kit](/docs/{{version}}/starter-kits)，则可以使用 Echo 的 [useEcho 钩子](#using-react-or-vue)监听事件。
+启用事件广播后，你就可以了解有关定义广播事件和监听事件的更多信息。如果你使用 Laravel 的 React、Vue 或 Svelte [starter kit](/topic/Laravel%2013.x/kl9nop7vz4.html)，则可以使用 Echo 的 useEcho 钩子监听事件。
 
 > [!NOTE]
-> 在广播任何事件之前，应先配置并运行[队列工作进程](/docs/{{version}}/queues)。所有事件广播都通过队列任务完成，以免应用响应时间受到广播事件的严重影响。
+> 在广播任何事件之前，应先配置并运行[队列工作进程](/topic/Laravel%2013.x/wevwmkz9l2.html)。所有事件广播都通过队列任务完成，以免应用响应时间受到广播事件的严重影响。
 
 ## 服务端安装
 
@@ -54,7 +54,7 @@ php artisan install:broadcasting --reverb
 
 #### 手动安装
 
-运行 `install:broadcasting` 命令时，系统会提示你安装 [Laravel Reverb](/docs/{{version}}/reverb)。当然，你也可以使用 Composer 包管理器手动安装 Reverb：
+运行 `install:broadcasting` 命令时，系统会提示你安装 [Laravel Reverb](/topic/Laravel%2013.x/2ev868oyor.html)。当然，你也可以使用 Composer 包管理器手动安装 Reverb：
 
 ```shell
 composer require laravel/reverb
@@ -66,7 +66,7 @@ composer require laravel/reverb
 php artisan reverb:install
 ```
 
-你可以在 [Reverb 文档](/docs/{{version}}/reverb)中找到详细的 Reverb 安装和使用说明。
+你可以在 [Reverb 文档](/topic/Laravel%2013.x/2ev868oyor.html)中找到详细的 Reverb 安装和使用说明。
 
 ### Pusher Channels
 
@@ -104,7 +104,7 @@ PUSHER_APP_CLUSTER="mt1"
 BROADCAST_CONNECTION=pusher
 ```
 
-最后，你已准备好安装和配置 [Laravel Echo](#client-side-installation)，它将在客户端接收广播事件。
+最后，你已准备好安装和配置 Laravel Echo，它将在客户端接收广播事件。
 
 ### Ably
 
@@ -127,7 +127,7 @@ php artisan install:broadcasting --ably
 composer require ably/ably-php
 ```
 
-接下来，应在 `config/broadcasting.php` 配置文件中配置 Ably 凭据。此文件中已包含 Ably 配置示例，使你能够快速指定你的密钥。通常，应通过 `ABLY_KEY` [环境变量](/docs/{{version}}/configuration#environment-configuration)设置此值：
+接下来，应在 `config/broadcasting.php` 配置文件中配置 Ably 凭据。此文件中已包含 Ably 配置示例，使你能够快速指定你的密钥。通常，应通过 `ABLY_KEY` [环境变量](/topic/Laravel%2013.x/3dykqpoyl0.html)设置此值：
 
 ```ini
 ABLY_KEY=your-ably-key
@@ -139,7 +139,7 @@ ABLY_KEY=your-ably-key
 BROADCAST_CONNECTION=ably
 ```
 
-最后，你已准备好安装和配置 [Laravel Echo](#client-side-installation)，它将在客户端接收广播事件。
+最后，你已准备好安装和配置 Laravel Echo，它将在客户端接收广播事件。
 
 ## 客户端安装
 
@@ -328,7 +328,7 @@ npm run build
 ```
 
 > [!NOTE]
-> 要了解有关编译应用 JavaScript 资源的更多信息，请参阅 [Vite](/docs/{{version}}/vite) 文档。
+> 要了解有关编译应用 JavaScript 资源的更多信息，请参阅 [Vite](/topic/Laravel%2013.x/ndvm3gj93j.html) 文档。
 
 #### 使用现有客户端实例
 
@@ -434,11 +434,11 @@ npm run dev
 ```
 
 > [!NOTE]
-> 要了解有关编译应用 JavaScript 资源的更多信息，请参阅 [Vite](/docs/{{version}}/vite) 文档。
+> 要了解有关编译应用 JavaScript 资源的更多信息，请参阅 [Vite](/topic/Laravel%2013.x/ndvm3gj93j.html) 文档。
 
 ## 概念概述
 
-Laravel 的事件广播允许你使用基于驱动的方法通过 WebSocket 将服务端 Laravel 事件广播到客户端 JavaScript 应用。目前，Laravel 附带 [Laravel Reverb](https://reverb.laravel.com)、[Pusher Channels](https://pusher.com/channels) 和 [Ably](https://ably.com) 驱动。可以使用 [Laravel Echo](#client-side-installation) JavaScript 包轻松地在客户端消费事件。
+Laravel 的事件广播允许你使用基于驱动的方法通过 WebSocket 将服务端 Laravel 事件广播到客户端 JavaScript 应用。目前，Laravel 附带 [Laravel Reverb](https://reverb.laravel.com)、[Pusher Channels](https://pusher.com/channels) 和 [Ably](https://ably.com) 驱动。可以使用 Laravel Echo JavaScript 包轻松地在客户端消费事件。
 
 事件通过「频道」广播，频道可以指定为公共或私有。任何访问者都可以订阅公共频道而无需任何身份认证或授权；但是，要订阅私有频道，用户必须经过身份认证并被授权收听该频道。
 
@@ -534,7 +534,7 @@ Broadcast::channel('orders.{orderId}', function (User $user, int $orderId) {
 
 #### 监听事件广播
 
-接下来，剩下的就是在 JavaScript 应用中监听事件。我们可以使用 [Laravel Echo](#client-side-installation) 来执行此操作。Laravel Echo 内置的 React、Vue 和 Svelte 钩子使入门变得简单，并且默认情况下，事件的所有公共属性都将包含在广播事件中：
+接下来，剩下的就是在 JavaScript 应用中监听事件。我们可以使用 Laravel Echo 来执行此操作。Laravel Echo 内置的 React、Vue 和 Svelte 钩子使入门变得简单，并且默认情况下，事件的所有公共属性都将包含在广播事件中：
 
 ```js tab=React
 import { useEcho } from "@laravel/echo-react";
@@ -580,7 +580,7 @@ useEcho(
 
 要通知 Laravel 应广播给定事件，必须在事件类上实现 `Illuminate\Contracts\Broadcasting\ShouldBroadcast` 接口。该接口已导入到框架生成的所有事件类中，因此可以轻松地将其添加到任何事件。
 
-`ShouldBroadcast` 接口要求你实现一个方法：`broadcastOn`。`broadcastOn` 方法应返回一个频道或事件应广播到的频道数组。频道应为 `Channel`、`PrivateChannel` 或 `PresenceChannel` 的实例。`Channel` 实例表示任何用户都可以订阅的公共频道，而 `PrivateChannel` 和 `PresenceChannel` 表示需要[频道授权](#authorizing-channels)的私有频道：
+`ShouldBroadcast` 接口要求你实现一个方法：`broadcastOn`。`broadcastOn` 方法应返回一个频道或事件应广播到的频道数组。频道应为 `Channel`、`PrivateChannel` 或 `PresenceChannel` 的实例。`Channel` 实例表示任何用户都可以订阅的公共频道，而 `PrivateChannel` 和 `PresenceChannel` 表示需要频道授权的私有频道：
 
 ```php
 <?php
@@ -620,7 +620,7 @@ class ServerCreated implements ShouldBroadcast
 }
 ```
 
-实现 `ShouldBroadcast` 接口后，只需像往常一样[触发事件](/docs/{{version}}/events)。一旦事件被触发，[队列任务](/docs/{{version}}/queues)将使用你指定的广播驱动自动广播该事件。
+实现 `ShouldBroadcast` 接口后，只需像往常一样[触发事件](/topic/Laravel%2013.x/x3vo0l4vm1.html)。一旦事件被触发，[队列任务](/topic/Laravel%2013.x/wevwmkz9l2.html)将使用你指定的广播驱动自动广播该事件。
 
 ### 广播名称
 
@@ -751,11 +751,11 @@ class ServerCreated implements ShouldBroadcast, ShouldDispatchAfterCommit
 ```
 
 > [!NOTE]
-> 要了解有关解决这些问题的更多信息，请查看有关[队列任务和数据库事务](/docs/{{version}}/queues#jobs-and-database-transactions)的文档。
+> 要了解有关解决这些问题的更多信息，请查看有关[队列任务和数据库事务](/topic/Laravel%2013.x/wevwmkz9l2.html)的文档。
 
 ## 授权频道
 
-私有频道要求你授权当前 authenticated 用户实际上可以收听该频道。这是通过使用频道名称向 Laravel 应用发起 HTTP 请求并允许应用确定用户是否可以收听该频道来完成的。在使用 [Laravel Echo](#client-side-installation) 时，授权私有频道订阅的 HTTP 请求将自动发起。
+私有频道要求你授权当前 authenticated 用户实际上可以收听该频道。这是通过使用频道名称向 Laravel 应用发起 HTTP 请求并允许应用确定用户是否可以收听该频道来完成的。在使用 Laravel Echo 时，授权私有频道订阅的 HTTP 请求将自动发起。
 
 安装广播后，Laravel 会尝试自动注册 `/broadcasting/auth` 路由来处理授权请求。如果 Laravel 未能自动注册这些路由，则可以在应用的 `/bootstrap/app.php` 文件中手动注册它们：
 
@@ -791,7 +791,7 @@ php artisan channel:list
 
 #### 授权回调模型绑定
 
-与 HTTP 路由一样，频道路由也可以利用隐式和显式[路由模型绑定](/docs/{{version}}/routing#route-model-binding)。例如，可以请求实际的 `Order` 模型实例，而不是接收字符串或数字订单 ID：
+与 HTTP 路由一样，频道路由也可以利用隐式和显式[路由模型绑定](/topic/Laravel%2013.x/dgy7xg5vw2.html)。例如，可以请求实际的 `Order` 模型实例，而不是接收字符串或数字订单 ID：
 
 ```php
 use App\Models\Order;
@@ -803,7 +803,7 @@ Broadcast::channel('orders.{order}', function (User $user, Order $order) {
 ```
 
 > [!WARNING]
-> 与 HTTP 路由模型绑定不同，频道模型绑定不支持自动[隐式模型绑定作用域](/docs/{{version}}/routing#implicit-model-binding-scoping)。但是，这很少是问题，因为大多数频道可以根据单个模型的唯一主键进行作用域限定。
+> 与 HTTP 路由模型绑定不同，频道模型绑定不支持自动[隐式模型绑定作用域](/topic/Laravel%2013.x/dgy7xg5vw2.html)。但是，这很少是问题，因为大多数频道可以根据单个模型的唯一主键进行作用域限定。
 
 #### 授权回调身份认证
 
@@ -859,7 +859,7 @@ class OrderChannel
 ```
 
 > [!NOTE]
-> 与 Laravel 中的许多其他类一样，频道类将自动由[服务容器](/docs/{{version}}/container)解析。因此，你可以在频道类的构造函数中对频道所需的任何依赖项进行类型提示。
+> 与 Laravel 中的许多其他类一样，频道类将自动由[服务容器](/topic/Laravel%2013.x/x3vo054vm1.html)解析。因此，你可以在频道类的构造函数中对频道所需的任何依赖项进行类型提示。
 
 ## 广播事件
 
@@ -988,7 +988,7 @@ Broadcast::private('orders.'.$order->id)->send();
 Broadcast::presence('channels.'.$channel->id)->send();
 ```
 
-使用 `send` 方法广播匿名事件会将事件分发到应用的[队列](/docs/{{version}}/queues)以进行处理。但是，如果你希望立即广播事件，则可以使用 `sendNow` 方法：
+使用 `send` 方法广播匿名事件会将事件分发到应用的[队列](/topic/Laravel%2013.x/wevwmkz9l2.html)以进行处理。但是，如果你希望立即广播事件，则可以使用 `sendNow` 方法：
 
 ```php
 Broadcast::on('orders.'.$order->id)->sendNow();
@@ -1006,7 +1006,7 @@ Broadcast::on('orders.'.$order->id)
 
 当应用的队列服务器不可用或 Laravel 在广播事件时遇到错误时，将引发异常，通常会导致最终用户看到应用错误。由于事件广播通常是应用核心功能的补充，因此你可以通过在事件上实现 `ShouldRescue` 接口来防止这些异常中断用户体验。
 
-实现 `ShouldRescue` 接口的事件在广播尝试期间自动利用 Laravel 的 [rescue 辅助函数](/docs/{{version}}/helpers#method-rescue)。此辅助函数捕获任何异常，将其报告给应用的异常 handler进行记录，并允许应用在不中断用户工作流的情况下正常继续执行：
+实现 `ShouldRescue` 接口的事件在广播尝试期间自动利用 Laravel 的 [rescue 辅助函数](/topic/Laravel%2013.x/569x5d8yep.html)。此辅助函数捕获任何异常，将其报告给应用的异常 handler进行记录，并允许应用在不中断用户工作流的情况下正常继续执行：
 
 ```php
 <?php
@@ -1026,7 +1026,7 @@ class ServerCreated implements ShouldBroadcast, ShouldRescue
 
 ### 监听事件
 
-一旦你已[安装并实例化 Laravel Echo](#client-side-installation)，就可以开始监听从 Laravel 应用广播的事件。首先，使用 `channel` 方法检索频道的实例，然后调用 `listen` 方法监听指定事件：
+一旦你已安装并实例化 Laravel Echo，就可以开始监听从 Laravel 应用广播的事件。首先，使用 `channel` 方法检索频道的实例，然后调用 `listen` 方法监听指定事件：
 
 ```js
 Echo.channel(`orders.${this.order.id}`)
@@ -1046,7 +1046,7 @@ Echo.private(`orders.${this.order.id}`)
 
 #### 停止监听事件
 
-如果要在不[离开频道](#leaving-a-channel)的情况下停止监听给定事件，可以使用 `stopListening` 方法：
+如果要在不离开频道的情况下停止监听给定事件，可以使用 `stopListening` 方法：
 
 ```js
 Echo.private(`orders.${this.order.id}`)
@@ -1392,7 +1392,7 @@ const socketId = useSocketId();
 
 ### 授权状态频道
 
-所有状态频道也是私有频道；因此，用户必须被[授权访问它们](#authorizing-channels)。但是，在为状态频道定义授权回调时，如果用户被授权加入频道，你将不会返回 `true`。相反，你应该返回包含用户相关数据的数组。
+所有状态频道也是私有频道；因此，用户必须被授权访问它们。但是，在为状态频道定义授权回调时，如果用户被授权加入频道，你将不会返回 `true`。相反，你应该返回包含用户相关数据的数组。
 
 授权回调返回的数据将可用于 JavaScript 应用中的状态频道事件监听器。如果用户未被授权加入状态频道，则应返回 `false` 或 `null`：
 
@@ -1471,7 +1471,7 @@ Echo.join(`chat.${roomId}`)
 > [!WARNING]
 > 在阅读以下有关模型广播的文档之前，我们建议你熟悉 Laravel 模型广播服务的一般概念，以及如何手动创建和监听广播事件。
 
-当应用的 [Eloquent 模型](/docs/{{version}}/eloquent)被创建、更新或删除时，广播事件是很常见的。当然，这可以通过手动[为 Eloquent 模型状态变化定义自定义事件](/docs/{{version}}/eloquent#events)并使用 `ShouldBroadcast` 接口标记这些事件来轻松实现。
+当应用的 [Eloquent 模型](/topic/Laravel%2013.x/rwyl2kxvz8.html)被创建、更新或删除时，广播事件是很常见的。当然，这可以通过手动[为 Eloquent 模型状态变化定义自定义事件](/topic/Laravel%2013.x/rwyl2kxvz8.html)并使用 `ShouldBroadcast` 接口标记这些事件来轻松实现。
 
 但是，如果你的应用中没有出于任何其他目的使用这些事件，则仅为广播它们而创建事件类可能很麻烦。为了解决此问题，Laravel 允许你指示 Eloquent 模型自动广播其状态变化。
 
@@ -1636,11 +1636,11 @@ public function broadcastWith(string $event): array
 
 ### 监听模型广播
 
-将 `BroadcastsEvents` Trait 添加到模型并定义模型的 `broadcastOn` 方法后，就可以开始在客户端应用中监听广播的模型事件。在开始之前，你可能希望查阅有关[监听事件](#listening-for-events)的完整文档。
+将 `BroadcastsEvents` Trait 添加到模型并定义模型的 `broadcastOn` 方法后，就可以开始在客户端应用中监听广播的模型事件。在开始之前，你可能希望查阅有关监听事件的完整文档。
 
-首先，使用 `private` 方法检索频道的实例，然后调用 `listen` 方法监听指定的事件。通常，传递给 `private` 方法的频道名称应与 Laravel 的[模型广播约定](#model-broadcasting-conventions)相对应。
+首先，使用 `private` 方法检索频道的实例，然后调用 `listen` 方法监听指定的事件。通常，传递给 `private` 方法的频道名称应与 Laravel 的模型广播约定相对应。
 
-获得频道实例后，可以使用 `listen` 方法监听特定事件。由于模型广播事件与应用 `App\Events` 目录中的「实际」事件无关联，因此[事件名称](#model-broadcasting-event-conventions)必须以 `.` 为前缀，以表明它不属于特定命名空间。每个模型广播事件都有一个 `model` 属性，其中包含模型的所有可广播属性：
+获得频道实例后，可以使用 `listen` 方法监听特定事件。由于模型广播事件与应用 `App\Events` 目录中的「实际」事件无关联，因此事件名称必须以 `.` 为前缀，以表明它不属于特定命名空间。每个模型广播事件都有一个 `model` 属性，其中包含模型的所有可广播属性：
 
 ```js
 Echo.private(`App.Models.User.${this.user.id}`)
@@ -1797,7 +1797,7 @@ channel().listenForWhisper('typing', (e) => {
 
 ## 通知
 
-通过将事件广播与[通知](/docs/{{version}}/notifications)配对，你的 JavaScript 应用可以在新通知发生时接收它们，而无需刷新页面。在开始之前，请务必阅读有关使用[广播通知频道](/docs/{{version}}/notifications#broadcast-notifications)的文档。
+通过将事件广播与[通知](/topic/Laravel%2013.x/2ky045l9z8.html)配对，你的 JavaScript 应用可以在新通知发生时接收它们，而无需刷新页面。在开始之前，请务必阅读有关使用[广播通知频道](/topic/Laravel%2013.x/2ky045l9z8.html)的文档。
 
 将通知配置为使用广播频道后，可以使用 Echo 的 `notification` 方法监听广播事件。请记住，频道名称应与接收通知的实体的类名匹配：
 
@@ -1846,7 +1846,7 @@ channel().notification((notification) => {
 
 #### 停止监听通知
 
-如果要在不[离开频道](#leaving-a-channel)的情况下停止监听通知，可以使用 `stopListeningForNotification` 方法：
+如果要在不离开频道的情况下停止监听通知，可以使用 `stopListeningForNotification` 方法：
 
 ```js
 const callback = (notification) => {
