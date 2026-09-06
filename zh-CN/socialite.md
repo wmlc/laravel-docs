@@ -60,7 +60,7 @@ Route::get('/auth/callback', function () {
 
 ### 认证与存储
 
-从 OAuth 提供方获取用户后，你可以判断该用户是否存在于应用程序的数据库中，并[对用户进行身份验证](/docs/{{version}}/authentication#authenticate-a-user-instance)。如果用户不存在于应用程序的数据库中，你通常会创建一条新的数据库记录来表示该用户：
+从 OAuth 提供方获取用户后，你可以判断该用户是否存在于应用程序的数据库中，并[对用户进行身份验证](/topic/Laravel%2013.x/xq9zrgjvdo.html)。如果用户不存在于应用程序的数据库中，你通常会创建一条新的数据库记录来表示该用户：
 
 ```php
 use App\Models\User;
@@ -86,7 +86,7 @@ Route::get('/auth/callback', function () {
 ```
 
 > [!NOTE]
-> 关于特定 OAuth 提供方可用的用户信息，请查阅 [获取用户详情](#retrieving-user-details) 的相关文档。
+> 关于特定 OAuth 提供方可用的用户信息，请查阅 获取用户详情 的相关文档。
 
 ### 访问作用域
 
@@ -132,7 +132,7 @@ return Socialite::driver('slack')
 $user = Socialite::driver('slack')->asBotUser()->user();
 ```
 
-生成 Bot 令牌时，`user` 方法仍会返回一个 `Laravel\Socialite\Two\User` 实例；但只有 `token` 属性会被填充。该令牌可以存储起来，以便[向已验证用户的 Slack 工作区发送通知](/docs/{{version}}/notifications#notifying-external-slack-workspaces)。
+生成 Bot 令牌时，`user` 方法仍会返回一个 `Laravel\Socialite\Two\User` 实例；但只有 `token` 属性会被填充。该令牌可以存储起来，以便[向已验证用户的 Slack 工作区发送通知](/topic/Laravel%2013.x/2ky045l9z8.html)。
 
 ### 可选参数
 

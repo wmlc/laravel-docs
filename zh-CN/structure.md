@@ -28,7 +28,7 @@ Laravel 默认的应用程序结构旨在为大型和小型应用都提供一个
 
 ### `resources` 目录
 
-`resources` 目录包含你的[视图](/docs/{{version}}/views)以及原始的、未经编译的资源文件，例如 CSS 或 JavaScript。
+`resources` 目录包含你的[视图](/topic/Laravel%2013.x/m892gz6y01.html)以及原始的、未经编译的资源文件，例如 CSS 或 JavaScript。
 
 ### `routes` 目录
 
@@ -36,13 +36,13 @@ Laravel 默认的应用程序结构旨在为大型和小型应用都提供一个
 
 `web.php` 文件包含 Laravel 放置在 `web` 中间件 组中的路由，该中间件组提供会话状态、CSRF 保护和 Cookie 加密。如果你的应用程序不提供无状态的 RESTful API，那么你的所有路由很可能都定义在该 `web.php` 文件中。
 
-`console.php` 文件用于定义所有基于闭包的命令行命令。每个闭包都绑定到一个命令实例，提供了一种与每个命令的 IO 方法交互的简单方式。尽管该文件不定义 HTTP 路由，但它定义了进入应用程序的基于控制台的入口点（路由）。你也可以在 `console.php` 文件中[调度](/docs/{{version}}/scheduling)任务。
+`console.php` 文件用于定义所有基于闭包的命令行命令。每个闭包都绑定到一个命令实例，提供了一种与每个命令的 IO 方法交互的简单方式。尽管该文件不定义 HTTP 路由，但它定义了进入应用程序的基于控制台的入口点（路由）。你也可以在 `console.php` 文件中[调度](/topic/Laravel%2013.x/e296olw9q7.html)任务。
 
 可选地，你可以通过 `install:api` 和 `install:broadcasting` Artisan 命令安装额外的路由文件，用于 API 路由（`api.php`）和广播频道（`channels.php`）。
 
-`api.php` 文件包含旨在无状态的路由，因此通过这些路由进入应用程序的 请求 旨在通过[令牌](/docs/{{version}}/sanctum)进行身份验证，并且无法访问会话状态。
+`api.php` 文件包含旨在无状态的路由，因此通过这些路由进入应用程序的 请求 旨在通过[令牌](/topic/Laravel%2013.x/xq9zr3jvdo.html)进行身份验证，并且无法访问会话状态。
 
-`channels.php` 文件用于注册你的应用程序支持的所有[事件广播](/docs/{{version}}/broadcasting)频道。
+`channels.php` 文件用于注册你的应用程序支持的所有[事件广播](/topic/Laravel%2013.x/enyd5w197d.html)频道。
 
 ### `storage` 目录
 
@@ -71,7 +71,7 @@ Laravel 默认的应用程序结构旨在为大型和小型应用都提供一个
 
 ### `Broadcasting` 目录
 
-`Broadcasting` 目录包含你的应用程序的所有广播频道类。这些类使用 `make:channel` 命令生成。该目录默认不存在，但在你创建第一个频道时会为你创建。要了解有关频道的更多信息，请查看[事件广播](/docs/{{version}}/broadcasting)文档。
+`Broadcasting` 目录包含你的应用程序的所有广播频道类。这些类使用 `make:channel` 命令生成。该目录默认不存在，但在你创建第一个频道时会为你创建。要了解有关频道的更多信息，请查看[事件广播](/topic/Laravel%2013.x/enyd5w197d.html)文档。
 
 ### `Console` 目录
 
@@ -79,7 +79,7 @@ Laravel 默认的应用程序结构旨在为大型和小型应用都提供一个
 
 ### `Events` 目录
 
-该目录默认不存在，但会由 `event:generate` 和 `make:event` Artisan 命令为你创建。`Events` 目录存放[事件类](/docs/{{version}}/events)。事件可用于提醒应用程序的其他部分某个给定操作已发生，从而提供极大的灵活性与解耦能力。
+该目录默认不存在，但会由 `event:generate` 和 `make:event` Artisan 命令为你创建。`Events` 目录存放[事件类](/topic/Laravel%2013.x/x3vo0l4vm1.html)。事件可用于提醒应用程序的其他部分某个给定操作已发生，从而提供极大的灵活性与解耦能力。
 
 ### `Exceptions` 目录
 
@@ -91,34 +91,34 @@ Laravel 默认的应用程序结构旨在为大型和小型应用都提供一个
 
 ### `Jobs` 目录
 
-该目录默认不存在，但如果你执行 `make:job` Artisan 命令，它会为你创建。`Jobs` 目录存放你的应用程序的[可排队任务](/docs/{{version}}/queues)。任务可以由你的应用程序排队，也可以在当前 请求 生命周期内同步运行。在当前 请求 期间同步运行的任务有时被称为"命令"，因为它们是[命令模式](https://en.wikipedia.org/wiki/Command_pattern)的一种实现。
+该目录默认不存在，但如果你执行 `make:job` Artisan 命令，它会为你创建。`Jobs` 目录存放你的应用程序的[可排队任务](/topic/Laravel%2013.x/wevwmkz9l2.html)。任务可以由你的应用程序排队，也可以在当前 请求 生命周期内同步运行。在当前 请求 期间同步运行的任务有时被称为"命令"，因为它们是[命令模式](https://en.wikipedia.org/wiki/Command_pattern)的一种实现。
 
 ### `Listeners` 目录
 
-该目录默认不存在，但如果你执行 `event:generate` 或 `make:listener` Artisan 命令，它会为你创建。`Listeners` 目录包含处理你的[事件](/docs/{{version}}/events)的类。事件监听器接收一个事件实例，并在事件被触发时执行相应逻辑。例如，`UserRegistered` 事件可能由 `SendWelcomeEmail` 监听器处理。
+该目录默认不存在，但如果你执行 `event:generate` 或 `make:listener` Artisan 命令，它会为你创建。`Listeners` 目录包含处理你的[事件](/topic/Laravel%2013.x/x3vo0l4vm1.html)的类。事件监听器接收一个事件实例，并在事件被触发时执行相应逻辑。例如，`UserRegistered` 事件可能由 `SendWelcomeEmail` 监听器处理。
 
 ### `Mail` 目录
 
-该目录默认不存在，但如果你执行 `make:mail` Artisan 命令，它会为你创建。`Mail` 目录包含你的应用程序发送的所有[代表邮件的类](/docs/{{version}}/mail)。邮件对象允许你将构建一封邮件的所有逻辑封装在一个简单类中，并通过 `Mail::send` 方法发送。
+该目录默认不存在，但如果你执行 `make:mail` Artisan 命令，它会为你创建。`Mail` 目录包含你的应用程序发送的所有[代表邮件的类](/topic/Laravel%2013.x/d6vro0rv3g.html)。邮件对象允许你将构建一封邮件的所有逻辑封装在一个简单类中，并通过 `Mail::send` 方法发送。
 
 ### `Models` 目录
 
-`Models` 目录包含你所有的[Eloquent 模型类](/docs/{{version}}/eloquent)。Laravel 附带的 Eloquent ORM 提供了一个优美、简洁的 ActiveRecord 实现，用于处理你的数据库。每个数据库表都有一个对应的"模型"，用于与该表交互。模型允许你在表中查询数据，以及向表中插入新记录。
+`Models` 目录包含你所有的[Eloquent 模型类](/topic/Laravel%2013.x/rwyl2kxvz8.html)。Laravel 附带的 Eloquent ORM 提供了一个优美、简洁的 ActiveRecord 实现，用于处理你的数据库。每个数据库表都有一个对应的"模型"，用于与该表交互。模型允许你在表中查询数据，以及向表中插入新记录。
 
 ### `Notifications` 目录
 
-该目录默认不存在，但如果你执行 `make:notification` Artisan 命令，它会为你创建。`Notifications` 目录包含你的应用程序发送的所有"事务性"[通知](/docs/{{version}}/notifications)，例如你的应用程序中发生的事件相关的简单通知。Laravel 的通知功能抽象了通过多种驱动发送通知的方式，例如电子邮件、Slack、短信，或存储在数据库中。
+该目录默认不存在，但如果你执行 `make:notification` Artisan 命令，它会为你创建。`Notifications` 目录包含你的应用程序发送的所有"事务性"[通知](/topic/Laravel%2013.x/2ky045l9z8.html)，例如你的应用程序中发生的事件相关的简单通知。Laravel 的通知功能抽象了通过多种驱动发送通知的方式，例如电子邮件、Slack、短信，或存储在数据库中。
 
 ### `Policies` 目录
 
-该目录默认不存在，但如果你执行 `make:policy` Artisan 命令，它会为你创建。`Policies` 目录包含你的应用程序的[授权策略类](/docs/{{version}}/authorization)。策略用于判断用户是否可以对某个资源执行给定操作。
+该目录默认不存在，但如果你执行 `make:policy` Artisan 命令，它会为你创建。`Policies` 目录包含你的应用程序的[授权策略类](/topic/Laravel%2013.x/2wy3l43ykm.html)。策略用于判断用户是否可以对某个资源执行给定操作。
 
 ### `Providers` 目录
 
-`Providers` 目录包含你的应用程序的所有[服务提供者](/docs/{{version}}/providers)。服务提供者（Service Provider）通过以下方式引导（Bootstrap）你的应用程序：在服务容器（Service Container）中绑定服务、注册事件，或执行其他准备传入 请求 的任务。
+`Providers` 目录包含你的应用程序的所有[服务提供者](/topic/Laravel%2013.x/qk942kovw1.html)。服务提供者（Service Provider）通过以下方式引导（Bootstrap）你的应用程序：在服务容器（Service Container）中绑定服务、注册事件，或执行其他准备传入 请求 的任务。
 
 在一个全新的 Laravel 应用程序中，该目录已经包含 `AppServiceProvider`。你可以根据需要向此目录添加自己的服务提供者。
 
 ### `Rules` 目录
 
-该目录默认不存在，但如果你执行 `make:rule` Artisan 命令，它会为你创建。`Rules` 目录包含你的应用程序的自定义验证规则对象。规则用于将复杂的验证逻辑封装在一个简单对象中。更多信息，请查看[验证文档](/docs/{{version}}/validation)。
+该目录默认不存在，但如果你执行 `make:rule` Artisan 命令，它会为你创建。`Rules` 目录包含你的应用程序的自定义验证规则对象。规则用于将复杂的验证逻辑封装在一个简单对象中。更多信息，请查看[验证文档](/topic/Laravel%2013.x/e296oew9q7.html)。

@@ -21,231 +21,231 @@ Laravel 包含多种用于操作字符串值的函数。框架本身使用了其
 
 ### 字符串
 
-[\__](#method-__)
-[class_basename](#method-class-basename)
-[e](#method-e)
-[preg_replace_array](#method-preg-replace-array)
-[Str::after](#method-str-after)
-[Str::afterLast](#method-str-after-last)
-[Str::apa](#method-str-apa)
-[Str::ascii](#method-str-ascii)
-[Str::before](#method-str-before)
-[Str::beforeLast](#method-str-before-last)
-[Str::between](#method-str-between)
-[Str::betweenFirst](#method-str-between-first)
-[Str::camel](#method-camel-case)
-[Str::charAt](#method-char-at)
-[Str::chopStart](#method-str-chop-start)
-[Str::chopEnd](#method-str-chop-end)
-[Str::contains](#method-str-contains)
-[Str::containsAll](#method-str-contains-all)
-[Str::counted](#method-str-counted)
-[Str::doesntContain](#method-str-doesnt-contain)
-[Str::doesntEndWith](#method-str-doesnt-end-with)
-[Str::doesntStartWith](#method-str-doesnt-start-with)
-[Str::deduplicate](#method-deduplicate)
-[Str::endsWith](#method-ends-with)
-[Str::excerpt](#method-excerpt)
-[Str::finish](#method-str-finish)
-[Str::fromBase64](#method-str-from-base64)
-[Str::headline](#method-str-headline)
-[Str::initials](#method-str-initials)
-[Str::inlineMarkdown](#method-str-inline-markdown)
-[Str::is](#method-str-is)
-[Str::isAscii](#method-str-is-ascii)
-[Str::isJson](#method-str-is-json)
-[Str::isUlid](#method-str-is-ulid)
-[Str::isUrl](#method-str-is-url)
-[Str::isUuid](#method-str-is-uuid)
-[Str::kebab](#method-kebab-case)
-[Str::lcfirst](#method-str-lcfirst)
-[Str::length](#method-str-length)
-[Str::limit](#method-str-limit)
-[Str::lower](#method-str-lower)
-[Str::markdown](#method-str-markdown)
-[Str::mask](#method-str-mask)
-[Str::match](#method-str-match)
-[Str::matchAll](#method-str-match-all)
-[Str::isMatch](#method-str-is-match)
-[Str::orderedUuid](#method-str-ordered-uuid)
-[Str::padBoth](#method-str-padboth)
-[Str::padLeft](#method-str-padleft)
-[Str::padRight](#method-str-padright)
-[Str::password](#method-str-password)
-[Str::plural](#method-str-plural)
-[Str::pluralStudly](#method-str-plural-studly)
-[Str::position](#method-str-position)
-[Str::random](#method-str-random)
-[Str::remove](#method-str-remove)
-[Str::repeat](#method-str-repeat)
-[Str::replace](#method-str-replace)
-[Str::replaceArray](#method-str-replace-array)
-[Str::replaceFirst](#method-str-replace-first)
-[Str::replaceLast](#method-str-replace-last)
-[Str::replaceMatches](#method-str-replace-matches)
-[Str::replaceStart](#method-str-replace-start)
-[Str::replaceEnd](#method-str-replace-end)
-[Str::reverse](#method-str-reverse)
-[Str::singular](#method-str-singular)
-[Str::slug](#method-str-slug)
-[Str::snake](#method-snake-case)
-[Str::squish](#method-str-squish)
-[Str::start](#method-str-start)
-[Str::startsWith](#method-starts-with)
-[Str::studly](#method-studly-case)
-[Str::substr](#method-str-substr)
-[Str::substrCount](#method-str-substrcount)
-[Str::substrReplace](#method-str-substrreplace)
-[Str::swap](#method-str-swap)
-[Str::take](#method-take)
-[Str::title](#method-title-case)
-[Str::toBase64](#method-str-to-base64)
-[Str::transliterate](#method-str-transliterate)
-[Str::trim](#method-str-trim)
-[Str::ltrim](#method-str-ltrim)
-[Str::rtrim](#method-str-rtrim)
-[Str::ucfirst](#method-str-ucfirst)
-[Str::ucsplit](#method-str-ucsplit)
-[Str::ucwords](#method-str-ucwords)
-[Str::upper](#method-str-upper)
-[Str::ulid](#method-str-ulid)
-[Str::unwrap](#method-str-unwrap)
-[Str::uuid](#method-str-uuid)
-[Str::uuid7](#method-str-uuid7)
-[Str::wordCount](#method-str-word-count)
-[Str::wordWrap](#method-str-word-wrap)
-[Str::words](#method-str-words)
-[Str::wrap](#method-str-wrap)
-[str](#method-str)
-[trans](#method-trans)
-[trans_choice](#method-trans-choice)
+\__
+class_basename
+e
+preg_replace_array
+Str::after
+Str::afterLast
+Str::apa
+Str::ascii
+Str::before
+Str::beforeLast
+Str::between
+Str::betweenFirst
+Str::camel
+Str::charAt
+Str::chopStart
+Str::chopEnd
+Str::contains
+Str::containsAll
+Str::counted
+Str::doesntContain
+Str::doesntEndWith
+Str::doesntStartWith
+Str::deduplicate
+Str::endsWith
+Str::excerpt
+Str::finish
+Str::fromBase64
+Str::headline
+Str::initials
+Str::inlineMarkdown
+Str::is
+Str::isAscii
+Str::isJson
+Str::isUlid
+Str::isUrl
+Str::isUuid
+Str::kebab
+Str::lcfirst
+Str::length
+Str::limit
+Str::lower
+Str::markdown
+Str::mask
+Str::match
+Str::matchAll
+Str::isMatch
+Str::orderedUuid
+Str::padBoth
+Str::padLeft
+Str::padRight
+Str::password
+Str::plural
+Str::pluralStudly
+Str::position
+Str::random
+Str::remove
+Str::repeat
+Str::replace
+Str::replaceArray
+Str::replaceFirst
+Str::replaceLast
+Str::replaceMatches
+Str::replaceStart
+Str::replaceEnd
+Str::reverse
+Str::singular
+Str::slug
+Str::snake
+Str::squish
+Str::start
+Str::startsWith
+Str::studly
+Str::substr
+Str::substrCount
+Str::substrReplace
+Str::swap
+Str::take
+Str::title
+Str::toBase64
+Str::transliterate
+Str::trim
+Str::ltrim
+Str::rtrim
+Str::ucfirst
+Str::ucsplit
+Str::ucwords
+Str::upper
+Str::ulid
+Str::unwrap
+Str::uuid
+Str::uuid7
+Str::wordCount
+Str::wordWrap
+Str::words
+Str::wrap
+str
+trans
+trans_choice
 
 ### 流式字符串
 
-[after](#method-fluent-str-after)
-[afterLast](#method-fluent-str-after-last)
-[apa](#method-fluent-str-apa)
-[append](#method-fluent-str-append)
-[ascii](#method-fluent-str-ascii)
-[basename](#method-fluent-str-basename)
-[before](#method-fluent-str-before)
-[beforeLast](#method-fluent-str-before-last)
-[between](#method-fluent-str-between)
-[betweenFirst](#method-fluent-str-between-first)
-[camel](#method-fluent-str-camel)
-[charAt](#method-fluent-str-char-at)
-[classBasename](#method-fluent-str-class-basename)
-[chopStart](#method-fluent-str-chop-start)
-[chopEnd](#method-fluent-str-chop-end)
-[contains](#method-fluent-str-contains)
-[containsAll](#method-fluent-str-contains-all)
-[counted](#method-fluent-str-counted)
-[decrypt](#method-fluent-str-decrypt)
-[deduplicate](#method-fluent-str-deduplicate)
-[dirname](#method-fluent-str-dirname)
-[doesntContain](#method-fluent-str-doesnt-contain)
-[doesntEndWith](#method-fluent-str-doesnt-end-with)
-[doesntStartWith](#method-fluent-str-doesnt-start-with)
-[encrypt](#method-fluent-str-encrypt)
-[endsWith](#method-fluent-str-ends-with)
-[exactly](#method-fluent-str-exactly)
-[excerpt](#method-fluent-str-excerpt)
-[explode](#method-fluent-str-explode)
-[finish](#method-fluent-str-finish)
-[fromBase64](#method-fluent-str-from-base64)
-[hash](#method-fluent-str-hash)
-[headline](#method-fluent-str-headline)
-[initials](#method-fluent-str-initials)
-[inlineMarkdown](#method-fluent-str-inline-markdown)
-[is](#method-fluent-str-is)
-[isAscii](#method-fluent-str-is-ascii)
-[isEmpty](#method-fluent-str-is-empty)
-[isNotEmpty](#method-fluent-str-is-not-empty)
-[isJson](#method-fluent-str-is-json)
-[isUlid](#method-fluent-str-is-ulid)
-[isUrl](#method-fluent-str-is-url)
-[isUuid](#method-fluent-str-is-uuid)
-[kebab](#method-fluent-str-kebab)
-[lcfirst](#method-fluent-str-lcfirst)
-[length](#method-fluent-str-length)
-[limit](#method-fluent-str-limit)
-[lower](#method-fluent-str-lower)
-[markdown](#method-fluent-str-markdown)
-[mask](#method-fluent-str-mask)
-[match](#method-fluent-str-match)
-[matchAll](#method-fluent-str-match-all)
-[isMatch](#method-fluent-str-is-match)
-[newLine](#method-fluent-str-new-line)
-[padBoth](#method-fluent-str-padboth)
-[padLeft](#method-fluent-str-padleft)
-[padRight](#method-fluent-str-padright)
-[pipe](#method-fluent-str-pipe)
-[plural](#method-fluent-str-plural)
-[position](#method-fluent-str-position)
-[prepend](#method-fluent-str-prepend)
-[remove](#method-fluent-str-remove)
-[repeat](#method-fluent-str-repeat)
-[replace](#method-fluent-str-replace)
-[replaceArray](#method-fluent-str-replace-array)
-[replaceFirst](#method-fluent-str-replace-first)
-[replaceLast](#method-fluent-str-replace-last)
-[replaceMatches](#method-fluent-str-replace-matches)
-[replaceStart](#method-fluent-str-replace-start)
-[replaceEnd](#method-fluent-str-replace-end)
-[scan](#method-fluent-str-scan)
-[singular](#method-fluent-str-singular)
-[slug](#method-fluent-str-slug)
-[snake](#method-fluent-str-snake)
-[split](#method-fluent-str-split)
-[squish](#method-fluent-str-squish)
-[start](#method-fluent-str-start)
-[startsWith](#method-fluent-str-starts-with)
-[stripTags](#method-fluent-str-strip-tags)
-[studly](#method-fluent-str-studly)
-[substr](#method-fluent-str-substr)
-[substrReplace](#method-fluent-str-substrreplace)
-[swap](#method-fluent-str-swap)
-[take](#method-fluent-str-take)
-[tap](#method-fluent-str-tap)
-[test](#method-fluent-str-test)
-[title](#method-fluent-str-title)
-[toBase64](#method-fluent-str-to-base64)
-[toHtmlString](#method-fluent-str-to-html-string)
-[toUri](#method-fluent-str-to-uri)
-[transliterate](#method-fluent-str-transliterate)
-[trim](#method-fluent-str-trim)
-[ltrim](#method-fluent-str-ltrim)
-[rtrim](#method-fluent-str-rtrim)
-[ucfirst](#method-fluent-str-ucfirst)
-[ucsplit](#method-fluent-str-ucsplit)
-[ucwords](#method-fluent-str-ucwords)
-[unwrap](#method-fluent-str-unwrap)
-[upper](#method-fluent-str-upper)
-[when](#method-fluent-str-when)
-[whenContains](#method-fluent-str-when-contains)
-[whenContainsAll](#method-fluent-str-when-contains-all)
-[whenDoesntEndWith](#method-fluent-str-when-doesnt-end-with)
-[whenDoesntStartWith](#method-fluent-str-when-doesnt-start-with)
-[whenEmpty](#method-fluent-str-when-empty)
-[whenNotEmpty](#method-fluent-str-when-not-empty)
-[whenStartsWith](#method-fluent-str-when-starts-with)
-[whenEndsWith](#method-fluent-str-when-ends-with)
-[whenExactly](#method-fluent-str-when-exactly)
-[whenNotExactly](#method-fluent-str-when-not-exactly)
-[whenIs](#method-fluent-str-when-is)
-[whenIsAscii](#method-fluent-str-when-is-ascii)
-[whenIsUlid](#method-fluent-str-when-is-ulid)
-[whenIsUuid](#method-fluent-str-when-is-uuid)
-[whenTest](#method-fluent-str-when-test)
-[wordCount](#method-fluent-str-word-count)
-[words](#method-fluent-str-words)
-[wrap](#method-fluent-str-wrap)
+after
+afterLast
+apa
+append
+ascii
+basename
+before
+beforeLast
+between
+betweenFirst
+camel
+charAt
+classBasename
+chopStart
+chopEnd
+contains
+containsAll
+counted
+decrypt
+deduplicate
+dirname
+doesntContain
+doesntEndWith
+doesntStartWith
+encrypt
+endsWith
+exactly
+excerpt
+explode
+finish
+fromBase64
+hash
+headline
+initials
+inlineMarkdown
+is
+isAscii
+isEmpty
+isNotEmpty
+isJson
+isUlid
+isUrl
+isUuid
+kebab
+lcfirst
+length
+limit
+lower
+markdown
+mask
+match
+matchAll
+isMatch
+newLine
+padBoth
+padLeft
+padRight
+pipe
+plural
+position
+prepend
+remove
+repeat
+replace
+replaceArray
+replaceFirst
+replaceLast
+replaceMatches
+replaceStart
+replaceEnd
+scan
+singular
+slug
+snake
+split
+squish
+start
+startsWith
+stripTags
+studly
+substr
+substrReplace
+swap
+take
+tap
+test
+title
+toBase64
+toHtmlString
+toUri
+transliterate
+trim
+ltrim
+rtrim
+ucfirst
+ucsplit
+ucwords
+unwrap
+upper
+when
+whenContains
+whenContainsAll
+whenDoesntEndWith
+whenDoesntStartWith
+whenEmpty
+whenNotEmpty
+whenStartsWith
+whenEndsWith
+whenExactly
+whenNotExactly
+whenIs
+whenIsAscii
+whenIsUlid
+whenIsUuid
+whenTest
+wordCount
+words
+wrap
 
 ## 字符串
 
 #### `__()` {.collection-method}
 
-`__` 函数使用你的[语言文件](/docs/{{version}}/localization)翻译给定的翻译字符串或翻译键：
+`__` 函数使用你的[语言文件](/topic/Laravel%2013.x/kpv13q298w.html)翻译给定的翻译字符串或翻译键：
 
 ```php
 echo __('Welcome to our application');
@@ -1154,7 +1154,7 @@ $label = Str::counted('order', 1000);
 
 #### `Str::plural()` {.collection-method}
 
-`Str::plural` 方法将单数单词字符串转换为复数形式。该函数支持 [Laravel 复数化器支持的任何语言](/docs/{{version}}/localization#pluralization-language)：
+`Str::plural` 方法将单数单词字符串转换为复数形式。该函数支持 [Laravel 复数化器支持的任何语言](/topic/Laravel%2013.x/kpv13q298w.html)：
 
 ```php
 use Illuminate\Support\Str;
@@ -1194,7 +1194,7 @@ $label = Str::plural('car', 1000, prependCount: true);
 
 #### `Str::pluralStudly()` {.collection-method}
 
-`Str::pluralStudly` 方法将以 studly caps 大小写格式化的单数单词字符串转换为复数形式。该函数支持 [Laravel 复数化器支持的任何语言](/docs/{{version}}/localization#pluralization-language)：
+`Str::pluralStudly` 方法将以 studly caps 大小写格式化的单数单词字符串转换为复数形式。该函数支持 [Laravel 复数化器支持的任何语言](/topic/Laravel%2013.x/kpv13q298w.html)：
 
 ```php
 use Illuminate\Support\Str;
@@ -1431,7 +1431,7 @@ $reversed = Str::reverse('Hello World');
 
 #### `Str::singular()` {.collection-method}
 
-`Str::singular` 方法将字符串转换为单数形式。该函数支持 [Laravel 复数化器支持的任何语言](/docs/{{version}}/localization#pluralization-language)：
+`Str::singular` 方法将字符串转换为单数形式。该函数支持 [Laravel 复数化器支持的任何语言](/topic/Laravel%2013.x/kpv13q298w.html)：
 
 ```php
 use Illuminate\Support\Str;
@@ -1889,7 +1889,7 @@ $snake = str()->snake('FooBar');
 
 #### `trans()` {.collection-method}
 
-`trans` 函数使用你的[语言文件](/docs/{{version}}/localization)翻译给定的翻译键：
+`trans` 函数使用你的[语言文件](/topic/Laravel%2013.x/kpv13q298w.html)翻译给定的翻译键：
 
 ```php
 echo trans('messages.welcome');
@@ -2177,7 +2177,7 @@ $containsAll = Str::of('This is my name')->containsAll(['MY', 'NAME'], ignoreCas
 
 #### `decrypt` {.collection-method}
 
-`decrypt` 方法[解密](/docs/{{version}}/encryption)加密的字符串：
+`decrypt` 方法[解密](/topic/Laravel%2013.x/enyd5k197d.html)加密的字符串：
 
 ```php
 use Illuminate\Support\Str;
@@ -2187,7 +2187,7 @@ $decrypted = $encrypted->decrypt();
 // 'secret'
 ```
 
-`decrypt` 的逆方法，请参阅 [encrypt](#method-fluent-str-encrypt) 方法。
+`decrypt` 的逆方法，请参阅 encrypt 方法。
 
 #### `deduplicate` {.collection-method}
 
@@ -2235,7 +2235,7 @@ $string = Str::of('/foo/bar/baz')->dirname(2);
 
 #### `doesntContain()` {.collection-method}
 
-`doesntContain` 方法判断给定字符串是否不包含给定值。该方法是 [contains](#method-fluent-str-contains) 方法的逆方法。默认情况下，该方法区分大小写：
+`doesntContain` 方法判断给定字符串是否不包含给定值。该方法是 contains 方法的逆方法。默认情况下，该方法区分大小写：
 
 ```php
 use Illuminate\Support\Str;
@@ -2315,7 +2315,7 @@ $result = Str::of('This is my name')->doesntStartWith(['What', 'That', 'There'])
 
 #### `encrypt` {.collection-method}
 
-`encrypt` 方法[加密](/docs/{{version}}/encryption)字符串：
+`encrypt` 方法[加密](/topic/Laravel%2013.x/enyd5k197d.html)字符串：
 
 ```php
 use Illuminate\Support\Str;
@@ -2323,7 +2323,7 @@ use Illuminate\Support\Str;
 $encrypted = Str::of('secret')->encrypt();
 ```
 
-`encrypt` 的逆方法，请参阅 [decrypt](#method-fluent-str-decrypt) 方法。
+`encrypt` 的逆方法，请参阅 decrypt 方法。
 
 #### `endsWith` {.collection-method}
 
@@ -2938,7 +2938,7 @@ $label = Str::of('order')->counted(1000);
 
 #### `plural` {.collection-method}
 
-`plural` 方法将单数单词字符串转换为复数形式。该函数支持 [Laravel 复数化器支持的任何语言](/docs/{{version}}/localization#pluralization-language)：
+`plural` 方法将单数单词字符串转换为复数形式。该函数支持 [Laravel 复数化器支持的任何语言](/topic/Laravel%2013.x/kpv13q298w.html)：
 
 ```php
 use Illuminate\Support\Str;
@@ -3160,7 +3160,7 @@ $collection = Str::of('filename.jpg')->scan('%[^.].%s');
 
 #### `singular` {.collection-method}
 
-`singular` 方法将字符串转换为单数形式。该函数支持 [Laravel 复数化器支持的任何语言](/docs/{{version}}/localization#pluralization-language)：
+`singular` 方法将字符串转换为单数形式。该函数支持 [Laravel 复数化器支持的任何语言](/topic/Laravel%2013.x/kpv13q298w.html)：
 
 ```php
 use Illuminate\Support\Str;
@@ -3414,7 +3414,7 @@ $htmlString = Str::of('Nuno Maduro')->toHtmlString();
 
 #### `toUri` {.collection-method}
 
-`toUri` 方法将给定字符串转换为 [Illuminate\Support\Uri](/docs/{{version}}/helpers#uri) 实例：
+`toUri` 方法将给定字符串转换为 [Illuminate\Support\Uri](/topic/Laravel%2013.x/569x5d8yep.html) 实例：
 
 ```php
 use Illuminate\Support\Str;

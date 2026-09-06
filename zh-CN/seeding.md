@@ -3,17 +3,17 @@
 Laravel 包含使用数据填充（Seeder）类为数据库填充数据的能力。所有填充类都存放在 `database/seeders` 目录中。默认情况下，会为你定义一个 `DatabaseSeeder` 类。在这个类中，你可以使用 `call` 方法运行其他填充类，从而控制填充的顺序。
 
 > [!NOTE]
-> [批量赋值保护](/docs/{{version}}/eloquent#mass-assignment) 在数据库填充期间会自动禁用。
+> [批量赋值保护](/topic/Laravel%2013.x/rwyl2kxvz8.html) 在数据库填充期间会自动禁用。
 
 ## 编写数据填充器
 
-要生成一个填充器（Seeder），执行 `make:seeder` [Artisan 命令](/docs/{{version}}/artisan)。框架生成的所有填充器都会放置在 `database/seeders` 目录中：
+要生成一个填充器（Seeder），执行 `make:seeder` [Artisan 命令](/topic/Laravel%2013.x/3dykqdoyl0.html)。框架生成的所有填充器都会放置在 `database/seeders` 目录中：
 
 ```shell
 php artisan make:seeder UserSeeder
 ```
 
-默认情况下，一个填充器类只包含一个方法：`run`。当执行 `db:seed` [Artisan 命令](/docs/{{version}}/artisan) 时会调用该方法。在 `run` 方法中，你可以按自己的意愿向数据库插入数据。你可以使用 [查询构造器](/docs/{{version}}/queries) 手动插入数据，也可以使用 [Eloquent 模型工厂](/docs/{{version}}/eloquent-factories)。
+默认情况下，一个填充器类只包含一个方法：`run`。当执行 `db:seed` [Artisan 命令](/topic/Laravel%2013.x/3dykqdoyl0.html) 时会调用该方法。在 `run` 方法中，你可以按自己的意愿向数据库插入数据。你可以使用 [查询构造器](/topic/Laravel%2013.x/xpv525gv86.html) 手动插入数据，也可以使用 [Eloquent 模型工厂](/topic/Laravel%2013.x/wevwmlz9l2.html)。
 
 举个例子，我们来修改默认的 `DatabaseSeeder` 类，并向 `run` 方法中添加一条数据库插入语句：
 
@@ -44,11 +44,11 @@ class DatabaseSeeder extends Seeder
 ```
 
 > [!NOTE]
-> 你可以在 `run` 方法的签名中类型提示任何所需的依赖。它们会通过 Laravel [服务容器](/docs/{{version}}/container) 自动解析。
+> 你可以在 `run` 方法的签名中类型提示任何所需的依赖。它们会通过 Laravel [服务容器](/topic/Laravel%2013.x/x3vo054vm1.html) 自动解析。
 
 ### 使用模型工厂
 
-当然，手动为每个模型填充指定属性会非常繁琐。相反，你可以使用 [模型工厂](/docs/{{version}}/eloquent-factories) 来方便地生成大量数据库记录。首先，请阅读 [模型工厂文档](/docs/{{version}}/eloquent-factories) 了解如何定义你的工厂。
+当然，手动为每个模型填充指定属性会非常繁琐。相反，你可以使用 [模型工厂](/topic/Laravel%2013.x/wevwmlz9l2.html) 来方便地生成大量数据库记录。首先，请阅读 [模型工厂文档](/topic/Laravel%2013.x/wevwmlz9l2.html) 了解如何定义你的工厂。
 
 例如，我们来创建 50 个用户，每个用户各拥有一篇关联文章：
 

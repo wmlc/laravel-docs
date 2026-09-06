@@ -18,13 +18,13 @@ Laravel 自带多种可通过富有表现力、统一的 API 访问的会话后�
 - `array` - 会话存储在 PHP 数组中，且不会被持久化。
 
 > [!NOTE]
-> array 驱动主要在 [测试](/docs/{{version}}/testing) 期间使用，它会阻止存储在会话中的数据被持久化。
+> array 驱动主要在 [测试](/topic/Laravel%2013.x/e296oqw9q7.html) 期间使用，它会阻止存储在会话中的数据被持久化。
 
 ### 驱动前置条件
 
 #### 数据库
 
-当使用 `database` 会话驱动时，你需要确保有一个用于存储会话数据的数据库表。通常，这已包含在 Laravel 默认的 `0001_01_01_000000_create_users_table.php` [数据库迁移](/docs/{{version}}/migrations) 中；但是，如果由于任何原因你没有 `sessions` 表，可以使用 `make:session-table` Artisan 命令来生成该迁移：
+当使用 `database` 会话驱动时，你需要确保有一个用于存储会话数据的数据库表。通常，这已包含在 Laravel 默认的 `0001_01_01_000000_create_users_table.php` [数据库迁移](/topic/Laravel%2013.x/x3vo0g4vm1.html) 中；但是，如果由于任何原因你没有 `sessions` 表，可以使用 `make:session-table` Artisan 命令来生成该迁移：
 
 ```shell
 php artisan make:session-table
@@ -34,7 +34,7 @@ php artisan migrate
 
 #### Redis
 
-在 Laravel 中使用 Redis 会话之前，你需要通过 PECL 安装 PhpRedis PHP 扩展，或通过 Composer 安装 `predis/predis` 包。关于配置 Redis 的更多信息，请参阅 Laravel 的 [Redis 文档](/docs/{{version}}/redis#configuration)。
+在 Laravel 中使用 Redis 会话之前，你需要通过 PECL 安装 PhpRedis PHP 扩展，或通过 Composer 安装 `predis/predis` 包。关于配置 Redis 的更多信息，请参阅 Laravel 的 [Redis 文档](/topic/Laravel%2013.x/569x518yep.html)。
 
 > [!NOTE]
 > `SESSION_CONNECTION` 环境变量，或 `session.php` 配置文件中的 `connection` 选项，可用于指定哪个 Redis 连接用于会话存储。
@@ -43,7 +43,7 @@ php artisan migrate
 
 ### 获取数据
 
-在 Laravel 中处理会话数据有两种主要方式：全局 `session` 辅助函数，以及通过 `Request` 实例。首先，我们来看看通过 `Request` 实例访问会话，它可以在路由闭包或控制器方法上进行类型提示。请记住，控制器方法的依赖会通过 Laravel [服务容器](/docs/{{version}}/container) 自动注入：
+在 Laravel 中处理会话数据有两种主要方式：全局 `session` 辅助函数，以及通过 `Request` 实例。首先，我们来看看通过 `Request` 实例访问会话，它可以在路由闭包或控制器方法上进行类型提示。请记住，控制器方法的依赖会通过 Laravel [服务容器](/topic/Laravel%2013.x/x3vo054vm1.html) 自动注入：
 
 ```php
 <?php
@@ -99,7 +99,7 @@ Route::get('/home', function () {
 ```
 
 > [!NOTE]
-> 通过 HTTP 请求实例使用会话，与通过全局 `session` 辅助函数使用会话，二者在实际差别上很小。两种方法都可通过 `assertSessionHas` 方法进行 [测试](/docs/{{version}}/testing)，该方法在你的所有测试用例中都可用。
+> 通过 HTTP 请求实例使用会话，与通过全局 `session` 辅助函数使用会话，二者在实际差别上很小。两种方法都可通过 `assertSessionHas` 方法进行 [测试](/topic/Laravel%2013.x/e296oqw9q7.html)，该方法在你的所有测试用例中都可用。
 
 #### 获取全部 Session 数据
 
@@ -227,7 +227,7 @@ $request->session()->flush();
 
 重新生成会话 ID 通常是为了防止恶意用户利用针对你应用的 [会话固定](https://owasp.org/www-community/attacks/Session_fixation) 攻击。
 
-如果你正在使用 Laravel [应用入门套件](/docs/{{version}}/starter-kits) 或 [Laravel Fortify](/docs/{{version}}/fortify)，Laravel 会在认证过程中自动重新生成会话 ID；但是，如果你需要手动重新生成会话 ID，可以使用 `regenerate` 方法：
+如果你正在使用 Laravel [应用入门套件](/topic/Laravel%2013.x/kl9nop7vz4.html) 或 [Laravel Fortify](/topic/Laravel%2013.x/x3vo0x4vm1.html)，Laravel 会在认证过程中自动重新生成会话 ID；但是，如果你需要手动重新生成会话 ID，可以使用 `regenerate` 方法：
 
 ```php
 $request->session()->regenerate();
@@ -241,7 +241,7 @@ $request->session()->invalidate();
 
 ## Session 缓存
 
-Laravel 的会话缓存提供了一种便捷的方式，用于缓存限定在单个用户会话范围内的数据。与全局应用缓存不同，会话缓存数据会自动按会话隔离，并在会话过期或被销毁时清理。会话缓存支持所有熟悉的 [Laravel 缓存方法](/docs/{{version}}/cache)，如 `get`、`put`、`remember`、`forget` 等，但限定在当前会话范围内。
+Laravel 的会话缓存提供了一种便捷的方式，用于缓存限定在单个用户会话范围内的数据。与全局应用缓存不同，会话缓存数据会自动按会话隔离，并在会话过期或被销毁时清理。会话缓存支持所有熟悉的 [Laravel 缓存方法](/topic/Laravel%2013.x/5dve2w3v4x.html)，如 `get`、`put`、`remember`、`forget` 等，但限定在当前会话范围内。
 
 会话缓存非常适合存储临时的、特定于用户的数据——这些数据你想在同一会话内的多次请求之间持久化，但又不需要永久存储。这包括表单数据、临时计算结果、API 响应，或任何其他应当绑定到特定用户会话的临时数据。
 
@@ -255,12 +255,12 @@ $request->session()->cache()->put(
 );
 ```
 
-关于 Laravel 缓存方法的更多信息，请参阅 [缓存文档](/docs/{{version}}/cache)。
+关于 Laravel 缓存方法的更多信息，请参阅 [缓存文档](/topic/Laravel%2013.x/5dve2w3v4x.html)。
 
 ## Session 阻塞
 
 > [!WARNING]
-> 要使用会话阻塞，你的应用必须使用支持 [原子锁](/docs/{{version}}/cache#atomic-locks) 的缓存驱动。目前，这些缓存驱动包括 `memcached`、`dynamodb`、`redis`、`mongodb`（包含在官方 `mongodb/laravel-mongodb` 包中）、`database`、`file` 和 `array` 驱动。此外，你不能使用 `cookie` 会话驱动。
+> 要使用会话阻塞，你的应用必须使用支持 [原子锁](/topic/Laravel%2013.x/5dve2w3v4x.html) 的缓存驱动。目前，这些缓存驱动包括 `memcached`、`dynamodb`、`redis`、`mongodb`（包含在官方 `mongodb/laravel-mongodb` 包中）、`database`、`file` 和 `array` 驱动。此外，你不能使用 `cookie` 会话驱动。
 
 默认情况下，Laravel 允许使用同一会话的请求并发执行。因此，例如，如果你使用某个 JavaScript HTTP 库向你的应用发起两个 HTTP 请求，它们会同时执行。对许多应用而言，这没有问题；但是，在少数会向两个不同应用端点并发请求、且两者都向会话写入数据的应用中，可能会发生会话数据丢失。
 
@@ -323,7 +323,7 @@ class MongoSessionHandler implements \SessionHandlerInterface
 
 ### 注册驱动
 
-驱动实现完成后，你就可以将它注册到 Laravel 中。要向 Laravel 的会话后端添加额外的驱动，可以使用 `Session` [Facade](/docs/{{version}}/facades) 提供的 `extend` 方法。你应该在 [服务提供者](/docs/{{version}}/providers) 的 `boot` 方法中调用 `extend` 方法。你可以在现有的 `App\Providers\AppServiceProvider` 中完成，也可以创建一个全新的提供者：
+驱动实现完成后，你就可以将它注册到 Laravel 中。要向 Laravel 的会话后端添加额外的驱动，可以使用 `Session` [Facade](/topic/Laravel%2013.x/569x508yep.html) 提供的 `extend` 方法。你应该在 [服务提供者](/topic/Laravel%2013.x/qk942kovw1.html) 的 `boot` 方法中调用 `extend` 方法。你可以在现有的 `App\Providers\AppServiceProvider` 中完成，也可以创建一个全新的提供者：
 
 ```php
 <?php

@@ -2,11 +2,11 @@
 
 ## 简介
 
-[Laravel Scout](https://github.com/laravel/scout) 提供了一个简单的、基于驱动的解决方案，用于向 [Eloquent 模型](/docs/{{version}}/eloquent) 添加全文搜索。使用模型观察者，Scout 会自动保持搜索索引与 Eloquent 记录同步。
+[Laravel Scout](https://github.com/laravel/scout) 提供了一个简单的、基于驱动的解决方案，用于向 [Eloquent 模型](/topic/Laravel%2013.x/rwyl2kxvz8.html) 添加全文搜索。使用模型观察者，Scout 会自动保持搜索索引与 Eloquent 记录同步。
 
-Scout 内置一个 `database` 引擎，使用 MySQL / PostgreSQL 全文索引和 `LIKE` 子句搜索现有数据库，不需要外部服务。对于大多数应用，这已经足够。有关 Laravel 中所有可用搜索选项的概述，请参阅 [search 文档](/docs/{{version}}/search)。
+Scout 内置一个 `database` 引擎，使用 MySQL / PostgreSQL 全文索引和 `LIKE` 子句搜索现有数据库，不需要外部服务。对于大多数应用，这已经足够。有关 Laravel 中所有可用搜索选项的概述，请参阅 [search 文档](/topic/Laravel%2013.x/3oyjdqxyp5.html)。
 
-当你需要大规模容错、分面过滤、向量搜索或地理搜索等功能时，Scout 还包含 [Algolia](https://www.algolia.com/)、[Meilisearch](https://www.meilisearch.com)、[Typesense](https://typesense.org) 和 [Turbopuffer](https://turbopuffer.com) 的驱动。还提供「collection」驱动用于本地开发，你也可以自由编写[自定义引擎](#custom-engines)。
+当你需要大规模容错、分面过滤、向量搜索或地理搜索等功能时，Scout 还包含 [Algolia](https://www.algolia.com/)、[Meilisearch](https://www.meilisearch.com)、[Typesense](https://typesense.org) 和 [Turbopuffer](https://turbopuffer.com) 的驱动。还提供「collection」驱动用于本地开发，你也可以自由编写自定义引擎。
 
 ## 安装
 
@@ -40,7 +40,7 @@ class Post extends Model
 
 ### 队列
 
-当使用非 `database` 或 `collection` 引擎时，应强烈考虑在使用该库之前配置[队列驱动](/docs/{{version}}/queues)。运行队列工作进程将允许 Scout 将同步模型信息到搜索索引的所有操作排队，从而为应用的 Web 界面提供更好的响应时间。
+当使用非 `database` 或 `collection` 引擎时，应强烈考虑在使用该库之前配置[队列驱动](/topic/Laravel%2013.x/wevwmkz9l2.html)。运行队列工作进程将允许 Scout 将同步模型信息到搜索索引的所有操作排队，从而为应用的 Web 界面提供更好的响应时间。
 
 配置队列驱动后，在 `config/scout.php` 配置文件中将 `queue` 选项的值设置为 `true`：
 
@@ -78,7 +78,7 @@ Scout::makeSearchableUsing(MakeSearchableUniquely::class);
 Scout::removeFromSearchUsing(RemoveFromSearchUniquely::class);
 ```
 
-这些任务使用 Laravel 的[唯一任务锁](/docs/{{version}}/queues#unique-jobs) 来避免在已经有匹配任务排队的情况下，为同一可搜索模型记录分派重复的排队索引操作。
+这些任务使用 Laravel 的[唯一任务锁](/topic/Laravel%2013.x/wevwmkz9l2.html) 来避免在已经有匹配任务排队的情况下，为同一可搜索模型记录分派重复的排队索引操作。
 
 ## 驱动先决条件
 
@@ -92,7 +92,7 @@ composer require algolia/algoliasearch-client-php
 
 ### Meilisearch
 
-[Meilisearch](https://www.meilisearch.com) 是一个快速的开源搜索引擎。如果不知道如何在本地机器上安装 Meilisearch，可以使用 [Laravel Sail](/docs/{{version}}/sail#meilisearch)，这是 Laravel 官方支持的 Docker 开发环境。
+[Meilisearch](https://www.meilisearch.com) 是一个快速的开源搜索引擎。如果不知道如何在本地机器上安装 Meilisearch，可以使用 [Laravel Sail](/topic/Laravel%2013.x/e296opw9q7.html)，这是 Laravel 官方支持的 Docker 开发环境。
 
 使用 Meilisearch 驱动时，需要通过 Composer 包管理器安装 Meilisearch PHP SDK：
 
@@ -135,7 +135,7 @@ TYPESENSE_API_KEY=masterKey
 TYPESENSE_HOST=localhost
 ```
 
-如果使用 [Laravel Sail](/docs/{{version}}/sail)，可能需要调整 `TYPESENSE_HOST` 环境变量以匹配 Docker 容器名称。还可以选择指定安装的端口、路径和协议：
+如果使用 [Laravel Sail](/topic/Laravel%2013.x/e296opw9q7.html)，可能需要调整 `TYPESENSE_HOST` 环境变量以匹配 Docker 容器名称。还可以选择指定安装的端口、路径和协议：
 
 ```ini
 TYPESENSE_PORT=8108
@@ -234,7 +234,7 @@ class User extends Model
 SCOUT_DRIVER=database
 ```
 
-配置完成后，可以[定义可搜索数据](#configuring-searchable-data) 并开始对模型[执行搜索查询](#searching)。与第三方引擎不同，数据库引擎不需要单独的索引步骤——它直接搜索数据库表。
+配置完成后，可以定义可搜索数据 并开始对模型执行搜索查询。与第三方引擎不同，数据库引擎不需要单独的索引步骤——它直接搜索数据库表。
 
 #### 语义搜索与混合搜索
 
@@ -256,7 +256,7 @@ Schema::table('articles', function (Blueprint $table) {
 
 #### 自定义数据库搜索策略
 
-默认情况下，数据库引擎会对[已配置为可搜索](#configuring-searchable-data) 的每个模型属性执行 `LIKE` 查询。但是，可以为特定列分配更高效的搜索策略。`SearchUsingFullText` 属性将对列使用数据库的全文索引，而 `SearchUsingPrefix` 仅匹配字符串的开头（`example%`），而不是在整个字符串中搜索（`%example%`）。
+默认情况下，数据库引擎会对已配置为可搜索 的每个模型属性执行 `LIKE` 查询。但是，可以为特定列分配更高效的搜索策略。`SearchUsingFullText` 属性将对列使用数据库的全文索引，而 `SearchUsingPrefix` 仅匹配字符串的开头（`example%`），而不是在整个字符串中搜索（`%example%`）。
 
 要定义此行为，请将 PHP 属性分配给模型的 `toSearchableArray` 方法。任何没有属性的列将继续使用默认的 `LIKE` 策略：
 
@@ -283,11 +283,11 @@ public function toSearchableArray(): array
 ```
 
 > [!WARNING]
-> 在指定列应使用全文查询约束之前，请确保已为该列分配了[全文索引](/docs/{{version}}/migrations#available-index-types)。
+> 在指定列应使用全文查询约束之前，请确保已为该列分配了[全文索引](/topic/Laravel%2013.x/x3vo0g4vm1.html)。
 
 ### 集合引擎
 
-「collection」引擎适用于快速原型设计、极小的数据集（几百条记录）或运行测试。它从数据库中检索所有可能的记录，并使用 Laravel 的 `Str::is` 辅助函数在 PHP 中过滤它们，因此它不需要任何索引或数据库特定的功能。对于超出简单用例的使用，应改用[数据库引擎](#database-engine)。
+「collection」引擎适用于快速原型设计、极小的数据集（几百条记录）或运行测试。它从数据库中检索所有可能的记录，并使用 Laravel 的 `Str::is` 辅助函数在 PHP 中过滤它们，因此它不需要任何索引或数据库特定的功能。对于超出简单用例的使用，应改用数据库引擎。
 
 要使用集合引擎，只需将 `SCOUT_DRIVER` 环境变量的值设置为 `collection`，或在应用的 `scout` 配置文件中直接指定 `collection` 驱动：
 
@@ -295,7 +295,7 @@ public function toSearchableArray(): array
 SCOUT_DRIVER=collection
 ```
 
-指定集合驱动作为首选驱动后，就可以开始对模型[执行搜索查询](#searching)。当使用集合引擎时，不需要搜索引擎索引（如为 Algolia、Meilisearch 或 Typesense 索引填充数据所需的索引）。
+指定集合驱动作为首选驱动后，就可以开始对模型执行搜索查询。当使用集合引擎时，不需要搜索引擎索引（如为 Algolia、Meilisearch 或 Typesense 索引填充数据所需的索引）。
 
 #### 与数据库引擎的区别
 
@@ -303,7 +303,7 @@ SCOUT_DRIVER=collection
 
 ## 第三方引擎配置
 
-以下配置选项仅在使用第三方搜索引擎（如 Algolia、Meilisearch 或 Typesense）时才相关。如果使用[数据库引擎](#database-engine)，可以跳过本节。
+以下配置选项仅在使用第三方搜索引擎（如 Algolia、Meilisearch 或 Typesense）时才相关。如果使用数据库引擎，可以跳过本节。
 
 ### 配置模型索引
 
@@ -496,7 +496,7 @@ php artisan scout:sync-index-settings
 ],
 ```
 
-模型的 `toSearchableEmbedding` 方法可以返回源文本，Scout 使用 [Laravel AI SDK](/docs/{{version}}/ai-sdk) 对其进行嵌入，也可以返回预计算的嵌入数组。更新配置后，运行 `scout:sync-index-settings` 命令。
+模型的 `toSearchableEmbedding` 方法可以返回源文本，Scout 使用 [Laravel AI SDK](/topic/Laravel%2013.x/ndvm3dj93j.html) 对其进行嵌入，也可以返回预计算的嵌入数组。更新配置后，运行 `scout:sync-index-settings` 命令。
 
 #### 可搜索数据类型
 
@@ -619,7 +619,7 @@ use App\Models\Article;
 ],
 ```
 
-模型的 `toSearchableEmbedding` 方法应返回 Scout 应嵌入的源文本或预计算的嵌入数组。Scout 使用 [Laravel AI SDK](/docs/{{version}}/ai-sdk) 生成源文本嵌入。
+模型的 `toSearchableEmbedding` 方法应返回 Scout 应嵌入的源文本或预计算的嵌入数组。Scout 使用 [Laravel AI SDK](/topic/Laravel%2013.x/ndvm3dj93j.html) 生成源文本嵌入。
 
 或者，可以使用 Turbopuffer 的原生嵌入而无需安装 Laravel AI SDK 或定义 `toSearchableEmbedding` 方法。将嵌入驱动设置为 `turbopuffer` 并在可搜索源属性上配置 `embed` schema：
 
@@ -657,7 +657,7 @@ use App\Models\Article;
 php artisan scout:import "App\Models\Post"
 ```
 
-`scout:queue-import` 命令可用于使用[排队任务](/docs/{{version}}/queues) 导入所有现有记录：
+`scout:queue-import` 命令可用于使用[排队任务](/topic/Laravel%2013.x/wevwmkz9l2.html) 导入所有现有记录：
 
 ```shell
 php artisan scout:queue-import "App\Models\Post" --chunk=500
@@ -686,11 +686,11 @@ protected function makeAllSearchableUsing(Builder $query): Builder
 ```
 
 > [!WARNING]
-> 使用队列批量导入模型时，`makeAllSearchableUsing` 方法可能不适用。当任务处理模型集合时，关联[不会被恢复](/docs/{{version}}/queues#handling-relationships)。
+> 使用队列批量导入模型时，`makeAllSearchableUsing` 方法可能不适用。当任务处理模型集合时，关联[不会被恢复](/topic/Laravel%2013.x/wevwmkz9l2.html)。
 
 ### 添加记录
 
-将 `Laravel\Scout\Searchable` trait 添加到模型后，只需 `save` 或 `create` 一个模型实例，它就会自动添加到搜索索引。如果已将 Scout 配置为[使用队列](#queueing)，则此操作将由队列工作进程在后台执行：
+将 `Laravel\Scout\Searchable` trait 添加到模型后，只需 `save` 或 `create` 一个模型实例，它就会自动添加到搜索索引。如果已将 Scout 配置为使用队列，则此操作将由队列工作进程在后台执行：
 
 ```php
 use App\Models\Order;
@@ -704,7 +704,7 @@ $order->save();
 
 #### 通过查询添加记录
 
-如果希望通过 Eloquent 查询将模型集合添加到搜索索引，可以将 `searchable` 方法链接到 Eloquent 查询上。`searchable` 方法将对查询结果进行[分块](/docs/{{version}}/eloquent#chunking-results)，并将记录添加到搜索索引。同样，如果已将 Scout 配置为使用队列，则所有块将由队列工作进程在后台导入：
+如果希望通过 Eloquent 查询将模型集合添加到搜索索引，可以将 `searchable` 方法链接到 Eloquent 查询上。`searchable` 方法将对查询结果进行[分块](/topic/Laravel%2013.x/rwyl2kxvz8.html)，并将记录添加到搜索索引。同样，如果已将 Scout 配置为使用队列，则所有块将由队列工作进程在后台导入：
 
 ```php
 use App\Models\Order;
@@ -791,7 +791,7 @@ public function searchIndexShouldBeUpdated(): bool
 
 ### 删除记录
 
-要从索引中删除记录，只需从数据库中 `delete` 该模型。即使使用的是[软删除](/docs/{{version}}/eloquent#soft-deleting) 模型，也可以这样做：
+要从索引中删除记录，只需从数据库中 `delete` 该模型。即使使用的是[软删除](/topic/Laravel%2013.x/rwyl2kxvz8.html) 模型，也可以这样做：
 
 ```php
 use App\Models\Order;
@@ -854,7 +854,7 @@ public function shouldBeSearchable(): bool
 `shouldBeSearchable` 方法仅在通过 `save` 和 `create` 方法、查询或关联操作模型时才适用。直接使用 `searchable` 方法使模型或集合可搜索将覆盖 `shouldBeSearchable` 方法的结果。
 
 > [!WARNING]
-> 使用 Scout 的「database」引擎时，`shouldBeSearchable` 方法不适用，因为所有可搜索数据始终存储在数据库中。要在使用数据库引擎时实现类似的行为，应改用 [where 子句](#where-clauses)。
+> 使用 Scout 的「database」引擎时，`shouldBeSearchable` 方法不适用，因为所有可搜索数据始终存储在数据库中。要在使用数据库引擎时实现类似的行为，应改用 where 子句。
 
 ## 搜索
 
@@ -885,7 +885,7 @@ $orders = Order::search('Star Trek')->raw();
 
 ### 语义搜索
 
-数据库、Meilisearch 和 Turbopuffer 引擎支持语义搜索，它根据查询的含义匹配记录。当 Scout 生成嵌入时，语义和混合搜索需要 [Laravel AI SDK](/docs/{{version}}/ai-sdk)。Turbopuffer 的[原生嵌入](#turbopuffer-configuration) 和预计算的查询向量不需要 Laravel AI SDK。
+数据库、Meilisearch 和 Turbopuffer 引擎支持语义搜索，它根据查询的含义匹配记录。当 Scout 生成嵌入时，语义和混合搜索需要 [Laravel AI SDK](/topic/Laravel%2013.x/ndvm3dj93j.html)。Turbopuffer 的原生嵌入 和预计算的查询向量不需要 Laravel AI SDK。
 
 为所选引擎配置嵌入后，在搜索查询上调用 `semantic` 方法：
 
@@ -913,7 +913,7 @@ $articles = Article::search('renewable energy storage')
 
 #### 自定义索引
 
-使用第三方引擎搜索时，搜索查询通常在模型的 [searchableAs](#configuring-model-indexes) 方法指定的索引上执行。但是，可以使用 `within` 方法指定要搜索的自定义索引：
+使用第三方引擎搜索时，搜索查询通常在模型的 searchableAs 方法指定的索引上执行。但是，可以使用 `within` 方法指定要搜索的自定义索引：
 
 ```php
 $orders = Order::search('Star Trek')
@@ -961,7 +961,7 @@ $orders = Order::search('Star Trek')->whereNotIn(
 ```
 
 > [!WARNING]
-> 如果应用正在使用 Meilisearch，则必须在使用 Scout 的「where」子句之前配置应用的[可过滤属性](#meilisearch-index-settings)。
+> 如果应用正在使用 Meilisearch，则必须在使用 Scout 的「where」子句之前配置应用的可过滤属性。
 
 #### 自定义 Eloquent 结果查询
 
@@ -976,11 +976,11 @@ $orders = Order::search('Star Trek')
     ->get();
 ```
 
-使用第三方引擎时，此回调在已经从搜索引擎检索到相关模型之后调用，因此它不应用于「过滤」结果——请改用 [Scout where 子句](#where-clauses)。但是，使用数据库引擎时，`query` 方法的约束直接应用于数据库查询，因此也可以将其用于过滤。
+使用第三方引擎时，此回调在已经从搜索引擎检索到相关模型之后调用，因此它不应用于「过滤」结果——请改用 Scout where 子句。但是，使用数据库引擎时，`query` 方法的约束直接应用于数据库查询，因此也可以将其用于过滤。
 
 ### 分页
 
-除了检索模型集合外，还可以使用 `paginate` 方法对搜索结果进行分页。此方法将返回 `Illuminate\Pagination\LengthAwarePaginator` 实例，就像[对传统 Eloquent 查询进行分页](/docs/{{version}}/pagination) 一样：
+除了检索模型集合外，还可以使用 `paginate` 方法对搜索结果进行分页。此方法将返回 `Illuminate\Pagination\LengthAwarePaginator` 实例，就像[对传统 Eloquent 查询进行分页](/topic/Laravel%2013.x/3xyq454vmq.html) 一样：
 
 ```php
 use App\Models\Order;
@@ -1000,7 +1000,7 @@ $orders = Order::search('Star Trek')->paginate(15);
 $orders = Order::search('Star Trek')->simplePaginate(15);
 ```
 
-检索结果后，可以使用 [Blade](/docs/{{version}}/blade) 显示结果并呈现页面链接，就像对传统 Eloquent 查询进行分页一样：
+检索结果后，可以使用 [Blade](/topic/Laravel%2013.x/wevwmrz9l2.html) 显示结果并呈现页面链接，就像对传统 Eloquent 查询进行分页一样：
 
 ```html
 <div class="container">
@@ -1028,7 +1028,7 @@ Route::get('/orders', function (Request $request) {
 
 ### 软删除
 
-如果已索引的模型是[软删除](/docs/{{version}}/eloquent#soft-deleting) 的，并且需要搜索软删除的模型，请将 `config/scout.php` 配置文件的 `soft_delete` 选项设置为 `true`：
+如果已索引的模型是[软删除](/topic/Laravel%2013.x/rwyl2kxvz8.html) 的，并且需要搜索软删除的模型，请将 `config/scout.php` 配置文件的 `soft_delete` 选项设置为 `true`：
 
 ```php
 'soft_delete' => true,

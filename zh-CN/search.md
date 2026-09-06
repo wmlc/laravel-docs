@@ -10,15 +10,15 @@
 
 #### 语义化 / 向量搜索
 
-对于通过 *语义*（而非精确关键词）匹配结果的 AI 驱动语义搜索，可以使用 `whereVectorSimilarTo` 查询构造器方法，它使用存储在启用了 `pgvector` 扩展的 PostgreSQL 或 MariaDB 中的向量嵌入。例如，搜索 "best wineries in Napa Valley" 可以呈现一篇标题为 "Top Vineyards to Visit" 的文章——即使两者词语并不重叠。向量搜索需要启用了 `pgvector` 扩展的 PostgreSQL 或 MariaDB 11.7 及更高版本，以及 [Laravel AI SDK](/docs/{{version}}/ai-sdk)。
+对于通过 *语义*（而非精确关键词）匹配结果的 AI 驱动语义搜索，可以使用 `whereVectorSimilarTo` 查询构造器方法，它使用存储在启用了 `pgvector` 扩展的 PostgreSQL 或 MariaDB 中的向量嵌入。例如，搜索 "best wineries in Napa Valley" 可以呈现一篇标题为 "Top Vineyards to Visit" 的文章——即使两者词语并不重叠。向量搜索需要启用了 `pgvector` 扩展的 PostgreSQL 或 MariaDB 11.7 及更高版本，以及 [Laravel AI SDK](/topic/Laravel%2013.x/ndvm3dj93j.html)。
 
 #### 重排序
 
-Laravel 的 [AI SDK](/docs/{{version}}/ai-sdk) 提供重排序（reranking）能力，它使用 AI 模型按与查询的语义相关性对任意结果集重新排序。重排序作为快速初始检索步骤（如全文搜索）之后的第二阶段时尤其强大——让你同时获得速度与语义准确性。
+Laravel 的 [AI SDK](/topic/Laravel%2013.x/ndvm3dj93j.html) 提供重排序（reranking）能力，它使用 AI 模型按与查询的语义相关性对任意结果集重新排序。重排序作为快速初始检索步骤（如全文搜索）之后的第二阶段时尤其强大——让你同时获得速度与语义准确性。
 
 #### Laravel Scout 搜索
 
-对于希望使用 `Searchable` Trait、让搜索索引随 Eloquent 模型自动保持同步的应用，[Laravel Scout](/docs/{{version}}/scout) 提供了内置的数据库引擎，以及针对 Algolia、Meilisearch、Typesense 和 Turbopuffer 等第三方服务的驱动。
+对于希望使用 `Searchable` Trait、让搜索索引随 Eloquent 模型自动保持同步的应用，[Laravel Scout](/topic/Laravel%2013.x/2wy3l13ykm.html) 提供了内置的数据库引擎，以及针对 Algolia、Meilisearch、Typesense 和 Turbopuffer 等第三方服务的驱动。
 
 ## 全文搜索
 
@@ -50,7 +50,7 @@ Schema::create('articles', function (Blueprint $table) {
 $table->fullText('body')->language('english');
 ```
 
-关于创建索引的更多信息，请参阅 [数据库迁移文档](/docs/{{version}}/migrations#available-index-types)。
+关于创建索引的更多信息，请参阅 [数据库迁移文档](/topic/Laravel%2013.x/x3vo0g4vm1.html)。
 
 ### 运行全文查询
 
@@ -60,7 +60,7 @@ $table->fullText('body')->language('english');
 $articles = Article::whereFullText('body', 'web developer')->get();
 ```
 
-使用 MariaDB 和 MySQL 时，结果会自动按相关性评分排序。在 PostgreSQL 上，`whereFullText` 会筛选匹配的记录但不会按相关性排序——如果你在 PostgreSQL 上需要自动相关性排序，可以考虑使用 [Scout 的数据库引擎](#database-engine)，它会为你处理这一点。
+使用 MariaDB 和 MySQL 时，结果会自动按相关性评分排序。在 PostgreSQL 上，`whereFullText` 会筛选匹配的记录但不会按相关性排序——如果你在 PostgreSQL 上需要自动相关性排序，可以考虑使用 Scout 的数据库引擎，它会为你处理这一点。
 
 如果你创建了跨多个列的复合全文索引，可以通过将相同的列数组传给 `whereFullText` 来对它们全部进行搜索：
 
@@ -70,7 +70,7 @@ $articles = Article::whereFullText(
 )->get();
 ```
 
-`orWhereFullText` 方法可用于添加一个作为 "or" 条件的全文搜索子句。完整细节请参阅 [查询构造器文档](/docs/{{version}}/queries#full-text-where-clauses)。
+`orWhereFullText` 方法可用于添加一个作为 "or" 条件的全文搜索子句。完整细节请参阅 [查询构造器文档](/topic/Laravel%2013.x/xpv525gv86.html)。
 
 ## 语义化 / 向量搜索
 
@@ -79,7 +79,7 @@ $articles = Article::whereFullText(
 向量搜索的基本工作流是：为每段内容生成一个嵌入（一个数值数组）并与你的数据一起存储；然后在搜索时，为用户的查询生成一个嵌入，并在向量空间中找到与之最接近的已存储嵌入。
 
 > [!NOTE]
-> 向量搜索需要 [Laravel AI SDK](/docs/{{version}}/ai-sdk)，并受 PostgreSQL（需要 `pgvector` 扩展）、MariaDB 11.7 及更高版本，以及 MongoDB（需要 [Laravel MongoDB 包](https://laravel.com/docs/13.x/mongodb)）支持。 [Laravel Cloud](https://laravel.com/cloud) 上的所有 Postgres 数据库都已安装 `pgvector`。
+> 向量搜索需要 [Laravel AI SDK](/topic/Laravel%2013.x/ndvm3dj93j.html)，并受 PostgreSQL（需要 `pgvector` 扩展）、MariaDB 11.7 及更高版本，以及 MongoDB（需要 [Laravel MongoDB 包](https://laravel.com/docs/13.x/mongodb)）支持。 [Laravel Cloud](https://laravel.com/cloud) 上的所有 Postgres 数据库都已安装 `pgvector`。
 
 ### 生成嵌入向量
 
@@ -104,7 +104,7 @@ $response = Embeddings::for([
 $response->embeddings; // [[0.123, 0.456, ...], [0.789, 0.012, ...]]
 ```
 
-关于配置嵌入提供者、自定义维度以及缓存的更多细节，请参阅 [AI SDK 文档](/docs/{{version}}/ai-sdk#embeddings)。
+关于配置嵌入提供者、自定义维度以及缓存的更多细节，请参阅 [AI SDK 文档](/topic/Laravel%2013.x/ndvm3dj93j.html)。
 
 ### 存储与索引向量
 
@@ -137,7 +137,7 @@ protected function casts(): array
 }
 ```
 
-关于向量列和索引的更多细节，请参阅 [数据库迁移文档](/docs/{{version}}/migrations#available-column-types)。
+关于向量列和索引的更多细节，请参阅 [数据库迁移文档](/topic/Laravel%2013.x/x3vo0g4vm1.html)。
 
 ### 按相似度查询
 
@@ -159,7 +159,7 @@ $documents = Document::query()
     ->get();
 ```
 
-要对向量查询进行更低层次的控制，还可以使用 `whereVectorDistanceLessThan`、`selectVectorDistance` 和 `orderByVectorDistance` 方法。这些方法让你可以直接处理距离值而非相似度评分，将计算出的距离作为结果中的一列进行选择，或手动控制排序。完整细节请参阅 [查询构造器文档](/docs/{{version}}/queries#vector-similarity-clauses) 和 [AI SDK 文档](/docs/{{version}}/ai-sdk#querying-embeddings)。
+要对向量查询进行更低层次的控制，还可以使用 `whereVectorDistanceLessThan`、`selectVectorDistance` 和 `orderByVectorDistance` 方法。这些方法让你可以直接处理距离值而非相似度评分，将计算出的距离作为结果中的一列进行选择，或手动控制排序。完整细节请参阅 [查询构造器文档](/topic/Laravel%2013.x/xpv525gv86.html) 和 [AI SDK 文档](/topic/Laravel%2013.x/ndvm3dj93j.html)。
 
 ## 对结果重排序
 
@@ -188,11 +188,11 @@ $articles = Article::all()
     ->rerank('body', 'Laravel tutorials');
 ```
 
-关于配置重排序提供者及可用选项的完整细节，请参阅 [AI SDK 文档](/docs/{{version}}/ai-sdk#reranking)。
+关于配置重排序提供者及可用选项的完整细节，请参阅 [AI SDK 文档](/topic/Laravel%2013.x/ndvm3dj93j.html)。
 
 ## Laravel Scout
 
-上述搜索技术都是你在代码中直接调用的查询构造器方法。 [Laravel Scout](/docs/{{version}}/scout) 则采用了不同的方式：它提供了一个 `Searchable` Trait，你可以将其添加到 Eloquent 模型上，Scout 会在记录被创建、更新和删除时自动保持搜索索引同步。当你希望模型始终可搜索、而无需手动管理索引更新时，这尤其方便。
+上述搜索技术都是你在代码中直接调用的查询构造器方法。 [Laravel Scout](/topic/Laravel%2013.x/2wy3l13ykm.html) 则采用了不同的方式：它提供了一个 `Searchable` Trait，你可以将其添加到 Eloquent 模型上，Scout 会在记录被创建、更新和删除时自动保持搜索索引同步。当你希望模型始终可搜索、而无需手动管理索引更新时，这尤其方便。
 
 ### 数据库引擎
 
@@ -228,7 +228,7 @@ class Article extends Model
 ```
 
 > [!WARNING]
-> 在指定某列应使用全文查询约束之前，请确保该列已分配了 [全文索引](/docs/{{version}}/migrations#available-index-types)。
+> 在指定某列应使用全文查询约束之前，请确保该列已分配了 [全文索引](/topic/Laravel%2013.x/x3vo0g4vm1.html)。
 
 添加该 Trait 后，你可以使用 Scout 的 `search` 方法搜索模型。Scout 的数据库引擎会自动按相关性排序结果，即使在 PostgreSQL 上也不例外：
 
@@ -236,7 +236,7 @@ class Article extends Model
 $articles = Article::search('Laravel')->get();
 ```
 
-当你的搜索需求适中，且希望获得 Scout 自动索引同步的便利、又不想部署外部服务时，数据库引擎是一个很好的选择。它能很好地处理最常见的搜索用例，包括筛选、分页和软删除记录处理。完整细节请参阅 [Scout 文档](/docs/{{version}}/scout#database-engine)。
+当你的搜索需求适中，且希望获得 Scout 自动索引同步的便利、又不想部署外部服务时，数据库引擎是一个很好的选择。它能很好地处理最常见的搜索用例，包括筛选、分页和软删除记录处理。完整细节请参阅 [Scout 文档](/topic/Laravel%2013.x/2wy3l13ykm.html)。
 
 ### 第三方引擎
 
@@ -244,7 +244,7 @@ Scout 还支持第三方搜索引擎，如 [Algolia](https://www.algolia.com/)�
 
 由于 Scout 在其所有驱动上提供统一的 API，日后从数据库引擎切换到第三方引擎只需极少的代码改动。你可以从数据库引擎起步，只有当应用的需求超出数据库所能提供的范围时，再迁移到第三方服务。
 
-关于配置第三方引擎的完整细节，请参阅 [Scout 文档](/docs/{{version}}/scout)。
+关于配置第三方引擎的完整细节，请参阅 [Scout 文档](/topic/Laravel%2013.x/2wy3l13ykm.html)。
 
 > [!NOTE]
 > 许多应用永远不需要外部搜索引擎。本页描述的这些内置技术已覆盖了绝大多数用例。

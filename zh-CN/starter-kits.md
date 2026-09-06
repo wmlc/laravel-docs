@@ -2,13 +2,13 @@
 
 ## 简介
 
-为了帮你更快上手构建新的 Laravel 应用程序，我们很高兴提供[应用程序起步套件](https://laravel.com/starter-kits)。这些起步套件为构建下一个 Laravel 应用程序提供了一个良好的起点，并包含了注册和对应用程序用户进行身份验证所需的路由、控制器和视图。起步套件使用 [Laravel Fortify](/docs/{{version}}/fortify) 提供身份验证。
+为了帮你更快上手构建新的 Laravel 应用程序，我们很高兴提供[应用程序起步套件](https://laravel.com/starter-kits)。这些起步套件为构建下一个 Laravel 应用程序提供了一个良好的起点，并包含了注册和对应用程序用户进行身份验证所需的路由、控制器和视图。起步套件使用 [Laravel Fortify](/topic/Laravel%2013.x/x3vo0x4vm1.html) 提供身份验证。
 
 虽然欢迎你使用这些起步套件，但它们并非必需。你可以简单地安装一份全新的 Laravel 来从零开始构建自己的应用程序。无论哪种方式，我们都知道你会构建出很棒的东西！
 
 ## 使用入门套件创建应用
 
-要使用我们的某个起步套件创建一个新的 Laravel 应用程序，你应首先[安装 PHP 和 Laravel CLI 工具](/docs/{{version}}/installation#installing-php)。如果你已经安装了 PHP 和 Composer，可以通过 Composer 安装 Laravel 安装器 CLI 工具：
+要使用我们的某个起步套件创建一个新的 Laravel 应用程序，你应首先[安装 PHP 和 Laravel CLI 工具](/topic/Laravel%2013.x/2wy3lj3ykm.html)。如果你已经安装了 PHP 和 Composer，可以通过 Composer 安装 Laravel 安装器 CLI 工具：
 
 ```shell
 composer global require laravel/installer
@@ -303,7 +303,7 @@ Livewire 起步套件附带的身份验证页面（例如登录页和注册页�
 
 ## 认证
 
-所有起步套件都使用 [Laravel Fortify](/docs/{{version}}/fortify) 处理身份验证。Fortify 提供了用于登录、注册、密码重置、邮箱验证等的路由、控制器和逻辑。
+所有起步套件都使用 [Laravel Fortify](/topic/Laravel%2013.x/x3vo0x4vm1.html) 处理身份验证。Fortify 提供了用于登录、注册、密码重置、邮箱验证等的路由、控制器和逻辑。
 
 Fortify 会根据你的应用程序 `config/fortify.php` 配置文件中启用的功能自动注册以下身份验证路由：
 
@@ -348,7 +348,7 @@ use Laravel\Fortify\Features;
 
 要禁用某个功能，将该功能条目从 `features` 数组中注释掉或移除。例如，移除 `Features::registration()` 以禁用公开注册。
 
-使用 [React](#react)、[Svelte](#svelte) 或 [Vue](#vue) 起步套件时，你还需要在前端代码中移除对已禁用功能路由的任何引用。例如，如果禁用邮箱验证，你应该移除 React、Svelte 或 Vue 组件中对 `verification` 路由的导入和引用。这是必要的，因为这些起步套件使用 Wayfinder 进行类型安全的路由生成，它会在构建时生成路由定义。如果你引用了不再存在的路由，应用程序将无法构建。
+使用 React、Svelte 或 Vue 起步套件时，你还需要在前端代码中移除对已禁用功能路由的任何引用。例如，如果禁用邮箱验证，你应该移除 React、Svelte 或 Vue 组件中对 `verification` 路由的导入和引用。这是必要的，因为这些起步套件使用 Wayfinder 进行类型安全的路由生成，它会在构建时生成路由定义。如果你引用了不再存在的路由，应用程序将无法构建。
 
 ### 自定义用户创建与密码重置
 
@@ -385,7 +385,7 @@ public function create(array $input): User
 
 起步套件内置了双因素身份验证（2FA），允许用户使用任何兼容 TOTP 的身份验证器应用来保护他们的账户。2FA 默认通过应用程序 `config/fortify.php` 配置文件中的 `Features::twoFactorAuthentication()` 启用。
 
-`confirm` 选项要求用户在 2FA 完全启用之前验证一个代码，而 `confirmPassword` 要求在启用或禁用 2FA 之前进行密码确认。更多详情，请参阅 [Fortify 的双因素身份验证文档](/docs/{{version}}/fortify#two-factor-authentication)。
+`confirm` 选项要求用户在 2FA 完全启用之前验证一个代码，而 `confirmPassword` 要求在启用或禁用 2FA 之前进行密码确认。更多详情，请参阅 [Fortify 的双因素身份验证文档](/topic/Laravel%2013.x/x3vo0x4vm1.html)。
 
 ### 限流
 
@@ -504,7 +504,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 ```
 
 > [!NOTE]
-> 使用起步套件的 [WorkOS](#workos) 变体时不需要邮箱验证。
+> 使用起步套件的 WorkOS 变体时不需要邮箱验证。
 
 #### 如何修改默认邮件模板？
 
