@@ -5,7 +5,7 @@
 Laravel 内置了一个易于使用的速率限制抽象层，它与应用的 [缓存](cache) 配合，提供了一种在指定时间窗口内限制任意操作的简便方式。
 
 > [!NOTE]
-> 如果你希望对传入的 HTTP 请求进行速率限制，请查阅[速率限制中间件文档](/docs/{{version}}/routing#rate-limiting)。
+> 如果你希望对传入的 HTTP 请求进行速率限制，请查阅[速率限制中间件文档](/topic/Laravel%2013.x/dgy7xg5vw2.html)。
 
 ### 缓存配置
 

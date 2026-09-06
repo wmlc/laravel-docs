@@ -12,7 +12,7 @@ Laravel 及其其他第一方扩展包遵循 [语义化版本控制](https://sem
 
 ## 支持策略
 
-对于所有 Laravel 版本，错误修复提供 18 个月，安全修复提供 2 年。对于所有其他库，只有最新的主要版本会获得错误修复。此外，请查阅 Laravel [支持的数据库版本](/docs/{{version}}/database#introduction)。
+对于所有 Laravel 版本，错误修复提供 18 个月，安全修复提供 2 年。对于所有其他库，只有最新的主要版本会获得错误修复。此外，请查阅 Laravel [支持的数据库版本](/topic/Laravel%2013.x/kl9no87vz4.html)。
 
 | 版本 | PHP（*） | 发布日期 | 错误修复截止 | 安全修复截止 |
 | ------- |-----------| ------------------- | ------------------- | -------------------- |
@@ -89,17 +89,17 @@ $embeddings = Str::of('Napa Valley has great wine.')->toEmbeddings();
 
 ### JSON:API 资源
 
-Laravel 现在包含第一方的 [JSON:API 资源](/docs/{{version}}/eloquent-resources#jsonapi-resources)，使返回符合 JSON:API 规范的响应变得简单直接。
+Laravel 现在包含第一方的 [JSON:API 资源](/topic/Laravel%2013.x/2qvpxnz93m.html)，使返回符合 JSON:API 规范的响应变得简单直接。
 
 JSON:API 资源负责资源对象序列化、关联包含、稀疏字段集、链接，以及符合 JSON:API 规范的响应头。
 
 ### 请求伪造防护
 
-出于安全考虑，Laravel 的 [请求伪造防护](/docs/{{version}}/csrf#preventing-csrf-requests) 中间件已增强并正式化为 `PreventRequestForgery`，在保留与基于令牌的 CSRF 防护兼容的同时，增加了基于来源的请求验证。
+出于安全考虑，Laravel 的 [请求伪造防护](/topic/Laravel%2013.x/kpv136298w.html) 中间件已增强并正式化为 `PreventRequestForgery`，在保留与基于令牌的 CSRF 防护兼容的同时，增加了基于来源的请求验证。
 
 ### 队列路由
 
-Laravel 13 通过 `Queue::route(...)` 添加了[按类的队列路由](/docs/{{version}}/queues#queue-routing)，让你可以在集中的位置为特定任务定义默认的队列/连接路由规则：
+Laravel 13 通过 `Queue::route(...)` 添加了[按类的队列路由](/topic/Laravel%2013.x/wevwmkz9l2.html)，让你可以在集中的位置为特定任务定义默认的队列/连接路由规则：
 
 ```php
 Queue::route(ProcessPodcast::class, connection: 'redis', queue: 'podcasts');
@@ -139,11 +139,11 @@ Eloquent、事件、通知、验证、测试以及资源序列化 API 中也引�
 
 ### 缓存 TTL 延长
 
-Laravel 现在包含 [`Cache::touch(...)`](/docs/{{version}}/cache)，让你无需获取并重新存储其值即可延长现有缓存项的 TTL。
+Laravel 现在包含 [`Cache::touch(...)`](/topic/Laravel%2013.x/5dve2w3v4x.html)，让你无需获取并重新存储其值即可延长现有缓存项的 TTL。
 
 ### 语义 / 向量搜索
 
-Laravel 13 凭借原生的向量查询支持、嵌入工作流，以及在 [search](/docs/{{version}}/search#semantic-vector-search)、[queries](/docs/{{version}}/queries#vector-similarity-clauses) 和 [AI SDK](/docs/{{version}}/ai-sdk#embeddings) 中记录的 related API，深化了其语义搜索能力。
+Laravel 13 凭借原生的向量查询支持、嵌入工作流，以及在 [search](/topic/Laravel%2013.x/3oyjdqxyp5.html)、[queries](/topic/Laravel%2013.x/xpv525gv86.html) 和 [AI SDK](/topic/Laravel%2013.x/ndvm3dj93j.html) 中记录的 related API，深化了其语义搜索能力。
 
 这些特性让你能够轻松地使用 PostgreSQL + `pgvector` 构建由 AI 驱动的搜索体验，包括针对直接从字符串生成的嵌入进行相似度搜索。
 

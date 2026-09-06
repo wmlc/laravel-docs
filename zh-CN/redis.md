@@ -4,7 +4,7 @@
 
 [Redis](https://redis.io) 是一个开源的高级键值存储。它常被称为数据结构服务器，因为键可以包含[字符串](https://redis.io/docs/latest/develop/data-types/strings/)、[哈希](https://redis.io/docs/latest/develop/data-types/hashes/)、[列表](https://redis.io/docs/latest/develop/data-types/lists/)、[集合](https://redis.io/docs/latest/develop/data-types/sets/)和[有序集合](https://redis.io/docs/latest/develop/data-types/sorted-sets/)。
 
-在将 Redis 与 Laravel 配合使用之前，我们建议你通过 PECL 安装并使用 [PhpRedis](https://github.com/phpredis/phpredis) PHP 扩展。与"用户态"PHP 包相比，该扩展安装更复杂，但对于重度使用 Redis 的应用可能带来更好的性能。如果你正在使用 [Laravel Sail](/docs/{{version}}/sail)，该扩展已经安装在应用的 Docker 容器中。
+在将 Redis 与 Laravel 配合使用之前，我们建议你通过 PECL 安装并使用 [PhpRedis](https://github.com/phpredis/phpredis) PHP 扩展。与"用户态"PHP 包相比，该扩展安装更复杂，但对于重度使用 Redis 的应用可能带来更好的性能。如果你正在使用 [Laravel Sail](/topic/Laravel%2013.x/e296opw9q7.html)，该扩展已经安装在应用的 Docker 容器中。
 
 如果你无法安装 PhpRedis 扩展，可以通过 Composer 安装 `predis/predis` 包。Predis 是一个完全用 PHP 编写的 Redis 客户端，不需要任何额外的扩展：
 
@@ -298,7 +298,7 @@ PhpRedis 扩展也可以配置为使用多种序列化器和压缩算法。这�
 
 ## 与 Redis 交互
 
-你可以通过在 `Redis` [Facade](/docs/{{version}}/facades) 上调用各种方法来与 Redis 交互。`Redis` Facade 支持动态方法，这意味着你可以在该 Facade 上调用任意 [Redis 命令](https://redis.io/commands)，该命令会被直接传递给 Redis。在本例中，我们将通过调用 `Redis` Facade 的 `get` 方法来调用 Redis 的 `GET` 命令：
+你可以通过在 `Redis` [Facade](/topic/Laravel%2013.x/569x508yep.html) 上调用各种方法来与 Redis 交互。`Redis` Facade 支持动态方法，这意味着你可以在该 Facade 上调用任意 [Redis 命令](https://redis.io/commands)，该命令会被直接传递给 Redis。在本例中，我们将通过调用 `Redis` Facade 的 `get` 方法来调用 Redis 的 `GET` 命令：
 
 ```php
 <?php
@@ -411,7 +411,7 @@ Facades\Redis::pipeline(function (Redis $pipe) {
 
 Laravel 为 Redis 的 `publish` 和 `subscribe` 命令提供了一个便捷的接口。这些 Redis 命令允许你监听给定"频道"上的消息。你可以从另一个应用、甚至使用另一种编程语言向该频道发布消息，从而实现应用与进程之间的轻松通信。
 
-首先，让我们使用 `subscribe` 方法设置一个频道监听器。我们会将此方法调用放在一个 [Artisan 命令](/docs/{{version}}/artisan) 中，因为调用 `subscribe` 方法会启动一个长生命周期进程：
+首先，让我们使用 `subscribe` 方法设置一个频道监听器。我们会将此方法调用放在一个 [Artisan 命令](/topic/Laravel%2013.x/3dykqdoyl0.html) 中，因为调用 `subscribe` 方法会启动一个长生命周期进程：
 
 ```php
 <?php

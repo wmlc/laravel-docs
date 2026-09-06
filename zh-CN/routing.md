@@ -14,7 +14,7 @@ Route::get('/greeting', function () {
 
 ### 默认路由文件
 
-所有 Laravel 路由都定义在路由文件中，这些文件位于 `routes` 目录下。这些文件由 Laravel 根据 `bootstrap/app.php` 文件中指定的配置自动加载。`routes/web.php` 文件定义了用于 Web 界面的路由。这些路由被分配到 `web` [中间件组](/docs/{{version}}/middleware#laravels-default-middleware-groups)，提供会话状态和 CSRF 保护等功能。
+所有 Laravel 路由都定义在路由文件中，这些文件位于 `routes` 目录下。这些文件由 Laravel 根据 `bootstrap/app.php` 文件中指定的配置自动加载。`routes/web.php` 文件定义了用于 Web 界面的路由。这些路由被分配到 `web` [中间件组](/topic/Laravel%2013.x/rwyl2exvz8.html)，提供会话状态和 CSRF 保护等功能。
 
 对于大多数应用，你会从在 `routes/web.php` 文件中定义路由开始。`routes/web.php` 中定义的路由可以通过在浏览器中输入所定义的路由 URL 来访问。例如，可以通过在浏览器中导航到 `http://example.com/user` 来访问以下路由：
 
@@ -32,7 +32,7 @@ Route::get('/user', [UserController::class, 'index']);
 php artisan install:api
 ```
 
-`install:api` 命令会安装 [Laravel Sanctum](/docs/{{version}}/sanctum)，它提供了强大而简单的 API 令牌身份验证守卫，可用于对第三方 API 消费者、SPA 或移动应用进行身份验证。此外，`install:api` 命令会创建 `routes/api.php` 文件：
+`install:api` 命令会安装 [Laravel Sanctum](/topic/Laravel%2013.x/xq9zr3jvdo.html)，它提供了强大而简单的 API 令牌身份验证守卫，可用于对第三方 API 消费者、SPA 或移动应用进行身份验证。此外，`install:api` 命令会创建 `routes/api.php` 文件：
 
 ```php
 Route::get('/user', function (Request $request) {
@@ -42,7 +42,7 @@ Route::get('/user', function (Request $request) {
 
 当然，对于那些应公开访问的路由，可以省略 `auth:sanctum` 中间件。
 
-`routes/api.php` 中的路由是无状态的，并被分配到 `api` [中间件组](/docs/{{version}}/middleware#laravels-default-middleware-groups)。此外，`/api` URI 前缀会自动应用到这些路由，因此无需手动为文件中的每个路由应用该前缀。可以通过修改应用的 `bootstrap/app.php` 文件来更改前缀：
+`routes/api.php` 中的路由是无状态的，并被分配到 `api` [中间件组](/topic/Laravel%2013.x/rwyl2exvz8.html)。此外，`/api` URI 前缀会自动应用到这些路由，因此无需手动为文件中的每个路由应用该前缀。可以通过修改应用的 `bootstrap/app.php` 文件来更改前缀：
 
 ```php
 ->withRouting(
@@ -82,7 +82,7 @@ Route::any('/', function () {
 
 #### 依赖注入
 
-你可以在路由的回调签名中对路由所需的任何依赖进行类型提示。所声明的依赖将由 Laravel 的[服务容器](/docs/{{version}}/container) 自动解析并注入到回调中。例如，可以对 `Illuminate\Http\Request` 类进行类型提示，以将当前 HTTP 请求自动注入到路由回调中：
+你可以在路由的回调签名中对路由所需的任何依赖进行类型提示。所声明的依赖将由 Laravel 的[服务容器](/topic/Laravel%2013.x/x3vo054vm1.html) 自动解析并注入到回调中。例如，可以对 `Illuminate\Http\Request` 类进行类型提示，以将当前 HTTP 请求自动注入到路由回调中：
 
 ```php
 use Illuminate\Http\Request;
@@ -94,7 +94,7 @@ Route::get('/users', function (Request $request) {
 
 #### CSRF 保护
 
-请记住，任何指向 `web` 路由文件中定义的 `POST`、`PUT`、`PATCH` 或 `DELETE` 路由的 HTML 表单都应包含 CSRF token 字段。否则，请求将被拒绝。可以在 [CSRF 文档](/docs/{{version}}/csrf) 中阅读有关 CSRF 保护的更多信息：
+请记住，任何指向 `web` 路由文件中定义的 `POST`、`PUT`、`PATCH` 或 `DELETE` 路由的 HTML 表单都应包含 CSRF token 字段。否则，请求将被拒绝。可以在 [CSRF 文档](/topic/Laravel%2013.x/kpv136298w.html) 中阅读有关 CSRF 保护的更多信息：
 
 ```blade
 <form method="POST" action="/profile">
@@ -128,7 +128,7 @@ Route::permanentRedirect('/here', '/there');
 
 ### 视图路由
 
-如果路由仅需要返回[视图](/docs/{{version}}/views)，可以使用 `Route::view` 方法。与 `redirect` 方法类似，该方法提供了一个简单的快捷方式，因此不必定义完整的路由或控制器。`view` 方法接受 URI 作为第一个参数，接受视图名作为第二个参数。此外，可以提供数据数组作为可选的第三个参数传递给视图：
+如果路由仅需要返回[视图](/topic/Laravel%2013.x/m892gz6y01.html)，可以使用 `Route::view` 方法。与 `redirect` 方法类似，该方法提供了一个简单的快捷方式，因此不必定义完整的路由或控制器。`view` 方法接受 URI 作为第一个参数，接受视图名作为第二个参数。此外，可以提供数据数组作为可选的第三个参数传递给视图：
 
 ```php
 Route::view('/welcome', 'welcome');
@@ -419,7 +419,7 @@ $url = route('profile', ['id' => 1, 'photos' => 'yes']);
 ```
 
 > [!NOTE]
-> 有时你可能希望为 URL 参数指定请求范围的默认值，例如当前区域设置。为此，可以使用 [URL::defaults 方法](/docs/{{version}}/urls#default-values)。
+> 有时你可能希望为 URL 参数指定请求范围的默认值，例如当前区域设置。为此，可以使用 [URL::defaults 方法](/topic/Laravel%2013.x/3oyjdkxyp5.html)。
 
 #### 检查当前路由
 
@@ -453,7 +453,7 @@ public function handle(Request $request, Closure $next): Response
 
 ### 中间件
 
-要将[中间件](/docs/{{version}}/middleware) 分配给组内的所有路由，可以在定义组之前使用 `middleware` 方法。中间件按数组中列出的顺序执行：
+要将[中间件](/topic/Laravel%2013.x/rwyl2exvz8.html) 分配给组内的所有路由，可以在定义组之前使用 `middleware` 方法。中间件按数组中列出的顺序执行：
 
 ```php
 Route::middleware(['first', 'second'])->group(function () {
@@ -469,7 +469,7 @@ Route::middleware(['first', 'second'])->group(function () {
 
 ### 控制器
 
-如果一组路由都使用相同的[控制器](/docs/{{version}}/controllers)，则可以使用 `controller` 方法为组内的所有路由定义公共控制器。然后，在定义路由时，只需提供它们调用的控制器方法：
+如果一组路由都使用相同的[控制器](/topic/Laravel%2013.x/d6vro4rv3g.html)，则可以使用 `controller` 方法为组内的所有路由定义公共控制器。然后，在定义路由时，只需提供它们调用的控制器方法：
 
 ```php
 use App\Http\Controllers\OrderController;
@@ -552,7 +552,7 @@ public function show(User $user)
 
 #### 软删除模型
 
-通常，隐式模型绑定不会检索已被[软删除](/docs/{{version}}/eloquent#soft-deleting) 的模型。但是，可以通过将 `withTrashed` 方法链接到路由定义上来指示隐式绑定检索这些模型：
+通常，隐式模型绑定不会检索已被[软删除](/topic/Laravel%2013.x/rwyl2kxvz8.html) 的模型。但是，可以通过将 `withTrashed` 方法链接到路由定义上来指示隐式绑定检索这些模型：
 
 ```php
 use App\Models\User;
@@ -740,7 +740,7 @@ public function resolveRouteBinding($value, $field = null)
 }
 ```
 
-如果路由正在使用[隐式绑定作用域](#implicit-model-binding-scoping)，则将使用 `resolveChildRouteBinding` 方法解析父模型的子绑定：
+如果路由正在使用隐式绑定作用域，则将使用 `resolveChildRouteBinding` 方法解析父模型的子绑定：
 
 ```php
 /**
@@ -899,7 +899,7 @@ RateLimiter::for('resource-not-found', function (Request $request) {
 
 ### 将限流器附加到路由
 
-可以使用 `throttle` [中间件](/docs/{{version}}/middleware) 将限流器附加到路由或路由组。`throttle` 中间件接受希望分配给路由的限流器的名称：
+可以使用 `throttle` [中间件](/topic/Laravel%2013.x/rwyl2exvz8.html) 将限流器附加到路由或路由组。`throttle` 中间件接受希望分配给路由的限流器的名称：
 
 ```php
 Route::middleware(['throttle:uploads'])->group(function () {
@@ -935,7 +935,7 @@ HTML 表单不支持 `PUT`、`PATCH` 或 `DELETE` 操作。因此，当定义从
 </form>
 ```
 
-为方便起见，可以使用 `@method` [Blade 指令](/docs/{{version}}/blade) 来生成 `_method` 输入字段：
+为方便起见，可以使用 `@method` [Blade 指令](/topic/Laravel%2013.x/wevwmrz9l2.html) 来生成 `_method` 输入字段：
 
 ```blade
 <form action="/example" method="POST">
@@ -960,7 +960,7 @@ $action = Route::currentRouteAction(); // string
 
 ## 跨源资源共享（CORS）
 
-Laravel 可以使用你配置的值自动响应 CORS `OPTIONS` HTTP 请求。`OPTIONS` 请求将由 `HandleCors` [中间件](/docs/{{version}}/middleware) 自动处理，该中间件自动包含在应用的全局中间件堆栈中。
+Laravel 可以使用你配置的值自动响应 CORS `OPTIONS` HTTP 请求。`OPTIONS` 请求将由 `HandleCors` [中间件](/topic/Laravel%2013.x/rwyl2exvz8.html) 自动处理，该中间件自动包含在应用的全局中间件堆栈中。
 
 有时，你可能需要为应用自定义 CORS 配置值。为此，可以使用 `config:publish` Artisan 命令发布 `cors` 配置文件：
 

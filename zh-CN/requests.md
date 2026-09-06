@@ -8,7 +8,7 @@ Laravel 的 `Illuminate\Http\Request` 类提供了一种面向对象的方式来
 
 ### 访问请求
 
-要通过依赖注入获得当前 HTTP 请求的实例，应当在路由闭包或控制器方法中类型提示 `Illuminate\Http\Request` 类。进来的请求实例会由 Laravel [服务容器](/docs/{{version}}/container) 自动注入：
+要通过依赖注入获得当前 HTTP 请求的实例，应当在路由闭包或控制器方法中类型提示 `Illuminate\Http\Request` 类。进来的请求实例会由 Laravel [服务容器](/topic/Laravel%2013.x/x3vo054vm1.html) 自动注入：
 
 ```php
 <?php
@@ -100,7 +100,7 @@ if ($request->is('admin/*')) {
 }
 ```
 
-通过 `routeIs` 方法，你可以判断进来的请求是否匹配了某个 [命名路由](/docs/{{version}}/routing#named-routes)：
+通过 `routeIs` 方法，你可以判断进来的请求是否匹配了某个 [命名路由](/topic/Laravel%2013.x/dgy7xg5vw2.html)：
 
 ```php
 if ($request->routeIs('admin.*')) {
@@ -269,7 +269,7 @@ Route::get('/', function (ServerRequestInterface $request) {
 $input = $request->all();
 ```
 
-使用 `collect` 方法，可以把进来请求的所有输入数据作为一个 [集合](/docs/{{version}}/collections) 获取：
+使用 `collect` 方法，可以把进来请求的所有输入数据作为一个 [集合](/topic/Laravel%2013.x/4rvgn63ydj.html) 获取：
 
 ```php
 $input = $request->collect();
@@ -341,7 +341,7 @@ $name = $request->input('user.name');
 
 #### 获取可字符串化输入值
 
-你不必把请求的输入数据作为原始 `string` 获取，而是可以使用 `string` 方法把请求数据作为 [Illuminate\Support\Stringable](/docs/{{version}}/strings) 实例获取：
+你不必把请求的输入数据作为原始 `string` 获取，而是可以使用 `string` 方法把请求数据作为 [Illuminate\Support\Stringable](/topic/Laravel%2013.x/2ev86royor.html) 实例获取：
 
 ```php
 $name = $request->string('name')->trim();
@@ -582,11 +582,11 @@ $request->mergeIfMissing(['votes' => 0]);
 
 ### 旧输入
 
-Laravel 允许你在下一次请求中使用上一次请求的输入。该特性在检测到校验错误、需要重新填充表单时尤其有用。不过，如果你正在使用 Laravel 自带的 [校验特性](/docs/{{version}}/validation)，通常无需直接使用这些 Session 输入闪存（flashing）方法，因为 Laravel 一些内置的校验设施会自动调用它们。
+Laravel 允许你在下一次请求中使用上一次请求的输入。该特性在检测到校验错误、需要重新填充表单时尤其有用。不过，如果你正在使用 Laravel 自带的 [校验特性](/topic/Laravel%2013.x/e296oew9q7.html)，通常无需直接使用这些 Session 输入闪存（flashing）方法，因为 Laravel 一些内置的校验设施会自动调用它们。
 
 #### 把输入闪存到 Session
 
-`Illuminate\Http\Request` 类的 `flash` 方法会把当前输入闪存到 [会话](/docs/{{version}}/session) 中，使其在用户的下一次请求中可用：
+`Illuminate\Http\Request` 类的 `flash` 方法会把当前输入闪存到 [会话](/topic/Laravel%2013.x/2ev86noyor.html) 中，使其在用户的下一次请求中可用：
 
 ```php
 $request->flash();
@@ -616,13 +616,13 @@ return redirect('/form')->withInput(
 
 #### 获取旧输入
 
-要获取上一次请求闪存的输入，需要在 `Illuminate\Http\Request` 实例上调用 `old` 方法。`old` 方法会从 [会话](/docs/{{version}}/session) 中取出上一次的输入数据：
+要获取上一次请求闪存的输入，需要在 `Illuminate\Http\Request` 实例上调用 `old` 方法。`old` 方法会从 [会话](/topic/Laravel%2013.x/2ev86noyor.html) 中取出上一次的输入数据：
 
 ```php
 $username = $request->old('username');
 ```
 
-Laravel 还提供了一个全局的 `old` 辅助函数。如果你在 [Blade 模板](/docs/{{version}}/blade) 中显示旧输入，使用 `old` 辅助函数重新填充表单会更方便。如果指定字段不存在旧输入，将返回 `null`：
+Laravel 还提供了一个全局的 `old` 辅助函数。如果你在 [Blade 模板](/topic/Laravel%2013.x/wevwmrz9l2.html) 中显示旧输入，使用 `old` 辅助函数重新填充表单会更方便。如果指定字段不存在旧输入，将返回 `null`：
 
 ```blade
 <input type="text" name="username" value="{{ old('username') }}">
@@ -698,7 +698,7 @@ if ($request->hasFile('photo')) {
 $image = $request->image('photo');
 ```
 
-关于处理图片的更多细节，请参阅完整的 [图片处理文档](/docs/{{version}}/images)。
+关于处理图片的更多细节，请参阅完整的 [图片处理文档](/topic/Laravel%2013.x/rwyl24xvz8.html)。
 
 #### 校验上传是否成功
 
@@ -726,7 +726,7 @@ $extension = $request->photo->extension();
 
 ### 存储上传的文件
 
-要存储一个上传的文件，通常会使用你配置好的某个 [文件系统](/docs/{{version}}/filesystem)。`UploadedFile` 类有一个 `store` 方法，它会把上传的文件移动到你的一块磁盘上，磁盘可以是本地文件系统的某个位置，也可以是像 Amazon S3 这样的云存储位置。
+要存储一个上传的文件，通常会使用你配置好的某个 [文件系统](/topic/Laravel%2013.x/qk9428ovw1.html)。`UploadedFile` 类有一个 `store` 方法，它会把上传的文件移动到你的一块磁盘上，磁盘可以是本地文件系统的某个位置，也可以是像 Amazon S3 这样的云存储位置。
 
 `store` 方法接收相对于文件系统根目录的存储路径作为参数。该路径不应该包含文件名，因为会自动生成一个唯一 ID 作为文件名。
 
@@ -747,7 +747,7 @@ $path = $request->photo->storeAs('images', 'filename.jpg', 's3');
 ```
 
 > [!NOTE]
-> 关于 Laravel 中文件存储的更多信息，请参阅完整的 [文件存储文档](/docs/{{version}}/filesystem)。
+> 关于 Laravel 中文件存储的更多信息，请参阅完整的 [文件存储文档](/topic/Laravel%2013.x/qk9428ovw1.html)。
 
 ## 配置受信代理
 

@@ -35,7 +35,7 @@ Laravel Sanctum 通过将用户 API 令牌存储在单个数据库表中，并�
 php artisan install:api
 ```
 
-接下来，如果你打算使用 Sanctum 来认证一个 SPA，请参阅本文档的 [SPA Authentication](#spa-authentication) 部分。
+接下来，如果你打算使用 Sanctum 来认证一个 SPA，请参阅本文档的 SPA Authentication 部分。
 
 ## 配置
 
@@ -70,7 +70,7 @@ public function boot(): void
 ## API 令牌认证
 
 > [!NOTE]
-> 你不应该使用 API 令牌来认证你自己的第一方 SPA。相反，请使用 Sanctum 内置的 [SPA 认证功能](#spa-authentication)。
+> 你不应该使用 API 令牌来认证你自己的第一方 SPA。相反，请使用 Sanctum 内置的 SPA 认证功能。
 
 ### 颁发 API 令牌
 
@@ -161,9 +161,9 @@ Route::get('/orders', function () {
 
 #### 第一方 UI 发起的请求
 
-为方便起见，如果传入的已认证请求来自你的第一方 SPA，并且你正在使用 Sanctum 内置的 [SPA 认证](#spa-authentication)，那么 `tokenCan` 方法将始终返回 `true`。
+为方便起见，如果传入的已认证请求来自你的第一方 SPA，并且你正在使用 Sanctum 内置的 SPA 认证，那么 `tokenCan` 方法将始终返回 `true`。
 
-不过，这并不一定意味着你的应用必须允许用户执行该操作。通常，你应用的 [授权策略](/docs/{{version}}/authorization#creating-policies) 将决定令牌是否已被授予执行这些能力的权限，同时还会检查用户实例本身是否应当被允许执行该操作。
+不过，这并不一定意味着你的应用必须允许用户执行该操作。通常，你应用的 [授权策略](/topic/Laravel%2013.x/2wy3l43ykm.html) 将决定令牌是否已被授予执行这些能力的权限，同时还会检查用户实例本身是否应当被允许执行该操作。
 
 例如，设想一个管理服务器的应用，这可能意味着要检查令牌是否被授权更新服务器 **并且** 该服务器属于该用户：
 
@@ -205,7 +205,7 @@ $user->tokens()->where('id', $tokenId)->delete();
 
 ### 令牌过期
 
-默认情况下，Sanctum 令牌永不过期，只能通过在 [撤销令牌](#revoking-tokens) 时使其失效。不过，如果你想为应用的 API 令牌配置过期时间，可以通过应用 `sanctum` 配置文件中的 `expiration` 配置选项来实现。该配置选项定义了已发放令牌被视为过期前的分钟数：
+默认情况下，Sanctum 令牌永不过期，只能通过在 撤销令牌 时使其失效。不过，如果你想为应用的 API 令牌配置过期时间，可以通过应用 `sanctum` 配置文件中的 `expiration` 配置选项来实现。该配置选项定义了已发放令牌被视为过期前的分钟数：
 
 ```php
 'expiration' => 525600,
@@ -219,7 +219,7 @@ return $user->createToken(
 )->plainTextToken;
 ```
 
-如果你为应用配置了令牌过期时间，你可能还希望 [安排一个任务](/docs/{{version}}/scheduling) 来清理应用已过期的令牌。值得庆幸的是，Sanctum 自带一个 `sanctum:prune-expired` Artisan 命令，你可以用它来完成这项工作。例如，你可以配置一个计划任务，删除所有已过期至少 24 小时的令牌数据库记录：
+如果你为应用配置了令牌过期时间，你可能还希望 [安排一个任务](/topic/Laravel%2013.x/e296olw9q7.html) 来清理应用已过期的令牌。值得庆幸的是，Sanctum 自带一个 `sanctum:prune-expired` Artisan 命令，你可以用它来完成这项工作。例如，你可以配置一个计划任务，删除所有已过期至少 24 小时的令牌数据库记录：
 
 ```php
 use Illuminate\Support\Facades\Schedule;
@@ -298,16 +298,16 @@ axios.get('/sanctum/csrf-cookie').then(response => {
 
 #### 登录
 
-一旦 CSRF 防护初始化完成，你应该向你的 Laravel 应用的 `/login` 路由发起一个 `POST` 请求。这个 `/login` 路由可以 [手动实现](/docs/{{version}}/authentication#authenticating-users)，也可以使用无头认证包（如 [Laravel Fortify](/docs/{{version}}/fortify)）。
+一旦 CSRF 防护初始化完成，你应该向你的 Laravel 应用的 `/login` 路由发起一个 `POST` 请求。这个 `/login` 路由可以 [手动实现](/topic/Laravel%2013.x/xq9zrgjvdo.html)，也可以使用无头认证包（如 [Laravel Fortify](/topic/Laravel%2013.x/x3vo0x4vm1.html)）。
 
 如果登录请求成功，你就完成了认证，对你的应用路由的后续请求将通过 Laravel 应用发给客户端的会话 Cookie 自动完成认证。此外，由于你的应用已经向 `/sanctum/csrf-cookie` 路由发起过请求，只要你的 JavaScript HTTP 客户端在 `X-XSRF-TOKEN` 请求头中发送 `XSRF-TOKEN` Cookie 的值，后续请求就应该自动获得 CSRF 防护。
 
 当然，如果你的用户会话因缺乏活动而过期，对 Laravel 应用的后续请求可能会收到 401 或 419 的 HTTP 错误响应。在这种情况下，你应该将用户重定向到 SPA 的登录页面。
 
-由于这种 SPA 认证方式是基于会话的，你可以使用 Laravel 的标准认证服务，包括 ["记住我"](/docs/{{version}}/authentication#remembering-users) 功能。
+由于这种 SPA 认证方式是基于会话的，你可以使用 Laravel 的标准认证服务，包括 ["记住我"](/topic/Laravel%2013.x/xq9zrgjvdo.html) 功能。
 
 > [!WARNING]
-> 你可以自由编写自己的 `/login` 端点；但是，你应该确保它使用标准的、 [Laravel 提供的基于会话的认证服务](/docs/{{version}}/authentication#authenticating-users) 来认证用户。通常，这意味着使用 `web` 认证守卫。
+> 你可以自由编写自己的 `/login` 端点；但是，你应该确保它使用标准的、 [Laravel 提供的基于会话的认证服务](/topic/Laravel%2013.x/xq9zrgjvdo.html) 来认证用户。通常，这意味着使用 `web` 认证守卫。
 
 ### 保护路由
 
@@ -323,7 +323,7 @@ Route::get('/user', function (Request $request) {
 
 ### 授权私有广播频道
 
-如果你的 SPA 需要认证 [私有 / 存在性广播频道](/docs/{{version}}/broadcasting#authorizing-channels)，你应该从应用 `bootstrap/app.php` 文件包含的 `withRouting` 方法中移除 `channels` 条目。相反，你应该调用 `withBroadcasting` 方法，以便为应用的广播路由指定正确的中间件：
+如果你的 SPA 需要认证 [私有 / 存在性广播频道](/topic/Laravel%2013.x/enyd5w197d.html)，你应该从应用 `bootstrap/app.php` 文件包含的 `withRouting` 方法中移除 `channels` 条目。相反，你应该调用 `withBroadcasting` 方法，以便为应用的广播路由指定正确的中间件：
 
 ```php
 return Application::configure(basePath: dirname(__DIR__))
@@ -337,7 +337,7 @@ return Application::configure(basePath: dirname(__DIR__))
     )
 ```
 
-接下来，为了让 Pusher 的授权请求能够成功，你需要在初始化 [Laravel Echo](/docs/{{version}}/broadcasting#client-side-installation) 时提供一个自定义的 Pusher `authorizer`。这让你的应用可以将 Pusher 配置为使用 [为跨域请求正确配置的](#cors-and-cookies) `axios` 实例：
+接下来，为了让 Pusher 的授权请求能够成功，你需要在初始化 [Laravel Echo](/topic/Laravel%2013.x/enyd5w197d.html) 时提供一个自定义的 Pusher `authorizer`。这让你的应用可以将 Pusher 配置为使用 为跨域请求正确配置的 `axios` 实例：
 
 ```js
 window.Echo = new Echo({
@@ -402,7 +402,7 @@ Route::post('/sanctum/token', function (Request $request) {
 当移动应用使用该令牌向你的应用发起 API 请求时，它应该在 `Authorization` 请求头中以 `Bearer` 令牌的形式传递该令牌。
 
 > [!NOTE]
-> 为移动应用发放令牌时，你同样可以自由指定 [令牌能力](#token-abilities)。
+> 为移动应用发放令牌时，你同样可以自由指定 令牌能力。
 
 ### 保护路由
 

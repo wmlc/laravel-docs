@@ -21,11 +21,11 @@ Route::get('/', function () {
 ```
 
 > [!NOTE]
-> 你知道吗？还可以从路由或控制器返回 [Eloquent 集合](/docs/{{version}}/eloquent-collections)。它们会自动转换为 JSON。试试看！
+> 你知道吗？还可以从路由或控制器返回 [Eloquent 集合](/topic/Laravel%2013.x/d6vroqrv3g.html)。它们会自动转换为 JSON。试试看！
 
 #### 响应对象
 
-通常，你不会仅从路由操作返回简单的字符串或数组。相反，你会返回完整的 `Illuminate\Http\Response` 实例或[视图](/docs/{{version}}/views)。
+通常，你不会仅从路由操作返回简单的字符串或数组。相反，你会返回完整的 `Illuminate\Http\Response` 实例或[视图](/topic/Laravel%2013.x/m892gz6y01.html)。
 
 返回完整的 `Response` 实例允许自定义响应的 HTTP 状态码和标头。`Response` 实例继承自 `Symfony\Component\HttpFoundation\Response` 类，该类提供了多种用于构建 HTTP 响应的方法：
 
@@ -38,7 +38,7 @@ Route::get('/home', function () {
 
 #### Eloquent 模型和集合
 
-还可以直接从路由和控制器返回 [Eloquent ORM](/docs/{{version}}/eloquent) 模型和集合。这样做时，Laravel 会自动将模型和集合转换为 JSON 响应，同时遵守模型的[隐藏属性](/docs/{{version}}/eloquent-serialization#hiding-attributes-from-json)：
+还可以直接从路由和控制器返回 [Eloquent ORM](/topic/Laravel%2013.x/rwyl2kxvz8.html) 模型和集合。这样做时，Laravel 会自动将模型和集合转换为 JSON 响应，同时遵守模型的[隐藏属性](/topic/Laravel%2013.x/m892ge6y01.html)：
 
 ```php
 use App\Models\User;
@@ -175,7 +175,7 @@ Route::get('/dashboard', function () {
 });
 ```
 
-有时你可能希望将用户重定向到他们之前的位置，例如当提交表单无效时。可以使用全局 `back` 辅助函数来实现这一点。由于此功能利用了[会话](/docs/{{version}}/session)，请确保调用 `back` 函数的路由使用的是 `web` 中间件组：
+有时你可能希望将用户重定向到他们之前的位置，例如当提交表单无效时。可以使用全局 `back` 辅助函数来实现这一点。由于此功能利用了[会话](/topic/Laravel%2013.x/2ev86noyor.html)，请确保调用 `back` 函数的路由使用的是 `web` 中间件组：
 
 ```php
 Route::post('/user/profile', function () {
@@ -225,7 +225,7 @@ public function getRouteKey(): mixed
 
 ### 重定向到控制器操作
 
-还可以生成到[控制器操作](/docs/{{version}}/controllers) 的重定向。为此，将控制器和操作名称传递给 `action` 方法：
+还可以生成到[控制器操作](/topic/Laravel%2013.x/d6vro4rv3g.html) 的重定向。为此，将控制器和操作名称传递给 `action` 方法：
 
 ```php
 use App\Http\Controllers\UserController;
@@ -251,7 +251,7 @@ return redirect()->away('https://www.google.com');
 
 ### 使用闪现 Session 数据重定向
 
-重定向到新 URL 并[将数据闪现到会话](/docs/{{version}}/session#flash-data) 通常同时完成。通常，在成功执行操作后执行此操作，此时将成功消息闪现到会话。为方便起见，可以创建一个 `RedirectResponse` 实例，并通过单一流畅的方法链将数据闪现到会话：
+重定向到新 URL 并[将数据闪现到会话](/topic/Laravel%2013.x/2ev86noyor.html) 通常同时完成。通常，在成功执行操作后执行此操作，此时将成功消息闪现到会话。为方便起见，可以创建一个 `RedirectResponse` 实例，并通过单一流畅的方法链将数据闪现到会话：
 
 ```php
 Route::post('/user/profile', function () {
@@ -261,7 +261,7 @@ Route::post('/user/profile', function () {
 });
 ```
 
-用户被重定向后，可以从[会话](/docs/{{version}}/session) 显示闪现的消息。例如，使用 [Blade 语法](/docs/{{version}}/blade)：
+用户被重定向后，可以从[会话](/topic/Laravel%2013.x/2ev86noyor.html) 显示闪现的消息。例如，使用 [Blade 语法](/topic/Laravel%2013.x/wevwmrz9l2.html)：
 
 ```blade
 @if (session('status'))
@@ -273,7 +273,7 @@ Route::post('/user/profile', function () {
 
 #### 使用输入重定向
 
-可以使用 `RedirectResponse` 实例提供的 `withInput` 方法，在将用户重定向到新位置之前将当前请求的输入数据闪现到会话。如果用户遇到验证错误，通常会执行此操作。一旦输入被闪现到会话，就可以在下一个请求期间轻松[检索它](/docs/{{version}}/requests#retrieving-old-input) 以重新填充表单：
+可以使用 `RedirectResponse` 实例提供的 `withInput` 方法，在将用户重定向到新位置之前将当前请求的输入数据闪现到会话。如果用户遇到验证错误，通常会执行此操作。一旦输入被闪现到会话，就可以在下一个请求期间轻松[检索它](/topic/Laravel%2013.x/2ky040l9z8.html) 以重新填充表单：
 
 ```php
 return back()->withInput();
@@ -281,11 +281,11 @@ return back()->withInput();
 
 ## 其他响应类型
 
-`response` 辅助函数可用于生成其他类型的响应实例。当调用 `response` 辅助函数而不带参数时，将返回 `Illuminate\Contracts\Routing\ResponseFactory` [契约](/docs/{{version}}/contracts) 的实现。该契约提供了多种用于生成响应的有用方法。
+`response` 辅助函数可用于生成其他类型的响应实例。当调用 `response` 辅助函数而不带参数时，将返回 `Illuminate\Contracts\Routing\ResponseFactory` [契约](/topic/Laravel%2013.x/3xyq4r4vmq.html) 的实现。该契约提供了多种用于生成响应的有用方法。
 
 ### 视图响应
 
-如果需要控制响应的状态和标头，但又需要将[视图](/docs/{{version}}/views) 作为响应的内容返回，则应使用 `view` 方法：
+如果需要控制响应的状态和标头，但又需要将[视图](/topic/Laravel%2013.x/m892gz6y01.html) 作为响应的内容返回，则应使用 `view` 方法：
 
 ```php
 return response()
@@ -460,7 +460,7 @@ const sendMessage = () => {
 通过 `send` 向流发送数据时，活动连接到流会在发送新数据之前被取消。所有请求都以 JSON `POST` 请求形式发送。
 
 > [!WARNING]
-> 由于 `useStream` hook 会向应用发出 `POST` 请求，因此需要有效的 CSRF token。提供 CSRF token 最简单的方法是[通过应用布局头部中的 meta 标签包含它](/docs/{{version}}/csrf#csrf-x-csrf-token)。
+> 由于 `useStream` hook 会向应用发出 `POST` 请求，因此需要有效的 CSRF token。提供 CSRF token 最简单的方法是[通过应用布局头部中的 meta 标签包含它](/topic/Laravel%2013.x/kpv136298w.html)。
 
 传递给 `useStream` 的第二个参数是一个选项对象，可用于自定义流消费行为。此对象的默认值如下所示：
 
@@ -733,7 +733,7 @@ Route::get('/users.json', function () {
 });
 ```
 
-`useJsonStream` hook 与 [useStream hook](#consuming-streamed-responses) 相同，只是它会在流完成后尝试将数据解析为 JSON：
+`useJsonStream` hook 与 useStream hook 相同，只是它会在流完成后尝试将数据解析为 JSON：
 
 ```tsx tab=React
 import { useJsonStream } from "@laravel/stream-react";
@@ -1009,7 +1009,7 @@ return response()->streamDownload(function () {
 
 ## 响应宏
 
-如果希望定义可在各种路由和控制器中重用的自定义响应，可以使用 `Response` Facade 上的 `macro` 方法。通常，应该从应用的某个[服务提供者](/docs/{{version}}/providers) 的 `boot` 方法中调用此方法，例如 `App\Providers\AppServiceProvider` 服务提供者：
+如果希望定义可在各种路由和控制器中重用的自定义响应，可以使用 `Response` Facade 上的 `macro` 方法。通常，应该从应用的某个[服务提供者](/topic/Laravel%2013.x/qk942kovw1.html) 的 `boot` 方法中调用此方法，例如 `App\Providers\AppServiceProvider` 服务提供者：
 
 ```php
 <?php

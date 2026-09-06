@@ -43,7 +43,7 @@ php artisan schedule:list
 
 ### 调度 Artisan 命令
 
-除了计划闭包之外，你还可以计划 [Artisan 命令](/docs/{{version}}/artisan) 和系统命令。例如，你可以使用 `command` 方法，通过命令的名称或类名来计划一个 Artisan 命令。
+除了计划闭包之外，你还可以计划 [Artisan 命令](/topic/Laravel%2013.x/3dykqdoyl0.html) 和系统命令。例如，你可以使用 `command` 方法，通过命令的名称或类名来计划一个 Artisan 命令。
 
 使用 Artisan 命令的类名来计划 Artisan 命令时，你可以传入一个额外的命令行参数数组，这些参数会在命令被调用时提供给它：
 
@@ -76,7 +76,7 @@ Artisan::command('emails:send {user} {--force}', function ($user) {
 
 ### 调度队列任务
 
-`job` 方法可用于计划一个 [队列任务](/docs/{{version}}/queues)。该方法提供了一种便捷的方式，无需使用 `call` 方法定义闭包来将任务加入队列：
+`job` 方法可用于计划一个 [队列任务](/topic/Laravel%2013.x/wevwmkz9l2.html)。该方法提供了一种便捷的方式，无需使用 `call` 方法定义闭包来将任务加入队列：
 
 ```php
 use App\Jobs\Heartbeat;
@@ -251,7 +251,7 @@ Schedule::command('emails:send')->daily()->skip(function () {
 
 #### 环境约束
 
-`environments` 方法可用于只在给定的环境（由 `APP_ENV` [环境变量](/docs/{{version}}/configuration#environment-configuration) 定义）上执行任务：
+`environments` 方法可用于只在给定的环境（由 `APP_ENV` [环境变量](/topic/Laravel%2013.x/3dykqpoyl0.html) 定义）上执行任务：
 
 ```php
 Schedule::command('emails:send')
@@ -292,7 +292,7 @@ use Illuminate\Support\Facades\Schedule;
 Schedule::command('emails:send')->withoutOverlapping();
 ```
 
-在这个例子中，如果 `emails:send` [Artisan 命令](/docs/{{version}}/artisan) 尚未运行，它会每分钟运行一次。`withoutOverlapping` 方法在你那些执行时间差异很大的任务上尤其有用，它能让你无法精确预测某个给定任务会花费多长时间。
+在这个例子中，如果 `emails:send` [Artisan 命令](/topic/Laravel%2013.x/3dykqdoyl0.html) 尚未运行，它会每分钟运行一次。`withoutOverlapping` 方法在你那些执行时间差异很大的任务上尤其有用，它能让你无法精确预测某个给定任务会花费多长时间。
 
 如果需要，你可以指定在"不重叠"锁过期之前必须经过多少分钟。默认情况下，该锁会在 24 小时后过期：
 
@@ -300,7 +300,7 @@ Schedule::command('emails:send')->withoutOverlapping();
 Schedule::command('emails:send')->withoutOverlapping(10);
 ```
 
-在底层，`withoutOverlapping` 方法利用应用的 [缓存](/docs/{{version}}/cache) 来获取锁。如有必要，你可以使用 `schedule:clear-cache` Artisan 命令清除这些缓存锁。这通常只有在任务因意外的服务器问题而卡住时才需要。
+在底层，`withoutOverlapping` 方法利用应用的 [缓存](/topic/Laravel%2013.x/5dve2w3v4x.html) 来获取锁。如有必要，你可以使用 `schedule:clear-cache` Artisan 命令清除这些缓存锁。这通常只有在任务因意外的服务器问题而卡住时才需要。
 
 ### 在单台服务器上运行任务
 
@@ -368,7 +368,7 @@ Schedule::command('analytics:report')
 
 ### 维护模式
 
-当应用处于 [维护模式](/docs/{{version}}/configuration#maintenance-mode) 时，应用的计划任务不会运行，因为我们不希望你的任务干扰你可能在服务器上执行的任何未完成的维护工作。不过，如果你想强制任务即使在维护模式下也运行，可以在定义任务时调用 `evenInMaintenanceMode` 方法：
+当应用处于 [维护模式](/topic/Laravel%2013.x/3dykqpoyl0.html) 时，应用的计划任务不会运行，因为我们不希望你的任务干扰你可能在服务器上执行的任何未完成的维护工作。不过，如果你想强制任务即使在维护模式下也运行，可以在定义任务时调用 `evenInMaintenanceMode` 方法：
 
 ```php
 Schedule::command('emails:send')->evenInMaintenanceMode();
@@ -484,7 +484,7 @@ Schedule::command('emails:send')
     ->appendOutputTo($filePath);
 ```
 
-使用 `emailOutputTo` 方法，你可以将输出通过邮件发送到你选择的电子邮件地址。在通过邮件发送任务输出之前，你应该先配置好 Laravel 的 [邮件服务](/docs/{{version}}/mail)：
+使用 `emailOutputTo` 方法，你可以将输出通过邮件发送到你选择的电子邮件地址。在通过邮件发送任务输出之前，你应该先配置好 Laravel 的 [邮件服务](/topic/Laravel%2013.x/d6vro0rv3g.html)：
 
 ```php
 Schedule::command('report:generate')
@@ -585,7 +585,7 @@ Schedule::command('emails:send')
 
 ## 事件
 
-Laravel 在调度过程中会调度各种 [事件](/docs/{{version}}/events)。你可以为以下任意事件 [定义监听器](/docs/{{version}}/events)：
+Laravel 在调度过程中会调度各种 [事件](/topic/Laravel%2013.x/x3vo0l4vm1.html)。你可以为以下任意事件 [定义监听器](/topic/Laravel%2013.x/x3vo0l4vm1.html)：
 
 | Event Name                                                  |
 | ----------------------------------------------------------- |

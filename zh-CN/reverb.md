@@ -1,10 +1,10 @@
 # Laravel Reverb
 
-[Laravel Reverb](https://github.com/laravel/reverb) 为你的 Laravel 应用带来极速且可水平扩展的实时 WebSocket 通信能力，并与 Laravel 现有的 [事件广播工具](/docs/{{version}}/broadcasting) 套件无缝集成。
+[Laravel Reverb](https://github.com/laravel/reverb) 为你的 Laravel 应用带来极速且可水平扩展的实时 WebSocket 通信能力，并与 Laravel 现有的 [事件广播工具](/topic/Laravel%2013.x/enyd5w197d.html) 套件无缝集成。
 
 ## 简介
 
-[Laravel Reverb](https://github.com/laravel/reverb) 为你的 Laravel 应用带来极速且可水平扩展的实时 WebSocket 通信能力，并与 Laravel 现有的 [事件广播工具](/docs/{{version}}/broadcasting) 套件无缝集成。
+[Laravel Reverb](https://github.com/laravel/reverb) 为你的 Laravel 应用带来极速且可水平扩展的实时 WebSocket 通信能力，并与 Laravel 现有的 [事件广播工具](/topic/Laravel%2013.x/enyd5w197d.html) 套件无缝集成。
 
 ## 安装
 
@@ -65,7 +65,7 @@ REVERB_APP_SECRET=my-app-secret
 
 在大多数情况下，安全的 WebSocket 连接由上游 Web 服务器（Nginx 等）在请求被代理到你的 Reverb 服务器之前处理。
 
-不过，在某些情况下（例如在本地开发时），让 Reverb 服务器直接处理安全连接会很有用。如果你正在使用 [Laravel Herd](https://herd.laravel.com) 的安全站点功能，或者正在使用 [Laravel Valet](/docs/{{version}}/valet) 并已针对你的应用运行过 [secure 命令](/docs/{{version}}/valet#securing-sites)，你可以使用 Herd / Valet 为你的站点生成的证书来保障 Reverb 连接的安全。为此，请将 `REVERB_HOST` 环境变量设置为你的站点主机名，或在启动 Reverb 服务器时显式传入 hostname 选项：
+不过，在某些情况下（例如在本地开发时），让 Reverb 服务器直接处理安全连接会很有用。如果你正在使用 [Laravel Herd](https://herd.laravel.com) 的安全站点功能，或者正在使用 [Laravel Valet](/topic/Laravel%2013.x/xq9zr33vdo.html) 并已针对你的应用运行过 [secure 命令](/topic/Laravel%2013.x/xq9zr33vdo.html)，你可以使用 Herd / Valet 为你的站点生成的证书来保障 Reverb 连接的安全。为此，请将 `REVERB_HOST` 环境变量设置为你的站点主机名，或在启动 Reverb 服务器时显式传入 hostname 选项：
 
 ```shell
 php artisan reverb:start --host="0.0.0.0" --port=8080 --hostname="laravel.test"
@@ -131,9 +131,9 @@ php artisan reverb:restart
 
 ## 监控
 
-可以通过与 [Laravel Pulse](/docs/{{version}}/pulse) 的集成来监控 Reverb。启用 Reverb 的 Pulse 集成后，你可以跟踪服务器正在处理的连接数和消息数。
+可以通过与 [Laravel Pulse](/topic/Laravel%2013.x/3oyjdnxyp5.html) 的集成来监控 Reverb。启用 Reverb 的 Pulse 集成后，你可以跟踪服务器正在处理的连接数和消息数。
 
-要启用该集成，你首先应确保已 [安装 Pulse](/docs/{{version}}/pulse#installation)。然后，将 Reverb 的任意记录器（recorder）添加到应用的 `config/pulse.php` 配置文件中：
+要启用该集成，你首先应确保已 [安装 Pulse](/topic/Laravel%2013.x/3oyjdnxyp5.html)。然后，将 Reverb 的任意记录器（recorder）添加到应用的 `config/pulse.php` 配置文件中：
 
 ```php
 use Laravel\Reverb\Pulse\Recorders\ReverbConnections;
@@ -152,7 +152,7 @@ use Laravel\Reverb\Pulse\Recorders\ReverbMessages;
 ],
 ```
 
-接下来，将每个记录器对应的 Pulse 卡片添加到你的 [Pulse 仪表盘](/docs/{{version}}/pulse#dashboard-customization) 中：
+接下来，将每个记录器对应的 Pulse 卡片添加到你的 [Pulse 仪表盘](/topic/Laravel%2013.x/3oyjdnxyp5.html) 中：
 
 ```blade
 <x-pulse>
@@ -162,7 +162,7 @@ use Laravel\Reverb\Pulse\Recorders\ReverbMessages;
 </x-pulse>
 ```
 
-连接活动会通过周期性轮询新更新来记录。为确保该信息在 Pulse 仪表盘上正确呈现，你必须在 Reverb 服务器上运行 `pulse:check` 守护进程。如果你以 [水平扩展](#scaling) 配置运行 Reverb，则只应在一台服务器上运行该守护进程。
+连接活动会通过周期性轮询新更新来记录。为确保该信息在 Pulse 仪表盘上正确呈现，你必须在 Reverb 服务器上运行 `pulse:check` 守护进程。如果你以 水平扩展 配置运行 Reverb，则只应在一台服务器上运行该守护进程。
 
 ## 在生产环境运行 Reverb
 
@@ -255,7 +255,7 @@ cat /proc/sys/net/ipv4/ip_local_port_range
 # 32768	60999
 ```
 
-由于每个连接都需要一个空闲端口，以上输出表明服务器最多可处理 28,231（60,999 - 32,768）个连接。尽管我们建议通过 [水平扩展](#scaling) 来增加允许的连接的连接数，但你也可以通过更新服务器 `/etc/sysctl.conf` 配置文件中的允许端口范围来增加可用的打开端口数。
+由于每个连接都需要一个空闲端口，以上输出表明服务器最多可处理 28,231（60,999 - 32,768）个连接。尽管我们建议通过 水平扩展 来增加允许的连接的连接数，但你也可以通过更新服务器 `/etc/sysctl.conf` 配置文件中的允许端口范围来增加可用的打开端口数。
 
 ### 进程管理
 
@@ -277,13 +277,13 @@ minfds=10000
 REVERB_SCALING_ENABLED=true
 ```
 
-接下来，你应该准备一台专用的中央 Redis 服务器，所有 Reverb 服务器都将与之通信。Reverb 会使用 [为你的应用配置的默认 Redis 连接](/docs/{{version}}/redis#configuration) 来向所有 Reverb 服务器发布消息。
+接下来，你应该准备一台专用的中央 Redis 服务器，所有 Reverb 服务器都将与之通信。Reverb 会使用 [为你的应用配置的默认 Redis 连接](/topic/Laravel%2013.x/569x518yep.html) 来向所有 Reverb 服务器发布消息。
 
 一旦启用 Reverb 的扩展选项并配置好 Redis 服务器，你只需在与 Redis 服务器能够通信的多台服务器上调用 `reverb:start` 命令即可。这些 Reverb 服务器应放置在负载均衡器之后，由负载均衡器将传入请求均匀分发到各台服务器。
 
 ## 事件
 
-Reverb 会在连接生命周期和消息处理过程中调度内部事件。你可以 [监听这些事件](/docs/{{version}}/events)，以便在连接被管理或消息被交换时执行操作。
+Reverb 会在连接生命周期和消息处理过程中调度内部事件。你可以 [监听这些事件](/topic/Laravel%2013.x/x3vo0l4vm1.html)，以便在连接被管理或消息被交换时执行操作。
 
 Reverb 会调度以下事件：
 
