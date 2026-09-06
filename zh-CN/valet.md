@@ -7,7 +7,7 @@
 
 [Laravel Valet](https://github.com/laravel/valet) 是一个面向 macOS 极简主义的开发环境。Laravel Valet 会在你的 Mac 开机时配置机器在后台始终运行 [Nginx](https://www.nginx.com)。然后，Valet 使用 [DnsMasq](https://en.wikipedia.org/wiki/Dnsmasq) 将所有 `*.test` 域上的 请求 代理到指向安装在本机上的站点。
 
-换句话说，Valet 是一个极速的 Laravel 开发环境，大约只占用 7 MB 的 RAM。Valet 并不是 [Sail](/docs/{{version}}/sail) 或 [Homestead](/docs/{{version}}/homestead) 的完整替代品，但如果你想要灵活的基础、偏好极致速度，或者在内存有限的机器上工作，它是一个很好的选择。
+换句话说，Valet 是一个极速的 Laravel 开发环境，大约只占用 7 MB 的 RAM。Valet 并不是 [Sail](/topic/Laravel%2013.x/e296opw9q7.html) 或 [Homestead](/topic/Laravel%2013.x/dgy7x25vw2.html) 的完整替代品，但如果你想要灵活的基础、偏好极致速度，或者在内存有限的机器上工作，它是一个很好的选择。
 
 开箱即用的 Valet 支持（但不限于）以下内容：
 
@@ -40,7 +40,7 @@
 - [WordPress](https://wordpress.org)
 - [Zend](https://framework.zend.com)
 
-不过，你可以通过自己的[自定义驱动](#custom-valet-drivers)扩展 Valet。
+不过，你可以通过自己的自定义驱动扩展 Valet。
 
 ## 安装
 
@@ -78,7 +78,7 @@ Valet 会在每次机器启动时自动启动其所需的服务。
 #### PHP 版本
 
 > [!NOTE]
-> 你可以通过 `isolate` [命令](#per-site-php-versions) 指示 Valet 使用按站点指定的 PHP 版本，而无需修改全局 PHP 版本。
+> 你可以通过 `isolate` 命令 指示 Valet 使用按站点指定的 PHP 版本，而无需修改全局 PHP 版本。
 
 Valet 允许你使用 `valet use php@version` 命令切换 PHP 版本。如果该 PHP 版本尚未安装，Valet 会通过 Homebrew 安装指定的版本：
 
@@ -457,7 +457,7 @@ class LocalValetDriver extends LaravelValetDriver
 
 #### `~/.config/valet/Sites/`
 
-此目录包含你所有[链接项目](#the-link-command)的符号链接。
+此目录包含你所有链接项目的符号链接。
 
 #### `~/.config/valet/config.json`
 

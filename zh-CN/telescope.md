@@ -51,7 +51,7 @@ public function register(): void
 }
 ```
 
-最后，你还应该通过将以下内容添加到 `composer.json` 文件来阻止 Telescope 包被[自动发现](/docs/{{version}}/packages#package-discovery)：
+最后，你还应该通过将以下内容添加到 `composer.json` 文件来阻止 Telescope 包被[自动发现](/topic/Laravel%2013.x/2qvpx1z93m.html)：
 
 ```json
 "extra": {
@@ -65,7 +65,7 @@ public function register(): void
 
 ### 配置
 
-发布 Telescope 的资源后，其主要配置文件将位于 `config/telescope.php`。该配置文件允许你配置你的[监听器选项](#available-watchers)。每个配置选项都包含对其用途的说明，因此请务必仔细探索该文件。
+发布 Telescope 的资源后，其主要配置文件将位于 `config/telescope.php`。该配置文件允许你配置你的监听器选项。每个配置选项都包含对其用途的说明，因此请务必仔细探索该文件。
 
 如果需要，你可以使用 `enabled` 配置选项完全禁用 Telescope 的数据收集：
 
@@ -103,7 +103,7 @@ public function handle(Request $request, Closure $next): Response
 
 ### 数据清理
 
-如果不进行修剪，`telescope_entries` 表会非常快速地累积记录。为缓解此问题，你应该[调度](/docs/{{version}}/scheduling) `telescope:prune` Artisan 命令每日运行：
+如果不进行修剪，`telescope_entries` 表会非常快速地累积记录。为缓解此问题，你应该[调度](/topic/Laravel%2013.x/e296olw9q7.html) `telescope:prune` Artisan 命令每日运行：
 
 ```php
 use Illuminate\Support\Facades\Schedule;
@@ -121,7 +121,7 @@ Schedule::command('telescope:prune --hours=48')->daily();
 
 ### 仪表盘授权
 
-Telescope 仪表盘可以通过 `/telescope` 路由访问。默认情况下，你只能在 `local` 环境中访问此仪表盘。在 `app/Providers/TelescopeServiceProvider.php` 文件中，有一个[授权 Gate](/docs/{{version}}/authorization#gates)定义。该授权 Gate 控制**非本地**环境下对 Telescope 的访问。你可以根据需要修改此 Gate 以限制对 Telescope 安装的访问：
+Telescope 仪表盘可以通过 `/telescope` 路由访问。默认情况下，你只能在 `local` 环境中访问此仪表盘。在 `app/Providers/TelescopeServiceProvider.php` 文件中，有一个[授权 Gate](/topic/Laravel%2013.x/2wy3l43ykm.html)定义。该授权 Gate 控制**非本地**环境下对 Telescope 的访问。你可以根据需要修改此 Gate 以限制对 Telescope 安装的访问：
 
 ```php
 use App\Models\User;
@@ -279,7 +279,7 @@ Telescope 的"监听器（watchers）"会在 请求 或控制台命令执行时�
 
 ### 批处理监视器
 
-Batch 监听器记录有关排队[批处理](/docs/{{version}}/queues#job-batching)的信息，包括任务和连接信息。
+Batch 监听器记录有关排队[批处理](/topic/Laravel%2013.x/wevwmkz9l2.html)的信息，包括任务和连接信息。
 
 ### 缓存监视器
 
@@ -305,7 +305,7 @@ Dump 监听器在 Telescope 中记录并显示你的变量转储。使用 Larave
 
 ### 事件监视器
 
-Event 监听器记录你的应用程序分发的任何[事件](/docs/{{version}}/events)的负载、监听器和广播数据。Laravel 框架内部的事件会被 Event 监听器忽略。
+Event 监听器记录你的应用程序分发的任何[事件](/topic/Laravel%2013.x/x3vo0l4vm1.html)的负载、监听器和广播数据。Laravel 框架内部的事件会被 Event 监听器忽略。
 
 ### 异常监视器
 
@@ -313,7 +313,7 @@ Exception 监听器记录你的应用程序抛出的任何可报告异常的数�
 
 ### Gate 监视器
 
-Gate 监听器记录你的应用程序的[Gate 和策略](/docs/{{version}}/authorization)检查的數据和结果。如果你想将某些能力排除在监听器的记录之外，可以在 `config/telescope.php` 文件中的 `ignore_abilities` 选项中指定它们：
+Gate 监听器记录你的应用程序的[Gate 和策略](/topic/Laravel%2013.x/2wy3l43ykm.html)检查的數据和结果。如果你想将某些能力排除在监听器的记录之外，可以在 `config/telescope.php` 文件中的 `ignore_abilities` 选项中指定它们：
 
 ```php
 'watchers' => [
@@ -327,15 +327,15 @@ Gate 监听器记录你的应用程序的[Gate 和策略](/docs/{{version}}/auth
 
 ### HTTP 客户端监视器
 
-HTTP Client 监听器记录你的应用程序发出的传出 [HTTP 客户端请求](/docs/{{version}}/http-client)。
+HTTP Client 监听器记录你的应用程序发出的传出 [HTTP 客户端请求](/topic/Laravel%2013.x/dgy7x15vw2.html)。
 
 ### 任务监视器
 
-Job 监听器记录你的应用程序分发的任何[任务](/docs/{{version}}/queues)的数据和状态。
+Job 监听器记录你的应用程序分发的任何[任务](/topic/Laravel%2013.x/wevwmkz9l2.html)的数据和状态。
 
 ### 日志监视器
 
-Log 监听器记录你的应用程序写入的任何[日志数据](/docs/{{version}}/logging)。
+Log 监听器记录你的应用程序写入的任何[日志数据](/topic/Laravel%2013.x/2wy3l33ykm.html)。
 
 默认情况下，Telescope 只会记录 `error` 级别及以上的日志。不过，你可以修改应用程序 `config/telescope.php` 配置文件中的 `level` 选项来更改此行为：
 
@@ -352,11 +352,11 @@ Log 监听器记录你的应用程序写入的任何[日志数据](/docs/{{versi
 
 ### 邮件监视器
 
-Mail 监听器允许你在浏览器中预览你的应用程序发送的[邮件](/docs/{{version}}/mail)及其相关数据。你还可以将邮件下载为 `.eml` 文件。
+Mail 监听器允许你在浏览器中预览你的应用程序发送的[邮件](/topic/Laravel%2013.x/d6vro0rv3g.html)及其相关数据。你还可以将邮件下载为 `.eml` 文件。
 
 ### 模型监视器
 
-Model 监听器在分发 Eloquent [模型事件](/docs/{{version}}/eloquent#events)时记录模型变更。你可以通过监听器的 `events` 选项指定应记录哪些模型事件：
+Model 监听器在分发 Eloquent [模型事件](/topic/Laravel%2013.x/rwyl2kxvz8.html)时记录模型变更。你可以通过监听器的 `events` 选项指定应记录哪些模型事件：
 
 ```php
 'watchers' => [
@@ -383,7 +383,7 @@ Model 监听器在分发 Eloquent [模型事件](/docs/{{version}}/eloquent#even
 
 ### 通知监视器
 
-Notification 监听器记录你的应用程序发送的所有[通知](/docs/{{version}}/notifications)。如果通知触发了邮件，并且你启用了 Mail 监听器，则该邮件也可在 Mail 监听器界面中预览。
+Notification 监听器记录你的应用程序发送的所有[通知](/topic/Laravel%2013.x/2ky045l9z8.html)。如果通知触发了邮件，并且你启用了 Mail 监听器，则该邮件也可在 Mail 监听器界面中预览。
 
 ### 查询监视器
 
@@ -401,7 +401,7 @@ Query 监听器记录你的应用程序执行的所有查询的原始 SQL、绑�
 
 ### Redis 监视器
 
-Redis 监听器记录你的应用程序执行的所有 [Redis](/docs/{{version}}/redis) 命令。如果你使用 Redis 进行缓存，缓存命令也会被 Redis 监听器记录。
+Redis 监听器记录你的应用程序执行的所有 [Redis](/topic/Laravel%2013.x/569x518yep.html) 命令。如果你使用 Redis 进行缓存，缓存命令也会被 Redis 监听器记录。
 
 ### 请求监视器
 
@@ -419,11 +419,11 @@ Request 监听器记录应用程序处理的任何 请求 相关的 请求、Hea
 
 ### 计划任务监视器
 
-Schedule 监听器记录你的应用程序运行的任何[调度任务](/docs/{{version}}/scheduling)的命令和输出。
+Schedule 监听器记录你的应用程序运行的任何[调度任务](/topic/Laravel%2013.x/e296olw9q7.html)的命令和输出。
 
 ### 视图监视器
 
-View 监听器记录渲染视图时使用的[视图](/docs/{{version}}/views)名称、路径、数据和"composers"。
+View 监听器记录渲染视图时使用的[视图](/topic/Laravel%2013.x/m892gz6y01.html)名称、路径、数据和"composers"。
 
 ## 显示用户头像
 

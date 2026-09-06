@@ -12,7 +12,7 @@ Laravel 从设计之初就内置了对测试的考量。事实上，开箱即提
 
 ## 环境
 
-运行测试时，由于 `phpunit.xml` 文件中定义的环境变量，Laravel 会自动将[配置环境](/docs/{{version}}/configuration#environment-configuration)设置为 `testing`。Laravel 还会自动将会话和缓存配置为 `array` 驱动，以便在测试期间不会持久化任何会话或缓存数据。
+运行测试时，由于 `phpunit.xml` 文件中定义的环境变量，Laravel 会自动将[配置环境](/topic/Laravel%2013.x/3dykqpoyl0.html)设置为 `testing`。Laravel 还会自动将会话和缓存配置为 `array` 驱动，以便在测试期间不会持久化任何会话或缓存数据。
 
 你可以根据需要定义其他测试环境配置值。可以在应用程序的 `phpunit.xml` 文件中配置 `testing` 环境变量，但在运行测试之前，请务必使用 `config:clear` Artisan 命令清除你的配置缓存！
 
@@ -60,7 +60,7 @@ class LocationServiceTest extends TestCase
 ```
 
 > [!NOTE]
-> 测试桩可以通过[桩发布](/docs/{{version}}/artisan#stub-customization)进行自定义。
+> 测试桩可以通过[桩发布](/topic/Laravel%2013.x/3dykqdoyl0.html)进行自定义。
 
 生成测试后，你可以像往常一样使用 Pest 或 PHPUnit 定义测试。要运行测试，请在终端中执行 `vendor/bin/pest`、`vendor/bin/phpunit` 或 `php artisan test` 命令：
 

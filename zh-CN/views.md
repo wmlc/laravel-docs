@@ -2,7 +2,7 @@
 
 当然，直接从路由和控制器返回完整的 HTML 文档字符串并不现实。幸好，视图提供了一种便捷的方式，让我们可以将所有 HTML 放置在独立的文件中。
 
-视图将你的控制器 / 应用逻辑与展示逻辑分离开来，并存储在 `resources/views` 目录中。使用 Laravel 时，视图模板通常使用 [Blade 模板语言](/docs/{{version}}/blade) 编写。一个简单的视图看起来像这样：
+视图将你的控制器 / 应用逻辑与展示逻辑分离开来，并存储在 `resources/views` 目录中。使用 Laravel 时，视图模板通常使用 [Blade 模板语言](/topic/Laravel%2013.x/wevwmrz9l2.html) 编写。一个简单的视图看起来像这样：
 
 ```blade
 <!-- 视图存储在 resources/views/greeting.blade.php -->
@@ -23,13 +23,13 @@ Route::get('/', function () {
 ```
 
 > [!NOTE]
-> 想了解更多关于如何编写 Blade 模板的信息？请查看完整的 [Blade 文档](/docs/{{version}}/blade) 开始上手。
+> 想了解更多关于如何编写 Blade 模板的信息？请查看完整的 [Blade 文档](/topic/Laravel%2013.x/wevwmrz9l2.html) 开始上手。
 
 ## 使用 React / Svelte / Vue 编写视图
 
 许多开发者开始倾向于使用 React、Svelte 或 Vue 来编写前端模板，而不是通过 Blade 用 PHP 编写。得益于 [Inertia](https://inertiajs.com/)，Laravel 让这件事变得轻而易举——Inertia 是一个库，可以轻松地将你的 React / Svelte / Vue 前端与 Laravel 后端连接起来，而无需构建 SPA 时的常见复杂性。
 
-我们的 [React、Svelte 和 Vue 应用入门套件](/docs/{{version}}/starter-kits) 为你的下一个由 Inertia 驱动的 Laravel 应用提供了良好的起点。
+我们的 [React、Svelte 和 Vue 应用入门套件](/topic/Laravel%2013.x/kl9nop7vz4.html) 为你的下一个由 Inertia 驱动的 Laravel 应用提供了良好的起点。
 
 ## 创建与渲染视图
 
@@ -39,7 +39,7 @@ Route::get('/', function () {
 php artisan make:view greeting
 ```
 
-`.blade.php` 扩展名告诉框架该文件包含一个 [Blade 模板](/docs/{{version}}/blade)。Blade 模板包含 HTML 以及 Blade 指令，让你可以轻松输出值、创建 "if" 语句、遍历数据等。
+`.blade.php` 扩展名告诉框架该文件包含一个 [Blade 模板](/topic/Laravel%2013.x/wevwmrz9l2.html)。Blade 模板包含 HTML 以及 Blade 指令，让你可以轻松输出值、创建 "if" 语句、遍历数据等。
 
 创建视图后，你可以使用全局的 `view` 辅助函数，从应用的某个路由或控制器返回它：
 
@@ -57,7 +57,7 @@ use Illuminate\Support\Facades\View;
 return View::make('greeting', ['name' => 'James']);
 ```
 
-如你所见，传给 `view` 辅助函数的第一个参数对应 `resources/views` 目录中视图文件的名称。第二个参数是一个数组，包含应当提供给视图的数据。在本例中，我们传入了 `name` 变量，该变量会在视图中通过 [Blade 语法](/docs/{{version}}/blade) 显示。
+如你所见，传给 `view` 辅助函数的第一个参数对应 `resources/views` 目录中视图文件的名称。第二个参数是一个数组，包含应当提供给视图的数据。在本例中，我们传入了 `name` 变量，该变量会在视图中通过 [Blade 语法](/topic/Laravel%2013.x/wevwmrz9l2.html) 显示。
 
 ### 嵌套视图目录
 
@@ -145,7 +145,7 @@ class AppServiceProvider extends ServiceProvider
 
 视图合成器是在视图渲染时被调用的回调或类方法。如果你有数据希望每次渲染某个视图时都绑定到该视图，视图合成器可以帮你将这些逻辑组织到单一位置。当同一个视图被应用中的多个路由或控制器返回、且始终需要某个特定数据时，视图合成器会特别有用。
 
-通常，视图合成器会注册在应用的某个 [服务提供者](/docs/{{version}}/providers) 中。在本例中，我们假设 `App\Providers\AppServiceProvider` 类将承载这段逻辑。
+通常，视图合成器会注册在应用的某个 [服务提供者](/topic/Laravel%2013.x/qk942kovw1.html) 中。在本例中，我们假设 `App\Providers\AppServiceProvider` 类将承载这段逻辑。
 
 我们将使用 `View` Facade 的 `composer` 方法来注册视图合成器。Laravel 没有为基于类的视图合成器提供默认目录，因此你可以自由地按自己的意愿组织它们。例如，你可以创建一个 `app/View/Composers` 目录来存放应用中所有的视图合成器：
 
@@ -218,7 +218,7 @@ class ProfileComposer
 }
 ```
 
-如你所见，所有视图合成器都通过 [服务容器](/docs/{{version}}/container) 解析，因此你可以在合成器的构造函数中类型提示任何所需的依赖。
+如你所见，所有视图合成器都通过 [服务容器](/topic/Laravel%2013.x/x3vo054vm1.html) 解析，因此你可以在合成器的构造函数中类型提示任何所需的依赖。
 
 #### 将合成器附加到多个视图
 

@@ -62,7 +62,7 @@ class PostController extends Controller
 
 现在，我们可以开始填充 `store` 方法，加入验证新博客文章的逻辑。我们将使用 `Illuminate\Http\Request` 对象提供的 `validate` 方法。如果验证规则通过，你的代码会照常继续执行；但如果验证失败，会抛出 `Illuminate\Validation\ValidationException` 异常，并自动向用户发送正确的错误响应。
 
-如果在传统的 HTTP 请求期间验证失败，系统会生成一个重定向响应，返回上一个 URL。如果传入的请求是 XHR 请求，则会返回 [包含验证错误信息的 JSON 响应](#validation-error-response-format)。
+如果在传统的 HTTP 请求期间验证失败，系统会生成一个重定向响应，返回上一个 URL。如果传入的请求是 XHR 请求，则会返回 包含验证错误信息的 JSON 响应。
 
 为了更好地理解 `validate` 方法，让我们回到 `store` 方法：
 
@@ -83,9 +83,9 @@ public function store(Request $request): RedirectResponse
 }
 ```
 
-如你所见，验证规则被传入了 `validate` 方法。不必担心 —— 所有可用的验证规则都在 [文档中](#available-validation-rules) 有说明。再次强调，如果验证失败，正确的响应会自动生成；如果验证通过，我们的控制器会继续照常执行。
+如你所见，验证规则被传入了 `validate` 方法。不必担心 —— 所有可用的验证规则都在 文档中 有说明。再次强调，如果验证失败，正确的响应会自动生成；如果验证通过，我们的控制器会继续照常执行。
 
-此外，你还可以使用 `validateWithBag` 方法验证请求，并将任何错误信息存储到 [命名的错误包](#named-error-bags) 中：
+此外，你还可以使用 `validateWithBag` 方法验证请求，并将任何错误信息存储到 命名的错误包 中：
 
 ```php
 $validated = $request->validateWithBag('post', [
@@ -130,9 +130,9 @@ $request->validate([
 
 ### 显示验证错误
 
-那么，如果传入的请求字段没有通过给定的验证规则会怎样？如前所述，Laravel 会自动将用户重定向回之前的位置。此外，所有的验证错误和 [请求输入](/docs/{{version}}/requests#retrieving-old-input) 都会自动被 [闪存到会话](/docs/{{version}}/session#flash-data) 中。
+那么，如果传入的请求字段没有通过给定的验证规则会怎样？如前所述，Laravel 会自动将用户重定向回之前的位置。此外，所有的验证错误和 [请求输入](/topic/Laravel%2013.x/2ky040l9z8.html) 都会自动被 [闪存到会话](/topic/Laravel%2013.x/2ev86noyor.html) 中。
 
-`$errors` 变量由 `Illuminate\View\Middleware\ShareErrorsFromSession` 中间件（由 `web` 中间件组提供）共享给应用的所有视图。应用该中间件后，`$errors` 变量在你的视图中始终可用，让你可以放心地假定 `$errors` 变量总是已定义且可安全使用。`$errors` 变量会是 `Illuminate\Support\MessageBag` 的一个实例。想了解更多关于使用该对象的信息，请参阅 [它的文档](#working-with-error-messages)。
+`$errors` 变量由 `Illuminate\View\Middleware\ShareErrorsFromSession` 中间件（由 `web` 中间件组提供）共享给应用的所有视图。应用该中间件后，`$errors` 变量在你的视图中始终可用，让你可以放心地假定 `$errors` 变量总是已定义且可安全使用。`$errors` 变量会是 `Illuminate\Support\MessageBag` 的一个实例。想了解更多关于使用该对象的信息，请参阅 它的文档。
 
 因此，在我们的示例中，验证失败时用户会被重定向到控制器的 `create` 方法，让我们可以在视图中显示错误信息：
 
@@ -160,18 +160,18 @@ Laravel 内置的每条验证规则都有一条错误信息，位于应用的 `l
 
 在 `lang/en/validation.php` 文件中，你会找到每条验证规则的翻译条目。你可以根据应用的需要自由更改或修改这些消息。
 
-此外，你可以将此文件复制到另一个语言目录，为应用所用的语言翻译消息。想了解更多关于 Laravel 本地化的信息，请查阅完整的 [本地化文档](/docs/{{version}}/localization)。
+此外，你可以将此文件复制到另一个语言目录，为应用所用的语言翻译消息。想了解更多关于 Laravel 本地化的信息，请查阅完整的 [本地化文档](/topic/Laravel%2013.x/kpv13q298w.html)。
 
 > [!WARNING]
 > 默认情况下，Laravel 应用骨架不包含 `lang` 目录。如果你想自定义 Laravel 的语言文件，可以通过 `lang:publish` Artisan 命令发布它们。
 
 #### XHR 请求与验证
 
-在本例中，我们使用了一个传统表单向应用发送数据。不过，许多应用会从由 JavaScript 驱动的前端接收 XHR 请求。在 XHR 请求期间使用 `validate` 方法时，Laravel 不会生成重定向响应，而是会生成 [包含全部验证错误的 JSON 响应](#validation-error-response-format)。该 JSON 响应会以 422 HTTP 状态码返回。
+在本例中，我们使用了一个传统表单向应用发送数据。不过，许多应用会从由 JavaScript 驱动的前端接收 XHR 请求。在 XHR 请求期间使用 `validate` 方法时，Laravel 不会生成重定向响应，而是会生成 包含全部验证错误的 JSON 响应。该 JSON 响应会以 422 HTTP 状态码返回。
 
 #### `@error` 指令
 
-你可以使用 `@error` [Blade](/docs/{{version}}/blade) 指令，快速判断某个给定属性是否存在验证错误信息。在 `@error` 指令内部，你可以输出 `$message` 变量来显示错误信息：
+你可以使用 `@error` [Blade](/topic/Laravel%2013.x/wevwmrz9l2.html) 指令，快速判断某个给定属性是否存在验证错误信息。在 `@error` 指令内部，你可以输出 `$message` 变量来显示错误信息：
 
 ```blade
 <!-- /resources/views/post/create.blade.php -->
@@ -190,7 +190,7 @@ Laravel 内置的每条验证规则都有一条错误信息，位于应用的 `l
 @enderror
 ```
 
-如果你在使用 [命名的错误包](#named-error-bags)，可以将错误包的名称作为第二个参数传给 `@error` 指令：
+如果你在使用 命名的错误包，可以将错误包的名称作为第二个参数传给 `@error` 指令：
 
 ```blade
 <input ... class="@error('title', 'post') is-invalid @enderror">
@@ -198,15 +198,15 @@ Laravel 内置的每条验证规则都有一条错误信息，位于应用的 `l
 
 ### 表单数据回填
 
-当 Laravel 因验证错误而生成重定向响应时，框架会自动将 [请求的所有输入闪存到会话](/docs/{{version}}/session#flash-data) 中。这样做是为了让你能在下一次请求期间方便地访问这些输入，并回填用户尝试提交的表单。
+当 Laravel 因验证错误而生成重定向响应时，框架会自动将 [请求的所有输入闪存到会话](/topic/Laravel%2013.x/2ev86noyor.html) 中。这样做是为了让你能在下一次请求期间方便地访问这些输入，并回填用户尝试提交的表单。
 
-要从上一次请求中获取被闪存的输入，可以调用 `Illuminate\Http\Request` 实例上的 `old` 方法。`old` 方法会从 [会话](/docs/{{version}}/session) 中取出之前闪存的输入数据：
+要从上一次请求中获取被闪存的输入，可以调用 `Illuminate\Http\Request` 实例上的 `old` 方法。`old` 方法会从 [会话](/topic/Laravel%2013.x/2ev86noyor.html) 中取出之前闪存的输入数据：
 
 ```php
 $title = $request->old('title');
 ```
 
-Laravel 还提供了一个全局的 `old` 辅助函数。如果你在 [Blade 模板](/docs/{{version}}/blade) 中显示旧的输入，使用 `old` 辅助函数来回填表单会更方便。如果给定字段没有旧的输入，则会返回 `null`：
+Laravel 还提供了一个全局的 `old` 辅助函数。如果你在 [Blade 模板](/topic/Laravel%2013.x/wevwmrz9l2.html) 中显示旧的输入，使用 `old` 辅助函数来回填表单会更方便。如果给定字段没有旧的输入，则会返回 `null`：
 
 ```blade
 <input type="text" name="title" value="{{ old('title') }}">
@@ -283,7 +283,7 @@ public function rules(): array
 ```
 
 > [!NOTE]
-> 你可以在 `rules` 方法的签名中类型提示任何所需的依赖。它们会通过 Laravel [服务容器](/docs/{{version}}/container) 自动解析。
+> 你可以在 `rules` 方法的签名中类型提示任何所需的依赖。它们会通过 Laravel [服务容器](/topic/Laravel%2013.x/x3vo054vm1.html) 自动解析。
 
 那么，验证规则是如何被求值的？你只需在控制器方法中对请求进行类型提示即可。传入的表单请求会在控制器方法被调用之前完成验证，这意味着你无需在控制器中塞入任何验证逻辑：
 
@@ -308,10 +308,10 @@ public function store(StorePostRequest $request): RedirectResponse
 }
 ```
 
-如果验证失败，会生成一个重定向响应，将用户送回之前的位置。错误信息也会被闪存到会话中，以便显示。如果请求是 XHR 请求，则会向用户返回带有 422 状态码的 HTTP 响应，其中包含 [验证错误的 JSON 表示](#validation-error-response-format)。
+如果验证失败，会生成一个重定向响应，将用户送回之前的位置。错误信息也会被闪存到会话中，以便显示。如果请求是 XHR 请求，则会向用户返回带有 422 状态码的 HTTP 响应，其中包含 验证错误的 JSON 表示。
 
 > [!NOTE]
-> 需要为你的 Inertia 驱动的 Laravel 前端添加实时表单请求验证？请查看 [Laravel Precognition](/docs/{{version}}/precognition)。
+> 需要为你的 Inertia 驱动的 Laravel 前端添加实时表单请求验证？请查看 [Laravel Precognition](/topic/Laravel%2013.x/wevwmwz9l2.html)。
 
 #### 执行额外的验证
 
@@ -470,7 +470,7 @@ class StorePostRequest extends FormRequest
 
 #### 自定义错误包
 
-当表单请求验证失败时，错误信息会被闪存到 `default` 错误包中。如果你需要将错误信息存储到不同的 [命名错误包](#named-error-bags)，可以在表单请求上使用 `ErrorBag` 属性：
+当表单请求验证失败时，错误信息会被闪存到 `default` 错误包中。如果你需要将错误信息存储到不同的 命名错误包，可以在表单请求上使用 `ErrorBag` 属性：
 
 ```php
 <?php
@@ -489,7 +489,7 @@ class LoginRequest extends FormRequest
 
 ### 表单请求的授权
 
-表单请求类还包含一个 `authorize` 方法。在该方法内部，你可以判断已认证的用户是否真的有权限更新某个给定资源。例如，你可以判断用户是否真的拥有他试图更新的某条博客评论。很可能，你会在这个方法中与你的 [授权 gate 和策略](/docs/{{version}}/authorization) 交互：
+表单请求类还包含一个 `authorize` 方法。在该方法内部，你可以判断已认证的用户是否真的有权限更新某个给定资源。例如，你可以判断用户是否真的拥有他试图更新的某条博客评论。很可能，你会在这个方法中与你的 [授权 gate 和策略](/topic/Laravel%2013.x/2wy3l43ykm.html) 交互：
 
 ```php
 use App\Models\Comment;
@@ -511,7 +511,7 @@ public function authorize(): bool
 Route::post('/comment/{comment}');
 ```
 
-因此，如果你的应用利用了 [路由模型绑定](/docs/{{version}}/routing#route-model-binding)，你可以通过像访问请求的属性一样访问已解析的模型，让代码更加简洁：
+因此，如果你的应用利用了 [路由模型绑定](/topic/Laravel%2013.x/dgy7xg5vw2.html)，你可以通过像访问请求的属性一样访问已解析的模型，让代码更加简洁：
 
 ```php
 return $this->user()->can('update', $this->comment);
@@ -532,7 +532,7 @@ public function authorize(): bool
 ```
 
 > [!NOTE]
-> 你可以在 `authorize` 方法的签名中类型提示任何所需的依赖。它们会通过 Laravel [服务容器](/docs/{{version}}/container) 自动解析。
+> 你可以在 `authorize` 方法的签名中类型提示任何所需的依赖。它们会通过 Laravel [服务容器](/topic/Laravel%2013.x/x3vo054vm1.html) 自动解析。
 
 ### 自定义错误信息
 
@@ -603,7 +603,7 @@ protected function passedValidation(): void
 
 ## 手动创建验证器
 
-如果你不想使用请求上的 `validate` 方法，可以使用 `Validator` [Facade](/docs/{{version}}/facades) 手动创建一个验证器实例。Facade 上的 `make` 方法会生成一个新的验证器实例：
+如果你不想使用请求上的 `validate` 方法，可以使用 `Validator` [Facade](/topic/Laravel%2013.x/569x508yep.html) 手动创建一个验证器实例。Facade 上的 `make` 方法会生成一个新的验证器实例：
 
 ```php
 <?php
@@ -662,7 +662,7 @@ if ($validator->stopOnFirstFailure()->fails()) {
 
 ### 自动重定向
 
-如果你想手动创建一个验证器实例，但仍想利用 HTTP 请求 `validate` 方法所提供的自动重定向，可以调用现有验证器实例上的 `validate` 方法。如果验证失败，用户会自动被重定向，或者在 XHR 请求的情况下，返回 [JSON 响应](#validation-error-response-format)：
+如果你想手动创建一个验证器实例，但仍想利用 HTTP 请求 `validate` 方法所提供的自动重定向，可以调用现有验证器实例上的 `validate` 方法。如果验证失败，用户会自动被重定向，或者在 XHR 请求的情况下，返回 JSON 响应：
 
 ```php
 Validator::make($request->all(), [
@@ -671,7 +671,7 @@ Validator::make($request->all(), [
 ])->validate();
 ```
 
-如果验证失败，你可以使用 `validateWithBag` 方法将错误信息存储到 [命名错误包](#named-error-bags) 中：
+如果验证失败，你可以使用 `validateWithBag` 方法将错误信息存储到 命名错误包 中：
 
 ```php
 Validator::make($request->all(), [
@@ -812,7 +812,7 @@ $email = $validated['email'];
 $validated = $request->safe()->merge(['name' => 'Taylor Otwell']);
 ```
 
-如果你想以 [集合](/docs/{{version}}/collections) 实例的形式取出已验证的数据，可以调用 `collect` 方法：
+如果你想以 [集合](/topic/Laravel%2013.x/4rvgn63ydj.html) 实例的形式取出已验证的数据，可以调用 `collect` 方法：
 
 ```php
 $collection = $request->safe()->collect();
@@ -876,7 +876,7 @@ Laravel 内置的每条验证规则都有一条错误信息，位于应用的 `l
 
 在 `lang/en/validation.php` 文件中，你会找到每条验证规则的翻译条目。你可以根据应用的需要自由更改或修改这些消息。
 
-此外，你可以将此文件复制到另一个语言目录，为应用所用的语言翻译消息。想了解更多关于 Laravel 本地化的信息，请查阅完整的 [本地化文档](/docs/{{version}}/localization)。
+此外，你可以将此文件复制到另一个语言目录，为应用所用的语言翻译消息。想了解更多关于 Laravel 本地化的信息，请查阅完整的 [本地化文档](/topic/Laravel%2013.x/kpv13q298w.html)。
 
 > [!WARNING]
 > 默认情况下，Laravel 应用骨架不包含 `lang` 目录。如果你想自定义 Laravel 的语言文件，可以通过 `lang:publish` Artisan 命令发布它们。
@@ -948,152 +948,152 @@ The credit card number field is required when payment type is credit card.
 
 #### 布尔值
 
-[Accepted](#rule-accepted)
-[Accepted If](#rule-accepted-if)
-[Boolean](#rule-boolean)
-[Declined](#rule-declined)
-[Declined If](#rule-declined-if)
+Accepted
+Accepted If
+Boolean
+Declined
+Declined If
 
 #### 字符串
 
-[Active URL](#rule-active-url)
-[Alpha](#rule-alpha)
-[Alpha Dash](#rule-alpha-dash)
-[Alpha Numeric](#rule-alpha-num)
-[Ascii](#rule-ascii)
-[Confirmed](#rule-confirmed)
-[Current Password](#rule-current-password)
-[Different](#rule-different)
-[Doesnt Start With](#rule-doesnt-start-with)
-[Doesnt End With](#rule-doesnt-end-with)
-[Email](#rule-email)
-[Ends With](#rule-ends-with)
-[Enum](#rule-enum)
-[Hex Color](#rule-hex-color)
-[In](#rule-in)
-[IP Address](#rule-ip)
-[JSON](#rule-json)
-[Lowercase](#rule-lowercase)
-[MAC Address](#rule-mac)
-[Max](#rule-max)
-[Min](#rule-min)
-[Not In](#rule-not-in)
-[Regular Expression](#rule-regex)
-[Not Regular Expression](#rule-not-regex)
-[Same](#rule-same)
-[Size](#rule-size)
-[Starts With](#rule-starts-with)
-[String](#rule-string)
-[Uppercase](#rule-uppercase)
-[URL](#rule-url)
-[ULID](#rule-ulid)
-[UUID](#rule-uuid)
+Active URL
+Alpha
+Alpha Dash
+Alpha Numeric
+Ascii
+Confirmed
+Current Password
+Different
+Doesnt Start With
+Doesnt End With
+Email
+Ends With
+Enum
+Hex Color
+In
+IP Address
+JSON
+Lowercase
+MAC Address
+Max
+Min
+Not In
+Regular Expression
+Not Regular Expression
+Same
+Size
+Starts With
+String
+Uppercase
+URL
+ULID
+UUID
 
 #### 数字
 
-[Between](#rule-between)
-[Decimal](#rule-decimal)
-[Different](#rule-different)
-[Digits](#rule-digits)
-[Digits Between](#rule-digits-between)
-[Greater Than](#rule-gt)
-[Greater Than Or Equal](#rule-gte)
-[Integer](#rule-integer)
-[Less Than](#rule-lt)
-[Less Than Or Equal](#rule-lte)
-[Max](#rule-max)
-[Max Digits](#rule-max-digits)
-[Min](#rule-min)
-[Min Digits](#rule-min-digits)
-[Multiple Of](#rule-multiple-of)
-[Numeric](#rule-numeric)
-[Same](#rule-same)
-[Size](#rule-size)
+Between
+Decimal
+Different
+Digits
+Digits Between
+Greater Than
+Greater Than Or Equal
+Integer
+Less Than
+Less Than Or Equal
+Max
+Max Digits
+Min
+Min Digits
+Multiple Of
+Numeric
+Same
+Size
 
 #### 数组
 
-[Array](#rule-array)
-[Array Keys](#rule-array-keys)
-[Between](#rule-between)
-[Contains](#rule-contains)
-[Doesnt Contain](#rule-doesnt-contain)
-[Distinct](#rule-distinct)
-[In Array](#rule-in-array)
-[In Array Keys](#rule-in-array-keys)
-[List](#rule-list)
-[Max](#rule-max)
-[Min](#rule-min)
-[Size](#rule-size)
+Array
+Array Keys
+Between
+Contains
+Doesnt Contain
+Distinct
+In Array
+In Array Keys
+List
+Max
+Min
+Size
 
 #### 日期
 
-[After](#rule-after)
-[After Or Equal](#rule-after-or-equal)
-[Before](#rule-before)
-[Before Or Equal](#rule-before-or-equal)
-[Date](#rule-date)
-[Date Equals](#rule-date-equals)
-[Date Format](#rule-date-format)
-[Different](#rule-different)
-[Timezone](#rule-timezone)
+After
+After Or Equal
+Before
+Before Or Equal
+Date
+Date Equals
+Date Format
+Different
+Timezone
 
 #### 文件
 
-[Between](#rule-between)
-[Dimensions](#rule-dimensions)
-[Encoding](#rule-encoding)
-[Extensions](#rule-extensions)
-[File](#rule-file)
-[Image](#rule-image)
-[Max](#rule-max)
-[Min](#rule-min)
-[MIME Types](#rule-mimetypes)
-[MIME Type By File Extension](#rule-mimes)
-[Size](#rule-size)
+Between
+Dimensions
+Encoding
+Extensions
+File
+Image
+Max
+Min
+MIME Types
+MIME Type By File Extension
+Size
 
 #### 数据库
 
-[Exists](#rule-exists)
-[Unique](#rule-unique)
+Exists
+Unique
 
 #### 工具类
 
-[Any Of](#rule-anyof)
-[Bail](#rule-bail)
-[Exclude](#rule-exclude)
-[Exclude If](#rule-exclude-if)
-[Exclude Unless](#rule-exclude-unless)
-[Exclude With](#rule-exclude-with)
-[Exclude Without](#rule-exclude-without)
-[Filled](#rule-filled)
-[Missing](#rule-missing)
-[Missing If](#rule-missing-if)
-[Missing Unless](#rule-missing-unless)
-[Missing With](#rule-missing-with)
-[Missing With All](#rule-missing-with-all)
-[Nullable](#rule-nullable)
-[Present](#rule-present)
-[Present If](#rule-present-if)
-[Present Unless](#rule-present-unless)
-[Present With](#rule-present-with)
-[Present With All](#rule-present-with-all)
-[Prohibited](#rule-prohibited)
-[Prohibited If](#rule-prohibited-if)
-[Prohibited If Accepted](#rule-prohibited-if-accepted)
-[Prohibited If Declined](#rule-prohibited-if-declined)
-[Prohibited Unless](#rule-prohibited-unless)
-[Prohibits](#rule-prohibits)
-[Required](#rule-required)
-[Required If](#rule-required-if)
-[Required If Accepted](#rule-required-if-accepted)
-[Required If Declined](#rule-required-if-declined)
-[Required Unless](#rule-required-unless)
-[Required With](#rule-required-with)
-[Required With All](#rule-required-with-all)
-[Required Without](#rule-required-without)
-[Required Without All](#rule-required-without-all)
-[Required Array Keys](#rule-required-array-keys)
-[Sometimes](#validating-when-present)
+Any Of
+Bail
+Exclude
+Exclude If
+Exclude Unless
+Exclude With
+Exclude Without
+Filled
+Missing
+Missing If
+Missing Unless
+Missing With
+Missing With All
+Nullable
+Present
+Present If
+Present Unless
+Present With
+Present With All
+Prohibited
+Prohibited If
+Prohibited If Accepted
+Prohibited If Declined
+Prohibited Unless
+Prohibits
+Required
+Required If
+Required If Accepted
+Required If Declined
+Required Unless
+Required With
+Required With All
+Required Without
+Required Without All
+Required Array Keys
+Sometimes
 
 #### accepted
 
@@ -1151,7 +1151,7 @@ use Illuminate\Validation\Rule;
 
 #### after\_or\_equal:_date_
 
-待验证字段必须是给定日期当天或之后的值。更多信息，请参阅 [after](#rule-after) 规则。
+待验证字段必须是给定日期当天或之后的值。更多信息，请参阅 after 规则。
 
 为方便起见，可以使用流畅的 `date` 规则构造器来构建基于日期的规则：
 
@@ -1266,7 +1266,7 @@ if ($validator->stopOnFirstFailure()->fails()) {
 
 #### before:_date_
 
-待验证字段必须是给定日期之前的值。日期会被传入 PHP 的 `strtotime` 函数，以便转换为有效的 `DateTime` 实例。此外，与 [after](#rule-after) 规则一样，可以提供另一个待验证字段的名称作为 `date` 的值。
+待验证字段必须是给定日期之前的值。日期会被传入 PHP 的 `strtotime` 函数，以便转换为有效的 `DateTime` 实例。此外，与 after 规则一样，可以提供另一个待验证字段的名称作为 `date` 的值。
 
 为方便起见，也可以使用流畅的 `date` 规则构造器来构建基于日期的规则：
 
@@ -1290,7 +1290,7 @@ use Illuminate\Validation\Rule;
 
 #### before\_or\_equal:_date_
 
-待验证字段必须是给定日期当天或之前的值。日期会被传入 PHP 的 `strtotime` 函数，以便转换为有效的 `DateTime` 实例。此外，与 [after](#rule-after) 规则一样，可以提供另一个待验证字段的名称作为 `date` 的值。
+待验证字段必须是给定日期当天或之前的值。日期会被传入 PHP 的 `strtotime` 函数，以便转换为有效的 `DateTime` 实例。此外，与 after 规则一样，可以提供另一个待验证字段的名称作为 `date` 的值。
 
 为方便起见，也可以使用流畅的 `date` 规则构造器来构建基于日期的规则：
 
@@ -1305,7 +1305,7 @@ use Illuminate\Validation\Rule;
 
 #### between:_min_,_max_
 
-待验证字段的大小必须介于给定的 _min_ 和 _max_ 之间（含边界）。字符串、数字、数组和文件的求值方式与 [size](#rule-size) 规则相同。
+待验证字段的大小必须介于给定的 _min_ 和 _max_ 之间（含边界）。字符串、数字、数组和文件的求值方式与 size 规则相同。
 
 #### boolean
 
@@ -1359,7 +1359,7 @@ Validator::make($data, [
 
 #### current_password
 
-待验证字段必须与已认证用户的密码相匹配。可以使用规则的第一个参数指定一个 [认证 guard](/docs/{{version}}/authentication)：
+待验证字段必须与已认证用户的密码相匹配。可以使用规则的第一个参数指定一个 [认证 guard](/topic/Laravel%2013.x/xq9zrgjvdo.html)：
 
 ```php
 'password' => ['current_password:api']
@@ -1528,7 +1528,7 @@ $request->validate([
 
 `dns` 验证器会执行一次真实的 DNS 查询，以确认地址的域具有有效的 MX 记录。它不会判断单个邮箱是否存在。
 
-由于你的测试不应依赖实时的 DNS 查询，可以使用 `Validator::fakeDnsLookups` 方法 [伪造 DNS 查询](#rule-active-url)，同时其他被请求的验证（如 `rfc`）继续运行：
+由于你的测试不应依赖实时的 DNS 查询，可以使用 `Validator::fakeDnsLookups` 方法 伪造 DNS 查询，同时其他被请求的验证（如 `rfc`）继续运行：
 
 ```php
 use Illuminate\Support\Facades\Validator;
@@ -1708,7 +1708,7 @@ Validator::make($data, [
 'state' => [Rule::exists('states', 'abbreviation')],
 ```
 
-有时，你可能希望验证一组值是否存在于数据库中。为此，可以将 `exists` 规则和 [array](#rule-array) 规则都添加到待验证字段上：
+有时，你可能希望验证一组值是否存在于数据库中。为此，可以将 `exists` 规则和 array 规则都添加到待验证字段上：
 
 ```php
 'states' => ['array', Rule::exists('states', 'abbreviation')],
@@ -1725,7 +1725,7 @@ Validator::make($data, [
 ```
 
 > [!WARNING]
-> 你绝不应仅依赖通过用户指定的扩展名来验证文件。此规则通常应始终与 [mimes](#rule-mimes) 或 [mimetypes](#rule-mimetypes) 规则结合使用。
+> 你绝不应仅依赖通过用户指定的扩展名来验证文件。此规则通常应始终与 mimes 或 mimetypes 规则结合使用。
 
 #### file
 
@@ -1737,11 +1737,11 @@ Validator::make($data, [
 
 #### gt:_field_
 
-待验证字段必须大于给定的 _field_ 或 _value_。两个字段必须是相同类型。字符串、数字、数组和文件的求值方式与 [size](#rule-size) 规则相同。
+待验证字段必须大于给定的 _field_ 或 _value_。两个字段必须是相同类型。字符串、数字、数组和文件的求值方式与 size 规则相同。
 
 #### gte:_field_
 
-待验证字段必须大于或等于给定的 _field_ 或 _value_。两个字段必须是相同类型。字符串、数字、数组和文件的求值方式与 [size](#rule-size) 规则相同。
+待验证字段必须大于或等于给定的 _field_ 或 _value_。两个字段必须是相同类型。字符串、数字、数组和文件的求值方式与 size 规则相同。
 
 #### hex_color
 
@@ -1812,7 +1812,7 @@ Validator::make($input, [
 ```
 
 > [!WARNING]
-> 此验证规则并不验证输入是否为 "integer" 变量类型，只验证输入是否为 PHP 的 `FILTER_VALIDATE_INT` 规则所接受的类型。如果你需要验证输入是一个数字，请将此规则与 [the `numeric` 验证规则](#rule-numeric) 结合使用。
+> 此验证规则并不验证输入是否为 "integer" 变量类型，只验证输入是否为 PHP 的 `FILTER_VALIDATE_INT` 规则所接受的类型。如果你需要验证输入是一个数字，请将此规则与 the `numeric` 验证规则 结合使用。
 
 #### ip
 
@@ -1832,11 +1832,11 @@ Validator::make($input, [
 
 #### lt:_field_
 
-待验证字段必须小于给定的 _field_。两个字段必须是相同类型。字符串、数字、数组和文件的求值方式与 [size](#rule-size) 规则相同。
+待验证字段必须小于给定的 _field_。两个字段必须是相同类型。字符串、数字、数组和文件的求值方式与 size 规则相同。
 
 #### lte:_field_
 
-待验证字段必须小于或等于给定的 _field_。两个字段必须是相同类型。字符串、数字、数组和文件的求值方式与 [size](#rule-size) 规则相同。
+待验证字段必须小于或等于给定的 _field_。两个字段必须是相同类型。字符串、数字、数组和文件的求值方式与 size 规则相同。
 
 #### lowercase
 
@@ -1852,7 +1852,7 @@ Validator::make($input, [
 
 #### max:_value_
 
-待验证字段必须小于或等于最大 _value_。字符串、数字、数组和文件的求值方式与 [size](#rule-size) 规则相同。
+待验证字段必须小于或等于最大 _value_。字符串、数字、数组和文件的求值方式与 size 规则相同。
 
 #### max_digits:_value_
 
@@ -1884,11 +1884,11 @@ Validator::make($input, [
 
 #### MIME 类型与扩展名
 
-此验证规则不会验证 MIME 类型与用户为文件指定的扩展名之间是否一致。例如，`mimes:png` 验证规则会认为一个包含有效 PNG 内容的文件是有效的 PNG 图片，即使该文件名为 `photo.txt`。如果你想验证用户为文件指定的扩展名，可以使用 [extensions](#rule-extensions) 规则。
+此验证规则不会验证 MIME 类型与用户为文件指定的扩展名之间是否一致。例如，`mimes:png` 验证规则会认为一个包含有效 PNG 内容的文件是有效的 PNG 图片，即使该文件名为 `photo.txt`。如果你想验证用户为文件指定的扩展名，可以使用 extensions 规则。
 
 #### min:_value_
 
-待验证字段必须具有最小 _value_。字符串、数字、数组和文件的求值方式与 [size](#rule-size) 规则相同。
+待验证字段必须具有最小 _value_。字符串、数字、数组和文件的求值方式与 size 规则相同。
 
 #### min_digits:_value_
 
@@ -2344,7 +2344,7 @@ $validator = Validator::make($data, [
 在上面的示例中，只有当 `email` 字段存在于 `$data` 数组中时，才会被验证。
 
 > [!NOTE]
-> 如果你正在尝试验证一个应当始终存在但可能为空字段，请查看 [这篇关于可选字段的说明](#a-note-on-optional-fields)。
+> 如果你正在尝试验证一个应当始终存在但可能为空字段，请查看 这篇关于可选字段的说明。
 
 ### 复杂的条件验证
 
@@ -2411,7 +2411,7 @@ $validator->sometimes('channels.*.address', 'url', function (Fluent $input, Flue
 
 ## 验证数组
 
-正如 [array 验证规则文档](#rule-array) 中所讨论的，`array` 规则接受一组允许的数组键。如果数组中存在任何额外的键，验证将失败：
+正如 array 验证规则文档 中所讨论的，`array` 规则接受一组允许的数组键。如果数组中存在任何额外的键，验证将失败：
 
 ```php
 use Illuminate\Support\Facades\Validator;
@@ -2452,7 +2452,7 @@ $validator = Validator::make($request->all(), [
 ]);
 ```
 
-同样地，在指定 [语言文件中的自定义验证消息](#custom-messages-for-specific-attributes) 时，你可以使用 `*` 字符，从而轻松地为基于数组的字段使用单条验证消息：
+同样地，在指定 语言文件中的自定义验证消息 时，你可以使用 `*` 字符，从而轻松地为基于数组的字段使用单条验证消息：
 
 ```php
 'custom' => [
@@ -2483,7 +2483,7 @@ $validator = Validator::make($request->all(), [
 
 ### 错误信息的索引与位置
 
-验证数组时，你可能希望在应用显示的错误信息中，引用某个验证失败的具体条目的索引或位置。为此，你可以在 [自定义验证消息](#manual-customizing-the-error-messages) 中包含 `:index`（从 `0` 开始）、`:position`（从 `1` 开始）或 `:ordinal-position`（从 `1st` 开始）占位符：
+验证数组时，你可能希望在应用显示的错误信息中，引用某个验证失败的具体条目的索引或位置。为此，你可以在 自定义验证消息 中包含 `:index`（从 `0` 开始）、`:position`（从 `1` 开始）或 `:ordinal-position`（从 `1st` 开始）占位符：
 
 ```php
 use Illuminate\Support\Facades\Validator;
@@ -2573,7 +2573,7 @@ Validator::validate($input, [
 ```
 
 > [!NOTE]
-> 关于验证图片尺寸的更多信息，请参阅 [dimensions 规则文档](#rule-dimensions)。
+> 关于验证图片尺寸的更多信息，请参阅 dimensions 规则文档。
 
 > [!WARNING]
 > 默认情况下，`image` 规则由于存在 XSS 漏洞风险而不允许 SVG 文件。如果你需要允许 SVG 文件，可以向 `image` 规则传入 `allowSvg: true`：`File::image(allowSvg: true)`。
@@ -2594,7 +2594,7 @@ File::image()->dimensions(
 ```
 
 > [!NOTE]
-> 关于验证图片尺寸的更多信息，请参阅 [dimensions 规则文档](#rule-dimensions)。
+> 关于验证图片尺寸的更多信息，请参阅 dimensions 规则文档。
 
 ## 验证密码
 
@@ -2755,7 +2755,7 @@ $request->validate([
 
 #### 翻译验证消息
 
-除了向 `$fail` 闭包提供字面量的错误信息，你也可以提供一个 [翻译字符串键](/docs/{{version}}/localization)，并指示 Laravel 翻译该错误信息：
+除了向 `$fail` 闭包提供字面量的错误信息，你也可以提供一个 [翻译字符串键](/topic/Laravel%2013.x/kpv13q298w.html)，并指示 Laravel 翻译该错误信息：
 
 ```php
 if (strtoupper($value) !== $value) {
@@ -2865,7 +2865,7 @@ $validator = Validator::make($request->all(), [
 
 ### 隐式规则
 
-默认情况下，当待验证的属性不存在或包含空字符串时，普通的验证规则（包括自定义规则）不会运行。例如，[unique](#rule-unique) 规则不会针对空字符串运行：
+默认情况下，当待验证的属性不存在或包含空字符串时，普通的验证规则（包括自定义规则）不会运行。例如，unique 规则不会针对空字符串运行：
 
 ```php
 use Illuminate\Support\Facades\Validator;

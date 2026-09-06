@@ -2,29 +2,29 @@
 
 ## 高影响变更
 
-- [更新依赖](#updating-dependencies)
-- [更新 Laravel 安装器](#updating-the-laravel-installer)
-- [请求伪造防护](#request-forgery-protection)
+- 更新依赖
+- 更新 Laravel 安装器
+- 请求伪造防护
 
 ## 中等影响变更
 
-- [缓存 `serializable_classes` 配置](#cache-serializable_classes-configuration)
-- [使用 MySQL 或 MariaDB 的数据库 `upsert`](#database-upsert-mariadb-mysql)
+- 缓存 `serializable_classes` 配置
+- 使用 MySQL 或 MariaDB 的数据库 `upsert`
 
 ## 低影响变更
 
-- [缓存前缀与会话 Cookie 名称](#cache-prefixes-and-session-cookie-names)
-- [集合模型序列化恢复预加载的关联](#collection-model-serialization-restores-eager-loaded-relations)
-- [`Container::call` 与可空类默认值](#containercall-and-nullable-class-defaults)
-- [域路由注册优先级](#domain-route-registration-precedence)
-- [`JobAttempted` 事件异常负载](#jobattempted-event-exception-payload)
-- [Manager `extend` 回调绑定](#manager-extend-callback-binding)
-- [带 `JOIN`、`ORDER BY` 和 `LIMIT` 的 MySQL `DELETE` 查询](#mysql-delete-queries-with-join-order-by-and-limit)
-- [分页 Bootstrap 视图名称](#pagination-bootstrap-view-names)
-- [多态数据透视表名称生成](#polymorphic-pivot-table-name-generation)
-- [`QueueBusy` 事件属性重命名](#queuebusy-event-property-rename)
-- [会话 `serialization` 配置](#session-serialization-configuration)
-- [`Str` 工厂在测试间重置](#str-factories-reset-between-tests)
+- 缓存前缀与会话 Cookie 名称
+- 集合模型序列化恢复预加载的关联
+- `Container::call` 与可空类默认值
+- 域路由注册优先级
+- `JobAttempted` 事件异常负载
+- Manager `extend` 回调绑定
+- 带 `JOIN`、`ORDER BY` 和 `LIMIT` 的 MySQL `DELETE` 查询
+- 分页 Bootstrap 视图名称
+- 多态数据透视表名称生成
+- `QueueBusy` 事件属性重命名
+- 会话 `serialization` 配置
+- `Str` 工厂在测试间重置
 
 ## 从 12.x 升级到 13.0
 

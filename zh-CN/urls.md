@@ -62,7 +62,7 @@ echo url()->current();
 echo url()->full();
 ```
 
-上述每个方法也可以通过 `URL` [Facade](/docs/{{version}}/facades) 访问：
+上述每个方法也可以通过 `URL` [Facade](/topic/Laravel%2013.x/569x508yep.html) 访问：
 
 ```php
 use Illuminate\Support\Facades\URL;
@@ -82,7 +82,7 @@ echo url()->previous();
 echo url()->previousPath();
 ```
 
-或者，通过[会话](/docs/{{version}}/session)，你可以将上一个 URL 作为[流式 URI](#fluent-uri-objects)实例访问：
+或者，通过[会话](/topic/Laravel%2013.x/2ev86noyor.html)，你可以将上一个 URL 作为流式 URI实例访问：
 
 ```php
 use Illuminate\Http\Request;
@@ -102,7 +102,7 @@ $previousRoute = $request->session()->previousRoute();
 
 ## 命名路由的 URL
 
-`route` 辅助函数可用于生成[命名路由](/docs/{{version}}/routing#named-routes)的 URL。命名路由允许你在生成 URL 时不与路由上定义的实际 URL 耦合。因此，如果路由的 URL 发生变化，你不需要修改对 `route` 函数的调用。例如，假设你的应用程序包含一个如下定义的路由：
+`route` 辅助函数可用于生成[命名路由](/topic/Laravel%2013.x/dgy7xg5vw2.html)的 URL。命名路由允许你在生成 URL 时不与路由上定义的实际 URL 耦合。因此，如果路由的 URL 发生变化，你不需要修改对 `route` 函数的调用。例如，假设你的应用程序包含一个如下定义的路由：
 
 ```php
 Route::get('/post/{post}', function (Post $post) {
@@ -140,7 +140,7 @@ echo route('post.show', ['post' => 1, 'search' => 'rocket']);
 
 #### Eloquent 模型
 
-你经常会使用 [Eloquent 模型](/docs/{{version}}/eloquent)的路由键（通常是主键）来生成 URL。因此，你可以将 Eloquent 模型作为参数值传递。`route` 辅助函数会自动提取模型的路由键：
+你经常会使用 [Eloquent 模型](/topic/Laravel%2013.x/rwyl2kxvz8.html)的路由键（通常是主键）来生成 URL。因此，你可以将 Eloquent 模型作为参数值传递。`route` 辅助函数会自动提取模型的路由键：
 
 ```php
 echo route('post.show', ['post' => $post]);
@@ -198,7 +198,7 @@ if (! $request->hasValidSignatureWhileIgnoring(['page', 'order'])) {
 }
 ```
 
-除了使用传入的 请求 实例验证签名 URL 外，你还可以将 `signed`（`Illuminate\Routing\Middleware\ValidateSignature`）[中间件](/docs/{{version}}/middleware)分配给该路由。如果传入的 请求 没有有效签名，该中间件会自动返回 `403` HTTP 响应：
+除了使用传入的 请求 实例验证签名 URL 外，你还可以将 `signed`（`Illuminate\Routing\Middleware\ValidateSignature`）[中间件](/topic/Laravel%2013.x/rwyl2exvz8.html)分配给该路由。如果传入的 请求 没有有效签名，该中间件会自动返回 `403` HTTP 响应：
 
 ```php
 Route::post('/unsubscribe/{user}', function (Request $request) {
@@ -285,7 +285,7 @@ $uri = Uri::of('https://example.com')
     ->withFragment('section-1');
 ```
 
-有关使用流式 URI 对象的更多信息，请参阅 [URI 文档](/docs/{{version}}/helpers#uri)。
+有关使用流式 URI 对象的更多信息，请参阅 [URI 文档](/topic/Laravel%2013.x/569x5d8yep.html)。
 
 ## 默认值
 
@@ -297,7 +297,7 @@ Route::get('/{locale}/posts', function () {
 })->name('post.index');
 ```
 
-每次调用 `route` 辅助函数时都要传递 `locale` 会很麻烦。因此，你可以使用 `URL::defaults` 方法为该参数定义一个默认值，该值在当前 请求 期间始终被应用。你可能希望从[路由中间件](/docs/{{version}}/middleware#assigning-middleware-to-routes)中调用此方法，以便你能访问当前 请求：
+每次调用 `route` 辅助函数时都要传递 `locale` 会很麻烦。因此，你可以使用 `URL::defaults` 方法为该参数定义一个默认值，该值在当前 请求 期间始终被应用。你可能希望从[路由中间件](/topic/Laravel%2013.x/rwyl2exvz8.html)中调用此方法，以便你能访问当前 请求：
 
 ```php
 <?php
@@ -329,7 +329,7 @@ class SetDefaultLocaleForUrls
 
 #### URL 默认值与中间件优先级
 
-设置 URL 默认值可能会干扰 Laravel 对隐式模型绑定的处理。因此，你应该[提高设置 URL 默认值的路由中间件的优先级](/docs/{{version}}/middleware#sorting-middleware)，使其先于 Laravel 自身的 `SubstituteBindings` 中间件执行。你可以在应用程序的 `bootstrap/app.php` 文件中使用 `priority` 中间件方法来实现：
+设置 URL 默认值可能会干扰 Laravel 对隐式模型绑定的处理。因此，你应该[提高设置 URL 默认值的路由中间件的优先级](/topic/Laravel%2013.x/rwyl2exvz8.html)，使其先于 Laravel 自身的 `SubstituteBindings` 中间件执行。你可以在应用程序的 `bootstrap/app.php` 文件中使用 `priority` 中间件方法来实现：
 
 ```php
 ->withMiddleware(function (Middleware $middleware): void {

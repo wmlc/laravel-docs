@@ -3,7 +3,7 @@
 许多 Web 应用都要求用户在使用应用前验证自己的邮箱地址。Laravel 提供了便捷的内置服务用于发送和验证邮箱验证请求，你无需为每个新建的应用重复实现该功能。
 
 > [!NOTE]
-> 想要快速上手？可以在一个全新的 Laravel 应用中安装 [Laravel 应用入门套件](/docs/{{version}}/starter-kits)。这些套件会为你搭建好整套认证系统，包括邮箱验证功能。
+> 想要快速上手？可以在一个全新的 Laravel 应用中安装 [Laravel 应用入门套件](/topic/Laravel%2013.x/kl9nop7vz4.html)。这些套件会为你搭建好整套认证系统，包括邮箱验证功能。
 
 ## 模型准备
 
@@ -26,9 +26,9 @@ class User extends Authenticatable implements MustVerifyEmail
 }
 ```
 
-一旦将该接口添加到模型中，新注册的用户就会自动收到一封包含邮箱验证链接的邮件。之所以能无缝完成，是因为 Laravel 会自动为 `Illuminate\Auth\Events\Registered` 事件注册 `Illuminate\Auth\Listeners\SendEmailVerificationNotification` [监听器](/docs/{{version}}/events)。
+一旦将该接口添加到模型中，新注册的用户就会自动收到一封包含邮箱验证链接的邮件。之所以能无缝完成，是因为 Laravel 会自动为 `Illuminate\Auth\Events\Registered` 事件注册 `Illuminate\Auth\Listeners\SendEmailVerificationNotification` [监听器](/topic/Laravel%2013.x/x3vo0l4vm1.html)。
 
-如果你没有使用 [入门套件](/docs/{{version}}/starter-kits)，而是在应用中手动实现注册逻辑，则应确保用户注册成功后派发了 `Illuminate\Auth\Events\Registered` 事件：
+如果你没有使用 [入门套件](/topic/Laravel%2013.x/kl9nop7vz4.html)，而是在应用中手动实现注册逻辑，则应确保用户注册成功后派发了 `Illuminate\Auth\Events\Registered` 事件：
 
 ```php
 use Illuminate\Auth\Events\Registered;
@@ -58,10 +58,10 @@ Route::get('/email/verify', function () {
 })->middleware('auth')->name('verification.notice');
 ```
 
-返回邮箱验证通知的路由应当命名为 `verification.notice`。将该路由赋以此精确名称非常重要，因为 Laravel 内置的 `verified` 中间件（[详见下文](#protecting-routes)）会在用户尚未验证邮箱时，自动重定向到这个路由名称。
+返回邮箱验证通知的路由应当命名为 `verification.notice`。将该路由赋以此精确名称非常重要，因为 Laravel 内置的 `verified` 中间件（详见下文）会在用户尚未验证邮箱时，自动重定向到这个路由名称。
 
 > [!NOTE]
-> 手动实现邮箱验证时，你需要自行定义验证通知视图的内容。如果你希望获得包含全部必要认证与验证视图的脚手架，请查看 [Laravel 应用入门套件](/docs/{{version}}/starter-kits)。
+> 手动实现邮箱验证时，你需要自行定义验证通知视图的内容。如果你希望获得包含全部必要认证与验证视图的脚手架，请查看 [Laravel 应用入门套件](/topic/Laravel%2013.x/kl9nop7vz4.html)。
 
 ## 邮箱验证处理器
 
@@ -77,13 +77,13 @@ Route::get('/email/verify/{id}/{hash}', function (EmailVerificationRequest $requ
 })->middleware(['auth', 'signed'])->name('verification.verify');
 ```
 
-在继续之前，让我们仔细看一下这条路由。首先，你会注意到这里使用了 `EmailVerificationRequest` 请求类型，而不是常见的 `Illuminate\Http\Request` 实例。`EmailVerificationRequest` 是 Laravel 内置的一个 [表单请求](/docs/{{version}}/validation#form-request-validation)。该请求会自动负责校验请求中的 `id` 和 `hash` 参数。
+在继续之前，让我们仔细看一下这条路由。首先，你会注意到这里使用了 `EmailVerificationRequest` 请求类型，而不是常见的 `Illuminate\Http\Request` 实例。`EmailVerificationRequest` 是 Laravel 内置的一个 [表单请求](/topic/Laravel%2013.x/e296oew9q7.html)。该请求会自动负责校验请求中的 `id` 和 `hash` 参数。
 
 接下来，我们可以直接调用请求上的 `fulfill` 方法。该方法会在已认证的用户上调用 `markEmailAsVerified` 方法，并派发 `Illuminate\Auth\Events\Verified` 事件。`markEmailAsVerified` 方法通过 `Illuminate\Foundation\Auth\User` 基类提供给默认的 `App\Models\User` 模型。一旦用户的邮箱地址通过验证，你可以将其重定向到任意位置。
 
 ## 重新发送验证邮件
 
-有时用户可能会放错地方或误删验证邮件。为应对这种情况，你可以定义一条路由，允许用户请求重新发送验证邮件。然后，你可以在 [验证通知视图](#the-email-verification-notice) 中放置一个简单的表单提交按钮，向这条路由发起请求：
+有时用户可能会放错地方或误删验证邮件。为应对这种情况，你可以定义一条路由，允许用户请求重新发送验证邮件。然后，你可以在 验证通知视图 中放置一个简单的表单提交按钮，向这条路由发起请求：
 
 ```php
 use Illuminate\Http\Request;
@@ -97,7 +97,7 @@ Route::post('/email/verification-notification', function (Request $request) {
 
 ## 保护路由
 
-可以使用 [路由中间件](/docs/{{version}}/middleware) 来仅允许已验证的用户访问指定路由。Laravel 内置了一个 `verified` [中间件别名](/docs/{{version}}/middleware#middleware-aliases)，它是 `Illuminate\Auth\Middleware\EnsureEmailIsVerified` 中间件类的别名。由于该别名已由 Laravel 自动注册，你只需将 `verified` 中间件挂到路由定义上即可。通常，该中间件会与 `auth` 中间件配合使用：
+可以使用 [路由中间件](/topic/Laravel%2013.x/rwyl2exvz8.html) 来仅允许已验证的用户访问指定路由。Laravel 内置了一个 `verified` [中间件别名](/topic/Laravel%2013.x/rwyl2exvz8.html)，它是 `Illuminate\Auth\Middleware\EnsureEmailIsVerified` 中间件类的别名。由于该别名已由 Laravel 自动注册，你只需将 `verified` 中间件挂到路由定义上即可。通常，该中间件会与 `auth` 中间件配合使用：
 
 ```php
 Route::get('/profile', function () {
@@ -105,7 +105,7 @@ Route::get('/profile', function () {
 })->middleware(['auth', 'verified']);
 ```
 
-如果未验证的用户尝试访问分配了该中间件的路由，系统会自动将其重定向到 `verification.notice` [命名路由](/docs/{{version}}/routing#named-routes)。
+如果未验证的用户尝试访问分配了该中间件的路由，系统会自动将其重定向到 `verification.notice` [命名路由](/topic/Laravel%2013.x/dgy7xg5vw2.html)。
 
 ## 自定义
 
@@ -136,8 +136,8 @@ public function boot(): void
 ```
 
 > [!NOTE]
-> 想了解更多关于邮件通知的信息，请参阅 [邮件通知文档](/docs/{{version}}/notifications#mail-notifications)。
+> 想了解更多关于邮件通知的信息，请参阅 [邮件通知文档](/topic/Laravel%2013.x/2ky045l9z8.html)。
 
 ## 事件
 
-使用 [Laravel 应用入门套件](/docs/{{version}}/starter-kits) 时，Laravel 会在邮箱验证过程中派发 `Illuminate\Auth\Events\Verified` 事件。如果你在应用中手动处理邮箱验证，可以在验证完成后手动派发这些事件。
+使用 [Laravel 应用入门套件](/topic/Laravel%2013.x/kl9nop7vz4.html) 时，Laravel 会在邮箱验证过程中派发 `Illuminate\Auth\Events\Verified` 事件。如果你在应用中手动处理邮箱验证，可以在验证完成后手动派发这些事件。
