@@ -4,7 +4,7 @@
 
 Laravel 提供了一套流畅的图像处理 API，让你可以使用与框架一贯相同的表达力约定来调整大小、裁剪、编码并存储图像。Laravel 的图像特性由 [Intervention Image](https://image.intervention.io/) 提供支持，并支持 GD 和 Imagick PHP 扩展。
 
-图像 API 在处理上传文件、存储于 Laravel [文件系统磁盘](/docs/{{version}}/filesystem) 的文件、本地文件、远程 URL 或原始图像字节数据时都很有用：
+图像 API 在处理上传文件、存储于 Laravel [文件系统磁盘](/topic/Laravel%2013.x/qk9428ovw1.html) 的文件、本地文件、远程 URL 或原始图像字节数据时都很有用：
 
 ```php
 use Illuminate\Support\Facades\Image;
@@ -17,7 +17,7 @@ $path = Image::fromStorage('avatars/photo.jpg', 'public')
 ```
 
 > [!WARNING]
-> 图像处理会占用大量 CPU 与内存。建议把大批量的图像处理工作放到 [队列任务](/docs/{{version}}/queues) 中执行，而不是在接收上传的 HTTP 请求里同步处理。
+> 图像处理会占用大量 CPU 与内存。建议把大批量的图像处理工作放到 [队列任务](/topic/Laravel%2013.x/wevwmkz9l2.html) 中执行，而不是在接收上传的 HTTP 请求里同步处理。
 
 ## 安装
 
@@ -82,7 +82,7 @@ $file = $image->file();
 
 ### 存储的文件
 
-可以通过 `fromStorage` 方法从一个 [文件系统磁盘](/docs/{{version}}/filesystem) 上的文件创建图像实例。第一个参数是文件路径，第二个参数是磁盘名：
+可以通过 `fromStorage` 方法从一个 [文件系统磁盘](/topic/Laravel%2013.x/qk9428ovw1.html) 上的文件创建图像实例。第一个参数是文件路径，第二个参数是磁盘名：
 
 ```php
 use Illuminate\Support\Facades\Image;

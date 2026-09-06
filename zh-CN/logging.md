@@ -12,7 +12,7 @@ Laravel 的日志基于"通道（channel）"。每个通道代表一种写入日
 
 控制应用日志行为的全部配置选项都存放在 `config/logging.php` 配置文件中。该文件允许你配置应用的日志通道，因此请务必查看每个可用通道及其选项。下面我们将介绍几个常见选项。
 
-默认情况下，Laravel 在记录消息时会使用 `stack` 通道。该通道用于将多个日志通道聚合为单一通道。有关构建通道栈的更多信息，请查看[下面的文档](#building-log-stacks)。
+默认情况下，Laravel 在记录消息时会使用 `stack` 通道。该通道用于将多个日志通道聚合为单一通道。有关构建通道栈的更多信息，请查看下面的文档。
 
 ### 可用频道驱动
 
@@ -32,7 +32,7 @@ Laravel 的日志基于"通道（channel）"。每个通道代表一种写入日
 | `syslog`     | 基于 Monolog `SyslogHandler` 的驱动。                               |
 
 > [!NOTE]
-> 查看关于[高级通道自定义](#monolog-channel-customization)的文档，了解有关 `monolog` 和 `custom` 驱动的更多信息。
+> 查看关于高级通道自定义的文档，了解有关 `monolog` 和 `custom` 驱动的更多信息。
 
 #### 配置频道名称
 
@@ -269,7 +269,7 @@ class AssignRequestId
 ```
 
 > [!NOTE]
-> 如果你需要在处理队列任务时共享日志上下文，可以使用[任务中间件](/docs/{{version}}/queues#job-middleware)。
+> 如果你需要在处理队列任务时共享日志上下文，可以使用[任务中间件](/topic/Laravel%2013.x/wevwmkz9l2.html)。
 
 ### 写入指定频道
 

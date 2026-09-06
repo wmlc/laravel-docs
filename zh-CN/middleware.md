@@ -171,7 +171,7 @@ Route::middleware([EnsureTokenIsValid::class])->group(function () {
 });
 ```
 
-你也可以从整个[路由组](/docs/{{version}}/routing#route-groups)中排除一组给定的中间件：
+你也可以从整个[路由组](/topic/Laravel%2013.x/dgy7xg5vw2.html)中排除一组给定的中间件：
 
 ```php
 use App\Http\Middleware\EnsureTokenIsValid;
@@ -183,7 +183,7 @@ Route::withoutMiddleware([EnsureTokenIsValid::class])->group(function () {
 });
 ```
 
-`withoutMiddleware` 方法只能移除路由中间件，不适用于[全局中间件](#global-middleware)。
+`withoutMiddleware` 方法只能移除路由中间件，不适用于全局中间件。
 
 ### 中间件组
 

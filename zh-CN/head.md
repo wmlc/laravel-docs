@@ -50,7 +50,7 @@ Head::title($post->title)
 4. 运行时元数据（Runtime metadata）
 5. 错误元数据（Error metadata）
 
-更高层级会按字段逐项覆盖更低层级。例如，运行时标题会替换路由标题，但不会替换路由描述。下面将分别介绍如何在每一层设置元数据。关于在 Blade、Livewire 和 Inertia 中如何渲染解析后的元数据，请参阅[渲染](#rendering)。
+更高层级会按字段逐项覆盖更低层级。例如，运行时标题会替换路由标题，但不会替换路由描述。下面将分别介绍如何在每一层设置元数据。关于在 Blade、Livewire 和 Inertia 中如何渲染解析后的元数据，请参阅渲染。
 
 ## 定义元数据
 
@@ -289,7 +289,7 @@ Head::og(
 );
 ```
 
-`og(image: ...)` 和 `ogImage(...)` 会写入同一份底层图片列表，你可以在调用处选用更顺手的形式。可以使用 [`meta`](#custom-tags) 方法来扩展自定义的 Open Graph 字段（例如 product、article 属性）。
+`og(image: ...)` 和 `ogImage(...)` 会写入同一份底层图片列表，你可以在调用处选用更顺手的形式。可以使用 `meta` 方法来扩展自定义的 Open Graph 字段（例如 product、article 属性）。
 
 ### X / Twitter Cards
 

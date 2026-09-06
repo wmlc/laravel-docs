@@ -100,7 +100,7 @@ Mcp::web('/mcp/weather', WeatherServer::class)
 
 ### 本地服务器
 
-本地服务器作为 Artisan 命令运行，非常适合构建本地 AI 助手集成，例如 [Laravel Boost](/docs/{{version}}/installation#installing-laravel-boost)。使用 `local` 方法注册本地服务器：
+本地服务器作为 Artisan 命令运行，非常适合构建本地 AI 助手集成，例如 [Laravel Boost](/topic/Laravel%2013.x/2wy3lj3ykm.html)。使用 `local` 方法注册本地服务器：
 
 ```php
 use App\Mcp\Servers\WeatherServer;
@@ -109,7 +109,7 @@ use Laravel\Mcp\Facades\Mcp;
 Mcp::local('weather', WeatherServer::class);
 ```
 
-注册后，通常无需手动运行 `mcp:start` Artisan 命令。请改为配置你的 MCP 客户端（AI 代理）以启动服务器，或使用 [MCP Inspector](#mcp-inspector)。
+注册后，通常无需手动运行 `mcp:start` Artisan 命令。请改为配置你的 MCP 客户端（AI 代理）以启动服务器，或使用 MCP Inspector。
 
 ## 工具
 
@@ -296,7 +296,7 @@ class CurrentWeatherTool extends Tool
 
 JSON Schema 定义为工具参数提供了基本结构，但你可能还希望强制执行更复杂的验证规则。
 
-Laravel MCP 与 Laravel 的 [验证功能](/docs/{{version}}/validation) 无缝集成。你可以在工具的 `handle` 方法中验证传入的工具参数：
+Laravel MCP 与 Laravel 的 [验证功能](/topic/Laravel%2013.x/e296oew9q7.html) 无缝集成。你可以在工具的 `handle` 方法中验证传入的工具参数：
 
 ```php
 <?php
@@ -338,7 +338,7 @@ $validated = $request->validate([
 
 #### 工具依赖注入
 
-Laravel [服务容器](/docs/{{version}}/container) 用于解析所有工具。因此，你可以在构造函数中类型提示工具可能需要的任何依赖。声明的依赖将自动解析并注入到工具实例中：
+Laravel [服务容器](/topic/Laravel%2013.x/x3vo054vm1.html) 用于解析所有工具。因此，你可以在构造函数中类型提示工具可能需要的任何依赖。声明的依赖将自动解析并注入到工具实例中：
 
 ```php
 <?php
@@ -702,7 +702,7 @@ class DescribeWeatherPrompt extends Prompt
 
 Prompt 参数会根据其定义自动验证，但你可能还希望强制执行更复杂的验证规则。
 
-Laravel MCP 与 Laravel 的 [验证功能](/docs/{{version}}/validation) 无缝集成。你可以在 prompt 的 `handle` 方法中验证传入的 prompt 参数：
+Laravel MCP 与 Laravel 的 [验证功能](/topic/Laravel%2013.x/e296oew9q7.html) 无缝集成。你可以在 prompt 的 `handle` 方法中验证传入的 prompt 参数：
 
 ```php
 <?php
@@ -743,7 +743,7 @@ $validated = $request->validate([
 
 ### Prompt 依赖注入
 
-Laravel [服务容器](/docs/{{version}}/container) 用于解析所有 prompts。因此，你可以在构造函数中类型提示 prompt 可能需要的任何依赖。声明的依赖将自动解析并注入到 prompt 实例中：
+Laravel [服务容器](/topic/Laravel%2013.x/x3vo054vm1.html) 用于解析所有 prompts。因此，你可以在构造函数中类型提示 prompt 可能需要的任何依赖。声明的依赖将自动解析并注入到 prompt 实例中：
 
 ```php
 <?php
@@ -1074,7 +1074,7 @@ class WeatherGuidelinesResource extends Resource
 
 ### Resource 依赖注入
 
-Laravel [服务容器](/docs/{{version}}/container) 用于解析所有 resources。因此，你可以在构造函数中类型提示 resource 可能需要的任何依赖。声明的依赖将自动解析并注入到 resource 实例中：
+Laravel [服务容器](/topic/Laravel%2013.x/x3vo054vm1.html) 用于解析所有 resources。因此，你可以在构造函数中类型提示 resource 可能需要的任何依赖。声明的依赖将自动解析并注入到 resource 实例中：
 
 ```php
 <?php
@@ -1398,7 +1398,7 @@ class WeatherDashboardApp extends AppResource
 
 ### 使用 Boost 构建 Apps
 
-Laravel MCP 包含一个专用的 [Boost](/docs/{{version}}/boost) skill 参考，用于构建 MCP Apps。如果你安装了 [Laravel Boost](/docs/{{version}}/boost)，你的 AI 编码代理可以调用 `mcp-development` skill，并要求它为你搭建一个 app resource、Blade 视图以及链接的 tool。
+Laravel MCP 包含一个专用的 [Boost](/topic/Laravel%2013.x/2ev864oyor.html) skill 参考，用于构建 MCP Apps。如果你安装了 [Laravel Boost](/topic/Laravel%2013.x/2ev864oyor.html)，你的 AI 编码代理可以调用 `mcp-development` skill，并要求它为你搭建一个 app resource、Blade 视图以及链接的 tool。
 
 有关完整的协议参考（包括完整的客户端 API 和 schema 详细信息），请参阅官方 [MCP Apps 文档](https://modelcontextprotocol.io/extensions/apps/overview)。
 
@@ -1506,11 +1506,11 @@ class CurrentWeatherTool extends Tool
 
 与路由一样，你可以使用中间件对 Web MCP 服务器进行身份验证。为 MCP 服务器添加身份验证将要求用户在使用服务器的任何能力之前先进行身份验证。
 
-有两种方法可以对 MCP 服务器进行身份验证：通过 [Laravel Sanctum](/docs/{{version}}/sanctum) 进行简单的基于令牌的身份验证，或通过 `Authorization` HTTP 头传递任何令牌。或者，你也可以使用 [Laravel Passport](/docs/{{version}}/passport) 通过 OAuth 进行身份验证。
+有两种方法可以对 MCP 服务器进行身份验证：通过 [Laravel Sanctum](/topic/Laravel%2013.x/xq9zr3jvdo.html) 进行简单的基于令牌的身份验证，或通过 `Authorization` HTTP 头传递任何令牌。或者，你也可以使用 [Laravel Passport](/topic/Laravel%2013.x/2ky04xl9z8.html) 通过 OAuth 进行身份验证。
 
 ### OAuth 2.1
 
-保护基于 Web 的 MCP 服务器的最稳健方式是使用 [Laravel Passport](/docs/{{version}}/passport) 的 OAuth。
+保护基于 Web 的 MCP 服务器的最稳健方式是使用 [Laravel Passport](/topic/Laravel%2013.x/2ky04xl9z8.html) 的 OAuth。
 
 通过 OAuth 对 MCP 服务器进行身份验证时，请在 `routes/ai.php` 文件中调用 `Mcp::oauthRoutes` 方法，以注册所需的 OAuth2 发现和客户端注册路由。然后，在 `routes/ai.php` 文件中将 Passport 的 `auth:api` 中间件应用于 `Mcp::web` 路由：
 
@@ -1526,7 +1526,7 @@ Mcp::web('/mcp/weather', WeatherExample::class)
 
 #### 全新安装 Passport
 
-如果你的应用尚未使用 Laravel Passport，请按照 Passport 的 [安装和部署指南](/docs/{{version}}/passport#installation) 将 Passport 添加到你的应用。在继续之前，你应该有一个 `OAuthenticatable` model、新的身份验证 guard 和 passport 密钥。
+如果你的应用尚未使用 Laravel Passport，请按照 Passport 的 [安装和部署指南](/topic/Laravel%2013.x/2ky04xl9z8.html) 将 Passport 添加到你的应用。在继续之前，你应该有一个 `OAuthenticatable` model、新的身份验证 guard 和 passport 密钥。
 
 接下来，你应该发布 Laravel MCP 提供的 Passport 授权视图：
 
@@ -1567,11 +1567,11 @@ Laravel MCP 通过上面讨论的 `Mcp::oauthRoutes` 方法添加、通告并使
 
 OAuth2.1 是 Model Context Protocol 规范中记录的身份验证机制，也是 MCP 客户端中最广泛支持的方式。因此，我们建议尽可能使用 Passport。
 
-如果你的应用已经在使用 [Sanctum](/docs/{{version}}/sanctum)，那么添加 Passport 可能会很麻烦。在这种情况下，我们建议在明确需要使用仅支持 OAuth 的 MCP 客户端之前，使用 Sanctum 而不使用 Passport。
+如果你的应用已经在使用 [Sanctum](/topic/Laravel%2013.x/xq9zr3jvdo.html)，那么添加 Passport 可能会很麻烦。在这种情况下，我们建议在明确需要使用仅支持 OAuth 的 MCP 客户端之前，使用 Sanctum 而不使用 Passport。
 
 ### Sanctum
 
-如果你希望使用 [Sanctum](/docs/{{version}}/sanctum) 保护你的 MCP 服务器，只需在 `routes/ai.php` 文件中将 Sanctum 的身份验证中间件添加到你的服务器。然后，确保你的 MCP 客户端提供 `Authorization: Bearer <token>` 头以确保成功进行身份验证：
+如果你希望使用 [Sanctum](/topic/Laravel%2013.x/xq9zr3jvdo.html) 保护你的 MCP 服务器，只需在 `routes/ai.php` 文件中将 Sanctum 的身份验证中间件添加到你的服务器。然后，确保你的 MCP 客户端提供 `Authorization: Bearer <token>` 头以确保成功进行身份验证：
 
 ```php
 use App\Mcp\Servers\WeatherExample;
@@ -1587,7 +1587,7 @@ Mcp::web('/mcp/demo', WeatherExample::class)
 
 ## Authorization
 
-你可以通过 `$request->user()` 方法访问当前已通过身份验证的用户，从而可以在 MCP tools 和 resources 中执行 [授权检查](/docs/{{version}}/authorization)：
+你可以通过 `$request->user()` 方法访问当前已通过身份验证的用户，从而可以在 MCP tools 和 resources 中执行 [授权检查](/topic/Laravel%2013.x/2wy3l43ykm.html)：
 
 ```php
 use Laravel\Mcp\Request;
@@ -1608,7 +1608,7 @@ public function handle(Request $request): Response
 
 ## MCP Client
 
-除了构建服务器之外，Laravel MCP 还包括一个用于连接到其他 MCP 服务器（无论是一方还是第三方）的客户端。该客户端让你的应用能够发现并调用 MCP 服务器公开的工具，这对于让你的 [AI 代理](/docs/{{version}}/ai-sdk#mcp-tools) 访问外部 MCP 服务器提供的能力特别有用。
+除了构建服务器之外，Laravel MCP 还包括一个用于连接到其他 MCP 服务器（无论是一方还是第三方）的客户端。该客户端让你的应用能够发现并调用 MCP 服务器公开的工具，这对于让你的 [AI 代理](/topic/Laravel%2013.x/ndvm3dj93j.html) 访问外部 MCP 服务器提供的能力特别有用。
 
 ### 连接到服务器
 
@@ -1684,7 +1684,7 @@ $client = Client::web('https://mcp.example.com')->withToken(
 );
 ```
 
-对于受 [OAuth 2.1](#oauth) 保护的服务器，请使用 `withOAuth` 方法配置客户端。这是在你自己的服务器上使用 OAuth 进行保护的客户端对应操作：
+对于受 OAuth 2.1 保护的服务器，请使用 `withOAuth` 方法配置客户端。这是在你自己的服务器上使用 OAuth 进行保护的客户端对应操作：
 
 ```php
 use Laravel\Mcp\Client;
@@ -1771,7 +1771,7 @@ $result = $tools['current-weather']->call([
 ]);
 ```
 
-如果你正在使用 [Laravel AI SDK](/docs/{{version}}/ai-sdk) 构建代理，你也可以将来自 MCP 客户端的 tools 直接提供给代理，从而允许模型在响应 prompt 时调用它们。有关更多信息，请参阅 AI SDK 文档的 [MCP Tools](/docs/{{version}}/ai-sdk#mcp-tools) 部分。
+如果你正在使用 [Laravel AI SDK](/topic/Laravel%2013.x/ndvm3dj93j.html) 构建代理，你也可以将来自 MCP 客户端的 tools 直接提供给代理，从而允许模型在响应 prompt 时调用它们。有关更多信息，请参阅 AI SDK 文档的 [MCP Tools](/topic/Laravel%2013.x/ndvm3dj93j.html) 部分。
 
 ### Prompts
 

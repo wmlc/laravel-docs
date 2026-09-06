@@ -914,7 +914,7 @@ Http::get('https://laravel.com');
 
 Laravel 在发送 HTTP 请求的过程中会触发三个事件。在请求被发送之前会触发 `RequestSending` 事件，而在收到给定请求的响应后会触发 `ResponseReceived` 事件。如果未收到给定请求的响应，则会触发 `ConnectionFailed` 事件。
 
-`RequestSending` 和 `ConnectionFailed` 事件都包含一个公开的 `$request` 属性，你可以使用它来检查 `Illuminate\Http\Client\Request` 实例。同样，`ResponseReceived` 事件包含 `$request` 属性以及 `$response` 属性，可用于检查 `Illuminate\Http\Client\Response` 实例。你可以在应用中为这些事件创建[事件监听器](/docs/{{version}}/events)：
+`RequestSending` 和 `ConnectionFailed` 事件都包含一个公开的 `$request` 属性，你可以使用它来检查 `Illuminate\Http\Client\Request` 实例。同样，`ResponseReceived` 事件包含 `$request` 属性以及 `$response` 属性，可用于检查 `Illuminate\Http\Client\Response` 实例。你可以在应用中为这些事件创建[事件监听器](/topic/Laravel%2013.x/x3vo0l4vm1.html)：
 
 ```php
 use Illuminate\Http\Client\Events\RequestSending;

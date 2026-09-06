@@ -1,7 +1,7 @@
 # Laravel Homestead
 
 > [!WARNING]
-> Laravel Homestead 是一个已停止主动维护的旧版软件包。可以使用 [Laravel Sail](/docs/{{version}}/sail) 作为现代化的替代方案。
+> Laravel Homestead 是一个已停止主动维护的旧版软件包。可以使用 [Laravel Sail](/topic/Laravel%2013.x/e296opw9q7.html) 作为现代化的替代方案。
 
 Laravel 致力于让整个 PHP 开发体验都令人愉悦，包括本地开发环境。[Laravel Homestead](https://github.com/laravel/homestead) 是一个官方提供的预打包 Vagrant box，它能在不要求你在本地机器上安装 PHP、Web 服务器或其他任何服务器软件的情况下，为你提供出色的开发环境。
 
@@ -221,7 +221,7 @@ sites:
 
 Homestead 使用 `mDNS` 发布主机名，以实现自动主机解析。如果在 `Homestead.yaml` 文件中设置了 `hostname: homestead`，那么该主机将可以通过 `homestead.local` 访问。macOS、iOS 和 Linux 桌面发行版默认包含 `mDNS` 支持。如果你使用的是 Windows，必须安装 [Bonjour Print Services for Windows](https://support.apple.com/kb/DL999?viewlocale=en_US&locale=en_US)。
 
-自动主机名最适用于 Homestead 的[按项目安装](#per-project-installation)。如果在单个 Homestead 实例上托管多个站点，可以将站点的"域名"添加到机器上的 `hosts` 文件。该 `hosts` 文件会把对 Homestead 站点的请求重定向到 Homestead 虚拟机。在 macOS 和 Linux 上，该文件位于 `/etc/hosts`；在 Windows 上，它位于 `C:\Windows\System32\drivers\etc\hosts`。你添加到该文件中的内容类似于以下内容：
+自动主机名最适用于 Homestead 的按项目安装。如果在单个 Homestead 实例上托管多个站点，可以将站点的"域名"添加到机器上的 `hosts` 文件。该 `hosts` 文件会把对 Homestead 站点的请求重定向到 Homestead 虚拟机。在 macOS 和 Linux 上，该文件位于 `/etc/hosts`；在 Windows 上，它位于 `C:\Windows\System32\drivers\etc\hosts`。你添加到该文件中的内容类似于以下内容：
 
 ```text
 192.168.56.56  homestead.test
@@ -273,7 +273,7 @@ php vendor/bin/homestead make
 vendor\\bin\\homestead make
 ```
 
-接下来，在终端中运行 `vagrant up` 命令，并通过浏览器在 `http://homestead.test` 访问你的项目。请记住，如果你没有使用自动[主机名解析](#hostname-resolution)，仍然需要为 `homestead.test` 或你选择的域名添加一条 `/etc/hosts` 文件记录。
+接下来，在终端中运行 `vagrant up` 命令，并通过浏览器在 `http://homestead.test` 访问你的项目。请记住，如果你没有使用自动主机名解析，仍然需要为 `homestead.test` 或你选择的域名添加一条 `/etc/hosts` 文件记录。
 
 ### 安装可选功能
 
@@ -415,7 +415,7 @@ sites:
 ```
 
 > [!WARNING]
-> 在添加站点之前，应确保已为该项目的目录配置了[文件夹映射](#configuring-shared-folders)。
+> 在添加站点之前，应确保已为该项目的目录配置了文件夹映射。
 
 如果 Vagrant 没有自动管理你的 `hosts` 文件，你可能还需要将新站点添加到该文件中。在 macOS 和 Linux 上，该文件位于 `/etc/hosts`；在 Windows 上，它位于 `C:\Windows\System32\drivers\etc\hosts`：
 
@@ -515,7 +515,7 @@ sites:
       php: "7.1"
 ```
 
-[在你的 Homestead 虚拟机内](#connecting-via-ssh)，你可以通过 CLI 使用任意受支持的 PHP 版本：
+在你的 Homestead 虚拟机内，你可以通过 CLI 使用任意受支持的 PHP 版本：
 
 ```shell
 php5.6 artisan list
@@ -560,11 +560,11 @@ php83
 backup: true
 ```
 
-配置完成后，当执行 `vagrant destroy` 命令时，Homestead 会将数据库导出到 `.backup/mysql_backup` 和 `.backup/postgres_backup` 目录。这些目录可以在你安装 Homestead 的文件夹中找到，或者在使用[按项目安装](#per-project-installation)方式时位于项目的根目录。
+配置完成后，当执行 `vagrant destroy` 命令时，Homestead 会将数据库导出到 `.backup/mysql_backup` 和 `.backup/postgres_backup` 目录。这些目录可以在你安装 Homestead 的文件夹中找到，或者在使用按项目安装方式时位于项目的根目录。
 
 ### 配置 Cron 计划任务
 
-Laravel 提供了一种便捷的方式来[调度 cron 任务](/docs/{{version}}/scheduling)，只需调度一个每分钟运行一次的 `schedule:run` Artisan 命令。该 `schedule:run` 命令会检查 `routes/console.php` 文件中定义的任务调度，以确定要运行哪些计划任务。
+Laravel 提供了一种便捷的方式来[调度 cron 任务](/topic/Laravel%2013.x/e296olw9q7.html)，只需调度一个每分钟运行一次的 `schedule:run` Artisan 命令。该 `schedule:run` 命令会检查 `routes/console.php` 文件中定义的任务调度，以确定要运行哪些计划任务。
 
 如果你希望为某个 Homestead 站点运行 `schedule:run` 命令，可以在定义该站点时将 `schedule` 选项设为 `true`：
 
@@ -594,7 +594,7 @@ MAIL_ENCRYPTION=null
 
 ### 配置 Minio
 
-[Minio](https://github.com/minio/minio) 是一个开源的对象存储服务器，提供与 Amazon S3 兼容的 API。要安装 Minio，请在 `Homestead.yaml` 文件的 [features](#installing-optional-features) 部分添加以下配置选项：
+[Minio](https://github.com/minio/minio) 是一个开源的对象存储服务器，提供与 Amazon S3 兼容的 API。要安装 Minio，请在 `Homestead.yaml` 文件的 features 部分添加以下配置选项：
 
     minio: true
 
@@ -624,7 +624,7 @@ buckets:
 
 ### Laravel Dusk
 
-要在 Homestead 中运行 [Laravel Dusk](/docs/{{version}}/dusk) 测试，应该在 Homestead 配置中启用 [webdriver 功能](#installing-optional-features)：
+要在 Homestead 中运行 [Laravel Dusk](/topic/Laravel%2013.x/xpv520gv86.html) 测试，应该在 Homestead 配置中启用 webdriver 功能：
 
 ```yaml
 features:
@@ -637,7 +637,7 @@ features:
 
 有时你可能希望与同事或客户分享你当前的工作内容。Vagrant 通过 `vagrant share` 命令内置了对这一功能的支持；不过，如果你的 `Homestead.yaml` 文件中配置了多个站点，该命令将无法工作。
 
-为了解决这个问题，Homestead 自带一个 `share` 命令。要开始使用，请通过 `vagrant ssh` [SSH 进入你的 Homestead 虚拟机](#connecting-via-ssh) 并执行 `share homestead.test` 命令。该命令会分享你 `Homestead.yaml` 配置文件中名为 `homestead.test` 的站点。你可以将 `homestead.test` 替换为任何其他已配置的站点：
+为了解决这个问题，Homestead 自带一个 `share` 命令。要开始使用，请通过 `vagrant ssh` SSH 进入你的 Homestead 虚拟机 并执行 `share homestead.test` 命令。该命令会分享你 `Homestead.yaml` 配置文件中名为 `homestead.test` 的站点。你可以将 `homestead.test` 替换为任何其他已配置的站点：
 
 ```shell
 share homestead.test

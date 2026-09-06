@@ -41,7 +41,7 @@ class ExampleTest extends TestCase
 
 要向你的应用发起请求，可以在测试中调用 `get`、`post`、`put`、`patch` 或 `delete` 方法。这些方法并不会真正向你的应用发出"真实"的 HTTP 请求，而是会在内部模拟整个网络请求。
 
-测试请求方法返回的并不是 `Illuminate\Http\Response` 实例，而是 `Illuminate\Testing\TestResponse` 实例，它提供了[多种实用的断言](#available-assertions)，让你可以检查应用的响应：
+测试请求方法返回的并不是 `Illuminate\Http\Response` 实例，而是 `Illuminate\Testing\TestResponse` 实例，它提供了多种实用的断言，让你可以检查应用的响应：
 
 ```php tab=Pest
 <?php
@@ -192,7 +192,7 @@ class ExampleTest extends TestCase
 }
 ```
 
-Laravel 的 session 通常用于为当前已认证的用户维护状态。因此，`actingAs` 辅助方法提供了一种简单的方式，将给定的用户认证为当前用户。例如，我们可以使用[模型工厂](/docs/{{version}}/eloquent-factories) 来生成并认证一个用户：
+Laravel 的 session 通常用于为当前已认证的用户维护状态。因此，`actingAs` 辅助方法提供了一种简单的方式，将给定的用户认证为当前用户。例如，我们可以使用[模型工厂](/topic/Laravel%2013.x/wevwmlz9l2.html) 来生成并认证一个用户：
 
 ```php tab=Pest
 <?php
@@ -905,7 +905,7 @@ $contents = (string) $this->view('welcome');
 
 #### 共享错误
 
-某些视图可能依赖于 [Laravel 提供的全局错误包](/docs/{{version}}/validation#quick-displaying-the-validation-errors) 中共享的错误。要为错误包填充错误消息，可以使用 `withViewErrors` 方法：
+某些视图可能依赖于 [Laravel 提供的全局错误包](/topic/Laravel%2013.x/e296oew9q7.html) 中共享的错误。要为错误包填充错误消息，可以使用 `withViewErrors` 方法：
 
 ```php
 $view = $this->withViewErrors([
@@ -917,7 +917,7 @@ $view->assertSee('Please provide a valid name.');
 
 ### 渲染 Blade 与组件
 
-如有必要，你可以使用 `blade` 方法来计算并渲染原始的 [Blade](/docs/{{version}}/blade) 字符串。与 `view` 方法一样，`blade` 方法返回 `Illuminate\Testing\TestView` 实例：
+如有必要，你可以使用 `blade` 方法来计算并渲染原始的 [Blade](/topic/Laravel%2013.x/wevwmrz9l2.html) 字符串。与 `view` 方法一样，`blade` 方法返回 `Illuminate\Testing\TestView` 实例：
 
 ```php
 $view = $this->blade(
@@ -928,7 +928,7 @@ $view = $this->blade(
 $view->assertSee('Taylor');
 ```
 
-你可以使用 `component` 方法来计算并渲染一个 [Blade 组件](/docs/{{version}}/blade#components)。`component` 方法返回 `Illuminate\Testing\TestComponent` 实例：
+你可以使用 `component` 方法来计算并渲染一个 [Blade 组件](/topic/Laravel%2013.x/wevwmrz9l2.html)。`component` 方法返回 `Illuminate\Testing\TestComponent` 实例：
 
 ```php
 $view = $this->component(Profile::class, ['name' => 'Taylor']);
@@ -1001,89 +1001,89 @@ Laravel 的 `Illuminate\Testing\TestResponse` 类提供了多种自定义的断�
 
 <div class="collection-method-list" markdown="1">
 
-[assertAccepted](#assert-accepted)
-[assertBadRequest](#assert-bad-request)
-[assertClientError](#assert-client-error)
-[assertConflict](#assert-conflict)
-[assertCookie](#assert-cookie)
-[assertCookieExpired](#assert-cookie-expired)
-[assertCookieNotExpired](#assert-cookie-not-expired)
-[assertCookieMissing](#assert-cookie-missing)
-[assertCreated](#assert-created)
-[assertDontSee](#assert-dont-see)
-[assertDontSeeText](#assert-dont-see-text)
-[assertDownload](#assert-download)
-[assertExactJson](#assert-exact-json)
-[assertExactJsonStructure](#assert-exact-json-structure)
-[assertFailedDependency](#assert-failed-dependency)
-[assertForbidden](#assert-forbidden)
-[assertFound](#assert-found)
-[assertGone](#assert-gone)
-[assertHeader](#assert-header)
-[assertHeaderContains](#assert-header-contains)
-[assertHeaderMissing](#assert-header-missing)
-[assertInternalServerError](#assert-internal-server-error)
-[assertJson](#assert-json)
-[assertJsonCount](#assert-json-count)
-[assertJsonFragment](#assert-json-fragment)
-[assertJsonIsArray](#assert-json-is-array)
-[assertJsonIsObject](#assert-json-is-object)
-[assertJsonMissing](#assert-json-missing)
-[assertJsonMissingExact](#assert-json-missing-exact)
-[assertJsonMissingValidationErrors](#assert-json-missing-validation-errors)
-[assertJsonPath](#assert-json-path)
-[assertJsonPaths](#assert-json-paths)
-[assertJsonMissingPath](#assert-json-missing-path)
-[assertJsonMissingPaths](#assert-json-missing-paths)
-[assertJsonStructure](#assert-json-structure)
-[assertJsonValidationErrors](#assert-json-validation-errors)
-[assertJsonValidationErrorFor](#assert-json-validation-error-for)
-[assertLocation](#assert-location)
-[assertMethodNotAllowed](#assert-method-not-allowed)
-[assertMovedPermanently](#assert-moved-permanently)
-[assertContent](#assert-content)
-[assertNoContent](#assert-no-content)
-[assertStreamed](#assert-streamed)
-[assertStreamedContent](#assert-streamed-content)
-[assertNotFound](#assert-not-found)
-[assertOk](#assert-ok)
-[assertPaymentRequired](#assert-payment-required)
-[assertPlainCookie](#assert-plain-cookie)
-[assertRedirect](#assert-redirect)
-[assertRedirectBack](#assert-redirect-back)
-[assertRedirectBackWithErrors](#assert-redirect-back-with-errors)
-[assertRedirectBackWithoutErrors](#assert-redirect-back-without-errors)
-[assertRedirectContains](#assert-redirect-contains)
-[assertRedirectToRoute](#assert-redirect-to-route)
-[assertRedirectToSignedRoute](#assert-redirect-to-signed-route)
-[assertRequestTimeout](#assert-request-timeout)
-[assertSee](#assert-see)
-[assertSeeInOrder](#assert-see-in-order)
-[assertSeeText](#assert-see-text)
-[assertSeeTextInOrder](#assert-see-text-in-order)
-[assertServerError](#assert-server-error)
-[assertServiceUnavailable](#assert-service-unavailable)
-[assertSessionHas](#assert-session-has)
-[assertSessionHasInput](#assert-session-has-input)
-[assertSessionHasAll](#assert-session-has-all)
-[assertSessionHasErrors](#assert-session-has-errors)
-[assertSessionHasErrorsIn](#assert-session-has-errors-in)
-[assertSessionHasNoErrors](#assert-session-has-no-errors)
-[assertSessionDoesntHaveErrors](#assert-session-doesnt-have-errors)
-[assertSessionMissing](#assert-session-missing)
-[assertSessionMissingInput](#assert-session-missing-input)
-[assertStatus](#assert-status)
-[assertSuccessful](#assert-successful)
-[assertTooManyRequests](#assert-too-many-requests)
-[assertUnauthorized](#assert-unauthorized)
-[assertUnprocessable](#assert-unprocessable)
-[assertUnsupportedMediaType](#assert-unsupported-media-type)
-[assertValid](#assert-valid)
-[assertInvalid](#assert-invalid)
-[assertViewHas](#assert-view-has)
-[assertViewHasAll](#assert-view-has-all)
-[assertViewIs](#assert-view-is)
-[assertViewMissing](#assert-view-missing)
+assertAccepted
+assertBadRequest
+assertClientError
+assertConflict
+assertCookie
+assertCookieExpired
+assertCookieNotExpired
+assertCookieMissing
+assertCreated
+assertDontSee
+assertDontSeeText
+assertDownload
+assertExactJson
+assertExactJsonStructure
+assertFailedDependency
+assertForbidden
+assertFound
+assertGone
+assertHeader
+assertHeaderContains
+assertHeaderMissing
+assertInternalServerError
+assertJson
+assertJsonCount
+assertJsonFragment
+assertJsonIsArray
+assertJsonIsObject
+assertJsonMissing
+assertJsonMissingExact
+assertJsonMissingValidationErrors
+assertJsonPath
+assertJsonPaths
+assertJsonMissingPath
+assertJsonMissingPaths
+assertJsonStructure
+assertJsonValidationErrors
+assertJsonValidationErrorFor
+assertLocation
+assertMethodNotAllowed
+assertMovedPermanently
+assertContent
+assertNoContent
+assertStreamed
+assertStreamedContent
+assertNotFound
+assertOk
+assertPaymentRequired
+assertPlainCookie
+assertRedirect
+assertRedirectBack
+assertRedirectBackWithErrors
+assertRedirectBackWithoutErrors
+assertRedirectContains
+assertRedirectToRoute
+assertRedirectToSignedRoute
+assertRequestTimeout
+assertSee
+assertSeeInOrder
+assertSeeText
+assertSeeTextInOrder
+assertServerError
+assertServiceUnavailable
+assertSessionHas
+assertSessionHasInput
+assertSessionHasAll
+assertSessionHasErrors
+assertSessionHasErrorsIn
+assertSessionHasNoErrors
+assertSessionDoesntHaveErrors
+assertSessionMissing
+assertSessionMissingInput
+assertStatus
+assertSuccessful
+assertTooManyRequests
+assertUnauthorized
+assertUnprocessable
+assertUnsupportedMediaType
+assertValid
+assertInvalid
+assertViewHas
+assertViewHasAll
+assertViewIs
+assertViewMissing
 
 </div>
 
@@ -1205,7 +1205,7 @@ $response->assertExactJson(array $data);
 $response->assertExactJsonStructure(array $data);
 ```
 
-该方法是 [assertJsonStructure](#assert-json-structure) 的一个更严格的变体。与 `assertJsonStructure` 相比，如果响应包含任何未在预期 JSON 结构中显式包含的键，该方法将会失败。
+该方法是 assertJsonStructure 的一个更严格的变体。与 `assertJsonStructure` 相比，如果响应包含任何未在预期 JSON 结构中显式包含的键，该方法将会失败。
 
 #### assertFailedDependency
 
@@ -1348,7 +1348,7 @@ $response->assertJsonMissingValidationErrors($keys);
 ```
 
 > [!NOTE]
-> 更通用的 [assertValid](#assert-valid) 方法可用于断言响应没有以 JSON 形式返回的验证错误，**并且** 没有错误被闪存到 session 存储中。
+> 更通用的 assertValid 方法可用于断言响应没有以 JSON 形式返回的验证错误，**并且** 没有错误被闪存到 session 存储中。
 
 #### assertJsonPath
 
@@ -1502,7 +1502,7 @@ $response->assertJsonValidationErrors(array $data, $responseKey = 'errors');
 ```
 
 > [!NOTE]
-> 更通用的 [assertInvalid](#assert-invalid) 方法可用于断言响应具有以 JSON 形式返回的验证错误，**或者** 错误被闪存到了 session 存储中。
+> 更通用的 assertInvalid 方法可用于断言响应具有以 JSON 形式返回的验证错误，**或者** 错误被闪存到了 session 存储中。
 
 #### assertJsonValidationErrorFor
 
@@ -1618,7 +1618,7 @@ $response->assertRedirectBack();
 
 #### assertRedirectBackWithErrors
 
-断言响应是否正在重定向回上一页，且 [session 具有给定的错误](#assert-session-has-errors)：
+断言响应是否正在重定向回上一页，且 session 具有给定的错误：
 
 ```php
 $response->assertRedirectBackWithErrors(
@@ -1644,7 +1644,7 @@ $response->assertRedirectContains($string);
 
 #### assertRedirectToRoute
 
-断言响应是重定向到给定的 [命名路由](/docs/{{version}}/routing#named-routes)：
+断言响应是重定向到给定的 [命名路由](/topic/Laravel%2013.x/dgy7xg5vw2.html)：
 
 ```php
 $response->assertRedirectToRoute($name, $parameters = []);
@@ -1652,7 +1652,7 @@ $response->assertRedirectToRoute($name, $parameters = []);
 
 #### assertRedirectToSignedRoute
 
-断言响应是重定向到给定的 [签名路由](/docs/{{version}}/urls#signed-urls)：
+断言响应是重定向到给定的 [签名路由](/topic/Laravel%2013.x/3oyjdkxyp5.html)：
 
 ```php
 $response->assertRedirectToSignedRoute($name = null, $parameters = []);
@@ -1732,7 +1732,7 @@ $response->assertSessionHas($key, function (User $value) {
 
 #### assertSessionHasInput
 
-断言 session 在 [闪存输入数组](/docs/{{version}}/responses#redirecting-with-flashed-session-data) 中具有给定的值：
+断言 session 在 [闪存输入数组](/topic/Laravel%2013.x/2qvpxqz93m.html) 中具有给定的值：
 
 ```php
 $response->assertSessionHasInput($key, $value = null);
@@ -1790,11 +1790,11 @@ $response->assertSessionHasErrors([
 ```
 
 > [!NOTE]
-> 更通用的 [assertInvalid](#assert-invalid) 方法可用于断言响应具有以 JSON 形式返回的验证错误，**或者** 错误被闪存到了 session 存储中。
+> 更通用的 assertInvalid 方法可用于断言响应具有以 JSON 形式返回的验证错误，**或者** 错误被闪存到了 session 存储中。
 
 #### assertSessionHasErrorsIn
 
-断言在特定的 [错误包](/docs/{{version}}/validation#named-error-bags) 内，session 包含给定 `$keys` 的错误。如果 `$keys` 是一个关联数组，则断言在错误包内为每个字段（键）包含特定的错误消息（值）：
+断言在特定的 [错误包](/topic/Laravel%2013.x/e296oew9q7.html) 内，session 包含给定 `$keys` 的错误。如果 `$keys` 是一个关联数组，则断言在错误包内为每个字段（键）包含特定的错误消息（值）：
 
 ```php
 $response->assertSessionHasErrorsIn($errorBag, $keys = [], $format = null);
@@ -1817,7 +1817,7 @@ $response->assertSessionDoesntHaveErrors($keys = [], $format = null, $errorBag =
 ```
 
 > [!NOTE]
-> 更通用的 [assertValid](#assert-valid) 方法可用于断言响应没有以 JSON 形式返回的验证错误，**并且** 没有错误被闪存到 session 存储中。
+> 更通用的 assertValid 方法可用于断言响应没有以 JSON 形式返回的验证错误，**并且** 没有错误被闪存到 session 存储中。
 
 #### assertSessionMissing
 

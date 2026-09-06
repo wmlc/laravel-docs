@@ -1,9 +1,9 @@
 # Laravel Horizon
 
 > [!NOTE]
-> 在深入了解 Laravel Horizon 之前，你应该先熟悉 Laravel 基础的[队列服务](/docs/{{version}}/queues)。Horizon 在 Laravel 队列的基础上增加了额外功能，如果你还不了解 Laravel 提供的基础队列功能，这些功能可能会让你感到困惑。
+> 在深入了解 Laravel Horizon 之前，你应该先熟悉 Laravel 基础的[队列服务](/topic/Laravel%2013.x/wevwmkz9l2.html)。Horizon 在 Laravel 队列的基础上增加了额外功能，如果你还不了解 Laravel 提供的基础队列功能，这些功能可能会让你感到困惑。
 
-[Laravel Horizon](https://github.com/laravel/horizon) 为你的 Laravel [Redis 队列](/docs/{{version}}/queues) 提供了一个美观的仪表盘和基于代码的配置。Horizon 让你可以轻松监控队列系统的关键指标，例如任务吞吐量、运行时间和任务失败情况。
+[Laravel Horizon](https://github.com/laravel/horizon) 为你的 Laravel [Redis 队列](/topic/Laravel%2013.x/wevwmkz9l2.html) 提供了一个美观的仪表盘和基于代码的配置。Horizon 让你可以轻松监控队列系统的关键指标，例如任务吞吐量、运行时间和任务失败情况。
 
 使用 Horizon 时，你所有的队列工作进程配置都存储在一个简单统一的配置文件中。通过在受版本控制的文件中定义应用的 worker 配置，你可以在部署应用时轻松扩展或修改应用的队列工作进程。
 
@@ -97,10 +97,10 @@ public function handle(Request $request, Closure $next): Response
 ],
 ```
 
-启动 Horizon 时，它会使用应用当前运行环境对应的工作进程配置选项。通常，环境由 `APP_ENV` [环境变量](/docs/{{version}}/configuration#determining-the-current-environment) 的值决定。例如，默认的 `local` Horizon 环境被配置为启动三个工作进程，并自动平衡分配到每个队列的工作进程数量。默认的 `production` 环境被配置为最多启动 10 个工作进程，并自动平衡分配到每个队列的工作进程数量。
+启动 Horizon 时，它会使用应用当前运行环境对应的工作进程配置选项。通常，环境由 `APP_ENV` [环境变量](/topic/Laravel%2013.x/3dykqpoyl0.html) 的值决定。例如，默认的 `local` Horizon 环境被配置为启动三个工作进程，并自动平衡分配到每个队列的工作进程数量。默认的 `production` 环境被配置为最多启动 10 个工作进程，并自动平衡分配到每个队列的工作进程数量。
 
 > [!WARNING]
-> 你应该确保 `horizon` 配置文件的 `environments` 部分包含你计划运行 Horizon 的每个[环境](/docs/{{version}}/configuration#environment-configuration) 对应的条目。
+> 你应该确保 `horizon` 配置文件的 `environments` 部分包含你计划运行 Horizon 的每个[环境](/topic/Laravel%2013.x/3dykqpoyl0.html) 对应的条目。
 
 #### Supervisor
 
@@ -110,7 +110,7 @@ public function handle(Request $request, Closure $next): Response
 
 #### 维护模式
 
-当应用处于[维护模式](/docs/{{version}}/configuration#maintenance-mode) 时，除非在 Horizon 配置文件中将 supervisor 的 `force` 选项定义为 `true`，否则 Horizon 不会处理队列任务：
+当应用处于[维护模式](/topic/Laravel%2013.x/3dykqpoyl0.html) 时，除非在 Horizon 配置文件中将 supervisor 的 `force` 选项定义为 `true`，否则 Horizon 不会处理队列任务：
 
 ```php
 'environments' => [
@@ -125,11 +125,11 @@ public function handle(Request $request, Closure $next): Response
 
 #### 默认值
 
-在 Horizon 的默认配置文件中，你会注意到一个 `defaults` 配置选项。该配置选项指定了应用 [supervisor](#supervisors) 的默认值。supervisor 的默认配置值会合并到每个环境的 supervisor 配置中，让你在定义 supervisor 时避免不必要的重复。
+在 Horizon 的默认配置文件中，你会注意到一个 `defaults` 配置选项。该配置选项指定了应用 supervisor 的默认值。supervisor 的默认配置值会合并到每个环境的 supervisor 配置中，让你在定义 supervisor 时避免不必要的重复。
 
 ### 仪表盘授权
 
-可以通过 `/horizon` 路由访问 Horizon 仪表盘。默认情况下，你只能在 `local` 环境中访问该仪表盘。不过，在 `app/Providers/HorizonServiceProvider.php` 文件中，有一个[授权 Gate](/docs/{{version}}/authorization#gates) 定义。该授权 Gate 控制 **非本地** 环境下对 Horizon 的访问。你可以根据需要自由修改该 Gate，以限制对 Horizon 安装的访问：
+可以通过 `/horizon` 路由访问 Horizon 仪表盘。默认情况下，你只能在 `local` 环境中访问该仪表盘。不过，在 `app/Providers/HorizonServiceProvider.php` 文件中，有一个[授权 Gate](/topic/Laravel%2013.x/2wy3l43ykm.html) 定义。该授权 Gate 控制 **非本地** 环境下对 Horizon 的访问。你可以根据需要自由修改该 Gate，以限制对 Horizon 安装的访问：
 
 ```php
 /**
@@ -154,7 +154,7 @@ protected function gate(): void
 ### 最大任务尝试次数
 
 > [!NOTE]
-> 在细化这些选项之前，请确保你熟悉 Laravel 默认的[队列服务](/docs/{{version}}/queues#max-job-attempts-and-timeout) 以及"attempts（尝试次数）"的概念。
+> 在细化这些选项之前，请确保你熟悉 Laravel 默认的[队列服务](/topic/Laravel%2013.x/wevwmkz9l2.html) 以及"attempts（尝试次数）"的概念。
 
 你可以在 supervisor 的配置中定义任务可以使用的最大尝试次数：
 
@@ -265,7 +265,7 @@ protected function gate(): void
 ],
 ```
 
-除了静音单个任务类之外，Horizon 还支持基于[标签](#tags) 静音任务。如果你想隐藏共享某个公共标签的多个任务，这会很有用：
+除了静音单个任务类之外，Horizon 还支持基于标签 静音任务。如果你想隐藏共享某个公共标签的多个任务，这会很有用：
 
 ```php
 'silenced_tags' => [
@@ -469,7 +469,7 @@ php artisan horizon:pause
 php artisan horizon:continue
 ```
 
-你还可以使用 `horizon:pause-supervisor` 和 `horizon:continue-supervisor` Artisan 命令暂停和继续特定的 Horizon [supervisor](#supervisors)：
+你还可以使用 `horizon:pause-supervisor` 和 `horizon:continue-supervisor` Artisan 命令暂停和继续特定的 Horizon supervisor：
 
 ```shell
 php artisan horizon:pause-supervisor supervisor-1
@@ -483,7 +483,7 @@ php artisan horizon:continue-supervisor supervisor-1
 php artisan horizon:status
 ```
 
-你可以使用 `horizon:supervisor-status` Artisan 命令查看特定 Horizon [supervisor](#supervisors) 的当前状态：
+你可以使用 `horizon:supervisor-status` Artisan 命令查看特定 Horizon supervisor 的当前状态：
 
 ```shell
 php artisan horizon:supervisor-status supervisor-1
@@ -674,7 +674,7 @@ class SendRenderNotifications implements ShouldQueue
 ## 通知
 
 > [!WARNING]
-> 在配置 Horizon 发送 Slack 或 SMS 通知时，你应该查看[相关通知渠道的前置要求](/docs/{{version}}/notifications)。
+> 在配置 Horizon 发送 Slack 或 SMS 通知时，你应该查看[相关通知渠道的前置要求](/topic/Laravel%2013.x/2ky045l9z8.html)。
 
 如果你想在某一队列等待时间过长时收到通知，可以使用 `Horizon::routeMailNotificationsTo`、`Horizon::routeSlackNotificationsTo` 和 `Horizon::routeSmsNotificationsTo` 方法。你可以从应用的 `App\Providers\HorizonServiceProvider` 的 `boot` 方法中调用这些方法：
 

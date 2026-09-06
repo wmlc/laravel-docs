@@ -23,96 +23,96 @@ Laravel 包含各种全局"辅助" PHP 函数。其中许多函数由框架本�
 
 <div class="collection-method-list" markdown="1">
 
-[Arr::accessible](#method-array-accessible)
-[Arr::add](#method-array-add)
-[Arr::array](#method-array-array)
-[Arr::boolean](#method-array-boolean)
-[Arr::collapse](#method-array-collapse)
-[Arr::crossJoin](#method-array-crossjoin)
-[Arr::divide](#method-array-divide)
-[Arr::dot](#method-array-dot)
-[Arr::every](#method-array-every)
-[Arr::except](#method-array-except)
-[Arr::exceptValues](#method-array-except-values)
-[Arr::exists](#method-array-exists)
-[Arr::first](#method-array-first)
-[Arr::flatten](#method-array-flatten)
-[Arr::float](#method-array-float)
-[Arr::forget](#method-array-forget)
-[Arr::from](#method-array-from)
-[Arr::get](#method-array-get)
-[Arr::has](#method-array-has)
-[Arr::hasAll](#method-array-hasall)
-[Arr::hasAny](#method-array-hasany)
-[Arr::integer](#method-array-integer)
-[Arr::isAssoc](#method-array-isassoc)
-[Arr::isList](#method-array-islist)
-[Arr::join](#method-array-join)
-[Arr::keyBy](#method-array-keyby)
-[Arr::last](#method-array-last)
-[Arr::map](#method-array-map)
-[Arr::mapSpread](#method-array-map-spread)
-[Arr::mapWithKeys](#method-array-map-with-keys)
-[Arr::only](#method-array-only)
-[Arr::onlyValues](#method-array-only-values)
-[Arr::partition](#method-array-partition)
-[Arr::pluck](#method-array-pluck)
-[Arr::prepend](#method-array-prepend)
-[Arr::prependKeysWith](#method-array-prependkeyswith)
-[Arr::pull](#method-array-pull)
-[Arr::push](#method-array-push)
-[Arr::query](#method-array-query)
-[Arr::random](#method-array-random)
-[Arr::reject](#method-array-reject)
-[Arr::select](#method-array-select)
-[Arr::set](#method-array-set)
-[Arr::shuffle](#method-array-shuffle)
-[Arr::sole](#method-array-sole)
-[Arr::some](#method-array-some)
-[Arr::sort](#method-array-sort)
-[Arr::sortDesc](#method-array-sort-desc)
-[Arr::sortRecursive](#method-array-sort-recursive)
-[Arr::string](#method-array-string)
-[Arr::take](#method-array-take)
-[Arr::toCssClasses](#method-array-to-css-classes)
-[Arr::toCssStyles](#method-array-to-css-styles)
-[Arr::undot](#method-array-undot)
-[Arr::where](#method-array-where)
-[Arr::whereNotNull](#method-array-where-not-null)
-[Arr::wrap](#method-array-wrap)
-[data_fill](#method-data-fill)
-[data_get](#method-data-get)
-[data_set](#method-data-set)
-[data_forget](#method-data-forget)
-[head](#method-head)
-[last](#method-last)
+Arr::accessible
+Arr::add
+Arr::array
+Arr::boolean
+Arr::collapse
+Arr::crossJoin
+Arr::divide
+Arr::dot
+Arr::every
+Arr::except
+Arr::exceptValues
+Arr::exists
+Arr::first
+Arr::flatten
+Arr::float
+Arr::forget
+Arr::from
+Arr::get
+Arr::has
+Arr::hasAll
+Arr::hasAny
+Arr::integer
+Arr::isAssoc
+Arr::isList
+Arr::join
+Arr::keyBy
+Arr::last
+Arr::map
+Arr::mapSpread
+Arr::mapWithKeys
+Arr::only
+Arr::onlyValues
+Arr::partition
+Arr::pluck
+Arr::prepend
+Arr::prependKeysWith
+Arr::pull
+Arr::push
+Arr::query
+Arr::random
+Arr::reject
+Arr::select
+Arr::set
+Arr::shuffle
+Arr::sole
+Arr::some
+Arr::sort
+Arr::sortDesc
+Arr::sortRecursive
+Arr::string
+Arr::take
+Arr::toCssClasses
+Arr::toCssStyles
+Arr::undot
+Arr::where
+Arr::whereNotNull
+Arr::wrap
+data_fill
+data_get
+data_set
+data_forget
+head
+last
 </div>
 
 ### 数字
 
 <div class="collection-method-list" markdown="1">
 
-[Number::abbreviate](#method-number-abbreviate)
-[Number::clamp](#method-number-clamp)
-[Number::currency](#method-number-currency)
-[Number::defaultCurrency](#method-default-currency)
-[Number::defaultLocale](#method-default-locale)
-[Number::fileSize](#method-number-file-size)
-[Number::forHumans](#method-number-for-humans)
-[Number::format](#method-number-format)
-[Number::ordinal](#method-number-ordinal)
-[Number::pairs](#method-number-pairs)
-[Number::parse](#method-number-parse)
-[Number::parseInt](#method-number-parse-int)
-[Number::parseFloat](#method-number-parse-float)
-[Number::percentage](#method-number-percentage)
-[Number::spell](#method-number-spell)
-[Number::spellOrdinal](#method-number-spell-ordinal)
-[Number::trim](#method-number-trim)
-[Number::useLocale](#method-number-use-locale)
-[Number::withLocale](#method-number-with-locale)
-[Number::useCurrency](#method-number-use-currency)
-[Number::withCurrency](#method-number-with-currency)
+Number::abbreviate
+Number::clamp
+Number::currency
+Number::defaultCurrency
+Number::defaultLocale
+Number::fileSize
+Number::forHumans
+Number::format
+Number::ordinal
+Number::pairs
+Number::parse
+Number::parseInt
+Number::parseFloat
+Number::percentage
+Number::spell
+Number::spellOrdinal
+Number::trim
+Number::useLocale
+Number::withLocale
+Number::useCurrency
+Number::withCurrency
 
 </div>
 
@@ -120,14 +120,14 @@ Laravel 包含各种全局"辅助" PHP 函数。其中许多函数由框架本�
 
 <div class="collection-method-list" markdown="1">
 
-[app_path](#method-app-path)
-[base_path](#method-base-path)
-[config_path](#method-config-path)
-[database_path](#method-database-path)
-[lang_path](#method-lang-path)
-[public_path](#method-public-path)
-[resource_path](#method-resource-path)
-[storage_path](#method-storage-path)
+app_path
+base_path
+config_path
+database_path
+lang_path
+public_path
+resource_path
+storage_path
 
 </div>
 
@@ -135,15 +135,15 @@ Laravel 包含各种全局"辅助" PHP 函数。其中许多函数由框架本�
 
 <div class="collection-method-list" markdown="1">
 
-[action](#method-action)
-[asset](#method-asset)
-[route](#method-route)
-[secure_asset](#method-secure-asset)
-[secure_url](#method-secure-url)
-[to_action](#method-to-action)
-[to_route](#method-to-route)
-[uri](#method-uri)
-[url](#method-url)
+action
+asset
+route
+secure_asset
+secure_url
+to_action
+to_route
+uri
+url
 
 </div>
 
@@ -151,65 +151,65 @@ Laravel 包含各种全局"辅助" PHP 函数。其中许多函数由框架本�
 
 <div class="collection-method-list" markdown="1">
 
-[abort](#method-abort)
-[abort_if](#method-abort-if)
-[abort_unless](#method-abort-unless)
-[app](#method-app)
-[auth](#method-auth)
-[back](#method-back)
-[bcrypt](#method-bcrypt)
-[blank](#method-blank)
-[broadcast](#method-broadcast)
-[broadcast_if](#method-broadcast-if)
-[broadcast_unless](#method-broadcast-unless)
-[cache](#method-cache)
-[class_uses_recursive](#method-class-uses-recursive)
-[collect](#method-collect)
-[config](#method-config)
-[context](#method-context)
-[cookie](#method-cookie)
-[csrf_field](#method-csrf-field)
-[csrf_token](#method-csrf-token)
-[decrypt](#method-decrypt)
-[dd](#method-dd)
-[dispatch](#method-dispatch)
-[dispatch_sync](#method-dispatch-sync)
-[dump](#method-dump)
-[encrypt](#method-encrypt)
-[env](#method-env)
-[event](#method-event)
-[fake](#method-fake)
-[filled](#method-filled)
-[info](#method-info)
-[literal](#method-literal)
-[logger](#method-logger)
-[method_field](#method-method-field)
-[now](#method-now)
-[old](#method-old)
-[once](#method-once)
-[optional](#method-optional)
-[policy](#method-policy)
-[redirect](#method-redirect)
-[report](#method-report)
-[report_if](#method-report-if)
-[report_unless](#method-report-unless)
-[request](#method-request)
-[rescue](#method-rescue)
-[resolve](#method-resolve)
-[response](#method-response)
-[retry](#method-retry)
-[session](#method-session)
-[tap](#method-tap)
-[throw_if](#method-throw-if)
-[throw_unless](#method-throw-unless)
-[today](#method-today)
-[trait_uses_recursive](#method-trait-uses-recursive)
-[transform](#method-transform)
-[validator](#method-validator)
-[value](#method-value)
-[view](#method-view)
-[with](#method-with)
-[when](#method-when)
+abort
+abort_if
+abort_unless
+app
+auth
+back
+bcrypt
+blank
+broadcast
+broadcast_if
+broadcast_unless
+cache
+class_uses_recursive
+collect
+config
+context
+cookie
+csrf_field
+csrf_token
+decrypt
+dd
+dispatch
+dispatch_sync
+dump
+encrypt
+env
+event
+fake
+filled
+info
+literal
+logger
+method_field
+now
+old
+once
+optional
+policy
+redirect
+report
+report_if
+report_unless
+request
+rescue
+resolve
+response
+retry
+session
+tap
+throw_if
+throw_unless
+today
+trait_uses_recursive
+transform
+validator
+value
+view
+with
+when
 
 </div>
 
@@ -258,7 +258,7 @@ $array = Arr::add(['name' => 'Desk', 'price' => null], 'price', 100);
 
 #### `Arr::array()` {.collection-method}
 
-`Arr::array` 方法使用"点"表示法从深度嵌套的数组中检索值（就像 [Arr::get()](#method-array-get) 一样），但如果请求的值不是 `array`，则会抛出 `InvalidArgumentException`：
+`Arr::array` 方法使用"点"表示法从深度嵌套的数组中检索值（就像 Arr::get() 一样），但如果请求的值不是 `array`，则会抛出 `InvalidArgumentException`：
 
 ```php
 use Illuminate\Support\Arr;
@@ -276,7 +276,7 @@ $value = Arr::array($array, 'name');
 
 #### `Arr::boolean()` {.collection-method}
 
-`Arr::boolean` 方法使用"点"表示法从深度嵌套的数组中检索值（就像 [Arr::get()](#method-array-get) 一样），但如果请求的值不是 `boolean`，则会抛出 `InvalidArgumentException`：
+`Arr::boolean` 方法使用"点"表示法从深度嵌套的数组中检索值（就像 Arr::get() 一样），但如果请求的值不是 `boolean`，则会抛出 `InvalidArgumentException`：
 
 ```php
 use Illuminate\Support\Arr;
@@ -483,7 +483,7 @@ $flattened = Arr::flatten($array);
 
 #### `Arr::float()` {.collection-method}
 
-`Arr::float` 方法使用"点"表示法从深度嵌套的数组中检索值（就像 [Arr::get()](#method-array-get) 一样），但如果请求的值不是 `float`，则会抛出 `InvalidArgumentException`：
+`Arr::float` 方法使用"点"表示法从深度嵌套的数组中检索值（就像 Arr::get() 一样），但如果请求的值不是 `float`，则会抛出 `InvalidArgumentException`：
 
 ```php
 use Illuminate\Support\Arr;
@@ -613,7 +613,7 @@ $contains = Arr::hasAny($array, ['category', 'product.discount']);
 
 #### `Arr::integer()` {.collection-method}
 
-`Arr::integer` 方法使用"点"表示法从深度嵌套的数组中检索值（就像 [Arr::get()](#method-array-get) 一样），但如果请求的值不是 `int`，则会抛出 `InvalidArgumentException`：
+`Arr::integer` 方法使用"点"表示法从深度嵌套的数组中检索值（就像 Arr::get() 一样），但如果请求的值不是 `int`，则会抛出 `InvalidArgumentException`：
 
 ```php
 use Illuminate\Support\Arr;
@@ -1214,7 +1214,7 @@ $sorted = Arr::sortRecursiveDesc($array);
 
 #### `Arr::string()` {.collection-method}
 
-`Arr::string` 方法使用"点"表示法从深度嵌套的数组中检索值（就像 [Arr::get()](#method-array-get) 一样），但如果请求的值不是 `string`，则会抛出 `InvalidArgumentException`：
+`Arr::string` 方法使用"点"表示法从深度嵌套的数组中检索值（就像 Arr::get() 一样），但如果请求的值不是 `string`，则会抛出 `InvalidArgumentException`：
 
 ```php
 use Illuminate\Support\Arr;
@@ -1291,7 +1291,7 @@ $classes = Arr::toCssStyles($array);
 */
 ```
 
-此方法为 Laravel 的功能提供支持，允许 [将类与 Blade 组件的属性包合并](/docs/{{version}}/blade#conditionally-merge-classes) 以及 `@class` [Blade 指令](/docs/{{version}}/blade#conditional-classes)。
+此方法为 Laravel 的功能提供支持，允许 [将类与 Blade 组件的属性包合并](/topic/Laravel%2013.x/wevwmrz9l2.html) 以及 `@class` [Blade 指令](/topic/Laravel%2013.x/wevwmrz9l2.html)。
 
 #### `Arr::undot()` {.collection-method}
 
@@ -2071,7 +2071,7 @@ $url = asset('img/photo.jpg'); // http://example.com/assets/img/photo.jpg
 
 #### `route()` {.collection-method}
 
-`route` 函数为给定的 [命名路由](/docs/{{version}}/routing#named-routes) 生成 URL：
+`route` 函数为给定的 [命名路由](/topic/Laravel%2013.x/dgy7xg5vw2.html) 生成 URL：
 
 ```php
 $url = route('route.name');
@@ -2109,7 +2109,7 @@ $url = secure_url('user/profile', [1]);
 
 #### `to_action()` {.collection-method}
 
-`to_action` 函数为给定的控制器操作生成一个 [重定向 HTTP 响应](/docs/{{version}}/responses#redirects)：
+`to_action` 函数为给定的控制器操作生成一个 [重定向 HTTP 响应](/topic/Laravel%2013.x/2qvpxqz93m.html)：
 
 ```php
 use App\Http\Controllers\UserController;
@@ -2130,7 +2130,7 @@ return to_action(
 
 #### `to_route()` {.collection-method}
 
-`to_route` 函数为给定的 [命名路由](/docs/{{version}}/routing#named-routes) 生成一个 [重定向 HTTP 响应](/docs/{{version}}/responses#redirects)：
+`to_route` 函数为给定的 [命名路由](/topic/Laravel%2013.x/dgy7xg5vw2.html) 生成一个 [重定向 HTTP 响应](/topic/Laravel%2013.x/2qvpxqz93m.html)：
 
 ```php
 return to_route('users.show', ['user' => 1]);
@@ -2144,7 +2144,7 @@ return to_route('users.show', ['user' => 1], 302, ['X-Framework' => 'Laravel']);
 
 #### `uri()` {.collection-method}
 
-`uri` 函数为给定的 URI 生成一个 [流畅的 URI 实例](#uri)：
+`uri` 函数为给定的 URI 生成一个 流畅的 URI 实例：
 
 ```php
 $uri = uri('https://example.com')
@@ -2168,7 +2168,7 @@ use App\Http\Controllers\UserIndexController;
 $uri = uri(UserIndexController::class);
 ```
 
-如果给 `uri` 函数的值与 [命名路由](/docs/{{version}}/routing#named-routes) 的名称匹配，将为该路由的路径生成一个 `Uri` 实例：
+如果给 `uri` 函数的值与 [命名路由](/topic/Laravel%2013.x/dgy7xg5vw2.html) 的名称匹配，将为该路由的路径生成一个 `Uri` 实例：
 
 ```php
 $uri = uri('users.show', ['user' => $user]);
@@ -2194,13 +2194,13 @@ $full = url()->full();
 $previous = url()->previous();
 ```
 
-有关使用 `url` 函数的更多信息，请查阅 [URL 生成文档](/docs/{{version}}/urls#generating-urls)。
+有关使用 `url` 函数的更多信息，请查阅 [URL 生成文档](/topic/Laravel%2013.x/3oyjdkxyp5.html)。
 
 ## 杂项
 
 #### `abort()` {.collection-method}
 
-`abort` 函数抛出 [一个 HTTP 异常](/docs/{{version}}/errors#http-exceptions)，该异常将由 [异常处理器](/docs/{{version}}/errors#handling-exceptions) 渲染：
+`abort` 函数抛出 [一个 HTTP 异常](/topic/Laravel%2013.x/xq9zrzjvdo.html)，该异常将由 [异常处理器](/topic/Laravel%2013.x/xq9zrzjvdo.html) 渲染：
 
 ```php
 abort(403);
@@ -2234,7 +2234,7 @@ abort_unless(Auth::user()->isAdmin(), 403);
 
 #### `app()` {.collection-method}
 
-`app` 函数返回 [服务容器](/docs/{{version}}/container) 实例：
+`app` 函数返回 [服务容器](/topic/Laravel%2013.x/x3vo054vm1.html) 实例：
 
 ```php
 $container = app();
@@ -2248,7 +2248,7 @@ $api = app('HelpSpot\API');
 
 #### `auth()` {.collection-method}
 
-`auth` 函数返回一个 [认证器](/docs/{{version}}/authentication) 实例。你可以将它用作 `Auth` 门面的替代品：
+`auth` 函数返回一个 [认证器](/topic/Laravel%2013.x/xq9zrgjvdo.html) 实例。你可以将它用作 `Auth` 门面的替代品：
 
 ```php
 $user = auth()->user();
@@ -2262,7 +2262,7 @@ $user = auth('admin')->user();
 
 #### `back()` {.collection-method}
 
-`back` 函数生成一个到用户先前位置的 [重定向 HTTP 响应](/docs/{{version}}/responses#redirects)：
+`back` 函数生成一个到用户先前位置的 [重定向 HTTP 响应](/topic/Laravel%2013.x/2qvpxqz93m.html)：
 
 ```php
 return back($status = 302, $headers = [], $fallback = '/');
@@ -2272,7 +2272,7 @@ return back();
 
 #### `bcrypt()` {.collection-method}
 
-`bcrypt` 函数使用 Bcrypt [哈希](/docs/{{version}}/hashing) 给定值。你可以将此函数用作 `Hash` 门面的替代品：
+`bcrypt` 函数使用 Bcrypt [哈希](/topic/Laravel%2013.x/5dve2d3v4x.html) 给定值。你可以将此函数用作 `Hash` 门面的替代品：
 
 ```php
 $password = bcrypt('my-secret-password');
@@ -2297,11 +2297,11 @@ blank(false);
 // false
 ```
 
-对于 `blank` 的反向操作，请参见 [filled](#method-filled) 函数。
+对于 `blank` 的反向操作，请参见 filled 函数。
 
 #### `broadcast()` {.collection-method}
 
-`broadcast` 函数将给定的 [事件](/docs/{{version}}/events) [广播](/docs/{{version}}/broadcasting) 到其监听器：
+`broadcast` 函数将给定的 [事件](/topic/Laravel%2013.x/x3vo0l4vm1.html) [广播](/topic/Laravel%2013.x/enyd5w197d.html) 到其监听器：
 
 ```php
 broadcast(new UserRegistered($user));
@@ -2311,7 +2311,7 @@ broadcast(new UserRegistered($user))->toOthers();
 
 #### `broadcast_if()` {.collection-method}
 
-如果给定布尔表达式求值为 `true`，`broadcast_if` 函数将给定的 [事件](/docs/{{version}}/events) [广播](/docs/{{version}}/broadcasting) 到其监听器：
+如果给定布尔表达式求值为 `true`，`broadcast_if` 函数将给定的 [事件](/topic/Laravel%2013.x/x3vo0l4vm1.html) [广播](/topic/Laravel%2013.x/enyd5w197d.html) 到其监听器：
 
 ```php
 broadcast_if($user->isActive(), new UserRegistered($user));
@@ -2321,7 +2321,7 @@ broadcast_if($user->isActive(), new UserRegistered($user))->toOthers();
 
 #### `broadcast_unless()` {.collection-method}
 
-如果给定布尔表达式求值为 `false`，`broadcast_unless` 函数将给定的 [事件](/docs/{{version}}/events) [广播](/docs/{{version}}/broadcasting) 到其监听器：
+如果给定布尔表达式求值为 `false`，`broadcast_unless` 函数将给定的 [事件](/topic/Laravel%2013.x/x3vo0l4vm1.html) [广播](/topic/Laravel%2013.x/enyd5w197d.html) 到其监听器：
 
 ```php
 broadcast_unless($user->isBanned(), new UserRegistered($user));
@@ -2331,7 +2331,7 @@ broadcast_unless($user->isBanned(), new UserRegistered($user))->toOthers();
 
 #### `cache()` {.collection-method}
 
-`cache` 函数可用于从 [缓存](/docs/{{version}}/cache) 中获取值。如果给定的键不存在于缓存中，将返回一个可选的默认值：
+`cache` 函数可用于从 [缓存](/topic/Laravel%2013.x/5dve2w3v4x.html) 中获取值。如果给定的键不存在于缓存中，将返回一个可选的默认值：
 
 ```php
 $value = cache('key');
@@ -2357,7 +2357,7 @@ $traits = class_uses_recursive(App\Models\User::class);
 
 #### `collect()` {.collection-method}
 
-`collect` 函数从给定值创建一个 [集合](/docs/{{version}}/collections) 实例：
+`collect` 函数从给定值创建一个 [集合](/topic/Laravel%2013.x/4rvgn63ydj.html) 实例：
 
 ```php
 $collection = collect(['Taylor', 'Abigail']);
@@ -2365,7 +2365,7 @@ $collection = collect(['Taylor', 'Abigail']);
 
 #### `config()` {.collection-method}
 
-`config` 函数获取 [配置](/docs/{{version}}/configuration) 变量的值。配置值可以使用"点"语法访问，该语法包括文件名和你希望访问的选项。你还可以提供一个默认值，如果配置选项不存在，将返回该默认值：
+`config` 函数获取 [配置](/topic/Laravel%2013.x/3dykqpoyl0.html) 变量的值。配置值可以使用"点"语法访问，该语法包括文件名和你希望访问的选项。你还可以提供一个默认值，如果配置选项不存在，将返回该默认值：
 
 ```php
 $value = config('app.timezone');
@@ -2381,7 +2381,7 @@ config(['app.debug' => true]);
 
 #### `context()` {.collection-method}
 
-`context` 函数从当前 [上下文](/docs/{{version}}/context) 中获取值。你还可以提供一个默认值，如果上下文键不存在，将返回该默认值：
+`context` 函数从当前 [上下文](/topic/Laravel%2013.x/xpv527gv86.html) 中获取值。你还可以提供一个默认值，如果上下文键不存在，将返回该默认值：
 
 ```php
 $value = context('trace_id');
@@ -2399,7 +2399,7 @@ context(['trace_id' => Str::uuid()->toString()]);
 
 #### `cookie()` {.collection-method}
 
-`cookie` 函数创建一个新的 [Cookie](/docs/{{version}}/requests#cookies) 实例：
+`cookie` 函数创建一个新的 [Cookie](/topic/Laravel%2013.x/2ky040l9z8.html) 实例：
 
 ```php
 $cookie = cookie('name', 'value', $minutes);
@@ -2407,7 +2407,7 @@ $cookie = cookie('name', 'value', $minutes);
 
 #### `csrf_field()` {.collection-method}
 
-`csrf_field` 函数生成一个包含 CSRF 令牌值的 HTML `hidden` 输入字段。例如，使用 [Blade 语法](/docs/{{version}}/blade)：
+`csrf_field` 函数生成一个包含 CSRF 令牌值的 HTML `hidden` 输入字段。例如，使用 [Blade 语法](/topic/Laravel%2013.x/wevwmrz9l2.html)：
 
 ```blade
 {{ csrf_field() }}
@@ -2423,13 +2423,13 @@ $token = csrf_token();
 
 #### `decrypt()` {.collection-method}
 
-`decrypt` 函数 [解密](/docs/{{version}}/encryption) 给定值。你可以将此函数用作 `Crypt` 门面的替代品：
+`decrypt` 函数 [解密](/topic/Laravel%2013.x/enyd5k197d.html) 给定值。你可以将此函数用作 `Crypt` 门面的替代品：
 
 ```php
 $password = decrypt($value);
 ```
 
-对于 `decrypt` 的反向操作，请参见 [encrypt](#method-encrypt) 函数。
+对于 `decrypt` 的反向操作，请参见 encrypt 函数。
 
 #### `dd()` {.collection-method}
 
@@ -2441,11 +2441,11 @@ dd($value);
 dd($value1, $value2, $value3, ...);
 ```
 
-如果你不想停止脚本的执行，请改用 [dump](#method-dump) 函数。
+如果你不想停止脚本的执行，请改用 dump 函数。
 
 #### `dispatch()` {.collection-method}
 
-`dispatch` 函数将给定的 [任务](/docs/{{version}}/queues#creating-jobs) 推送到 Laravel [任务队列](/docs/{{version}}/queues)：
+`dispatch` 函数将给定的 [任务](/topic/Laravel%2013.x/wevwmkz9l2.html) 推送到 Laravel [任务队列](/topic/Laravel%2013.x/wevwmkz9l2.html)：
 
 ```php
 dispatch(new App\Jobs\SendEmails);
@@ -2453,7 +2453,7 @@ dispatch(new App\Jobs\SendEmails);
 
 #### `dispatch_sync()` {.collection-method}
 
-`dispatch_sync` 函数将给定任务推送到 [sync](/docs/{{version}}/queues#synchronous-dispatching) 队列，以便立即处理：
+`dispatch_sync` 函数将给定任务推送到 [sync](/topic/Laravel%2013.x/wevwmkz9l2.html) 队列，以便立即处理：
 
 ```php
 dispatch_sync(new App\Jobs\SendEmails);
@@ -2469,21 +2469,21 @@ dump($value);
 dump($value1, $value2, $value3, ...);
 ```
 
-如果你想在转储变量后停止执行脚本，请改用 [dd](#method-dd) 函数。
+如果你想在转储变量后停止执行脚本，请改用 dd 函数。
 
 #### `encrypt()` {.collection-method}
 
-`encrypt` 函数 [加密](/docs/{{version}}/encryption) 给定值。你可以将此函数用作 `Crypt` 门面的替代品：
+`encrypt` 函数 [加密](/topic/Laravel%2013.x/enyd5k197d.html) 给定值。你可以将此函数用作 `Crypt` 门面的替代品：
 
 ```php
 $secret = encrypt('my-secret-value');
 ```
 
-对于 `encrypt` 的反向操作，请参见 [decrypt](#method-decrypt) 函数。
+对于 `encrypt` 的反向操作，请参见 decrypt 函数。
 
 #### `env()` {.collection-method}
 
-`env` 函数检索 [环境变量](/docs/{{version}}/configuration#environment-configuration) 的值或返回默认值：
+`env` 函数检索 [环境变量](/topic/Laravel%2013.x/3dykqpoyl0.html) 的值或返回默认值：
 
 ```php
 $env = env('APP_ENV');
@@ -2496,7 +2496,7 @@ $env = env('APP_ENV', 'production');
 
 #### `event()` {.collection-method}
 
-`event` 函数将给定的 [事件](/docs/{{version}}/events) 分发到其监听器：
+`event` 函数将给定的 [事件](/topic/Laravel%2013.x/x3vo0l4vm1.html) 分发到其监听器：
 
 ```php
 event(new UserRegistered($user));
@@ -2543,11 +2543,11 @@ filled(collect());
 // false
 ```
 
-对于 `filled` 的反向操作，请参见 [blank](#method-blank) 函数。
+对于 `filled` 的反向操作，请参见 blank 函数。
 
 #### `info()` {.collection-method}
 
-`info` 函数将信息写入你的应用程序的 [日志](/docs/{{version}}/logging)：
+`info` 函数将信息写入你的应用程序的 [日志](/topic/Laravel%2013.x/2wy3l33ykm.html)：
 
 ```php
 info('Some helpful information!');
@@ -2575,7 +2575,7 @@ $obj->languages; // ['PHP', 'Ruby']
 
 #### `logger()` {.collection-method}
 
-`logger` 函数可用于将 `debug` 级别的消息写入 [日志](/docs/{{version}}/logging)：
+`logger` 函数可用于将 `debug` 级别的消息写入 [日志](/topic/Laravel%2013.x/2wy3l33ykm.html)：
 
 ```php
 logger('Debug message');
@@ -2587,7 +2587,7 @@ logger('Debug message');
 logger('User has logged in.', ['id' => $user->id]);
 ```
 
-如果没有值传递给该函数，将返回一个 [logger](/docs/{{version}}/logging) 实例：
+如果没有值传递给该函数，将返回一个 [logger](/topic/Laravel%2013.x/2wy3l33ykm.html) 实例：
 
 ```php
 logger()->error('You are not allowed here.');
@@ -2595,7 +2595,7 @@ logger()->error('You are not allowed here.');
 
 #### `method_field()` {.collection-method}
 
-`method_field` 函数生成一个 HTML `hidden` 输入字段，包含表单的 HTTP 动词的伪装值。例如，使用 [Blade 语法](/docs/{{version}}/blade)：
+`method_field` 函数生成一个 HTML `hidden` 输入字段，包含表单的 HTTP 动词的伪装值。例如，使用 [Blade 语法](/topic/Laravel%2013.x/wevwmrz9l2.html)：
 
 ```blade
 <form method="POST">
@@ -2613,7 +2613,7 @@ $now = now();
 
 #### `old()` {.collection-method}
 
-`old` 函数 [检索](/docs/{{version}}/requests#retrieving-input) 一个被闪存到会话中的 [旧输入](/docs/{{version}}/requests#old-input) 值：
+`old` 函数 [检索](/topic/Laravel%2013.x/2ky040l9z8.html) 一个被闪存到会话中的 [旧输入](/topic/Laravel%2013.x/2ky040l9z8.html) 值：
 
 ```php
 $value = old('value');
@@ -2691,7 +2691,7 @@ return optional(User::find($id), function (User $user) {
 
 #### `policy()` {.collection-method}
 
-`policy` 方法为给定类检索一个 [策略](/docs/{{version}}/authorization#creating-policies) 实例：
+`policy` 方法为给定类检索一个 [策略](/topic/Laravel%2013.x/2wy3l43ykm.html) 实例：
 
 ```php
 $policy = policy(App\Models\User::class);
@@ -2699,7 +2699,7 @@ $policy = policy(App\Models\User::class);
 
 #### `redirect()` {.collection-method}
 
-`redirect` 函数返回一个 [重定向 HTTP 响应](/docs/{{version}}/responses#redirects)，或者如果调用时没有参数，则返回重定向器实例：
+`redirect` 函数返回一个 [重定向 HTTP 响应](/topic/Laravel%2013.x/2qvpxqz93m.html)，或者如果调用时没有参数，则返回重定向器实例：
 
 ```php
 return redirect($to = null, $status = 302, $headers = [], $secure = null);
@@ -2711,7 +2711,7 @@ return redirect()->route('route.name');
 
 #### `report()` {.collection-method}
 
-`report` 函数将使用你的 [异常处理器](/docs/{{version}}/errors#handling-exceptions) 报告异常：
+`report` 函数将使用你的 [异常处理器](/topic/Laravel%2013.x/xq9zrzjvdo.html) 报告异常：
 
 ```php
 report($e);
@@ -2725,7 +2725,7 @@ report('Something went wrong.');
 
 #### `report_if()` {.collection-method}
 
-如果给定布尔表达式求值为 `true`，`report_if` 函数将使用你的 [异常处理器](/docs/{{version}}/errors#handling-exceptions) 报告异常：
+如果给定布尔表达式求值为 `true`，`report_if` 函数将使用你的 [异常处理器](/topic/Laravel%2013.x/xq9zrzjvdo.html) 报告异常：
 
 ```php
 report_if($shouldReport, $e);
@@ -2735,7 +2735,7 @@ report_if($shouldReport, 'Something went wrong.');
 
 #### `report_unless()` {.collection-method}
 
-如果给定布尔表达式求值为 `false`，`report_unless` 函数将使用你的 [异常处理器](/docs/{{version}}/errors#handling-exceptions) 报告异常：
+如果给定布尔表达式求值为 `false`，`report_unless` 函数将使用你的 [异常处理器](/topic/Laravel%2013.x/xq9zrzjvdo.html) 报告异常：
 
 ```php
 report_unless($reportingDisabled, $e);
@@ -2745,7 +2745,7 @@ report_unless($reportingDisabled, 'Something went wrong.');
 
 #### `request()` {.collection-method}
 
-`request` 函数返回当前的 [请求](/docs/{{version}}/requests) 实例，或从当前请求中获取输入字段的值：
+`request` 函数返回当前的 [请求](/topic/Laravel%2013.x/2ky040l9z8.html) 实例，或从当前请求中获取输入字段的值：
 
 ```php
 $request = request();
@@ -2755,7 +2755,7 @@ $value = request('key', $default);
 
 #### `rescue()` {.collection-method}
 
-`rescue` 函数执行给定的闭包并捕获其执行期间发生的任何异常。所有捕获的异常都将发送到你的 [异常处理器](/docs/{{version}}/errors#handling-exceptions)；但是，请求将继续处理：
+`rescue` 函数执行给定的闭包并捕获其执行期间发生的任何异常。所有捕获的异常都将发送到你的 [异常处理器](/topic/Laravel%2013.x/xq9zrzjvdo.html)；但是，请求将继续处理：
 
 ```php
 return rescue(function () {
@@ -2789,7 +2789,7 @@ return rescue(function () {
 
 #### `resolve()` {.collection-method}
 
-`resolve` 函数使用 [服务容器](/docs/{{version}}/container) 将给定的类名或接口名解析为实例：
+`resolve` 函数使用 [服务容器](/topic/Laravel%2013.x/x3vo054vm1.html) 将给定的类名或接口名解析为实例：
 
 ```php
 $api = resolve('HelpSpot\API');
@@ -2797,7 +2797,7 @@ $api = resolve('HelpSpot\API');
 
 #### `response()` {.collection-method}
 
-`response` 函数创建一个 [响应](/docs/{{version}}/responses) 实例或获取响应工厂的实例：
+`response` 函数创建一个 [响应](/topic/Laravel%2013.x/2qvpxqz93m.html) 实例或获取响应工厂的实例：
 
 ```php
 return response('Hello World', 200, $headers);
@@ -2860,7 +2860,7 @@ return retry(5, function () {
 
 #### `session()` {.collection-method}
 
-`session` 函数可用于获取或设置 [会话](/docs/{{version}}/session) 值：
+`session` 函数可用于获取或设置 [会话](/topic/Laravel%2013.x/2ev86noyor.html) 值：
 
 ```php
 $value = session('key');
@@ -2955,7 +2955,7 @@ $traits = trait_uses_recursive(\Illuminate\Notifications\Notifiable::class);
 
 #### `transform()` {.collection-method}
 
-`transform` 函数在给定值不为 [空白](#method-blank) 时对该值执行闭包，然后返回闭包的返回值：
+`transform` 函数在给定值不为 空白 时对该值执行闭包，然后返回闭包的返回值：
 
 ```php
 $callback = function (int $value) {
@@ -2977,7 +2977,7 @@ $result = transform(null, $callback, 'The value is blank');
 
 #### `validator()` {.collection-method}
 
-`validator` 函数使用给定的参数创建一个新的 [验证器](/docs/{{version}}/validation) 实例。你可以将它用作 `Validator` 门面的替代品：
+`validator` 函数使用给定的参数创建一个新的 [验证器](/topic/Laravel%2013.x/e296oew9q7.html) 实例。你可以将它用作 `Validator` 门面的替代品：
 
 ```php
 $validator = validator($data, $rules, $messages);
@@ -3011,7 +3011,7 @@ $result = value(function (string $name) {
 
 #### `view()` {.collection-method}
 
-`view` 函数检索一个 [视图](/docs/{{version}}/views) 实例：
+`view` 函数检索一个 [视图](/topic/Laravel%2013.x/m892gz6y01.html) 实例：
 
 ```php
 return view('auth.login');
@@ -3135,7 +3135,7 @@ Cache::put('metrics', $metrics, minutes(10));
 
 ### 延迟函数
 
-虽然 Laravel 的 [队列任务](/docs/{{version}}/queues) 允许你将任务排队以进行后台处理，但有时你可能有一些简单的任务希望延迟执行，而不需要配置或维护一个长时间运行的队列工作进程。
+虽然 Laravel 的 [队列任务](/topic/Laravel%2013.x/wevwmkz9l2.html) 允许你将任务排队以进行后台处理，但有时你可能有一些简单的任务希望延迟执行，而不需要配置或维护一个长时间运行的队列工作进程。
 
 延迟函数允许你将闭包的执行延迟到 HTTP 响应发送给用户之后，从而保持你的应用程序感觉快速和响应迅速。要延迟执行闭包，只需将闭包传递给 `Illuminate\Support\defer` 函数：
 
@@ -3288,11 +3288,11 @@ $user = Pipeline::send($user)
     ->then(fn (User $user) => $user);
 ```
 
-如你所见，管道中的每个可调用类或闭包都会获得输入和一个 `$next` 闭包。调用 `$next` 闭包将调用管道中的下一个可调用对象。正如你可能已经注意到的，这与 [中间件](/docs/{{version}}/middleware) 非常相似。
+如你所见，管道中的每个可调用类或闭包都会获得输入和一个 `$next` 闭包。调用 `$next` 闭包将调用管道中的下一个可调用对象。正如你可能已经注意到的，这与 [中间件](/topic/Laravel%2013.x/rwyl2exvz8.html) 非常相似。
 
 当管道中的最后一个可调用对象调用 `$next` 闭包时，将调用提供给 `then` 方法的可调用对象。通常，此可调用对象将简单地返回给定的输入。为方便起见，如果你只希望在处理后返回输入，你可以使用 `thenReturn` 方法。
 
-当然，如前所述，你不限于向管道提供闭包。你还可以提供可调用的类。如果提供了类名，该类将通过 Laravel 的 [服务容器](/docs/{{version}}/container) 实例化，从而允许将依赖项注入到可调用类中：
+当然，如前所述，你不限于向管道提供闭包。你还可以提供可调用的类。如果提供了类名，该类将通过 Laravel 的 [服务容器](/topic/Laravel%2013.x/x3vo054vm1.html) 实例化，从而允许将依赖项注入到可调用类中：
 
 ```php
 $user = Pipeline::send($user)
@@ -3459,7 +3459,7 @@ Sleep::assertNeverSlept();
 Sleep::assertInsomniac();
 ```
 
-有时在每次发生伪造休眠时执行某个操作可能会很有用。要实现这一点，你可以向 `whenFakingSleep` 方法提供一个回调。在下面的示例中，我们使用 Laravel 的 [时间操作辅助函数](/docs/{{version}}/mocking#interacting-with-time) 来按每次休眠的时长立即推进时间：
+有时在每次发生伪造休眠时执行某个操作可能会很有用。要实现这一点，你可以向 `whenFakingSleep` 方法提供一个回调。在下面的示例中，我们使用 Laravel 的 [时间操作辅助函数](/topic/Laravel%2013.x/5dve2r3v4x.html) 来按每次休眠的时长立即推进时间：
 
 ```php
 use Carbon\CarbonInterval as Duration;
@@ -3486,7 +3486,7 @@ Sleep::for(1)->second();
 $start->diffForHumans(); // 1 秒前
 ```
 
-每当 Laravel 暂停执行时，它都会在内部使用 `Sleep` 类。例如，[retry](#method-retry) 辅助函数在休眠时使用 `Sleep` 类，从而在使用该辅助函数时提高可测试性。
+每当 Laravel 暂停执行时，它都会在内部使用 `Sleep` 类。例如，retry 辅助函数在休眠时使用 `Sleep` 类，从而在使用该辅助函数时提高可测试性。
 
 ### 时间盒
 

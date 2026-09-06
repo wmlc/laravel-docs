@@ -16,7 +16,7 @@ Laravel 致力于提供卓越的开发体验，同时提供强大的特性——
 
 我们喜欢把 Laravel 称为「渐进式」框架，意思是 Laravel 会与你一同成长。如果你刚刚踏入 Web 开发，Laravel 庞大的文档、指南和 [视频教程](https://laracasts.com) 库会帮你顺利上手，不会被信息海洋淹没。
 
-如果你是一名资深开发者，Laravel 提供了稳健的工具，包括 [依赖注入](/docs/{{version}}/container)、[单元测试](/docs/{{version}}/testing)、[队列](/docs/{{version}}/queues)、[实时事件](/docs/{{version}}/broadcasting) 等。Laravel 已经为构建专业 Web 应用调校到位，并准备好应对企业级工作负载。
+如果你是一名资深开发者，Laravel 提供了稳健的工具，包括 [依赖注入](/topic/Laravel%2013.x/x3vo054vm1.html)、[单元测试](/topic/Laravel%2013.x/e296oqw9q7.html)、[队列](/topic/Laravel%2013.x/wevwmkz9l2.html)、[实时事件](/topic/Laravel%2013.x/enyd5w197d.html) 等。Laravel 已经为构建专业 Web 应用调校到位，并准备好应对企业级工作负载。
 
 #### 一个可扩展的框架
 
@@ -26,11 +26,11 @@ Laravel 的可扩展能力极强。得益于 PHP 本身良好的伸缩性以及 
 
 #### 一个 Agent 友好的框架
 
-Laravel 立场鲜明的约定和定义清晰的结构，使它成为 [AI 辅助开发](/docs/{{version}}/ai) 的理想框架，尤其是与 Cursor、Claude Code 等工具一起使用时。当你让 AI agent 添加一个控制器时，它清楚地知道该把文件放到哪里。需要新建迁移时，命名约定和文件位置都是可预期的。这种一致性消除了"猜"，让 AI 工具在更"灵活"的框架里常常感到吃力。
+Laravel 立场鲜明的约定和定义清晰的结构，使它成为 [AI 辅助开发](/topic/Laravel%2013.x/enyd5l197d.html) 的理想框架，尤其是与 Cursor、Claude Code 等工具一起使用时。当你让 AI agent 添加一个控制器时，它清楚地知道该把文件放到哪里。需要新建迁移时，命名约定和文件位置都是可预期的。这种一致性消除了"猜"，让 AI 工具在更"灵活"的框架里常常感到吃力。
 
 除了文件组织，Laravel 富有表达力的语法和完善的文档，也为 AI agent 提供了准确生成地道代码所需的上下文。Eloquent 关联、表单请求和中间件等特性都遵循一套确定的模式——agent 可以可靠地理解并复刻这些模式。最终结果是：AI 生成的代码看起来就像经验丰富的 Laravel 开发者写的，而不是用通用 PHP 片段拼凑出来的。
 
-要进一步了解为何 Laravel 是 AI 辅助开发的理想之选，可以查阅 [agentic 开发文档](/docs/{{version}}/ai)。
+要进一步了解为何 Laravel 是 AI 辅助开发的理想之选，可以查阅 [agentic 开发文档](/topic/Laravel%2013.x/enyd5l197d.html)。
 
 #### 一个由社区驱动的框架
 
@@ -80,7 +80,7 @@ composer global require laravel/installer
 ```
 
 > [!NOTE]
-> 若希望拥有完整功能、图形化的 PHP 安装与管理体验，请查看 [Laravel Herd](#installation-using-herd)。
+> 若希望拥有完整功能、图形化的 PHP 安装与管理体验，请查看 Laravel Herd。
 
 ### 创建应用
 
@@ -98,10 +98,10 @@ npm install && npm run build
 composer run dev
 ```
 
-启动开发服务器后，就可以在浏览器中通过 [http://localhost:8000](http://localhost:8000) 访问应用。准备好之后，可以 [开始你在 Laravel 生态的下一步旅程](#next-steps)。当然，你可能还想 [配置数据库](#databases-and-migrations)，并运行必要的迁移。
+启动开发服务器后，就可以在浏览器中通过 [http://localhost:8000](http://localhost:8000) 访问应用。准备好之后，可以 开始你在 Laravel 生态的下一步旅程。当然，你可能还想 配置数据库，并运行必要的迁移。
 
 > [!NOTE]
-> 如果想在 Laravel 开发中获得"快人一步"的体验，可以考虑使用我们的某个 [入门套件](/docs/{{version}}/starter-kits)。Laravel 的入门套件会为新应用预置后端与前端认证脚手架。
+> 如果想在 Laravel 开发中获得"快人一步"的体验，可以考虑使用我们的某个 [入门套件](/topic/Laravel%2013.x/kl9nop7vz4.html)。Laravel 的入门套件会为新应用预置后端与前端认证脚手架。
 
 ## 初始配置
 
@@ -116,7 +116,7 @@ Laravel 几乎不需要额外的开箱配置，可以立即着手开发！不过
 `.env` 文件不应提交到应用的源代码控制——因为每位开发者 / 每台服务器上可能需要不同的环境配置。此外，一旦入侵者获得源码仓库的访问权限，把敏感凭证暴露在 `.env` 里也是一种安全风险。
 
 > [!NOTE]
-> 关于 `.env` 文件与基于环境的配置的更多信息，请查阅完整的 [配置文档](/docs/{{version}}/configuration#environment-configuration)。
+> 关于 `.env` 文件与基于环境的配置的更多信息，请查阅完整的 [配置文档](/topic/Laravel%2013.x/3dykqpoyl0.html)。
 
 ### 数据库与迁移
 
@@ -135,7 +135,7 @@ DB_USERNAME=root
 DB_PASSWORD=
 ```
 
-如果选择 SQLite 之外的数据库，需要先创建数据库，再运行应用的 [数据库迁移](/docs/{{version}}/migrations)：
+如果选择 SQLite 之外的数据库，需要先创建数据库，再运行应用的 [数据库迁移](/topic/Laravel%2013.x/x3vo0g4vm1.html)：
 
 ```shell
 php artisan migrate
@@ -248,28 +248,28 @@ php artisan boost:install
 
 现在你已经创建好了 Laravel 应用，可能在想下一步学什么。首先，强烈建议你通过阅读以下文档熟悉 Laravel 的工作方式：
 
-- [请求生命周期](/docs/{{version}}/lifecycle)
-- [配置](/docs/{{version}}/configuration)
-- [目录结构](/docs/{{version}}/structure)
-- [前端](/docs/{{version}}/frontend)
-- [服务容器](/docs/{{version}}/container)
-- [门面](/docs/{{version}}/facades)
+- [请求生命周期](/topic/Laravel%2013.x/3xyq4o4vmq.html)
+- [配置](/topic/Laravel%2013.x/3dykqpoyl0.html)
+- [目录结构](/topic/Laravel%2013.x/5dve213v4x.html)
+- [前端](/topic/Laravel%2013.x/4rvgnw3ydj.html)
+- [服务容器](/topic/Laravel%2013.x/x3vo054vm1.html)
+- [门面](/topic/Laravel%2013.x/569x508yep.html)
 
 你打算如何使用 Laravel 也会决定接下来要走的路。Laravel 有着多种多样的使用方式，下面我们探讨其中两个最常见的用例。
 
 ### Laravel 作为全栈框架
 
-Laravel 可以扮演全栈框架的角色。所谓「全栈」框架，就是说你将借助 Laravel 把请求路由到应用，并通过 [Blade 模板](/docs/{{version}}/blade) 或类似 [Inertia](https://inertiajs.com) 的单页应用混合技术来渲染前端。这是使用 Laravel 最常见的方式，也是我们认为最高效的方式。
+Laravel 可以扮演全栈框架的角色。所谓「全栈」框架，就是说你将借助 Laravel 把请求路由到应用，并通过 [Blade 模板](/topic/Laravel%2013.x/wevwmrz9l2.html) 或类似 [Inertia](https://inertiajs.com) 的单页应用混合技术来渲染前端。这是使用 Laravel 最常见的方式，也是我们认为最高效的方式。
 
-如果你打算这样使用 Laravel，建议查阅我们的 [前端开发](/docs/{{version}}/frontend)、[路由](/docs/{{version}}/routing)、[视图](/docs/{{version}}/views) 或 [Eloquent ORM](/docs/{{version}}/eloquent) 文档。此外，你可能也想了解 [Livewire](https://livewire.laravel.com) 和 [Inertia](https://inertiajs.com) 等社区扩展包。这些扩展包让你在享受单页 JavaScript 应用带来的 UI 优势的同时，把 Laravel 当作全栈框架来使用。
+如果你打算这样使用 Laravel，建议查阅我们的 [前端开发](/topic/Laravel%2013.x/4rvgnw3ydj.html)、[路由](/topic/Laravel%2013.x/dgy7xg5vw2.html)、[视图](/topic/Laravel%2013.x/m892gz6y01.html) 或 [Eloquent ORM](/topic/Laravel%2013.x/rwyl2kxvz8.html) 文档。此外，你可能也想了解 [Livewire](https://livewire.laravel.com) 和 [Inertia](https://inertiajs.com) 等社区扩展包。这些扩展包让你在享受单页 JavaScript 应用带来的 UI 优势的同时，把 Laravel 当作全栈框架来使用。
 
-如果你把 Laravel 用作全栈框架，我们还强烈建议学习如何使用 [Vite](/docs/{{version}}/vite) 编译应用的 CSS 与 JavaScript。
+如果你把 Laravel 用作全栈框架，我们还强烈建议学习如何使用 [Vite](/topic/Laravel%2013.x/ndvm3gj93j.html) 编译应用的 CSS 与 JavaScript。
 
 > [!NOTE]
-> 如果你想更快地开始构建应用，可以试试我们的官方 [应用入门套件](/docs/{{version}}/starter-kits)。
+> 如果你想更快地开始构建应用，可以试试我们的官方 [应用入门套件](/topic/Laravel%2013.x/kl9nop7vz4.html)。
 
 ### Laravel 作为 API 后端
 
-Laravel 也可以充当 JavaScript 单页应用或移动应用的 API 后端。例如，你也许会用 Laravel 作为你的 [Next.js](https://nextjs.org) 应用的 API 后端。在这种情况下，你可以用 Laravel 提供 [认证](/docs/{{version}}/sanctum) 与数据存取能力，同时享受 Laravel 强大的队列、邮件、通知等服务。
+Laravel 也可以充当 JavaScript 单页应用或移动应用的 API 后端。例如，你也许会用 Laravel 作为你的 [Next.js](https://nextjs.org) 应用的 API 后端。在这种情况下，你可以用 Laravel 提供 [认证](/topic/Laravel%2013.x/xq9zr3jvdo.html) 与数据存取能力，同时享受 Laravel 强大的队列、邮件、通知等服务。
 
-如果你打算这样使用 Laravel，可以查看我们的 [路由](/docs/{{version}}/routing)、[Laravel Sanctum](/docs/{{version}}/sanctum) 与 [Eloquent ORM](/docs/{{version}}/eloquent) 文档。
+如果你打算这样使用 Laravel，可以查看我们的 [路由](/topic/Laravel%2013.x/dgy7xg5vw2.html)、[Laravel Sanctum](/topic/Laravel%2013.x/xq9zr3jvdo.html) 与 [Eloquent ORM](/topic/Laravel%2013.x/rwyl2kxvz8.html) 文档。

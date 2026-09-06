@@ -12,21 +12,21 @@
 
 所有 Laravel 应用请求的入口是 `public/index.php` 文件。Web 服务器（Apache / Nginx）配置把所有请求指向此文件。`index.php` 本身没有太多代码，它只是加载框架其余部分的起点。
 
-`index.php` 加载 Composer 生成的自动加载定义，然后从 `bootstrap/app.php` 取出 Laravel 应用实例。Laravel 自身执行的第一个动作就是创建应用实例 / [服务容器（service container）](/docs/{{version}}/container)。
+`index.php` 加载 Composer 生成的自动加载定义，然后从 `bootstrap/app.php` 取出 Laravel 应用实例。Laravel 自身执行的第一个动作就是创建应用实例 / [服务容器（service container）](/topic/Laravel%2013.x/x3vo054vm1.html)。
 
 ### HTTP / Console 内核
 
 接下来，根据进入请求的类型，请求会被分发给 HTTP 内核或 Console 内核，方式是调用应用实例的 `handleRequest` 或 `handleCommand` 方法。这两个内核是所有请求流经的中心位置。眼下我们只关注 HTTP 内核，它是 `Illuminate\Foundation\Http\Kernel` 的一个实例。
 
-HTTP 内核定义了一组 `bootstrappers`，会在请求执行前运行。这些引导程序配置错误处理、配置日志、[检测应用环境](/docs/{{version}}/configuration#environment-configuration)，以及执行其他需要在请求被实际处理前完成的任务。通常这些类处理的是你无需关心的 Laravel 内部配置。
+HTTP 内核定义了一组 `bootstrappers`，会在请求执行前运行。这些引导程序配置错误处理、配置日志、[检测应用环境](/topic/Laravel%2013.x/3dykqpoyl0.html)，以及执行其他需要在请求被实际处理前完成的任务。通常这些类处理的是你无需关心的 Laravel 内部配置。
 
-HTTP 内核还负责把请求传给应用的中间件栈。这些中间件负责读写 [HTTP 会话（session）](/docs/{{version}}/session)、判断应用是否处于维护模式、[验证 CSRF 令牌](/docs/{{version}}/csrf) 等。后文会详细介绍。
+HTTP 内核还负责把请求传给应用的中间件栈。这些中间件负责读写 [HTTP 会话（session）](/topic/Laravel%2013.x/2ev86noyor.html)、判断应用是否处于维护模式、[验证 CSRF 令牌](/topic/Laravel%2013.x/kpv136298w.html) 等。后文会详细介绍。
 
 HTTP 内核的 `handle` 方法签名很简单：接收一个 `Request`，返回一个 `Response`。可以把内核想象成代表整个应用的"大黑箱"——给它 HTTP 请求，它就会返回 HTTP 响应。
 
 ### 服务提供者（Service Providers）
 
-内核最重要的引导动作之一是为应用加载 [服务提供者（service providers）](/docs/{{version}}/providers)。服务提供者负责引导框架各类组件，例如数据库、队列、验证和路由组件。
+内核最重要的引导动作之一是为应用加载 [服务提供者（service providers）](/topic/Laravel%2013.x/qk942kovw1.html)。服务提供者负责引导框架各类组件，例如数据库、队列、验证和路由组件。
 
 Laravel 会遍历这个提供者列表并逐一实例化。实例化完成后，会调用所有提供者的 `register` 方法。接着，等所有提供者注册完毕后，再依次调用每个提供者的 `boot` 方法。如此一来，等到 `boot` 方法执行时，所有容器绑定都已经注册并可用。
 
@@ -38,7 +38,7 @@ Laravel 几乎所有主要功能都是通过服务提供者引导和配置的。
 
 应用引导完成、且所有服务提供者注册完毕后，`Request` 会被移交给路由器进行分发。路由器会把请求分发到对应的路由或控制器，并执行该路由特有的任何中间件。
 
-中间件提供了一种便捷机制，用于筛选或检视进入应用的 HTTP 请求。例如，Laravel 自带一个中间件，用于验证应用用户是否已认证。若用户未认证，中间件会重定向到登录页；若已认证，则允许请求继续进入应用后续流程。某些中间件会被分配给应用内的所有路由，例如 `PreventRequestsDuringMaintenance`；而另一些中间件只分配给特定路由或路由组。如需深入了解中间件，请阅读完整的 [中间件文档](/docs/{{version}}/middleware)。
+中间件提供了一种便捷机制，用于筛选或检视进入应用的 HTTP 请求。例如，Laravel 自带一个中间件，用于验证应用用户是否已认证。若用户未认证，中间件会重定向到登录页；若已认证，则允许请求继续进入应用后续流程。某些中间件会被分配给应用内的所有路由，例如 `PreventRequestsDuringMaintenance`；而另一些中间件只分配给特定路由或路由组。如需深入了解中间件，请阅读完整的 [中间件文档](/topic/Laravel%2013.x/rwyl2exvz8.html)。
 
 请求顺利通过所匹配路由上的全部中间件后，路由或控制器方法会被执行，返回的响应再沿路由的中间件链回传。
 

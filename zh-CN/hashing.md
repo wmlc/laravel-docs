@@ -2,7 +2,7 @@
 
 ## 简介
 
-Laravel 的 `Hash` [Facade](/docs/{{version}}/facades) 提供了安全的 Bcrypt 与 Argon2 哈希算法，用于存储用户密码。如果你使用的是 [Laravel 应用入门套件](/docs/{{version}}/starter-kits)之一，默认情况下注册与认证会使用 Bcrypt。
+Laravel 的 `Hash` [Facade](/topic/Laravel%2013.x/569x508yep.html) 提供了安全的 Bcrypt 与 Argon2 哈希算法，用于存储用户密码。如果你使用的是 [Laravel 应用入门套件](/topic/Laravel%2013.x/kl9nop7vz4.html)之一，默认情况下注册与认证会使用 Bcrypt。
 
 Bcrypt 是密码哈希的绝佳选择，因为它的「工作因子（work factor）」是可调的，这意味着随着硬件性能的提升，你可以增加生成哈希所需的时间。在为密码计算哈希时，越慢越好。算法计算密码哈希所需的时间越长，恶意用户生成「彩虹表（rainbow table）」所需的时间也就越长——彩虹表包含所有可能的字符串哈希值，可被用于对应用发起暴力破解攻击。
 

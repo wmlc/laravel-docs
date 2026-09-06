@@ -90,7 +90,7 @@ public function boot(): void
 ```
 
 > [!WARNING]
-> 如果自定义了复数化器的语言，应同时显式定义 Eloquent 模型的 [数据表名](/docs/{{version}}/eloquent#table-names)。
+> 如果自定义了复数化器的语言，应同时显式定义 Eloquent 模型的 [数据表名](/topic/Laravel%2013.x/rwyl2kxvz8.html)。
 
 ## 定义翻译字符串
 
@@ -147,7 +147,7 @@ echo __('messages.welcome');
 
 如果指定的翻译字符串不存在，`__` 函数会返回翻译字符串的 key。因此，按上面的示例，当翻译字符串不存在时，`__` 函数会返回 `messages.welcome`。
 
-如果使用 [翻译字符串自身作为 key](#using-translation-strings-as-keys)，应该把字符串的默认翻译传给 `__` 函数：
+如果使用 翻译字符串自身作为 key，应该把字符串的默认翻译传给 `__` 函数：
 
 ```php
 echo __('I love programming.');
@@ -155,7 +155,7 @@ echo __('I love programming.');
 
 同样的，如果翻译字符串不存在，`__` 函数会返回传入的字符串 key。
 
-如果使用 [Blade 模板引擎](/docs/{{version}}/blade)，可以用 `{{ }}` 输出语法来显示翻译字符串：
+如果使用 [Blade 模板引擎](/topic/Laravel%2013.x/wevwmrz9l2.html)，可以用 `{{ }}` 输出语法来显示翻译字符串：
 
 ```blade
 {{ __('messages.welcome') }}
@@ -211,7 +211,7 @@ public function boot(): void
 'apples' => 'There is one apple|There are many apples',
 ```
 
-当然，使用 [翻译字符串作为 key](#using-translation-strings-as-keys) 时也支持复数化：
+当然，使用 翻译字符串作为 key 时也支持复数化：
 
 ```json
 {

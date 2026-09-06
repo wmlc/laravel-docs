@@ -279,7 +279,7 @@ php artisan make:mail OrderShipped
 
 一旦生成了可邮寄类，打开它我们就能查看其内容。可邮寄类的配置是在多个方法中完成的，包括 `envelope`、`content` 和 `attachments` 方法。
 
-`envelope` 方法返回一个 `Illuminate\Mail\Mailables\Envelope` 对象，该对象定义了邮件的主题，有时也包括收件人。`content` 方法返回一个 `Illuminate\Mail\Mailables\Content` 对象，该对象定义了将用于生成邮件内容的 [Blade 模板](/docs/{{version}}/blade)。
+`envelope` 方法返回一个 `Illuminate\Mail\Mailables\Envelope` 对象，该对象定义了邮件的主题，有时也包括收件人。`content` 方法返回一个 `Illuminate\Mail\Mailables\Content` 对象，该对象定义了将用于生成邮件内容的 [Blade 模板](/topic/Laravel%2013.x/wevwmrz9l2.html)。
 
 ### 配置发件人
 
@@ -337,7 +337,7 @@ return new Envelope(
 
 ### 配置视图
 
-在可邮寄类的 `content` 方法中，你可以定义 `view`，即渲染邮件内容时应使用的模板。由于每封邮件通常都使用 [Blade 模板](/docs/{{version}}/blade)来渲染内容，在构建邮件的 HTML 时，你可以充分利用 Blade 模板引擎的全部能力与便利：
+在可邮寄类的 `content` 方法中，你可以定义 `view`，即渲染邮件内容时应使用的模板。由于每封邮件通常都使用 [Blade 模板](/topic/Laravel%2013.x/wevwmrz9l2.html)来渲染内容，在构建邮件的 HTML 时，你可以充分利用 Blade 模板引擎的全部能力与便利：
 
 ```php
 /**
@@ -518,7 +518,7 @@ public function attachments(): array
 
 #### 从磁盘附加文件
 
-如果你已将文件存储在某个[文件系统磁盘](/docs/{{version}}/filesystem)上，可以使用 `fromStorage` 附件方法将其附加到邮件中：
+如果你已将文件存储在某个[文件系统磁盘](/topic/Laravel%2013.x/qk9428ovw1.html)上，可以使用 `fromStorage` 附件方法将其附加到邮件中：
 
 ```php
 /**
@@ -657,7 +657,7 @@ public function attachments(): array
 }
 ```
 
-当然，附件数据也可能存储在 Amazon S3 等远程文件存储服务上。因此，Laravel 也允许你根据应用某个[文件系统磁盘](/docs/{{version}}/filesystem)上存储的数据来生成附件实例：
+当然，附件数据也可能存储在 Amazon S3 等远程文件存储服务上。因此，Laravel 也允许你根据应用某个[文件系统磁盘](/topic/Laravel%2013.x/qk9428ovw1.html)上存储的数据来生成附件实例：
 
 ```php
 // 从默认磁盘上的文件创建附件...
@@ -927,7 +927,7 @@ Mail::mailer('postmark')
 
 #### 将邮件消息加入队列
 
-由于发送电子邮件会对应用的响应时间产生负面影响，许多开发者选择将电子邮件消息加入队列以便在后台发送。Laravel 通过其内置的[统一队列 API](/docs/{{version}}/queues)让这一切变得简单。要将邮件消息加入队列，可以在指定消息收件人后，使用 `Mail` Facade 上的 `queue` 方法：
+由于发送电子邮件会对应用的响应时间产生负面影响，许多开发者选择将电子邮件消息加入队列以便在后台发送。Laravel 通过其内置的[统一队列 API](/topic/Laravel%2013.x/wevwmkz9l2.html)让这一切变得简单。要将邮件消息加入队列，可以在指定消息收件人后，使用 `Mail` Facade 上的 `queue` 方法：
 
 ```php
 Mail::to($request->user())
@@ -936,7 +936,7 @@ Mail::to($request->user())
     ->queue(new OrderShipped($order));
 ```
 
-该方法会自动负责将任务推入队列，从而使消息在后台发送。在使用此功能之前，你需要先[配置队列](/docs/{{version}}/queues)。
+该方法会自动负责将任务推入队列，从而使消息在后台发送。在使用此功能之前，你需要先[配置队列](/topic/Laravel%2013.x/wevwmkz9l2.html)。
 
 #### 延迟消息队列
 
@@ -1030,7 +1030,7 @@ class OrderShipped extends Mailable implements ShouldQueue
 ```
 
 > [!NOTE]
-> 要了解如何规避这些问题，请查阅有关[队列任务与数据库事务](/docs/{{version}}/queues#jobs-and-database-transactions)的文档。
+> 要了解如何规避这些问题，请查阅有关[队列任务与数据库事务](/topic/Laravel%2013.x/wevwmkz9l2.html)的文档。
 
 #### 队列邮件失败
 
@@ -1366,13 +1366,13 @@ Mail::assertNotOutgoing(function (OrderShipped $mail) use ($order) {
 
 #### Log 驱动
 
-`log` 邮件驱动不会真正发送邮件，而是将所有邮件消息写入日志文件以供检查。通常，这个驱动只会在本地开发期间使用。有关按环境配置应用的更多信息，请参阅[配置文档](/docs/{{version}}/configuration#environment-configuration)。
+`log` 邮件驱动不会真正发送邮件，而是将所有邮件消息写入日志文件以供检查。通常，这个驱动只会在本地开发期间使用。有关按环境配置应用的更多信息，请参阅[配置文档](/topic/Laravel%2013.x/3dykqpoyl0.html)。
 
 #### HELO / Mailtrap / Mailpit
 
 或者，你可以使用 [HELO](https://usehelo.com) 或 [Mailtrap](https://mailtrap.io) 这类服务，配合 `smtp` 驱动，将邮件消息发送到一个 "虚拟" 邮箱，然后你就可以在真实的邮件客户端中查看它们。这种方法的优点是，你可以实际在 Mailtrap 的消息查看器中检查最终的邮件。
 
-如果你使用的是 [Laravel Sail](/docs/{{version}}/sail)，可以使用 [Mailpit](https://github.com/axllent/mailpit) 预览你的消息。当 Sail 运行时，你可以在以下地址访问 Mailpit 界面：`http://localhost:8025`。
+如果你使用的是 [Laravel Sail](/topic/Laravel%2013.x/e296opw9q7.html)，可以使用 [Mailpit](https://github.com/axllent/mailpit) 预览你的消息。当 Sail 运行时，你可以在以下地址访问 Mailpit 界面：`http://localhost:8025`。
 
 #### 使用全局 `to` 地址
 
@@ -1396,7 +1396,7 @@ public function boot(): void
 
 ## 事件
 
-在发送邮件消息时，Laravel 会派发两个事件（event）。`MessageSending` 事件在消息发送之前派发，而 `MessageSent` 事件在消息发送之后派发。要注意，这些事件是在邮件*发送*时派发的，而不是在入队时。你可以在应用中为这些事件创建[事件监听器](/docs/{{version}}/events)：
+在发送邮件消息时，Laravel 会派发两个事件（event）。`MessageSending` 事件在消息发送之前派发，而 `MessageSent` 事件在消息发送之后派发。要注意，这些事件是在邮件*发送*时派发的，而不是在入队时。你可以在应用中为这些事件创建[事件监听器](/topic/Laravel%2013.x/x3vo0l4vm1.html)：
 
 ```php
 use Illuminate\Mail\Events\MessageSending;
