@@ -1,12 +1,21 @@
 # Facades
 
+- [简介](#introduction)
+- [何时使用 Facade](#when-to-use-facades)
+    - [Facade 与依赖注入](#facades-vs-dependency-injection)
+    - [Facade 与辅助函数](#facades-vs-helper-functions)
+- [Facade 的工作原理](#how-facades-work)
+- [实时 Facade](#real-time-facades)
+- [Facade 类参考](#facade-class-reference)
+
+<a name="introduction"></a>
 ## 简介
 
-在 Laravel 文档各处，你都会看到通过"facades"（Facade）与 Laravel 功能交互的代码示例。Facade 为应用[服务容器](/topic/Laravel%2013.x/x3vo054vm1.html)中可用的类提供了一个"静态"接口。Laravel 自带了许多 Facade，提供了对 Laravel 几乎所有功能的访问。
+在 Laravel 文档中，你会看到许多通过 "facade" 与 Laravel 功能交互的代码示例。Facade 为应用服务容器（Service Container）中可用的类提供了 "静态" 接口。Laravel 自带许多 facade，几乎可以访问 Laravel 的全部功能。
 
-Laravel 的 Facade 充当服务容器中底层类的"静态代理"（static proxies），在提供更简洁、更具表现力的语法优势的同时，比传统的静态方法更具可测试性与灵活性。如果你还不完全理解 Facade 的工作原理，完全不必担心——先跟着往下学，继续了解 Laravel 即可。
+Laravel 的 facade 充当服务容器中底层类的 "静态代理"，在提供简洁、富有表现力的语法优势的同时，比传统静态方法更具可测试性与灵活性。如果你不完全理解 facade 的工作原理也完全没问题——顺其自然，继续学习 Laravel 即可。
 
-Laravel 的所有 Facade 都定义在 `Illuminate\Support\Facades` 命名空间中。因此，我们可以像下面这样轻松访问某个 Facade：
+Laravel 的所有 facade 都定义在 `Illuminate\Support\Facades` 命名空间中。因此，我们可以像下面这样轻松访问某个 facade：
 
 ```php
 use Illuminate\Support\Facades\Cache;
@@ -17,13 +26,14 @@ Route::get('/cache', function () {
 });
 ```
 
-在 Laravel 文档中，许多示例都会使用 Facade 来演示框架的各种功能。
+在 Laravel 文档中，许多示例都会使用 facade 来演示框架的各种功能。
 
+<a name="helper-functions"></a>
 #### 辅助函数
 
-为了配合 Facade，Laravel 还提供了多种全局"辅助函数"（helper functions），让你与 Laravel 常用功能交互时更加轻松。你可能会用到的常见辅助函数有 `view`、`response`、`url`、`config` 等。Laravel 提供的每个辅助函数都在其对应功能的文档中有说明；不过，完整的列表可以在专门的[辅助函数文档](/topic/Laravel%2013.x/569x5d8yep.html)中查看。
+为了补充 facade，Laravel 提供了一系列全局 "辅助函数"，让你更轻松地与 Laravel 常用功能交互。你可能会用到的一些常见辅助函数包括 `view`、`response`、`url`、`config` 等。Laravel 提供的每个辅助函数都在对应的功能文档中有所说明；完整的列表可在专门的[辅助函数文档](/docs/{{version}}/helpers)中查看。
 
-例如，与其使用 `Illuminate\Support\Facades\Response` Facade 来生成 JSON 响应，我们可以直接使用 `response` 函数。由于辅助函数是全局可用的，你无需导入任何类即可使用它们：
+例如，我们不必使用 `Illuminate\Support\Facades\Response` facade 来生成 JSON 响应，而只需使用 `response` 函数。由于辅助函数是全局可用的，你无需导入任何类即可使用它们：
 
 ```php
 use Illuminate\Support\Facades\Response;
@@ -41,17 +51,19 @@ Route::get('/users', function () {
 });
 ```
 
+<a name="when-to-use-facades"></a>
 ## 何时使用 Facade
 
-Facade 有许多好处。它们提供了简洁好记的语法，让你无需记住那些必须手动注入或配置的长类名，就能使用 Laravel 的功能。此外，由于 Facade 独特地利用了 PHP 的动态方法，它们也很易于测试。
+Facade 有许多优点。它们提供简洁、易记的语法，让你无需记住必须手动注入或配置的长类名即可使用 Laravel 的功能。此外，由于它们独特地利用了 PHP 的动态方法，因此易于测试。
 
-不过，使用 Facade 时必须有所注意。Facade 最主要的危险是类的"职责蔓延"（scope creep）。由于 Facade 使用起来非常方便且不需要注入，你的类很容易在不知不觉中不断膨胀，并在单个类中使用大量 Facade。而如果采用依赖注入，庞大的构造函数会直观地提醒你类已经过大，从而降低这种可能性。因此，在使用 Facade 时，要特别注意类的规模，使其职责范围保持精简。如果你的类变得过于庞大，可以考虑将其拆分为多个更小的类。
+不过，使用 facade 时仍需谨慎。Facade 的主要隐患是类的 "职责蔓延"。由于 facade 使用起来非常简便且无需注入，你很容易让类不断膨胀，并在单个类中使用大量 facade。在使用依赖注入时，庞大的构造函数会给视觉上的反馈，提示你的类过大，从而缓解这种可能的隐患。因此，使用 facade 时请特别注意类的规模，使其职责范围保持精简。如果类变得过大，考虑将其拆分为多个更小的类。
 
-### Facade 与依赖注入的对比
+<a name="facades-vs-dependency-injection"></a>
+### Facade 与依赖注入
 
-依赖注入的主要好处之一，是能够替换被注入类的实现。这在测试时很有用，因为你可以注入一个 mock 或 stub，并断言 stub 上调用了各种方法。
+依赖注入的主要优点之一是能够替换被注入类的实现。这在测试时很有用，因为你可以注入一个 mock 或 stub，并断言在 stub 上调用了各种方法。
 
-通常，我们无法对一个真正静态的类方法进行 mock 或 stub。然而，由于 Facade 使用动态方法将方法调用代理到从服务容器中解析出来的对象，我们实际上可以像测试一个被注入的类实例那样测试 Facade。例如，给定以下路由：
+通常，无法对真正的静态类方法进行 mock 或 stub。不过，由于 facade 使用动态方法将方法调用代理到从服务容器（Service Container）解析出来的对象，我们实际上可以像测试被注入的类实例一样测试 facade。例如，给定以下路由：
 
 ```php
 use Illuminate\Support\Facades\Cache;
@@ -61,7 +73,7 @@ Route::get('/cache', function () {
 });
 ```
 
-使用 Laravel 的 Facade 测试方法，我们可以编写如下测试，来验证 `Cache::get` 方法确实以我们期望的参数被调用：
+使用 Laravel 的 facade 测试方法，我们可以编写以下测试来验证 `Cache::get` 方法是否以我们期望的参数被调用：
 
 ```php tab=Pest
 use Illuminate\Support\Facades\Cache;
@@ -81,7 +93,7 @@ test('basic example', function () {
 use Illuminate\Support\Facades\Cache;
 
 /**
- * 一个基础的功能测试示例。
+ * 一个基础功能测试示例。
  */
 public function test_basic_example(): void
 {
@@ -95,9 +107,10 @@ public function test_basic_example(): void
 }
 ```
 
-### Facade 与辅助函数的对比
+<a name="facades-vs-helper-functions"></a>
+### Facade 与辅助函数
 
-除了 Facade 之外，Laravel 还包含多种"辅助"函数，可以完成生成视图、触发事件、派发任务、发送 HTTP 响应等常见任务。许多辅助函数与对应的 Facade 功能相同。例如，下面这处 Facade 调用与辅助函数调用是等价的：
+除了 facade 之外，Laravel 还包含多种 "辅助" 函数，可执行生成视图、触发事件、派发任务或发送 HTTP 响应等常见任务。许多辅助函数与对应的 facade 执行相同的功能。例如，以下 facade 调用与辅助函数调用是等价的：
 
 ```php
 return Illuminate\Support\Facades\View::make('profile');
@@ -105,7 +118,7 @@ return Illuminate\Support\Facades\View::make('profile');
 return view('profile');
 ```
 
-Facade 与辅助函数之间在实践上没有任何区别。使用辅助函数时，你依然可以像测试对应的 Facade 那样测试它们。例如，给定以下路由：
+Facade 与辅助函数之间没有任何实际的区别。使用辅助函数时，你仍可以像测试对应 facade 那样测试它们。例如，给定以下路由：
 
 ```php
 Route::get('/cache', function () {
@@ -113,13 +126,13 @@ Route::get('/cache', function () {
 });
 ```
 
-`cache` 辅助函数会调用 `Cache` Facade 底层类的 `get` 方法。因此，即使我们使用的是辅助函数，依然可以编写如下测试，来验证该方法确实以我们期望的参数被调用：
+`cache` 辅助函数会调用 `Cache` facade 底层类上的 `get` 方法。因此，即使我们使用的是辅助函数，也可以编写以下测试来验证该方法是否以我们期望的参数被调用：
 
 ```php
 use Illuminate\Support\Facades\Cache;
 
 /**
- * 一个基础的功能测试示例。
+ * 一个基础功能测试示例。
  */
 public function test_basic_example(): void
 {
@@ -133,11 +146,12 @@ public function test_basic_example(): void
 }
 ```
 
+<a name="how-facades-work"></a>
 ## Facade 的工作原理
 
-在 Laravel 应用中，Facade 是一个类，它提供对容器中某个对象的访问。实现这一机制的逻辑位于 `Facade` 类中。Laravel 自带的 Facade，以及你创建的任何自定义 Facade，都会继承基础的 `Illuminate\Support\Facades\Facade` 类。
+在 Laravel 应用中，facade 是一个提供对容器中对象访问的类。实现这一机制的代码位于 `Facade` 类中。Laravel 的 facade 以及你创建的任何自定义 facade，都会继承基础的 `Illuminate\Support\Facades\Facade` 类。
 
-`Facade` 基类利用 `__callStatic()` 魔术方法，将来自 Facade 的调用延迟转发到从容器中解析出来的对象。在下面的例子中，代码调用了 Laravel 的缓存系统。粗略一看这段代码，你可能会以为是在 `Cache` 类上调用静态的 `get` 方法：
+`Facade` 基类利用 `__callStatic()` 魔术方法，将来自 facade 的调用延迟到从容器解析出的对象上。在下面的示例中，调用了 Laravel 缓存系统。粗略看这段代码，有人可能会以为是在 `Cache` 类上调用静态的 `get` 方法：
 
 ```php
 <?php
@@ -161,15 +175,15 @@ class UserController extends Controller
 }
 ```
 
-注意，在文件顶部我们"导入"了 `Cache` Facade。这个 Facade 充当访问 `Illuminate\Contracts\Cache\Factory` 接口底层实现的代理。我们使用 Facade 发起的任何调用，都会被传递到 Laravel 缓存服务的底层实例。
+注意，在文件顶部我们 "导入" 了 `Cache` facade。该 facade 充当访问 `Illuminate\Contracts\Cache\Factory` 接口底层实现的代理。我们使用 facade 发起的任何调用都将被传递给 Laravel 缓存服务的底层实例。
 
-如果我们查看那个 `Illuminate\Support\Facades\Cache` 类，你会发现其中并没有静态方法 `get`：
+如果我们查看 `Illuminate\Support\Facades\Cache` 类，会发现其中并没有静态方法 `get`：
 
 ```php
 class Cache extends Facade
 {
     /**
-     * 获取该组件的注册名称。
+     * 获取已注册组件的名称。
      */
     protected static function getFacadeAccessor(): string
     {
@@ -178,11 +192,12 @@ class Cache extends Facade
 }
 ```
 
-相反，`Cache` Facade 继承了基础的 `Facade` 类，并定义了 `getFacadeAccessor()` 方法。这个方法的作用是返回一个服务容器绑定的名称。当用户引用 `Cache` Facade 上的任意静态方法时，Laravel 会从[服务容器](/topic/Laravel%2013.x/x3vo054vm1.html)中解析出 `cache` 绑定，并对该对象运行所请求的方法（在本例中是 `get`）。
+相反，`Cache` facade 继承了基础的 `Facade` 类，并定义了 `getFacadeAccessor()` 方法。该方法的作用是返回服务容器（Service Container）绑定的名称。当用户引用 `Cache` facade 上的任意静态方法时，Laravel 会从服务容器（Service Container）中解析 `cache` 绑定，并对该对象运行所请求的方法（在本例中为 `get`）。
 
+<a name="real-time-facades"></a>
 ## 实时 Facade
 
-使用实时 Facade（real-time facades），你可以把应用中的任意类当作 Facade 来使用。为了说明其用法，我们先来看一段不使用实时 Facade 的代码。例如，假设我们的 `Podcast` 模型有一个 `publish` 方法。但是，要发布播客，我们需要注入一个 `Publisher` 实例：
+使用实时 facade，你可以将应用中的任意类当作 facade 来对待。为了说明其用法，我们先来看一段不使用实时 facade 的代码。例如，假设我们的 `Podcast` 模型有一个 `publish` 方法。但要发布播客，我们需要注入一个 `Publisher` 实例：
 
 ```php
 <?php
@@ -206,7 +221,7 @@ class Podcast extends Model
 }
 ```
 
-向方法中注入 publisher 实现，让我们能够轻松地对方法进行隔离测试，因为我们可以 mock 被注入的 publisher。但这要求我们在每次调用 `publish` 方法时都必须传入一个 publisher 实例。使用实时 Facade，我们可以保持同样的可测试性，同时又无需显式传入 `Publisher` 实例。要生成实时 Facade，只需在导入类的命名空间前加上 `Facades` 前缀：
+将 publisher 实现注入到方法中，使我们可以轻松地对方法进行隔离测试，因为我们可以 mock 被注入的 publisher。但这要求每次调用 `publish` 方法时都要传入一个 publisher 实例。使用实时 facade，我们可以在不需要显式传入 `Publisher` 实例的情况下，保持同样的可测试性。要生成实时 facade，请在导入类的命名空间前加上 `Facades` 前缀：
 
 ```php
 <?php
@@ -233,7 +248,7 @@ class Podcast extends Model
 }
 ```
 
-使用实时 Facade 时，publisher 实现会被从服务容器中解析出来，解析所用的是 `Facades` 前缀之后的接口或类名部分。在测试时，我们可以使用 Laravel 内置的 Facade 测试辅助函数来 mock 这个方法的调用：
+使用实时 facade 时，publisher 实现会通过 `Facades` 前缀之后的接口或类名部分，从服务容器（Service Container）中解析出来。测试时，我们可以使用 Laravel 内置的 facade 测试辅助函数来 mock 此方法调用：
 
 ```php tab=Pest
 <?php
@@ -281,9 +296,12 @@ class PodcastTest extends TestCase
 }
 ```
 
+<a name="facade-class-reference"></a>
 ## Facade 类参考
 
-下面列出了每个 Facade 及其底层类。这是一个很有用的工具，可以快速深入某个 Facade 根的 API 文档。在适用的情况下，还包含了[服务容器绑定](/topic/Laravel%2013.x/x3vo054vm1.html)的键。
+下方列出了每个 facade 及其底层类。这是一个快速深入查看给定 facade 根 API 文档的有用工具。适用的地方还包含了服务容器（Service Container）绑定键。
+
+<div class="overflow-auto">
 
 | Facade | 类 | 服务容器绑定 |
 | --- | --- | --- |
@@ -343,3 +361,5 @@ class PodcastTest extends TestCase
 | View (Instance) | [Illuminate\View\View](https://api.laravel.com/docs/{{version}}/Illuminate/View/View.html) | &nbsp; |
 | View | [Illuminate\View\Factory](https://api.laravel.com/docs/{{version}}/Illuminate/View/Factory.html) | `view` |
 | Vite | [Illuminate\Foundation\Vite](https://api.laravel.com/docs/{{version}}/Illuminate/Foundation/Vite.html) | &nbsp; |
+
+</div>

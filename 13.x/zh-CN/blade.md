@@ -1,10 +1,58 @@
 # Blade 模板
 
+- [简介](#introduction)
+    - [使用 Livewire 强化 Blade](#supercharging-blade-with-livewire)
+- [显示数据](#displaying-data)
+    - [HTML 实体编码](#html-entity-encoding)
+    - [Blade 与 JavaScript 框架](#blade-and-javascript-frameworks)
+- [Blade 指令](#blade-directives)
+    - [If 语句](#if-statements)
+    - [Switch 语句](#switch-statements)
+    - [循环](#loops)
+    - [循环变量](#the-loop-variable)
+    - [条件类](#conditional-classes)
+    - [附加属性](#additional-attributes)
+    - [包含子视图](#including-subviews)
+    - [`@once` 指令](#the-once-directive)
+    - [原生 PHP](#raw-php)
+    - [字体](#fonts)
+    - [注释](#comments)
+- [组件](#components)
+    - [渲染组件](#rendering-components)
+    - [索引组件](#index-components)
+    - [向组件传递数据](#passing-data-to-components)
+    - [组件属性](#component-attributes)
+    - [保留关键字](#reserved-keywords)
+    - [插槽](#slots)
+    - [内联组件视图](#inline-component-views)
+    - [动态组件](#dynamic-components)
+    - [手动注册组件](#manually-registering-components)
+- [匿名组件](#anonymous-components)
+    - [匿名索引组件](#anonymous-index-components)
+    - [数据属性 / 特性](#data-properties-attributes)
+    - [访问父级数据](#accessing-parent-data)
+    - [匿名组件路径](#anonymous-component-paths)
+- [构建布局](#building-layouts)
+    - [使用组件构建布局](#layouts-using-components)
+    - [使用模板继承构建布局](#layouts-using-template-inheritance)
+- [表单](#forms)
+    - [CSRF 字段](#csrf-field)
+    - [方法字段](#method-field)
+    - [验证错误](#validation-errors)
+- [栈](#stacks)
+- [服务注入](#service-injection)
+- [渲染内联 Blade 模板](#rendering-inline-blade-templates)
+- [渲染 Blade 片段](#rendering-blade-fragments)
+- [扩展 Blade](#extending-blade)
+    - [自定义 Echo 处理器](#custom-echo-handlers)
+    - [自定义 If 语句](#custom-if-statements)
+
+<a name="introduction"></a>
 ## 简介
 
-Blade 是 Laravel 内置的简洁而强大的模板引擎。与一些 PHP 模板引擎不同，Blade 不限制你在模板中使用原生 PHP 代码。事实上，所有 Blade 模板都会被编译为原生 PHP 代码并缓存起来，直到它们被修改，这意味着 Blade 基本上不会给你的应用带来任何额外开销。Blade 模板文件使用 `.blade.php` 文件扩展名，通常存放在 `resources/views` 目录中。
+Blade 是 Laravel 内置的简洁而强大的模板引擎。与某些 PHP 模板引擎不同，Blade 并不限制你在模板中使用纯 PHP 代码。实际上，所有 Blade 模板都会被编译为纯 PHP 代码并缓存，直到被修改，这意味着 Blade 对应用程序几乎零开销。Blade 模板文件使用 `.blade.php` 文件扩展名，通常存放在 `resources/views` 目录中。
 
-你可以在路由或控制器中使用全局的 `view` 辅助函数返回 Blade 视图。当然，正如 [视图](/topic/Laravel%2013.x/m892gz6y01.html) 文档中提到的，你可以通过 `view` 辅助函数的第二个参数将数据传递给 Blade 视图：
+Blade 视图可以通过全局 `view` 辅助函数从路由或控制器返回。当然，正如 [视图](/docs/{{version}}/views) 文档中所述，可以使用 `view` 辅助函数的第二个参数将数据传递给 Blade 视图：
 
 ```php
 Route::get('/', function () {
@@ -12,13 +60,15 @@ Route::get('/', function () {
 });
 ```
 
-### 用 Livewire 增强 Blade
+<a name="supercharging-blade-with-livewire"></a>
+### 使用 Livewire 强化 Blade
 
-想让你的 Blade 模板更进一步，轻松构建动态界面吗？来看看 [Laravel Livewire](https://livewire.laravel.com)。Livewire 允许你编写带有动态功能的 Blade 组件，这些功能通常只能通过 React、Svelte 或 Vue 等前端框架实现，为构建现代化、响应式前端提供了一种极佳的方式，无需承担许多 JavaScript 框架的复杂性、客户端渲染或构建步骤。
+想将你的 Blade 模板提升到更高水平，轻松构建动态界面吗？试试 [Laravel Livewire](https://livewire.laravel.com)。Livewire 让你编写 Blade 组件，并为其增强动态功能，这些功能通常只有通过 React、Svelte 或 Vue 等前端框架才能实现，提供了一种在不引入许多 JavaScript 框架的复杂性、客户端渲染或构建步骤的情况下构建现代、响应式前端的好方法。
 
+<a name="displaying-data"></a>
 ## 显示数据
 
-你可以通过将变量包裹在大括号中来显示传递给 Blade 视图的数据。例如，给定以下路由：
+可以通过将变量包裹在花括号中来显示传递给 Blade 视图的数据。例如，给定以下路由：
 
 ```php
 Route::get('/', function () {
@@ -26,24 +76,25 @@ Route::get('/', function () {
 });
 ```
 
-你可以像下面这样显示 `name` 变量的内容：
+你可以这样显示 `name` 变量的内容：
 
 ```blade
 Hello, {{ $name }}.
 ```
 
 > [!NOTE]
-> Blade 的 `{{ }}` 输出语句会自动经过 PHP 的 `htmlspecialchars` 函数处理，以防止 XSS 攻击。
+> Blade 的 `{{ }}` echo 语句会自动通过 PHP 的 `htmlspecialchars` 函数来防止 XSS 攻击。
 
-你可以显示传递给视图的变量内容，不仅限于此。你还可以输出任何 PHP 函数的结果。事实上，你可以在 Blade 输出语句中放入任何你想要的 PHP 代码：
+你不仅限于显示传递给视图的变量内容。你还可以 echo 任何 PHP 函数的结果。实际上，你可以在 Blade echo 语句中放入任何你想要的 PHP 代码：
 
 ```blade
 The current UNIX timestamp is {{ time() }}.
 ```
 
+<a name="html-entity-encoding"></a>
 ### HTML 实体编码
 
-默认情况下，Blade（以及 Laravel 的 `e` 函数）会对 HTML 实体进行双重编码。如果你想禁用双重编码，请在 `AppServiceProvider` 的 `boot` 方法中调用 `Blade::withoutDoubleEncoding` 方法：
+默认情况下，Blade（以及 Laravel 的 `e` 函数）会对 HTML 实体进行双重编码。如果你想禁用双重编码，可以从 `AppServiceProvider` 的 `boot` 方法中调用 `Blade::withoutDoubleEncoding` 方法：
 
 ```php
 <?php
@@ -56,7 +107,7 @@ use Illuminate\Support\ServiceProvider;
 class AppServiceProvider extends ServiceProvider
 {
     /**
-     * Bootstrap any application services.
+     * 引导任意应用服务。
      */
     public function boot(): void
     {
@@ -65,20 +116,22 @@ class AppServiceProvider extends ServiceProvider
 }
 ```
 
+<a name="displaying-unescaped-data"></a>
 #### 显示未转义的数据
 
-默认情况下，Blade 的 `{{ }}` 语句会自动经过 PHP 的 `htmlspecialchars` 函数处理，以防止 XSS 攻击。如果你不希望数据被转义，可以使用以下语法：
+默认情况下，Blade `{{ }}` 语句会自动通过 PHP 的 `htmlspecialchars` 函数以防止 XSS 攻击。如果你不想让你的数据被转义，可以使用以下语法：
 
 ```blade
 Hello, {!! $name !!}.
 ```
 
 > [!WARNING]
-> 在输出用户提供的内容时，请务必小心。通常应使用带转义的双大括号语法来显示用户提供的数据，以防止 XSS 攻击。
+> 在 echo 由应用程序用户提供的信息内容时要非常小心。在显示用户提供的信息时，通常应使用转义的双花括号语法以防止 XSS 攻击。
 
+<a name="blade-and-javascript-frameworks"></a>
 ### Blade 与 JavaScript 框架
 
-由于许多 JavaScript 框架也使用「大括号」来指示某个表达式应在浏览器中显示，你可以使用 `@` 符号告知 Blade 渲染引擎某个表达式应保持原样。例如：
+由于许多 JavaScript 框架也使用"花括号"来指示某个表达式应在浏览器中显示，你可以使用 `@` 符号告知 Blade 渲染引擎某个表达式应保持原样。例如：
 
 ```blade
 <h1>Laravel</h1>
@@ -86,21 +139,22 @@ Hello, {!! $name !!}.
 Hello, @{{ name }}.
 ```
 
-在这个例子中，`@` 符号会被 Blade 移除；但 `{{ name }}` 表达式会保持不变，从而允许它由你的 JavaScript 框架进行渲染。
+在此示例中，`@` 符号会被 Blade 移除；然而，`{{ name }}` 表达式将保持不被 Blade 引擎处理，从而允许它由你的 JavaScript 框架渲染。
 
-`@` 符号也可以用来转义 Blade 指令：
+`@` 符号也可用于转义 Blade 指令：
 
 ```blade
-{{-- Blade template --}}
+{{-- Blade 模板 --}}
 @@if()
 
-<!-- HTML output -->
+<!-- HTML 输出 -->
 @if()
 ```
 
+<a name="rendering-json"></a>
 #### 渲染 JSON
 
-有时你可能希望将一个数组传递给视图，并将其渲染为 JSON 以初始化一个 JavaScript 变量。例如：
+有时你可能会向视图传递一个数组，意图将其渲染为 JSON 以便初始化 JavaScript 变量。例如：
 
 ```php
 <script>
@@ -108,7 +162,7 @@ Hello, @{{ name }}.
 </script>
 ```
 
-不过，你可以使用 `Illuminate\Support\Js::from` 方法，而无需手动调用 `json_encode`。`from` 方法接受与 PHP 的 `json_encode` 函数相同的参数；但它会确保生成的 JSON 已正确转义，可以包含在 HTML 引号内。`from` 方法会返回一个 `JSON.parse` 的 JavaScript 语句字符串，用于将给定的对象或数组转换为有效的 JavaScript 对象：
+不过，你不必手动调用 `json_encode`，可以使用 `Illuminate\Support\Js::from` 方法。`from` 方法接受与 PHP 的 `json_encode` 函数相同的参数；但不同之处在于，它会确保生成的 JSON 已被正确转义，以便包含在 HTML 引号中。`from` 方法将返回一个 `JSON.parse` JavaScript 语句字符串，该语句会将给定对象或数组转换为有效的 JavaScript 对象：
 
 ```blade
 <script>
@@ -116,7 +170,7 @@ Hello, @{{ name }}.
 </script>
 ```
 
-最新版 Laravel 应用骨架包含一个 `Js` Facade，可在 Blade 模板内方便地访问此功能：
+Laravel 应用骨架的最新版本包含一个 `Js` facade，它让你在 Blade 模板中方便地访问此功能：
 
 ```blade
 <script>
@@ -125,11 +179,12 @@ Hello, @{{ name }}.
 ```
 
 > [!WARNING]
-> 你应仅使用 `Js::from` 方法将现有变量渲染为 JSON。Blade 模板基于正则表达式，尝试向该指令传递复杂表达式可能会导致意外失败。
+> 你应仅使用 `Js::from` 方法将现有变量渲染为 JSON。Blade 模板基于正则表达式，尝试将复杂表达式传递给该指令可能会导致意外的失败。
 
+<a name="the-at-verbatim-directive"></a>
 #### `@verbatim` 指令
 
-如果模板中有大段区域用于显示 JavaScript 变量，可以将 HTML 包裹在 `@verbatim` 指令中，这样就无需在每个 Blade 输出语句前添加 `@` 符号：
+如果你在模板的大部分区域显示 JavaScript 变量，可以将 HTML 包裹在 `@verbatim` 指令中，这样就不必在每个 Blade echo 语句前加 `@` 符号：
 
 ```blade
 @verbatim
@@ -139,13 +194,15 @@ Hello, @{{ name }}.
 @endverbatim
 ```
 
+<a name="blade-directives"></a>
 ## Blade 指令
 
-除了模板继承和数据显示之外，Blade 还为常见的 PHP 控制结构（如条件语句和循环）提供了便捷的快捷方式。这些快捷方式提供了一种非常简洁的方式来处理 PHP 控制结构，同时仍然与对应的 PHP 写法保持一致。
+除了模板继承和显示数据之外，Blade 还为常见的 PHP 控制结构（如条件语句和循环）提供了便捷的快捷方式。这些快捷方式提供了一种非常简洁、精炼的方式来处理 PHP 控制结构，同时与 PHP 中的对应写法保持熟悉。
 
-### if 语句
+<a name="if-statements"></a>
+### If 语句
 
-你可以使用 `@if`、`@elseif`、`@else` 和 `@endif` 指令来构造 `if` 语句。这些指令的功能与对应的 PHP 语句完全相同：
+你可以使用 `@if`、`@elseif`、`@else` 和 `@endif` 指令来构造 `if` 语句。这些指令的功能与其 PHP 对应写法完全相同：
 
 ```blade
 @if (count($records) === 1)
@@ -165,69 +222,72 @@ Hello, @{{ name }}.
 @endunless
 ```
 
-除了上面讨论的条件指令外，`@isset` 和 `@empty` 指令还可以用作对应 PHP 函数的便捷快捷方式：
+除了已经讨论过的条件指令之外，`@isset` 和 `@empty` 指令可作为对应 PHP 函数的便捷快捷方式：
 
 ```blade
 @isset($records)
-    // $records is defined and is not null...
+    // $records 已定义且不为 null...
 @endisset
 
 @empty($records)
-    // $records is "empty"...
+    // $records 为"空"...
 @endempty
 ```
 
-#### 身份验证指令
+<a name="authentication-directives"></a>
+#### 认证指令
 
-`@auth` 和 `@guest` 指令可用于快速判断当前用户是否[已通过身份验证](/topic/Laravel%2013.x/xq9zrgjvdo.html)或是否为游客：
+`@auth` 和 `@guest` 指令可用于快速判断当前用户是否已[认证](/docs/{{version}}/authentication) 或是否为访客：
 
 ```blade
 @auth
-    // The user is authenticated...
+    // 用户已认证...
 @endauth
 
 @guest
-    // The user is not authenticated...
+    // 用户未认证...
 @endguest
 ```
 
-如果需要，你可以在使用 `@auth` 和 `@guest` 指令时指定要检查的身份验证看守器：
+如果需要，你可以指定在使用 `@auth` 和 `@guest` 指令时应检查的认证 guard：
 
 ```blade
 @auth('admin')
-    // The user is authenticated...
+    // 用户已认证...
 @endauth
 
 @guest('admin')
-    // The user is not authenticated...
+    // 用户未认证...
 @endguest
 ```
 
+<a name="environment-directives"></a>
 #### 环境指令
 
-你可以使用 `@production` 指令检查应用是否运行在生产环境中：
+你可以使用 `@production` 指令检查应用程序是否运行在生产环境中：
 
 ```blade
 @production
-    // Production specific content...
+    // 生产环境特定的内容...
 @endproduction
 ```
 
-或者，你可以使用 `@env` 指令判断应用是否运行在特定环境中：
+或者，你可以使用 `@env` 指令判断应用程序是否运行在特定的环境中：
 
 ```blade
 @env('staging')
-    // The application is running in "staging"...
+    // 应用程序运行在"staging"环境中...
 @endenv
 
 @env(['staging', 'production'])
-    // The application is running in "staging" or "production"...
+    // 应用程序运行在"staging"或"production"环境中...
 @endenv
 ```
 
-#### section 指令
+<a name="section-directives"></a>
+#### 区块指令
 
-你可以使用 `@hasSection` 指令判断模板继承的 section 是否包含内容：
+你可以使用 `@hasSection` 指令判断模板继承区块是否包含内容：
 
 ```blade
 @hasSection('navigation')
@@ -239,7 +299,7 @@ Hello, @{{ name }}.
 @endif
 ```
 
-你可以使用 `sectionMissing` 指令判断某个 section 是否没有内容：
+你可以使用 `sectionMissing` 指令判断某个区块是否没有内容：
 
 ```blade
 @sectionMissing('navigation')
@@ -249,9 +309,10 @@ Hello, @{{ name }}.
 @endif
 ```
 
-#### session 指令
+<a name="session-directives"></a>
+#### 会话指令
 
-`@session` 指令可用于判断 [session](/topic/Laravel%2013.x/2ev86noyor.html) 值是否存在。如果 session 值存在，则 `@session` 和 `@endsession` 指令之间的模板内容将被求值。在 `@session` 指令的内容中，你可以输出 `$value` 变量以显示 session 值：
+`@session` 指令可用于判断某个[会话](/docs/{{version}}/session) 值是否存在。如果会话值存在，则 `@session` 和 `@endsession` 指令之间的模板内容会被求值。在 `@session` 指令的内容中，你可以 echo `$value` 变量来显示会话值：
 
 ```blade
 @session('status')
@@ -261,9 +322,10 @@ Hello, @{{ name }}.
 @endsession
 ```
 
-#### context 指令
+<a name="context-directives"></a>
+#### 上下文指令
 
-`@context` 指令可用于判断 [context](/topic/Laravel%2013.x/xpv527gv86.html) 值是否存在。如果 context 值存在，则 `@context` 和 `@endcontext` 指令之间的模板内容将被求值。在 `@context` 指令的内容中，你可以输出 `$value` 变量以显示 context 值：
+`@context` 指令可用于判断某个[上下文](/docs/{{version}}/context) 值是否存在。如果上下文值存在，则 `@context` 和 `@endcontext` 指令之间的模板内容会被求值。在 `@context` 指令的内容中，你可以 echo `$value` 变量来显示上下文值：
 
 ```blade
 @context('canonical')
@@ -271,9 +333,10 @@ Hello, @{{ name }}.
 @endcontext
 ```
 
-### switch 语句
+<a name="switch-statements"></a>
+### Switch 语句
 
-可以使用 `@switch`、`@case`、`@break`、`@default` 和 `@endswitch` 指令来构造 switch 语句：
+可以使用 `@switch`、`@case`、`@break`、`@default` 和 `@endswitch` 指令构造 switch 语句：
 
 ```blade
 @switch($i)
@@ -290,9 +353,10 @@ Hello, @{{ name }}.
 @endswitch
 ```
 
+<a name="loops"></a>
 ### 循环
 
-除了条件语句外，Blade 还提供了与 PHP 循环结构对应的简单指令。同样，这些指令的功能与对应的 PHP 写法完全相同：
+除了条件语句之外，Blade 还为处理 PHP 的循环结构提供了简单的指令。同样，这些指令中的每一个都与其 PHP 对应写法功能完全相同：
 
 ```blade
 @for ($i = 0; $i < 10; $i++)
@@ -305,7 +369,7 @@ Hello, @{{ name }}.
 
 @forelse ($users as $user)
     <li>{{ $user->name }}</li>
-    @empty
+@empty
     <p>No users</p>
 @endforelse
 
@@ -315,9 +379,9 @@ Hello, @{{ name }}.
 ```
 
 > [!NOTE]
-> 在 `foreach` 循环中迭代时，你可以使用 循环变量 来获取有关循环的有用信息，例如当前是循环的第一次还是最后一次迭代。
+> 在 `foreach` 循环中迭代时，你可以使用[循环变量](#the-loop-variable) 来获取关于循环的宝贵信息，例如你是在第一次还是最后一次迭代中。
 
-在使用循环时，你还可以使用 `@continue` 和 `@break` 指令跳过当前迭代或终止循环：
+使用循环时，你也可以使用 `@continue` 和 `@break` 指令跳过当前迭代或结束循环：
 
 ```blade
 @foreach ($users as $user)
@@ -333,7 +397,7 @@ Hello, @{{ name }}.
 @endforeach
 ```
 
-你也可以在指令声明中加入继续或中断条件：
+你也可以将续行或中断条件包含在指令声明中：
 
 ```blade
 @foreach ($users as $user)
@@ -345,9 +409,10 @@ Hello, @{{ name }}.
 @endforeach
 ```
 
+<a name="the-loop-variable"></a>
 ### 循环变量
 
-在 `foreach` 循环迭代过程中，循环内部会提供一个 `$loop` 变量。该变量提供了一些有用的信息，例如当前循环索引以及当前是否为循环的第一次或最后一次迭代：
+在 `foreach` 循环中迭代时，循环内部会提供一个 `$loop` 变量。该变量提供对一些有用信息的访问，例如当前循环索引，以及这是否是循环的第一次或最后一次迭代：
 
 ```blade
 @foreach ($users as $user)
@@ -363,7 +428,7 @@ Hello, @{{ name }}.
 @endforeach
 ```
 
-如果你处于嵌套循环中，可以通过 `parent` 属性访问父级循环的 `$loop` 变量：
+如果你处于嵌套循环中，可以通过 `parent` 属性访问父循环的 `$loop` 变量：
 
 ```blade
 @foreach ($users as $user)
@@ -377,22 +442,27 @@ Hello, @{{ name }}.
 
 `$loop` 变量还包含许多其他有用的属性：
 
-| 属性              | 描述                                                |
+<div class="overflow-auto">
+
+| 属性 | 说明 |
 | ------------------ | ------------------------------------------------------ |
 | `$loop->index`     | 当前循环迭代的索引（从 0 开始）。 |
-| `$loop->iteration` | 当前循环迭代的次数（从 1 开始）。              |
-| `$loop->remaining` | 循环中剩余的迭代次数。                  |
-| `$loop->count`     | 所迭代数组中的元素总数。 |
-| `$loop->first`     | 当前是否为循环的第一次迭代。  |
-| `$loop->last`      | 当前是否为循环的最后一次迭代。   |
-| `$loop->even`      | 当前是否为偶数次迭代。    |
-| `$loop->odd`       | 当前是否为奇数次迭代。     |
-| `$loop->depth`     | 当前循环的嵌套层级。                 |
-| `$loop->parent`    | 在嵌套循环中，父级循环的循环变量。     |
+| `$loop->iteration` | 当前循环迭代（从 1 开始）。 |
+| `$loop->remaining` | 循环中剩余的迭代次数。 |
+| `$loop->count`     | 被迭代数组中的总项数。 |
+| `$loop->first`     | 是否为循环的第一次迭代。 |
+| `$loop->last`      | 是否为循环的最后一次迭代。 |
+| `$loop->even`      | 是否为循环的偶数次迭代。 |
+| `$loop->odd`       | 是否为循环的奇数次迭代。 |
+| `$loop->depth`     | 当前循环的嵌套层级。 |
+| `$loop->parent`    | 在嵌套循环中，父级的循环变量。 |
 
+</div>
+
+<a name="conditional-classes"></a>
 ### 条件类与样式
 
-`@class` 指令会按条件编译 CSS 类字符串。该指令接受一个类数组，数组的键包含你希望添加的类，值是一个布尔表达式。如果数组元素使用数字键，它将始终包含在渲染的类列表中：
+`@class` 指令有条件地编译一个 CSS 类字符串。该指令接受一个类数组，其中数组键包含你希望添加的类或类组合，而值为布尔表达式。如果数组元素具有数字键，它将始终包含在编译后的类列表中：
 
 ```blade
 @php
@@ -410,7 +480,7 @@ Hello, @{{ name }}.
 <span class="p-4 text-gray-500 bg-red"></span>
 ```
 
-同样地，`@style` 指令可以用于按条件向 HTML 元素添加内联 CSS 样式：
+同样地，`@style` 指令可用于有条件地向 HTML 元素添加内联 CSS 样式：
 
 ```blade
 @php
@@ -425,9 +495,10 @@ Hello, @{{ name }}.
 <span style="background-color: red; font-weight: bold;"></span>
 ```
 
+<a name="additional-attributes"></a>
 ### 附加属性
 
-为方便起见，你可以使用 `@checked` 指令轻松指示给定的 HTML checkbox 输入是否处于「选中」状态。如果提供的条件求值为 `true`，该指令将输出 `checked`：
+为方便起见，你可以使用 `@checked` 指令轻松指示某个给定的 HTML 复选框输入是否被"勾选"。如果提供的条件求值为 `true`，该指令会 echo `checked`：
 
 ```blade
 <input
@@ -438,7 +509,7 @@ Hello, @{{ name }}.
 />
 ```
 
-同样地，`@selected` 指令可用于指示给定的 select 选项是否应处于「选中」状态：
+同样地，`@selected` 指令可用于指示某个给定的 select 选项是否应被"选中"：
 
 ```blade
 <select name="version">
@@ -450,13 +521,13 @@ Hello, @{{ name }}.
 </select>
 ```
 
-此外，`@disabled` 指令可用于指示给定元素是否应处于「禁用」状态：
+此外，`@disabled` 指令可用于指示某个给定元素是否应被"禁用"：
 
 ```blade
 <button type="submit" @disabled($errors->isNotEmpty())>Submit</button>
 ```
 
-此外，`@readonly` 指令可用于指示给定元素是否应处于「只读」状态：
+还有，`@readonly` 指令可用于指示某个给定元素是否应被"只读"：
 
 ```blade
 <input
@@ -467,7 +538,7 @@ Hello, @{{ name }}.
 />
 ```
 
-此外，`@required` 指令可用于指示给定元素是否为「必填」：
+另外，`@required` 指令可用于指示某个给定元素是否应被"必填"：
 
 ```blade
 <input
@@ -478,36 +549,37 @@ Hello, @{{ name }}.
 />
 ```
 
+<a name="including-subviews"></a>
 ### 包含子视图
 
 > [!NOTE]
-> 虽然你可以自由使用 `@include` 指令，但 Blade 组件 提供了类似功能，并在数据与属性绑定等方面比 `@include` 指令具有更多优势。
+> 虽然你可以自由使用 `@include` 指令，但 Blade [组件](#components) 提供了类似的功能，并在数据绑定和属性绑定等方面提供了比 `@include` 指令更多的好处。
 
-Blade 的 `@include` 指令允许你从一个视图内包含另一个 Blade 视图。所有在父视图中可用的变量在包含的视图中同样可用：
+Blade 的 `@include` 指令允许你从另一个视图中包含一个 Blade 视图。父视图可用的所有变量都将对包含视图可用：
 
 ```blade
 <div>
     @include('shared.errors')
 
     <form>
-        <!-- Form Contents -->
+        <!-- 表单内容 -->
     </form>
 </div>
 ```
 
-尽管被包含的视图会继承父视图中所有可用的数据，你也可以传递一个额外的数据数组，这些数据将在被包含的视图中可用：
+尽管包含的视图会继承父视图中所有可用的数据，你也可以传递一个额外的数据数组，这些数据应可供包含视图使用：
 
 ```blade
 @include('view.name', ['status' => 'complete'])
 ```
 
-如果你尝试 `@include` 一个不存在的视图，Laravel 将抛出一个错误。如果你希望包含一个可能存在也可能不存在的视图，应使用 `@includeIf` 指令：
+如果你尝试 `@include` 一个不存在的视图，Laravel 会抛出一个错误。如果你想包含一个可能存在或不存在的视图，应使用 `@includeIf` 指令：
 
 ```blade
 @includeIf('view.name', ['status' => 'complete'])
 ```
 
-如果你希望在给定的布尔表达式求值为 `true` 或 `false` 时才 `@include` 一个视图，可以使用 `@includeWhen` 和 `@includeUnless` 指令：
+如果你想在某个布尔表达式求值为 `true` 或 `false` 时 `@include` 一个视图，可以使用 `@includeWhen` 和 `@includeUnless` 指令：
 
 ```blade
 @includeWhen($boolean, 'view.name', ['status' => 'complete'])
@@ -515,65 +587,67 @@ Blade 的 `@include` 指令允许你从一个视图内包含另一个 Blade 视�
 @includeUnless($boolean, 'view.name', ['status' => 'complete'])
 ```
 
-要从给定的视图数组中包含第一个存在的视图，可以使用 `includeFirst` 指令：
+要包含给定视图数组中存在的第一个视图，可以使用 `includeFirst` 指令：
 
 ```blade
 @includeFirst(['custom.admin', 'admin'], ['status' => 'complete'])
 ```
 
-如果你希望包含视图时不要从父视图继承任何变量，可以使用 `@includeIsolated` 指令。被包含的视图将只能访问你显式传入的变量：
+如果你想包含一个不继承父视图任何变量的视图，可以使用 `@includeIsolated` 指令。包含的视图只能访问你显式传递的变量：
 
 ```blade
 @includeIsolated('view.name', ['user' => $user])
 ```
 
 > [!WARNING]
-> 应避免在 Blade 视图中使用 `__DIR__` 和 `__FILE__` 常量，因为它们将指向已缓存、已编译视图的位置。
+> 你应避免在 Blade 视图中使用 `__DIR__` 和 `__FILE__` 常量，因为它们指向的是缓存的、已编译视图的位置。
 
+<a name="rendering-views-for-collections"></a>
 #### 为集合渲染视图
 
-你可以使用 Blade 的 `@each` 指令将循环与包含合二为一：
+你可以将循环和包含通过 Blade 的 `@each` 指令组合成一行：
 
 ```blade
 @each('view.name', $jobs, 'job')
 ```
 
-`@each` 指令的第一个参数是为数组或集合中的每个元素渲染的视图。第二个参数是你希望迭代的数组或集合，第三个参数是在视图中分配给当前迭代的变量名称。例如，如果你正在迭代一个 `jobs` 数组，通常希望在视图中以 `job` 变量访问每个 job。当前迭代的数组键在视图中以 `key` 变量提供。
+`@each` 指令的第一个参数是为数组或集合中的每个元素渲染的视图。第二个参数是你希望迭代的数组或集合，而第三个参数是将在视图中赋给当前迭代的变量名。因此，例如，如果你正在迭代一个 `jobs` 数组，通常你会希望在视图中作为 `job` 变量访问每个 job。当前迭代的数组键将在视图中作为 `key` 变量可用。
 
-你也可以向 `@each` 指令传入第四个参数，该参数指定当给定数组为空时将渲染的视图：
+你还可以向 `@each` 指令传递第四个参数。该参数决定当给定数组为空时将渲染的视图。
 
 ```blade
 @each('view.name', $jobs, 'job', 'view.empty')
 ```
 
 > [!WARNING]
-> 通过 `@each` 渲染的视图不会继承父视图中的变量。如果子视图需要这些变量，应改用 `@foreach` 和 `@include` 指令。
+> 通过 `@each` 渲染的视图不会继承父视图的变量。如果子视图需要这些变量，你应使用 `@foreach` 和 `@include` 指令代替。
 
+<a name="the-once-directive"></a>
 ### `@once` 指令
 
-`@once` 指令允许你定义一个仅在每次渲染周期内求值一次的模板片段。当需要使用 stacks 将某段 JavaScript 推送到页面的 head 时，这非常有用。例如，如果你在循环中渲染某个给定的 组件，你可能只希望在第一次渲染该组件时将该 JavaScript 推送到 head：
+`@once` 指令允许你定义模板中的一部分内容，在每个渲染周期中只会被求值一次。这对于使用[栈](#stacks) 将一段给定的 JavaScript 推送到页面的头部可能很有用。例如，如果你在一个循环中渲染一个给定的[组件](#components)，你可能希望只在组件第一次渲染时将 JavaScript 推送到头部：
 
 ```blade
 @once
     @push('scripts')
         <script>
-            // Your custom JavaScript...
+            // 你的自定义 JavaScript...
         </script>
     @endpush
 @endonce
 ```
 
-由于 `@once` 指令经常与 `@push` 或 `@prepend` 指令一起使用，`@pushOnce` 和 `@prependOnce` 指令已为你准备好以便使用：
+由于 `@once` 指令通常与 `@push` 或 `@prepend` 指令结合使用，因此提供了 `@pushOnce` 和 `@prependOnce` 指令以方便使用：
 
 ```blade
 @pushOnce('scripts')
     <script>
-        // Your custom JavaScript...
+        // 你的自定义 JavaScript...
     </script>
 @endPushOnce
 ```
 
-如果你从两个不同的 Blade 模板中推送重复内容，应向 `@pushOnce` 指令的第二个参数提供一个唯一标识符，以确保内容只渲染一次：
+如果你正在从两个不同的 Blade 模板推送重复的内容，应提供唯一标识符作为 `@pushOnce` 指令的第二个参数，以确保内容只被渲染一次：
 
 ```blade
 <!-- pie-chart.blade.php -->
@@ -587,9 +661,10 @@ Blade 的 `@include` 指令允许你从一个视图内包含另一个 Blade 视�
 @endPushOnce
 ```
 
+<a name="raw-php"></a>
 ### 原生 PHP
 
-在某些情况下，在视图中嵌入 PHP 代码非常有用。你可以使用 Blade 的 `@php` 指令在模板中执行一段原生 PHP 代码块：
+在某些情况下，将 PHP 代码嵌入到你的视图中很有用。你可以使用 Blade 的 `@php` 指令在模板中执行一段纯 PHP 代码：
 
 ```blade
 @php
@@ -597,25 +672,25 @@ Blade 的 `@include` 指令允许你从一个视图内包含另一个 Blade 视�
 @endphp
 ```
 
-或者，如果你只是想使用 PHP 来引入某个类，可以使用 `@use` 指令：
+或者，如果你只需要使用 PHP 来导入一个类，可以使用 `@use` 指令：
 
 ```blade
 @use('App\Models\Flight')
 ```
 
-可以为 `@use` 指令提供第二个参数为引入的类设置别名：
+可以向 `@use` 指令提供第二个参数来为导入的类设置别名：
 
 ```blade
 @use('App\Models\Flight', 'FlightModel')
 ```
 
-如果同一命名空间下有多个类，可以对这些类的导入进行分组：
+如果你在同一命名空间中有多个类，可以将这些类的导入分组：
 
 ```blade
 @use('App\Models\{Flight, Airport}')
 ```
 
-`@use` 指令还支持通过在导入路径前加上 `function` 或 `const` 修饰符来导入 PHP 函数和常量：
+`@use` 指令还支持通过为导入路径添加 `function` 或 `const` 修饰符来导入 PHP 函数和常量：
 
 ```blade
 @use(function App\Helpers\format_currency)
@@ -629,16 +704,17 @@ Blade 的 `@include` 指令允许你从一个视图内包含另一个 Blade 视�
 @use(const App\Constants\MAX_ATTEMPTS, 'MAX_TRIES')
 ```
 
-分组导入同样支持 `function` 和 `const` 修饰符，允许你在单个指令中从同一命名空间导入多个符号：
+分组导入也同时支持 `function` 和 `const` 修饰符，允许你在单个指令中从同一命名空间导入多个符号：
 
 ```blade
 @use(function App\Helpers\{format_currency, format_date})
 @use(const App\Constants\{MAX_ATTEMPTS, DEFAULT_TIMEOUT})
 ```
 
+<a name="fonts"></a>
 ### 字体
 
-当使用 [Laravel 的 Vite 字体优化](/topic/Laravel%2013.x/ndvm3gj93j.html) 时，你可以使用 `@fonts` 指令在应用布局中渲染已配置的字体预加载链接与内联字体 CSS：
+使用 [Laravel 的 Vite 字体优化](/docs/{{version}}/vite#working-with-fonts) 时，你可以使用 `@fonts` 指令在应用程序的布局中渲染你配置的字体预加载链接和内置字体 CSS：
 
 ```blade
 <!doctype html>
@@ -650,43 +726,45 @@ Blade 的 `@include` 指令允许你从一个视图内包含另一个 Blade 视�
 </head>
 ```
 
-`@fonts` 指令会渲染在 `vite.config.js` 文件中配置的所有字体族。该指令通常应放置在应用根布局的 `<head>` 中、任何使用这些字体的内容之前。
+`@fonts` 指令会渲染在你的 `vite.config.js` 文件中配置的所有字体系列。该指令通常应放置在应用程序根布局的 `<head>` 中，位于任何使用这些字体的内容之前。
 
-如果页面只需要某些已配置的字体，你可以向指令传入一个或多个字体别名：
+如果某个页面只需要部分你配置的字体，可以向该指令传递一个或多个字体别名：
 
 ```blade
-{{-- Load a single font alias... --}}
+{{-- 加载单个字体别名... --}}
 @fonts('sans')
 
-{{-- Load multiple font aliases... --}}
+{{-- 加载多个字体别名... --}}
 @fonts(['sans', 'mono'])
 ```
 
-字体别名通过在 Vite 配置中定义字体时的 `alias` 选项进行配置。`@fonts` 指令调用 `Vite` Facade 提供的 `fonts` 方法，该方法也可以直接调用：
+字体别名是使用 `alias` 选项在 Vite 配置中定义字体时配置的。`@fonts` 指令调用由 `Vite` facade 提供的 `fonts` 方法，该方法也可以直接调用：
 
 ```blade
 {{ Vite::fonts(['sans', 'mono']) }}
 ```
 
+<a name="comments"></a>
 ### 注释
 
-Blade 还允许你在视图中定义注释。但与 HTML 注释不同，Blade 注释不会包含在应用返回的 HTML 中：
+Blade 还允许你在视图中定义注释。不过，与 HTML 注释不同，Blade 注释不会包含在应用程序返回的 HTML 中：
 
 ```blade
-{{-- This comment will not be present in the rendered HTML --}}
+{{-- 此注释不会出现在渲染后的 HTML 中 --}}
 ```
 
+<a name="components"></a>
 ## 组件
 
-组件和插槽提供了与 sections、layouts 和 includes 类似的好处；不过，有些人可能觉得组件和插槽的心智模型更容易理解。编写组件有两种方式：基于类的组件和匿名组件。
+组件和插槽提供的好处与区块、布局和包含类似；然而，有些人可能会发现组件和插槽的心智模型更容易理解。编写组件有两种方式：基于类的组件和匿名组件。
 
-要创建基于类的组件，你可以使用 `make:component` Artisan 命令。为了说明组件的用法，我们将创建一个简单的 `Alert` 组件。`make:component` 命令会将组件放在 `app/View/Components` 目录中：
+要创建基于类的组件，可以使用 `make:component` Artisan 命令。为了说明如何使用组件，我们将创建一个简单的 `Alert` 组件。`make:component` 命令会将组件放置在 `app/View/Components` 目录中：
 
 ```shell
 php artisan make:component Alert
 ```
 
-`make:component` 命令还会为该组件创建一个视图模板。视图将放置在 `resources/views/components` 目录中。为自己的应用编写组件时，组件会自动在 `app/View/Components` 目录和 `resources/views/components` 目录中发现，因此通常无需进一步的组件注册。
+`make:component` 命令还会为组件创建一个视图模板。该视图将放置在 `resources/views/components` 目录中。为你自己的应用程序编写组件时，组件会在 `app/View/Components` 目录和 `resources/views/components` 目录中自动被发现，因此通常不需要进一步的组件注册。
 
 你也可以在子目录中创建组件：
 
@@ -694,19 +772,20 @@ php artisan make:component Alert
 php artisan make:component Forms/Input
 ```
 
-上面的命令会在 `app/View/Components/Forms` 目录中创建一个 `Input` 组件，并将视图放在 `resources/views/components/forms` 目录中。
+上面的命令将在 `app/View/Components/Forms` 目录中创建一个 `Input` 组件，视图将放置在 `resources/views/components/forms` 目录中。
 
+<a name="manually-registering-package-components"></a>
 #### 手动注册包组件
 
-为自己的应用编写组件时，组件会自动在 `app/View/Components` 目录和 `resources/views/components` 目录中发现。
+当你为自己的应用程序编写组件时，组件会在 `app/View/Components` 目录和 `resources/views/components` 目录中自动被发现。
 
-但是，如果你正在构建使用 Blade 组件的包，则需要手动注册组件类及其 HTML 标签别名。通常应在包的服务提供者的 `boot` 方法中注册组件：
+但是，如果你正在构建一个使用 Blade 组件的包，你将需要手动注册你的组件类及其 HTML 标签别名。通常你应在包的[服务提供者](/docs/{{version}}/providers) 的 `boot` 方法中注册你的组件：
 
 ```php
 use Illuminate\Support\Facades\Blade;
 
 /**
- * Bootstrap your package's services.
+ * 引导你的包的服务。
  */
 public function boot(): void
 {
@@ -714,19 +793,19 @@ public function boot(): void
 }
 ```
 
-一旦组件被注册，就可以使用其标签别名进行渲染：
+一旦你的组件被注册，就可以使用其标签别名来渲染它：
 
 ```blade
 <x-package-alert/>
 ```
 
-或者，你可以使用 `componentNamespace` 方法按约定自动加载组件类。例如，一个 `Nightshade` 包可能拥有位于 `Package\Views\Components` 命名空间下的 `Calendar` 和 `ColorPicker` 组件：
+或者，你可以使用 `componentNamespace` 方法按约定自动加载组件类。例如，一个 `Nightshade` 包可能拥有位于 `Package\Views\Components` 命名空间中的 `Calendar` 和 `ColorPicker` 组件：
 
 ```php
 use Illuminate\Support\Facades\Blade;
 
 /**
- * Bootstrap your package's services.
+ * 引导你的包的服务。
  */
 public function boot(): void
 {
@@ -734,18 +813,19 @@ public function boot(): void
 }
 ```
 
-这允许通过供应商命名空间使用 `package-name::` 语法调用包组件：
+这将允许通过供应商命名空间使用 `package-name::` 语法来使用包组件：
 
 ```blade
 <x-nightshade::calendar />
 <x-nightshade::color-picker />
 ```
 
-Blade 会通过将组件名转换为 Pascal Case 自动检测与之关联的类。子目录也支持使用「点」表示法。
+Blade 会通过将组件名转换为 PascalCase 来自动检测链接到该组件的类的名称。也支持使用"点"表示法的子目录。
 
+<a name="rendering-components"></a>
 ### 渲染组件
 
-要显示一个组件，你可以在某个 Blade 模板中使用 Blade 组件标签。Blade 组件标签以字符串 `x-` 开头，后跟组件类的 kebab-case 名称：
+要显示组件，可以在某个 Blade 模板中使用 Blade 组件标签。Blade 组件标签以字符串 `x-` 开头，后跟组件类的 kebab-case 名称：
 
 ```blade
 <x-alert/>
@@ -753,19 +833,19 @@ Blade 会通过将组件名转换为 Pascal Case 自动检测与之关联的类�
 <x-user-profile/>
 ```
 
-如果组件类嵌套在 `app/View/Components` 目录的更深位置，你可以使用 `.` 字符来表示目录嵌套。例如，假设某个组件位于 `app/View/Components/Inputs/Button.php`，我们可以这样渲染它：
+如果组件类嵌套在 `app/View/Components` 目录的更深处，可以使用 `.` 字符来表示目录嵌套。例如，假设一个组件位于 `app/View/Components/Inputs/Button.php`，我们可以这样渲染它：
 
 ```blade
 <x-inputs.button/>
 ```
 
-如果你希望按条件渲染组件，可以在组件类上定义 `shouldRender` 方法。如果 `shouldRender` 方法返回 `false`，则不会渲染该组件：
+如果你想有条件地渲染你的组件，可以在组件类上定义 `shouldRender` 方法。如果 `shouldRender` 方法返回 `false`，该组件将不会被渲染：
 
 ```php
 use Illuminate\Support\Str;
 
 /**
- * Whether the component should be rendered
+ * 组件是否应该被渲染
  */
 public function shouldRender(): bool
 {
@@ -773,9 +853,10 @@ public function shouldRender(): bool
 }
 ```
 
-### Index 组件
+<a name="index-components"></a>
+### 索引组件
 
-有时组件是组件组的一部分，你可能希望将相关组件分组到单个目录中。例如，假设有一个具有以下类结构的「card」组件：
+有时组件是某个组件组的一部分，你可能希望将相关组件分组到单个目录中。例如，想象一个带有以下类结构的"card"组件：
 
 ```text
 App\Views\Components\Card\Card
@@ -783,7 +864,7 @@ App\Views\Components\Card\Header
 App\Views\Components\Card\Body
 ```
 
-由于根 `Card` 组件嵌套在 `Card` 目录中，你可能预期需要通过 `<x-card.card>` 渲染该组件。但是，当组件的文件名与组件目录名匹配时，Laravel 会自动将该组件视为「根」组件，允许你无需重复目录名即可渲染该组件：
+由于根 `Card` 组件嵌套在 `Card` 目录中，你可能会认为需要通过 `<x-card.card>` 来渲染该组件。然而，当组件的文件名与组件目录的名称匹配时，Laravel 会自动假定该组件是"根"组件，并允许你在不重复目录名的情况下渲染该组件：
 
 ```blade
 <x-card>
@@ -792,15 +873,16 @@ App\Views\Components\Card\Body
 </x-card>
 ```
 
+<a name="passing-data-to-components"></a>
 ### 向组件传递数据
 
-你可以使用 HTML 属性向 Blade 组件传递数据。硬编码的原始值可以使用简单的 HTML 属性字符串传递给组件。PHP 表达式和变量应通过使用 `:` 字符作为前缀的属性传递给组件：
+你可以使用 HTML 属性向 Blade 组件传递数据。硬编码的原始值可以通过简单的 HTML 属性字符串传递给组件。PHP 表达式和变量应通过以 `:` 字符作为前缀的属性传递给组件：
 
 ```blade
 <x-alert type="error" :message="$message"/>
 ```
 
-你应该在组件类的构造函数中定义所有组件的数据属性。组件上的所有 public 属性将自动对组件的视图可用，无需从组件的 `render` 方法将数据传递给视图：
+你应在组件类的构造函数中定义组件的所有数据属性。组件上的所有公共属性将自动可供组件的视图使用。不需要将数据从组件的 `render` 方法传递给视图：
 
 ```php
 <?php
@@ -813,7 +895,7 @@ use Illuminate\View\View;
 class Alert extends Component
 {
     /**
-     * Create the component instance.
+     * 创建组件实例。
      */
     public function __construct(
         public string $type,
@@ -821,7 +903,7 @@ class Alert extends Component
     ) {}
 
     /**
-     * Get the view / contents that represent the component.
+     * 获取表示组件的视图 / 内容。
      */
     public function render(): View
     {
@@ -830,7 +912,7 @@ class Alert extends Component
 }
 ```
 
-当组件被渲染时，你可以通过按名称输出变量来显示组件的 public 属性的内容：
+当你的组件被渲染时，你可以通过按名称 echo 变量来显示组件公共变量的内容：
 
 ```blade
 <div class="alert alert-{{ $type }}">
@@ -838,40 +920,43 @@ class Alert extends Component
 </div>
 ```
 
+<a name="casing"></a>
 #### 大小写约定
 
-组件构造函数参数应使用 `camelCase` 指定，而在 HTML 属性中引用参数名时应使用 `kebab-case`。例如，给定以下组件构造函数：
+组件构造函数的参数应使用 `camelCase` 指定，而在 HTML 属性中引用参数名时应使用 `kebab-case`。例如，给定以下组件构造函数：
 
 ```php
 /**
- * Create the component instance.
+ * 创建组件实例。
  */
 public function __construct(
     public string $alertType,
 ) {}
 ```
 
-`$alertType` 参数可以这样传递给组件：
+`$alertType` 参数可以这样提供给组件：
 
 ```blade
 <x-alert alert-type="danger" />
 ```
 
-#### 简短属性语法
+<a name="short-attribute-syntax"></a>
+#### 短属性语法
 
-向组件传递属性时，也可以使用「简短属性」语法。这通常很方便，因为属性名称经常与它们对应的变量名相同：
+向组件传递属性时，你也可以使用"短属性"语法。这往往很方便，因为属性名经常与它们对应的变量名相同：
 
 ```blade
-{{-- Short attribute syntax... --}}
+{{-- 短属性语法... --}}
 <x-profile :$userId :$name />
 
-{{-- Is equivalent to... --}}
+{{-- 等价于... --}}
 <x-profile :user-id="$userId" :name="$name" />
 ```
 
+<a name="escaping-attribute-rendering"></a>
 #### 转义属性渲染
 
-由于某些 JavaScript 框架（如 Alpine.js）也使用冒号前缀的属性，你可以使用双冒号（`::`）前缀来告知 Blade 该属性不是 PHP 表达式。例如，给定以下组件：
+由于某些 JavaScript 框架（如 Alpine.js）也使用以冒号作为前缀的属性，你可以使用双冒号（`::`）前缀来告知 Blade 该属性不是 PHP 表达式。例如，给定以下组件：
 
 ```blade
 <x-button ::class="{ danger: isDeleting }">
@@ -879,7 +964,7 @@ public function __construct(
 </x-button>
 ```
 
-Blade 会渲染以下 HTML：
+Blade 将渲染以下 HTML：
 
 ```blade
 <button :class="{ danger: isDeleting }">
@@ -887,13 +972,14 @@ Blade 会渲染以下 HTML：
 </button>
 ```
 
+<a name="component-methods"></a>
 #### 组件方法
 
-除了 public 变量对组件模板可用之外，组件上的任何 public 方法也可以被调用。例如，假设一个组件具有 `isSelected` 方法：
+除了公共变量可供组件模板使用之外，组件上的任何公共方法也可以被调用。例如，想象一个拥有 `isSelected` 方法的组件：
 
 ```php
 /**
- * Determine if the given option is the currently selected option.
+ * 判断给定的选项是否为当前选中的选项。
  */
 public function isSelected(string $option): bool
 {
@@ -901,7 +987,7 @@ public function isSelected(string $option): bool
 }
 ```
 
-你可以通过调用与该方法名称匹配的变量，从组件模板中执行此方法：
+你可以通过调用与该方法名匹配的变量来从组件模板中执行此方法：
 
 ```blade
 <option {{ $isSelected($value) ? 'selected' : '' }} value="{{ $value }}">
@@ -909,15 +995,16 @@ public function isSelected(string $option): bool
 </option>
 ```
 
+<a name="using-attributes-slots-within-component-class"></a>
 #### 在组件类中访问属性和插槽
 
-Blade 组件还允许你在类的 `render` 方法中访问组件名、属性和插槽。但是，为了访问这些数据，应该从组件的 `render` 方法返回一个闭包：
+Blade 组件还允许你访问组件名称、属性以及组件类 render 方法内的插槽。但是，为了访问这些数据，你应从组件的 `render` 方法返回一个闭包：
 
 ```php
 use Closure;
 
 /**
- * Get the view / contents that represent the component.
+ * 获取表示组件的视图 / 内容。
  */
 public function render(): Closure
 {
@@ -927,7 +1014,7 @@ public function render(): Closure
 }
 ```
 
-由组件的 `render` 方法返回的闭包也可以接受一个 `$data` 数组作为唯一参数。该数组将包含几个提供组件相关信息的元素：
+组件的 `render` 方法返回的闭包也可以接收 `$data` 数组作为其唯一参数。该数组将包含提供关于该组件信息的若干元素：
 
 ```php
 return function (array $data) {
@@ -940,21 +1027,22 @@ return function (array $data) {
 ```
 
 > [!WARNING]
-> 永远不要将 `$data` 数组中的元素直接嵌入到 `render` 方法返回的 Blade 字符串中，因为这样做可能会由于恶意属性内容而导致远程代码执行。
+> `$data` 数组中的元素绝不应被直接嵌入到组件的 `render` 方法返回的 Blade 字符串中，因为这样做可能通过恶意的属性内容允许远程代码执行。
 
-`componentName` 等于 HTML 标签中 `x-` 前缀之后使用的名称。所以 `<x-alert />` 的 `componentName` 将是 `alert`。`attributes` 元素将包含 HTML 标签上存在的所有属性。`slot` 元素是一个 `Illuminate\Support\HtmlString` 实例，其中包含组件插槽的内容。
+`componentName` 等于 HTML 标签中 `x-` 前缀之后的名称。因此 `<x-alert />` 的 `componentName` 将是 `alert`。`attributes` 元素将包含 HTML 标签上存在的所有属性。`slot` 元素是一个包含组件插槽内容的 `Illuminate\Support\HtmlString` 实例。
 
-闭包应返回一个字符串。如果返回的字符串对应于现有视图，则会渲染该视图；否则，返回的字符串将作为内联 Blade 视图进行求值。
+该闭包应返回一个字符串。如果返回的字符串对应于一个已存在的视图，则会渲染该视图；否则，该返回字符串将被作为内联 Blade 视图求值。
 
+<a name="additional-dependencies"></a>
 #### 附加依赖
 
-如果你的组件需要 Laravel [服务容器](/topic/Laravel%2013.x/x3vo054vm1.html) 中的依赖，你可以在组件的任何数据属性之前列出它们，它们将由容器自动注入：
+如果你的组件需要来自 Laravel [服务容器](/docs/{{version}}/container) 的依赖，你可以将它们列在组件任何数据属性之前，它们会被容器自动注入：
 
 ```php
 use App\Services\AlertCreator;
 
 /**
- * Create the component instance.
+ * 创建组件实例。
  */
 public function __construct(
     public AlertCreator $creator,
@@ -963,9 +1051,10 @@ public function __construct(
 ) {}
 ```
 
+<a name="hiding-attributes-and-methods"></a>
 #### 隐藏属性 / 方法
 
-如果希望阻止某些 public 方法或属性作为变量暴露给组件模板，可以将它们添加到组件上的 `$except` 数组属性中：
+如果你想阻止某些公共方法或属性作为变量暴露给组件模板，可以将它们添加到组件的 `$except` 数组属性中：
 
 ```php
 <?php
@@ -977,14 +1066,14 @@ use Illuminate\View\Component;
 class Alert extends Component
 {
     /**
-     * The properties / methods that should not be exposed to the component template.
+     * 不应暴露给组件模板的属性 / 方法。
      *
      * @var array
      */
     protected $except = ['type'];
 
     /**
-     * Create the component instance.
+     * 创建组件实例。
      */
     public function __construct(
         public string $type,
@@ -992,28 +1081,30 @@ class Alert extends Component
 }
 ```
 
+<a name="component-attributes"></a>
 ### 组件属性
 
-我们已经讨论了如何向组件传递数据属性；但是，有时你可能需要指定组件功能所需数据之外的附加 HTML 属性，例如 `class`。通常，你希望将这些附加属性向下传递到组件模板的根元素。例如，假设我们希望像下面这样渲染一个 `alert` 组件：
+我们已经探讨了如何向组件传递数据属性；但是，有时你可能需要指定额外的 HTML 属性（如 `class`），这些属性不是组件运行所需数据的一部分。通常，你希望将这些额外属性传递到组件模板的根元素。例如，想象我们想要这样渲染一个 `alert` 组件：
 
 ```blade
 <x-alert type="error" :message="$message" class="mt-4"/>
 ```
 
-所有不属于组件构造函数的属性将自动添加到组件的「属性包」中。该属性包会自动通过 `$attributes` 变量提供给组件。所有属性都可以通过输出此变量在组件内进行渲染：
+所有不属于组件构造函数的属性将自动被添加到组件的"属性包"中。该属性包通过 `$attributes` 变量自动供组件使用。所有属性都可以通过 echo 该变量在组件内渲染：
 
 ```blade
 <div {{ $attributes }}>
-    <!-- Component content -->
+    <!-- 组件内容 -->
 </div>
 ```
 
 > [!WARNING]
-> 目前不支持在组件标签中使用诸如 `@env` 等指令。例如，`<x-alert :live="@env('production')"/>` 不会被编译。
+> 目前不支持在组件标签内使用 `@env` 等指令。例如，`<x-alert :live="@env('production')"/>` 将不会被编译。
 
+<a name="default-merged-attributes"></a>
 #### 默认 / 合并属性
 
-有时你可能需要为属性指定默认值，或将其他值合并到组件的某些属性中。为此，你可以使用属性包的 `merge` 方法。当定义应始终应用于组件的一组默认 CSS 类时，此方法特别有用：
+有时你可能需要为属性指定默认值，或将额外的值合并到组件的某些属性中。为此，你可以使用属性包的 `merge` 方法。该方法在定义应始终应用于组件的一组默认 CSS 类时特别有用：
 
 ```blade
 <div {{ $attributes->merge(['class' => 'alert alert-'.$type]) }}>
@@ -1021,23 +1112,24 @@ class Alert extends Component
 </div>
 ```
 
-假设此组件被如下使用：
+如果我们假设该组件是这样使用的：
 
 ```blade
 <x-alert type="error" :message="$message" class="mb-4"/>
 ```
 
-组件最终渲染的 HTML 将如下所示：
+该组件最终渲染的 HTML 将如下所示：
 
 ```blade
 <div class="alert alert-error mb-4">
-    <!-- Contents of the $message variable -->
+    <!-- $message 变量的内容 -->
 </div>
 ```
 
-#### 按条件合并类
+<a name="conditionally-merge-classes"></a>
+#### 有条件地合并类
 
-有时你可能希望在给定条件为 `true` 时合并类。你可以通过 `class` 方法实现这一点，该方法接受一个类数组，其中数组的键包含你希望添加的类，值是一个布尔表达式。如果数组元素使用数字键，它将始终包含在渲染的类列表中：
+有时你可能希望在给定条件为 `true` 时合并类。你可以通过 `class` 方法来实现，该方法接受一个类数组，其中数组键包含你希望添加的类或类组合，而值为布尔表达式。如果数组元素具有数字键，它将始终被包含在编译后的类列表中：
 
 ```blade
 <div {{ $attributes->class(['p-4', 'bg-red' => $hasError]) }}>
@@ -1045,7 +1137,7 @@ class Alert extends Component
 </div>
 ```
 
-如果需要将其他属性合并到组件中，可以将 `merge` 方法链接到 `class` 方法之后：
+如果你需要将其他属性合并到你的组件上，可以将 `merge` 方法链式调用在 `class` 方法之后：
 
 ```blade
 <button {{ $attributes->class(['p-4'])->merge(['type' => 'button']) }}>
@@ -1054,11 +1146,12 @@ class Alert extends Component
 ```
 
 > [!NOTE]
-> 如果需要在不应接收合并属性的其他 HTML 元素上有条件地编译类，可以使用 @class 指令。
+> 如果你需要在不应接收合并属性的其他 HTML 元素上有条件地编译类，可以使用 [@class 指令](#conditional-classes)。
 
-#### 非 class 属性的合并
+<a name="non-class-attribute-merging"></a>
+#### 非类属性合并
 
-合并非 `class` 属性时，提供给 `merge` 方法的值将被视为该属性的「默认值」。但是，与 `class` 属性不同，这些属性不会与注入的属性值合并，而是会被覆盖。例如，一个 `button` 组件的实现可能如下所示：
+当合并非 `class` 属性时，提供给 `merge` 方法的值将被视为该属性的"默认"值。但是，与 `class` 属性不同，这些属性不会与注入的属性值合并。相反，它们会被覆盖。例如，`button` 组件的实现可能如下所示：
 
 ```blade
 <button {{ $attributes->merge(['type' => 'button']) }}>
@@ -1066,7 +1159,7 @@ class Alert extends Component
 </button>
 ```
 
-要使用自定义的 `type` 渲染 button 组件，可以在使用组件时指定它。如果未指定 `type`，则将使用 `button` 类型：
+要使用自定义 `type` 渲染按钮组件，可以在消费组件时指定它。如果未指定 type，将使用 `button` 类型：
 
 ```blade
 <x-button type="submit">
@@ -1074,7 +1167,7 @@ class Alert extends Component
 </x-button>
 ```
 
-本例中 `button` 组件渲染的 HTML 为：
+此示例中 `button` 组件渲染的 HTML 将是：
 
 ```blade
 <button type="submit">
@@ -1082,7 +1175,7 @@ class Alert extends Component
 </button>
 ```
 
-如果你希望除 `class` 之外的属性将其默认值与注入值连接在一起，可以使用 `prepends` 方法。在本例中，`data-controller` 属性将始终以 `profile-controller` 开头，任何额外注入的 `data-controller` 值都将放在此默认值之后：
+如果你希望除 `class` 之外的某个属性将其默认值和注入值连接在一起，可以使用 `prepends` 方法。在此示例中，`data-controller` 属性将始终以 `profile-controller` 开头，任何额外注入的 `data-controller` 值都将放置在此默认值之后：
 
 ```blade
 <div {{ $attributes->merge(['data-controller' => $attributes->prepends('profile-controller')]) }}>
@@ -1090,21 +1183,22 @@ class Alert extends Component
 </div>
 ```
 
-#### 检索和过滤属性
+<a name="filtering-attributes"></a>
+#### 检索与过滤属性
 
-你可以使用 `filter` 方法过滤属性。该方法接受一个闭包，如果希望保留属性包中的属性，闭包应返回 `true`：
+你可以使用 `filter` 方法过滤属性。该方法接受一个闭包，如果你希望保留属性包中的某个属性，该闭包应返回 `true`：
 
 ```blade
 {{ $attributes->filter(fn (string $value, string $key) => $key == 'foo') }}
 ```
 
-为方便起见，你可以使用 `whereStartsWith` 方法检索所有键以给定字符串开头的属性：
+为方便起见，你可以使用 `whereStartsWith` 方法检索键以给定字符串开头的所有属性：
 
 ```blade
 {{ $attributes->whereStartsWith('wire:model') }}
 ```
 
-相反，可以使用 `whereDoesntStartWith` 方法排除所有键以给定字符串开头的属性：
+相反，`whereDoesntStartWith` 方法可用于排除键以给定字符串开头的所有属性：
 
 ```blade
 {{ $attributes->whereDoesntStartWith('wire:model') }}
@@ -1116,27 +1210,27 @@ class Alert extends Component
 {{ $attributes->whereStartsWith('wire:model')->first() }}
 ```
 
-如果你希望检查组件上是否存在某个属性，可以使用 `has` 方法。该方法接受属性名称作为唯一参数，并返回一个布尔值，指示该属性是否存在：
+如果你想检查某个属性是否存在于组件上，可以使用 `has` 方法。该方法接受属性名作为其唯一参数，并返回一个布尔值，指示该属性是否存在：
 
 ```blade
 @if ($attributes->has('class'))
-    <div>Class attribute is present</div>
+    <div>Class 属性存在</div>
 @endif
 ```
 
-如果将一个数组传递给 `has` 方法，该方法将判断组件上是否同时存在所有给定属性：
+如果向 `has` 方法传递一个数组，该方法将判断给定属性是否全部存在于组件上：
 
 ```blade
 @if ($attributes->has(['name', 'class']))
-    <div>All of the attributes are present</div>
+    <div>所有属性都存在</div>
 @endif
 ```
 
-`hasAny` 方法可用于判断组件上是否存在任意给定属性：
+`hasAny` 方法可用于判断给定属性中是否有任何一个存在于组件上：
 
 ```blade
 @if ($attributes->hasAny(['href', ':href', 'v-bind:href']))
-    <div>One of the attributes is present</div>
+    <div>其中一个属性存在</div>
 @endif
 ```
 
@@ -1152,15 +1246,18 @@ class Alert extends Component
 {{ $attributes->only(['class']) }}
 ```
 
-`except` 方法可用于检索除具有给定键的属性之外的所有属性：
+`except` 方法可用于检索除具有给定键之外的所有属性：
 
 ```blade
 {{ $attributes->except(['class']) }}
 ```
 
+<a name="reserved-keywords"></a>
 ### 保留关键字
 
-默认情况下，某些关键字为 Blade 内部保留，用于渲染组件。以下关键字不能在组件中定义为 public 属性或方法名：
+默认情况下，一些关键字被保留供 Blade 内部用于渲染组件。以下关键字不能在你的组件中定义为公共属性或方法名：
+
+<div class="content-list" markdown="1">
 
 - `data`
 - `render`
@@ -1171,9 +1268,12 @@ class Alert extends Component
 - `withAttributes`
 - `withName`
 
+</div>
+
+<a name="slots"></a>
 ### 插槽
 
-你经常需要通过「插槽」向组件传递附加内容。组件插槽通过输出 `$slot` 变量进行渲染。为了说明这个概念，让我们假设一个 `alert` 组件具有以下标记：
+你经常需要通过"插槽"向组件传递额外内容。组件插槽通过 echo `$slot` 变量来渲染。为了探索这个概念，让我们想象一个 `alert` 组件具有以下标记：
 
 ```blade
 <!-- /resources/views/components/alert.blade.php -->
@@ -1191,7 +1291,7 @@ class Alert extends Component
 </x-alert>
 ```
 
-有时组件可能需要在组件内部的不同位置渲染多个不同的插槽。让我们修改 alert 组件以允许注入「title」插槽：
+有时组件可能需要在组件内的不同位置渲染多个不同的插槽。让我们修改我们的 alert 组件，以允许注入一个"title"插槽：
 
 ```blade
 <!-- /resources/views/components/alert.blade.php -->
@@ -1203,7 +1303,7 @@ class Alert extends Component
 </div>
 ```
 
-你可以使用 `x-slot` 标签定义具名插槽的内容。任何不在显式 `x-slot` 标签内的内容都将通过 `$slot` 变量传递给组件：
+你可以使用 `x-slot` 标签定义命名插槽的内容。任何不在显式 `x-slot` 标签内的内容都将通过 `$slot` 变量传递给组件：
 
 ```xml
 <x-alert>
@@ -1229,7 +1329,7 @@ class Alert extends Component
 </div>
 ```
 
-此外，`hasActualContent` 方法可用于判断插槽是否包含任何「实际」内容（非 HTML 注释）：
+此外，`hasActualContent` 方法可用于判断插槽是否包含任何不是 HTML 注释的"实际"内容：
 
 ```blade
 @if ($slot->hasActualContent())
@@ -1237,9 +1337,10 @@ class Alert extends Component
 @endif
 ```
 
+<a name="scoped-slots"></a>
 #### 作用域插槽
 
-如果你使用过 Vue 这样的 JavaScript 框架，你可能熟悉「作用域插槽」，它允许你在插槽内访问组件的数据或方法。在 Laravel 中，你可以通过在组件上定义 public 方法或属性，并通过 `$component` 变量在插槽内访问该组件，从而实现类似的行为。在本例中，我们假设 `x-alert` 组件在其组件类上定义了一个 public `formatAlert` 方法：
+如果你使用过诸如 Vue 之类的 JavaScript 框架，你可能熟悉"作用域插槽"，它允许你在插槽中访问组件内的数据或方法。你可以通过在组件上定义公共方法或属性，并通过 `$component` 变量在插槽内访问该组件，在 Laravel 中实现类似的行为。在此示例中，我们假设 `x-alert` 组件在其组件类上定义了一个公共的 `formatAlert` 方法：
 
 ```blade
 <x-alert>
@@ -1251,9 +1352,10 @@ class Alert extends Component
 </x-alert>
 ```
 
+<a name="slot-attributes"></a>
 #### 插槽属性
 
-与 Blade 组件一样，你也可以为插槽分配附加的属性，例如 CSS 类名：
+与 Blade 组件一样，你可以为插槽分配额外的[属性](#component-attributes)，例如 CSS 类名：
 
 ```xml
 <x-card class="shadow-sm">
@@ -1269,7 +1371,7 @@ class Alert extends Component
 </x-card>
 ```
 
-要与插槽属性交互，你可以访问插槽变量的 `attributes` 属性。有关如何与属性交互的更多信息，请参阅组件属性文档：
+要与插槽属性交互，你可以访问插槽变量的 `attributes` 属性。有关如何与属性交互的更多信息，请参阅[组件属性](#component-attributes) 文档：
 
 ```blade
 @props([
@@ -1290,13 +1392,14 @@ class Alert extends Component
 </div>
 ```
 
+<a name="inline-component-views"></a>
 ### 内联组件视图
 
-对于非常小的组件，同时管理组件类和组件的视图模板可能会显得繁琐。因此，你可以从 `render` 方法直接返回组件的标记：
+对于非常小的组件，同时管理组件类和组件视图模板可能会显得繁琐。因此，你可以直接从 `render` 方法返回组件的标记：
 
 ```php
 /**
- * Get the view / contents that represent the component.
+ * 获取表示组件的视图 / 内容。
  */
 public function render(): string
 {
@@ -1308,17 +1411,19 @@ public function render(): string
 }
 ```
 
+<a name="generating-inline-view-components"></a>
 #### 生成内联视图组件
 
-要创建渲染内联视图的组件，你可以在执行 `make:component` 命令时使用 `inline` 选项：
+要创建一个渲染内联视图的组件，可以在执行 `make:component` 命令时使用 `inline` 选项：
 
 ```shell
 php artisan make:component Alert --inline
 ```
 
+<a name="dynamic-components"></a>
 ### 动态组件
 
-有时你可能需要渲染某个组件，但在运行时之前并不知道应渲染哪个组件。在这种情况下，你可以使用 Laravel 内置的 `dynamic-component` 组件，根据运行时值或变量渲染组件：
+有时你可能需要渲染一个组件，但要到运行时才知道应该渲染哪个组件。在这种情况下，你可以使用 Laravel 内置的 `dynamic-component` 组件根据运行时的值或变量来渲染组件：
 
 ```blade
 // $componentName = "secondary-button";
@@ -1326,21 +1431,22 @@ php artisan make:component Alert --inline
 <x-dynamic-component :component="$componentName" class="mt-4" />
 ```
 
+<a name="manually-registering-components"></a>
 ### 手动注册组件
 
 > [!WARNING]
-> 以下关于手动注册组件的文档主要适用于编写包含视图组件的 Laravel 包的人。如果你不编写包，则这部分组件文档可能与你无关。
+> 以下关于手动注册组件的文档主要适用于那些编写包含视图组件的 Laravel 包的人。如果你不是在编写包，组件文档的这一部分可能与你无关。
 
-为自己的应用编写组件时，组件会自动在 `app/View/Components` 目录和 `resources/views/components` 目录中发现。
+当你为自己的应用程序编写组件时，组件会在 `app/View/Components` 目录和 `resources/views/components` 目录中自动被发现。
 
-但是，如果你正在构建使用 Blade 组件的包，或将组件放在非约定目录中，则需要手动注册组件类及其 HTML 标签别名，以便 Laravel 知道在哪里找到该组件。通常应在包的服务提供者的 `boot` 方法中注册组件：
+但是，如果你正在构建一个使用 Blade 组件的包，或将组件放在非传统目录中，你将需要手动注册你的组件类及其 HTML 标签别名，以便 Laravel 知道在哪里找到该组件。通常你应在包的[服务提供者](/docs/{{version}}/providers) 的 `boot` 方法中注册你的组件：
 
 ```php
 use Illuminate\Support\Facades\Blade;
 use VendorPackage\View\Components\AlertComponent;
 
 /**
- * Bootstrap your package's services.
+ * 引导你的包的服务。
  */
 public function boot(): void
 {
@@ -1348,7 +1454,7 @@ public function boot(): void
 }
 ```
 
-一旦组件被注册，就可以使用其标签别名进行渲染：
+一旦你的组件被注册，就可以使用其标签别名来渲染它：
 
 ```blade
 <x-package-alert/>
@@ -1356,13 +1462,13 @@ public function boot(): void
 
 #### 自动加载包组件
 
-或者，你可以使用 `componentNamespace` 方法按约定自动加载组件类。例如，一个 `Nightshade` 包可能拥有位于 `Package\Views\Components` 命名空间下的 `Calendar` 和 `ColorPicker` 组件：
+或者，你可以使用 `componentNamespace` 方法按约定自动加载组件类。例如，一个 `Nightshade` 包可能拥有位于 `Package\Views\Components` 命名空间中的 `Calendar` 和 `ColorPicker` 组件：
 
 ```php
 use Illuminate\Support\Facades\Blade;
 
 /**
- * Bootstrap your package's services.
+ * 引导你的包的服务。
  */
 public function boot(): void
 {
@@ -1370,24 +1476,25 @@ public function boot(): void
 }
 ```
 
-这允许通过供应商命名空间使用 `package-name::` 语法调用包组件：
+这将允许通过供应商命名空间使用 `package-name::` 语法来使用包组件：
 
 ```blade
 <x-nightshade::calendar />
 <x-nightshade::color-picker />
 ```
 
-Blade 会通过将组件名转换为 Pascal Case 自动检测与之关联的类。子目录也支持使用「点」表示法。
+Blade 会通过将组件名转换为 PascalCase 来自动检测链接到该组件的类的名称。也支持使用"点"表示法的子目录。
 
+<a name="anonymous-components"></a>
 ## 匿名组件
 
-与内联组件类似，匿名组件提供了一种通过单个文件管理组件的机制。但是，匿名组件使用单个视图文件，并且没有关联的类。要定义匿名组件，只需将 Blade 模板放在 `resources/views/components` 目录中。例如，假设你已在 `resources/views/components/alert.blade.php` 定义了一个组件，则可以直接这样渲染它：
+与内联组件类似，匿名组件提供了一种通过单个文件管理组件的机制。但是，匿名组件使用单个视图文件，并且没有相关联的类。要定义匿名组件，你只需在 `resources/views/components` 目录中放置一个 Blade 模板。例如，假设你在 `resources/views/components/alert.blade.php` 处定义了一个组件，你可以像这样简单地渲染它：
 
 ```blade
 <x-alert/>
 ```
 
-你可以使用 `.` 字符来表示组件是否嵌套在 `components` 目录的更深位置。例如，假设组件定义在 `resources/views/components/inputs/button.blade.php`，可以这样渲染：
+你可以使用 `.` 字符来表示组件是否嵌套在 `components` 目录的更深处。例如，假设组件定义在 `resources/views/components/inputs/button.blade.php`，你可以这样渲染它：
 
 ```blade
 <x-inputs.button/>
@@ -1399,18 +1506,19 @@ Blade 会通过将组件名转换为 Pascal Case 自动检测与之关联的类�
 php artisan make:component forms.input --view
 ```
 
-上面的命令将在 `resources/views/components/forms/input.blade.php` 创建一个 Blade 文件，可以通过 `<x-forms.input />` 作为组件进行渲染。
+上面的命令将在 `resources/views/components/forms/input.blade.php` 处创建一个 Blade 文件，可以通过 `<x-forms.input />` 作为组件渲染。
 
-### 匿名 Index 组件
+<a name="anonymous-index-components"></a>
+### 匿名索引组件
 
-有时，当某个组件由多个 Blade 模板组成时，你可能希望将该组件的模板分组到单个目录中。例如，假设一个「accordion」组件具有以下目录结构：
+有时，当一个组件由许多 Blade 模板组成时，你可能希望将给定组件的模板分组到单个目录中。例如，想象一个带有以下目录结构的"accordion"组件：
 
 ```text
 /resources/views/components/accordion.blade.php
 /resources/views/components/accordion/item.blade.php
 ```
 
-此目录结构允许你像下面这样渲染 accordion 组件及其 item：
+此目录结构允许你像这样渲染 accordion 组件及其 item：
 
 ```blade
 <x-accordion>
@@ -1420,20 +1528,21 @@ php artisan make:component forms.input --view
 </x-accordion>
 ```
 
-但是，为了通过 `x-accordion` 渲染 accordion 组件，我们不得不将「index」accordion 组件模板放在 `resources/views/components` 目录中，而不是与其他 accordion 相关模板一起嵌套在 `accordion` 目录中。
+但是，为了通过 `x-accordion` 渲染 accordion 组件，我们被迫将"索引"accordion 组件模板放置在 `resources/views/components` 目录中，而不是与其他 accordion 相关模板一起嵌套在 `accordion` 目录中。
 
-值得庆幸的是，Blade 允许你在组件目录中放置一个与组件目录名同名的文件。当此模板存在时，即使它嵌套在目录中，也可以作为组件的「根」元素进行渲染。因此，我们可以继续使用上面示例中相同的 Blade 语法；但是，我们将调整目录结构如下：
+幸运的是，Blade 允许你将与组件目录名匹配的文件放置在该组件目录本身内部。当此模板存在时，即使它嵌套在目录中，也可以作为组件的"根"元素渲染。因此，我们可以继续使用上面示例中给出的相同 Blade 语法；不过，我们将像这样调整我们的目录结构：
 
 ```text
 /resources/views/components/accordion/accordion.blade.php
 /resources/views/components/accordion/item.blade.php
 ```
 
-### 数据属性 / 属性
+<a name="data-properties-attributes"></a>
+### 数据属性 / 特性
 
-由于匿名组件没有任何关联的类，你可能想知道如何区分哪些数据应作为变量传递给组件，哪些属性应放在组件的属性包中。
+由于匿名组件没有任何相关联的类，你可能想知道如何区分哪些数据应作为变量传递给组件，哪些属性应放置在组件的[属性包](#component-attributes) 中。
 
-你可以使用 `@props` 指令在组件 Blade 模板的顶部指定应被视为数据变量的属性。组件上的所有其他属性可通过组件的属性包访问。如果希望为数据变量提供默认值，可以将变量名指定为数组键，将默认值指定为数组值：
+你可以使用 `@props` 指令在组件 Blade 模板的顶部指定哪些属性应被视为数据变量。组件上的所有其他属性将通过组件的属性包可用。如果你想为数据变量提供默认值，可以将变量名指定为数组键，将默认值指定为数组值：
 
 ```blade
 <!-- /resources/views/components/alert.blade.php -->
@@ -1445,15 +1554,16 @@ php artisan make:component forms.input --view
 </div>
 ```
 
-根据上面的组件定义，我们可以这样使用该组件：
+给定上面的组件定义，我们可以这样渲染组件：
 
 ```blade
 <x-alert type="error" :message="$message" class="mb-4"/>
 ```
 
+<a name="accessing-parent-data"></a>
 ### 访问父级数据
 
-有时你可能希望从父组件内访问子组件中的数据。在这种情况下，你可以使用 `@aware` 指令。例如，假设我们正在构建一个由父级 `<x-menu>` 和子级 `<x-menu.item>` 组成的复杂菜单组件：
+有时你可能希望在子组件中访问父组件的数据。在这些情况下，你可以使用 `@aware` 指令。例如，想象我们正在构建一个复杂的菜单组件，由父级 `<x-menu>` 和子级 `<x-menu.item>` 组成：
 
 ```blade
 <x-menu color="purple">
@@ -1462,7 +1572,7 @@ php artisan make:component forms.input --view
 </x-menu>
 ```
 
-`<x-menu>` 组件的实现可能如下所示：
+`<x-menu>` 组件可能具有以下实现：
 
 ```blade
 <!-- /resources/views/components/menu/index.blade.php -->
@@ -1474,7 +1584,7 @@ php artisan make:component forms.input --view
 </ul>
 ```
 
-因为 `color` prop 仅传递给父级（`<x-menu>`），所以它在 `<x-menu.item>` 内不可用。但是，如果我们使用 `@aware` 指令，也可以在 `<x-menu.item>` 内使其可用：
+因为 `color` prop 只传递给了父级（`<x-menu>`），它在 `<x-menu.item>` 内部将不可用。但是，如果我们使用 `@aware` 指令，我们也可以让它在 `<x-menu.item>` 内部可用：
 
 ```blade
 <!-- /resources/views/components/menu/item.blade.php -->
@@ -1487,17 +1597,18 @@ php artisan make:component forms.input --view
 ```
 
 > [!WARNING]
-> `@aware` 指令无法访问未通过 HTML 属性显式传递给父组件的父级数据。未显式传递给父组件的默认 `@props` 值无法被 `@aware` 指令访问。
+> `@aware` 指令无法访问未通过 HTML 属性显式传递给父组件的父级数据。未显式传递给父组件的默认 `@props` 值无法通过 `@aware` 指令访问。
 
+<a name="anonymous-component-paths"></a>
 ### 匿名组件路径
 
-如前所述，匿名组件通常通过将 Blade 模板放在 `resources/views/components` 目录中来定义。但是，除了默认路径之外，你可能偶尔希望向 Laravel 注册其他匿名组件路径。
+如前所述，匿名组件通常通过在 `resources/views/components` 目录中放置一个 Blade 模板来定义。但是，除了默认路径之外，你可能偶尔希望向 Laravel 注册其他匿名组件路径。
 
-`anonymousComponentPath` 方法的第一个参数接受匿名组件位置的「路径」，第二个参数是可选的「命名空间」，组件应放在该命名空间下。通常，应在某个应用[服务提供者](/topic/Laravel%2013.x/qk942kovw1.html) 的 `boot` 方法中调用此方法：
+`anonymousComponentPath` 方法接受匿名组件位置的"路径"作为第一个参数，并接受组件应放置在其下的可选"命名空间"作为第二个参数。通常，此方法应从你的某个应用程序[服务提供者](/docs/{{version}}/providers) 的 `boot` 方法中调用：
 
 ```php
 /**
- * Bootstrap any application services.
+ * 引导任意应用服务。
  */
 public function boot(): void
 {
@@ -1505,33 +1616,36 @@ public function boot(): void
 }
 ```
 
-如上面的示例所示，当注册组件路径时未指定前缀，这些路径下的组件也可以在 Blade 组件中无前缀地渲染。例如，如果在上面注册的路径中存在 `panel.blade.php` 组件，可以这样渲染：
+当组件路径像上面的示例一样在没有指定前缀的情况下注册时，它们也可以在没有相应前缀的情况下在你的 Blade 组件中渲染。例如，如果在上面注册的路径中存在一个 `panel.blade.php` 组件，它可以像这样渲染：
 
 ```blade
 <x-panel />
 ```
 
-可以将「namespace」前缀作为第二个参数传递给 `anonymousComponentPath` 方法：
+"命名空间"前缀可以作为第二个参数提供给 `anonymousComponentPath` 方法：
 
 ```php
 Blade::anonymousComponentPath(__DIR__.'/../components', 'dashboard');
 ```
 
-当提供前缀时，可以通过在渲染组件时将命名空间前缀添加到组件名称来渲染该「命名空间」下的组件：
+当提供了前缀时，该"命名空间"中的组件可以通过在渲染组件时将组件的命名空间作为前缀来渲染：
 
 ```blade
 <x-dashboard::panel />
 ```
 
+<a name="building-layouts"></a>
 ## 构建布局
 
+<a name="layouts-using-components"></a>
 ### 使用组件构建布局
 
-大多数 Web 应用在各个页面之间保持相同的一般布局。如果我们必须在创建的每个视图中重复整个布局 HTML，那将非常繁琐且难以维护。值得庆幸的是，可以将此布局方便地定义为单个 Blade 组件，然后在整个应用中使用它。
+大多数 Web 应用程序在各种页面上保持相同的整体布局。如果不得不在我们创建的每个视图中重复整个布局 HTML，维护我们的应用程序将变得非常繁琐且困难。幸运的是，将这个布局定义为单个 [Blade 组件](#components) 并在整个应用程序中使用它很方便。
 
+<a name="defining-the-layout-component"></a>
 #### 定义布局组件
 
-例如，假设我们正在构建一个「todo」列表应用。我们可以定义一个 `layout` 组件，如下所示：
+例如，想象我们正在构建一个"todo"列表应用程序。我们可能会定义一个看起来如下的 `layout` 组件：
 
 ```blade
 <!-- resources/views/components/layout.blade.php -->
@@ -1548,9 +1662,10 @@ Blade::anonymousComponentPath(__DIR__.'/../components', 'dashboard');
 </html>
 ```
 
+<a name="applying-the-layout-component"></a>
 #### 应用布局组件
 
-一旦定义了 `layout` 组件，我们就可以创建一个使用该组件的 Blade 视图。在本例中，我们将定义一个简单的视图来显示任务列表：
+一旦定义了 `layout` 组件，我们就可以创建一个使用该组件的 Blade 视图。在此示例中，我们将定义一个显示任务列表的简单视图：
 
 ```blade
 <!-- resources/views/tasks.blade.php -->
@@ -1562,7 +1677,7 @@ Blade::anonymousComponentPath(__DIR__.'/../components', 'dashboard');
 </x-layout>
 ```
 
-请记住，注入到组件中的内容将提供给 `layout` 组件内的默认 `$slot` 变量。你可能已经注意到，如果提供了 `$title` 插槽，我们的 layout 也会遵循它；否则，将显示默认标题。我们可以使用组件文档中讨论的标准插槽语法从任务列表视图注入自定义标题：
+请记住，注入到组件中的内容将提供给我们的 `layout` 组件中的默认 `$slot` 变量。你可能已经注意到，我们的 `layout` 也会在提供时接受一个 `$title` 插槽；否则会显示默认标题。我们可以使用[组件文档](#components) 中讨论的标准插槽语法从我们的任务列表视图注入自定义标题：
 
 ```blade
 <!-- resources/views/tasks.blade.php -->
@@ -1578,7 +1693,7 @@ Blade::anonymousComponentPath(__DIR__.'/../components', 'dashboard');
 </x-layout>
 ```
 
-现在我们已经定义了 layout 和任务列表视图，我们只需要从路由返回 `task` 视图：
+既然我们已经定义了布局和任务列表视图，我们只需要从一个路由返回 `task` 视图：
 
 ```php
 use App\Models\Task;
@@ -1588,13 +1703,15 @@ Route::get('/tasks', function () {
 });
 ```
 
+<a name="layouts-using-template-inheritance"></a>
 ### 使用模板继承构建布局
 
+<a name="defining-a-layout"></a>
 #### 定义布局
 
-布局也可以通过「模板继承」创建。这是组件 出现之前构建应用的主要方式。
+布局也可以通过"模板继承"创建。这是在引入[组件](#components) 之前构建应用程序的主要方式。
 
-让我们从一个简单的示例开始。首先，我们将考察一个页面布局。由于大多数 Web 应用在各个页面之间保持相同的一般布局，因此将此布局定义为单个 Blade 视图非常方便：
+首先，让我们看一个简单的示例。首先，我们检查一个页面布局。由于大多数 Web 应用程序在各种页面上保持相同的整体布局，将这个布局定义为单个 Blade 视图很方便：
 
 ```blade
 <!-- resources/views/layouts/app.blade.php -->
@@ -1615,13 +1732,14 @@ Route::get('/tasks', function () {
 </html>
 ```
 
-如你所见，此文件包含典型的 HTML 标记。但请注意 `@section` 和 `@yield` 指令。顾名思义，`@section` 指令定义内容的一部分，而 `@yield` 指令用于显示给定 section 的内容。
+如你所见，此文件包含典型的 HTML 标记。但是，请注意 `@section` 和 `@yield` 指令。`@section` 指令顾名思义，定义了一个内容区块，而 `@yield` 指令用于显示给定区块的内容。
 
-现在我们已经为应用定义了一个布局，让我们定义一个继承该布局的子页面。
+既然我们为应用程序定义了一个布局，让我们定义一个继承该布局的子页面。
 
+<a name="extending-a-layout"></a>
 #### 扩展布局
 
-定义子视图时，使用 `@extends` Blade 指令指定子视图应「继承」的布局。扩展 Blade 布局的视图可以使用 `@section` 指令将内容注入到布局的 section 中。请记住，如上面的示例所示，这些 section 的内容将使用 `@yield` 在布局中显示：
+定义子视图时，使用 `@extends` Blade 指令指定子视图应"继承"哪个布局。扩展 Blade 布局的视图可以使用 `@section` 指令将内容注入到布局的区块中。请记住，如上面的示例所示，这些区块的内容将使用 `@yield` 在布局中显示：
 
 ```blade
 <!-- resources/views/child.blade.php -->
@@ -1641,22 +1759,24 @@ Route::get('/tasks', function () {
 @endsection
 ```
 
-在此示例中，`sidebar` section 使用 `@@parent` 指令将内容附加（而非覆盖）到布局的 sidebar。`@@parent` 指令将在视图渲染时被布局的内容替换。
+在此示例中，`sidebar` 区块正在使用 `@@parent` 指令将内容追加（而不是覆盖）到布局的侧边栏。`@@parent` 指令在渲染视图时会被布局的内容替换。
 
 > [!NOTE]
-> 与前面的示例相反，此 `sidebar` section 以 `@endsection` 结尾，而不是 `@show`。`@endsection` 指令只会定义一个 section，而 `@show` 指令将定义并**立即 yield** 该 section。
+> 与前一个示例相反，此 `sidebar` 区块以 `@endsection` 而不是 `@show` 结束。`@endsection` 指令只会定义一个区块，而 `@show` 会定义并**立即 yield** 该区块。
 
-`@yield` 指令也接受默认值作为其第二个参数。如果要 yield 的 section 未定义，则将渲染该值：
+`@yield` 指令还接受默认值作为其第二个参数。如果被 yield 的区块未定义，将渲染该值：
 
 ```blade
 @yield('content', 'Default content')
 ```
 
+<a name="forms"></a>
 ## 表单
 
+<a name="csrf-field"></a>
 ### CSRF 字段
 
-每当你在应用中定义 HTML 表单时，都应在表单中包含一个隐藏的 CSRF 令牌字段，以便 [CSRF 保护](/topic/Laravel%2013.x/kpv136298w.html) 中间件可以验证请求。你可以使用 `@csrf` Blade 指令来生成该令牌字段：
+每当你在应用程序中定义 HTML 表单时，都应在表单中包含一个隐藏的 CSRF 令牌字段，以便 [CSRF 防护](/docs/{{version}}/csrf) 中间件可以验证请求。你可以使用 `@csrf` Blade 指令生成令牌字段：
 
 ```blade
 <form method="POST" action="/profile">
@@ -1666,9 +1786,10 @@ Route::get('/tasks', function () {
 </form>
 ```
 
-### Method 字段
+<a name="method-field"></a>
+### 方法字段
 
-由于 HTML 表单无法发起 `PUT`、`PATCH` 或 `DELETE` 请求，你需要添加一个隐藏的 `_method` 字段来伪造这些 HTTP 谓词。`@method` Blade 指令可以为你创建此字段：
+由于 HTML 表单无法发起 `PUT`、`PATCH` 或 `DELETE` 请求，你需要添加一个隐藏的 `_method` 字段来伪造这些 HTTP 动词。`@method` Blade 指令可以为你创建此字段：
 
 ```blade
 <form action="/foo/bar" method="POST">
@@ -1678,9 +1799,10 @@ Route::get('/tasks', function () {
 </form>
 ```
 
+<a name="validation-errors"></a>
 ### 验证错误
 
-`@error` 指令可用于快速检查给定属性是否存在[验证错误消息](/topic/Laravel%2013.x/e296oew9q7.html)。在 `@error` 指令内，你可以输出 `$message` 变量来显示错误消息：
+`@error` 指令可用于快速检查某个给定属性是否存在[验证错误消息](/docs/{{version}}/validation#quick-displaying-the-validation-errors)。在 `@error` 指令中，你可以 echo `$message` 变量来显示错误消息：
 
 ```blade
 <!-- /resources/views/post/create.blade.php -->
@@ -1698,7 +1820,7 @@ Route::get('/tasks', function () {
 @enderror
 ```
 
-由于 `@error` 指令会编译为一条「if」语句，你可以使用 `@else` 指令在该属性不存在错误时渲染内容：
+由于 `@error` 指令会编译为"if"语句，你可以使用 `@else` 指令在某个属性没有错误时渲染内容：
 
 ```blade
 <!-- /resources/views/auth.blade.php -->
@@ -1712,7 +1834,7 @@ Route::get('/tasks', function () {
 />
 ```
 
-你可以将[特定错误 bag 的名称](/topic/Laravel%2013.x/e296oew9q7.html) 作为第二个参数传递给 `@error` 指令，以在包含多个表单的页面中检索验证错误消息：
+你可以将[特定错误包的名称](/docs/{{version}}/validation#named-error-bags) 作为第二个参数传递给 `@error` 指令，以在包含多个表单的页面上检索验证错误消息：
 
 ```blade
 <!-- /resources/views/auth.blade.php -->
@@ -1730,9 +1852,10 @@ Route::get('/tasks', function () {
 @enderror
 ```
 
-## Stacks
+<a name="stacks"></a>
+## 栈
 
-Blade 允许你推送到具名 stacks，这些 stacks 可以在另一个视图或布局的其他地方进行渲染。当需要指定子视图所需的任何 JavaScript 库时，这特别有用：
+Blade 允许你推送到命名的栈，这些栈可以在另一个视图或布局中的其他地方渲染。这对于指定子视图所需的任何 JavaScript 库特别有用：
 
 ```blade
 @push('scripts')
@@ -1740,7 +1863,7 @@ Blade 允许你推送到具名 stacks，这些 stacks 可以在另一个视图�
 @endpush
 ```
 
-如果希望在给定的布尔表达式求值为 `true` 时才 `@push` 内容，可以使用 `@pushIf` 指令：
+如果你想在某个布尔表达式求值为 `true` 时 `@push` 内容，可以使用 `@pushIf` 指令：
 
 ```blade
 @pushIf($shouldPush, 'scripts')
@@ -1748,31 +1871,31 @@ Blade 允许你推送到具名 stacks，这些 stacks 可以在另一个视图�
 @endPushIf
 ```
 
-你可以根据需要多次推送到 stack。要渲染完整的 stack 内容，请将 stack 名称传递给 `@stack` 指令：
+你可以根据需要多次推送到一个栈。要渲染完整的栈内容，将栈的名称传递给 `@stack` 指令：
 
 ```blade
 <head>
-    <!-- Head Contents -->
+    <!-- Head 内容 -->
 
     @stack('scripts')
 </head>
 ```
 
-如果你希望将内容前置到 stack 的开头，应使用 `@prepend` 指令：
+如果你想将内容前置到栈的开头，应使用 `@prepend` 指令：
 
 ```blade
 @push('scripts')
     This will be second...
 @endpush
 
-// Later...
+// 稍后...
 
 @prepend('scripts')
     This will be first...
 @endprepend
 ```
 
-`@hasstack` 指令可用于判断 stack 是否为空：
+`@hasstack` 指令可用于判断栈是否为空：
 
 ```blade
 @hasstack('list')
@@ -1782,9 +1905,10 @@ Blade 允许你推送到具名 stacks，这些 stacks 可以在另一个视图�
 @endif
 ```
 
+<a name="service-injection"></a>
 ## 服务注入
 
-`@inject` 指令可用于从 Laravel [服务容器](/topic/Laravel%2013.x/x3vo054vm1.html) 中检索服务。传递给 `@inject` 的第一个参数是服务将要放入的变量名称，第二个参数是你希望解析的服务的类名或接口名：
+`@inject` 指令可用于从 Laravel [服务容器](/docs/{{version}}/container) 中检索服务。传递给 `@inject` 的第一个参数是服务将被放入其中的变量名，而第二个参数是你希望解析的服务的类或接口名：
 
 ```blade
 @inject('metrics', 'App\Services\MetricsService')
@@ -1794,9 +1918,10 @@ Blade 允许你推送到具名 stacks，这些 stacks 可以在另一个视图�
 </div>
 ```
 
+<a name="rendering-inline-blade-templates"></a>
 ## 渲染内联 Blade 模板
 
-有时你可能需要将原始的 Blade 模板字符串转换为有效的 HTML。你可以使用 `Blade` Facade 提供的 `render` 方法来实现。`render` 方法接受 Blade 模板字符串以及一个可选的提供给模板的数据数组：
+有时你可能需要将原始的 Blade 模板字符串转换为有效的 HTML。你可以使用 `Blade` facade 提供的 `render` 方法来实现。该方法接受 Blade 模板字符串和一个可选的提供给模板的数据数组：
 
 ```php
 use Illuminate\Support\Facades\Blade;
@@ -1804,7 +1929,7 @@ use Illuminate\Support\Facades\Blade;
 return Blade::render('Hello, {{ $name }}', ['name' => 'Julian Bashir']);
 ```
 
-Laravel 通过将内联 Blade 模板写入 `storage/framework/views` 目录来渲染它们。如果你希望 Laravel 在渲染 Blade 模板后删除这些临时文件，可以向方法提供 `deleteCachedView` 参数：
+Laravel 通过将内联 Blade 模板写入 `storage/framework/views` 目录来渲染它们。如果你希望 Laravel 在渲染 Blade 模板后删除这些临时文件，可以向该方法提供 `deleteCachedView` 参数：
 
 ```php
 return Blade::render(
@@ -1814,9 +1939,10 @@ return Blade::render(
 );
 ```
 
-## 渲染 Blade Fragments
+<a name="rendering-blade-fragments"></a>
+## 渲染 Blade 片段
 
-在使用诸如 [Turbo](https://turbo.hotwired.dev/) 和 [htmx](https://htmx.org/) 等前端框架时，你可能偶尔需要仅在 HTTP 响应中返回部分 Blade 模板。Blade「fragments」正是为此而设计的。首先，将部分 Blade 模板放在 `@fragment` 和 `@endfragment` 指令中：
+使用 [Turbo](https://turbo.hotwired.dev/) 和 [htmx](https://htmx.org/) 等前端框架时，你可能偶尔只需要在 HTTP 响应中返回 Blade 模板的一部分。Blade"片段"正是为此而生。首先，将 Blade 模板的一部分放在 `@fragment` 和 `@endfragment` 指令中：
 
 ```blade
 @fragment('user-list')
@@ -1828,20 +1954,20 @@ return Blade::render(
 @endfragment
 ```
 
-然后，在渲染使用此模板的视图时，可以调用 `fragment` 方法指定响应中仅应包含指定的 fragment：
+然后，当渲染使用该模板的视图时，你可以调用 `fragment` 方法来指定只有指定的片段应包含在传出的 HTTP 响应中：
 
 ```php
 return view('dashboard', ['users' => $users])->fragment('user-list');
 ```
 
-`fragmentIf` 方法允许你根据给定条件有条件地返回视图的 fragment。否则，将返回整个视图：
+`fragmentIf` 方法允许你根据给定条件有条件地返回视图的一个片段。否则，将返回整个视图：
 
 ```php
 return view('dashboard', ['users' => $users])
     ->fragmentIf($request->hasHeader('HX-Request'), 'user-list');
 ```
 
-`fragments` 和 `fragmentsIf` 方法允许你在响应中返回多个视图 fragment。这些 fragment 将连接在一起：
+`fragments` 和 `fragmentsIf` 方法允许你在响应中返回多个视图片段。这些片段将被连接在一起：
 
 ```php
 view('dashboard', ['users' => $users])
@@ -1854,11 +1980,12 @@ view('dashboard', ['users' => $users])
     );
 ```
 
+<a name="extending-blade"></a>
 ## 扩展 Blade
 
-Blade 允许你使用 `directive` 方法定义自己的自定义指令。当 Blade 编译器遇到自定义指令时，它将使用该指令包含的表达式调用提供的回调。
+Blade 允许你使用 `directive` 方法定义自己的自定义指令。当 Blade 编译器遇到自定义指令时，它将使用指令包含的表达式调用提供的回调。
 
-以下示例创建一个 `@datetime($var)` 指令，用于格式化给定的 `$var`，该变量应为 `DateTime` 的实例：
+以下示例创建了一个 `@datetime($var)` 指令，用于格式化给定的 `$var`，它应该是 `DateTime` 的一个实例：
 
 ```php
 <?php
@@ -1871,3 +1998,93 @@ use Illuminate\Support\ServiceProvider;
 class AppServiceProvider extends ServiceProvider
 {
     /**
+     * 注册任意应用服务。
+     */
+    public function register(): void
+    {
+        // ...
+    }
+
+    /**
+     * 引导任意应用服务。
+     */
+    public function boot(): void
+    {
+        Blade::directive('datetime', function (string $expression) {
+            return "<?php echo ($expression)->format('m/d/Y H:i'); ?>";
+        });
+    }
+}
+```
+
+如你所见，我们将对传入指令的任何表达式链式调用 `format` 方法。因此，在此示例中，该指令生成的最终 PHP 将是：
+
+```php
+<?php echo ($var)->format('m/d/Y H:i'); ?>
+```
+
+> [!WARNING]
+> 更新 Blade 指令的逻辑后，你需要删除所有缓存的 Blade 视图。可以使用 `view:clear` Artisan 命令删除缓存的 Blade 视图。
+
+<a name="custom-echo-handlers"></a>
+### 自定义 Echo 处理器
+
+如果你尝试使用 Blade"echo"一个对象，该对象的 `__toString` 方法将被调用。[__toString](https://www.php.net/manual/en/language.oop5.magic.php#object.tostring) 方法是 PHP 内置的"魔术方法"之一。但是，有时你可能无法控制给定类的 `__toString` 方法，例如当你交互的类属于第三方库时。
+
+在这些情况下，Blade 允许你为该特定类型的对象注册一个自定义 echo 处理器。为此，你应调用 Blade 的 `stringable` 方法。`stringable` 方法接受一个闭包。该闭包应类型提示它负责渲染的对象类型。通常，`stringable` 方法应在应用程序的 `AppServiceProvider` 类的 `boot` 方法中调用：
+
+```php
+use Illuminate\Support\Facades\Blade;
+use Money\Money;
+
+/**
+ * 引导任意应用服务。
+ */
+public function boot(): void
+{
+    Blade::stringable(function (Money $money) {
+        return $money->formatTo('en_GB');
+    });
+}
+```
+
+一旦定义了自定义 echo 处理器，你就可以在 Blade 模板中简单地 echo 该对象：
+
+```blade
+Cost: {{ $money }}
+```
+
+<a name="custom-if-statements"></a>
+### 自定义 If 语句
+
+在定义简单的自定义条件语句时，编写自定义指令有时比必要的更复杂。因此，Blade 提供了 `Blade::if` 方法，允许你使用闭包快速定义自定义条件指令。例如，让我们定义一个自定义条件来检查为应用程序配置的默认"磁盘"。我们可以在 `AppServiceProvider` 的 `boot` 方法中执行此操作：
+
+```php
+use Illuminate\Support\Facades\Blade;
+
+/**
+ * 引导任意应用服务。
+ */
+public function boot(): void
+{
+    Blade::if('disk', function (string $value) {
+        return config('filesystems.default') === $value;
+    });
+}
+```
+
+一旦定义了自定义条件，你就可以在模板中使用它：
+
+```blade
+@disk('local')
+    <!-- 应用程序正在使用本地磁盘... -->
+@elsedisk('s3')
+    <!-- 应用程序正在使用 s3 磁盘... -->
+@else
+    <!-- 应用程序正在使用其他磁盘... -->
+@enddisk
+
+@unlessdisk('local')
+    <!-- 应用程序未使用本地磁盘... -->
+@enddisk
+```

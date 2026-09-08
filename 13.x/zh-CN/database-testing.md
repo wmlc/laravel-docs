@@ -1,9 +1,17 @@
 # 数据库测试
 
+- [简介](#introduction)
+    - [每个测试后重置数据库](#resetting-the-database-after-each-test)
+- [模型工厂](#model-factories)
+- [运行数据填充](#running-seeders)
+- [可用断言](#available-assertions)
+
+<a name="introduction"></a>
 ## 简介
 
-Laravel 提供了多种实用的工具和断言，让你能够更轻松地测试基于数据库驱动的应用。此外，Laravel 的模型工厂（model factory）和填充器（seeder）让你能够借助应用的 Eloquent 模型和关联轻松创建测试数据库记录。我们将在下文中讨论所有这些强大特性。
+Laravel 提供了多种实用的工具和断言，让你能够更轻松地测试基于数据库驱动的应用。此外，Laravel 的模型工厂（model factory）和数据填充（Seeder）让你能够借助应用的 Eloquent 模型和关联轻松创建测试数据库记录。我们将在下文中讨论所有这些强大特性。
 
+<a name="resetting-the-database-after-each-test"></a>
 ### 每个测试后重置数据库
 
 在继续深入之前，我们先来讨论如何在每个测试之后重置数据库，以免上一个测试的数据干扰后续测试。Laravel 内置的 `Illuminate\Foundation\Testing\RefreshDatabase` trait 会替你完成这项工作。只需在你的测试类中使用该 trait 即可：
@@ -50,11 +58,12 @@ class ExampleTest extends TestCase
 
 如果你希望完全重置数据库，可以改用 `Illuminate\Foundation\Testing\DatabaseMigrations` 或 `Illuminate\Foundation\Testing\DatabaseTruncation` trait。不过，这两种方式都比 `RefreshDatabase` trait 慢得多。
 
+<a name="model-factories"></a>
 ## 模型工厂
 
-在测试时，你可能需要在执行测试之前向数据库中插入几条记录。Laravel 允许你使用[模型工厂](/topic/Laravel%2013.x/wevwmlz9l2.html)，为你的每个 [Eloquent 模型](/topic/Laravel%2013.x/rwyl2kxvz8.html)定义一组默认属性，而无需在创建测试数据时手动指定每个列的值。
+在测试时，你可能需要在执行测试之前向数据库中插入几条记录。Laravel 允许你使用[模型工厂](/docs/{{version}}/eloquent-factories)，为你的每个 [Eloquent 模型](/docs/{{version}}/eloquent)定义一组默认属性，而无需在创建测试数据时手动指定每个列的值。
 
-要了解如何创建并使用模型工厂来创建模型，请参阅完整的[模型工厂文档](/topic/Laravel%2013.x/wevwmlz9l2.html)。一旦定义了模型工厂，你就可以在测试中利用工厂来创建模型：
+要了解如何创建并使用模型工厂来创建模型，请参阅完整的[模型工厂文档](/docs/{{version}}/eloquent-factories)。一旦定义了模型工厂，你就可以在测试中利用工厂来创建模型：
 
 ```php tab=Pest
 use App\Models\User;
@@ -77,9 +86,10 @@ public function test_models_can_be_instantiated(): void
 }
 ```
 
+<a name="running-seeders"></a>
 ## 运行数据填充
 
-如果你想在功能测试期间使用[数据库填充器](/topic/Laravel%2013.x/qk942novw1.html)来填充数据库，可以调用 `seed` 方法。默认情况下，`seed` 方法会执行 `DatabaseSeeder`，而它应当执行你所有的其他填充器。或者，你也可以向 `seed` 方法传入一个特定的填充器类名：
+如果你想在功能测试期间使用[数据库数据填充（Seeder）](/docs/{{version}}/seeding)来填充数据库，可以调用 `seed` 方法。默认情况下，`seed` 方法会执行 `DatabaseSeeder`，而它应当执行你所有的其他数据填充。或者，你也可以向 `seed` 方法传入一个特定的数据填充类名：
 
 ```php tab=Pest
 <?php
@@ -94,12 +104,12 @@ test('orders can be created', function () {
     // 运行 DatabaseSeeder...
     $this->seed();
 
-    // 运行特定的填充器...
+    // 运行特定的数据填充...
     $this->seed(OrderStatusSeeder::class);
 
     // ...
 
-    // 运行一组特定的填充器...
+    // 运行一组特定的数据填充...
     $this->seed([
         OrderStatusSeeder::class,
         TransactionStatusSeeder::class,
@@ -130,12 +140,12 @@ class ExampleTest extends TestCase
         // 运行 DatabaseSeeder...
         $this->seed();
 
-        // 运行特定的填充器...
+        // 运行特定的数据填充...
         $this->seed(OrderStatusSeeder::class);
 
         // ...
 
-        // 运行一组特定的填充器...
+        // 运行一组特定的数据填充...
         $this->seed([
             OrderStatusSeeder::class,
             TransactionStatusSeeder::class,
@@ -161,7 +171,7 @@ abstract class TestCase extends BaseTestCase
 }
 ```
 
-当存在 `Seed` 属性时，测试会在每个使用 `RefreshDatabase` trait 的测试之前运行 `Database\Seeders\DatabaseSeeder` 类。不过，你也可以通过测试类上的 `Seeder` 属性来指定应当执行的具体填充器：
+当存在 `Seed` 属性时，测试会在每个使用 `RefreshDatabase` trait 的测试之前运行 `Database\Seeders\DatabaseSeeder` 类。不过，你也可以通过测试类上的 `Seeder` 属性来指定应当执行的具体数据填充：
 
 ```php
 <?php
@@ -182,10 +192,12 @@ class OrderTest extends TestCase
 }
 ```
 
+<a name="available-assertions"></a>
 ## 可用断言
 
 Laravel 为你的 [Pest](https://pestphp.com) 或 [PHPUnit](https://phpunit.de) 功能测试提供了多个数据库断言。我们将在下文逐一讨论这些断言。
 
+<a name="assert-database-count"></a>
 #### assertDatabaseCount
 
 断言数据库中的某个表包含给定数量的记录：
@@ -194,6 +206,7 @@ Laravel 为你的 [Pest](https://pestphp.com) 或 [PHPUnit](https://phpunit.de) 
 $this->assertDatabaseCount('users', 5);
 ```
 
+<a name="assert-database-empty"></a>
 #### assertDatabaseEmpty
 
 断言数据库中的某个表不包含任何记录：
@@ -202,6 +215,7 @@ $this->assertDatabaseCount('users', 5);
 $this->assertDatabaseEmpty('users');
 ```
 
+<a name="assert-database-has"></a>
 #### assertDatabaseHas
 
 断言数据库中的某个表包含匹配给定键 / 值查询约束的记录：
@@ -212,6 +226,7 @@ $this->assertDatabaseHas('users', [
 ]);
 ```
 
+<a name="assert-database-missing"></a>
 #### assertDatabaseMissing
 
 断言数据库中的某个表不包含匹配给定键 / 值查询约束的记录：
@@ -222,22 +237,25 @@ $this->assertDatabaseMissing('users', [
 ]);
 ```
 
+<a name="assert-deleted"></a>
 #### assertSoftDeleted
 
-`assertSoftDeleted` 方法可用于断言给定的 Eloquent 模型已被"软删除"：
+`assertSoftDeleted` 方法可用于断言给定的 Eloquent 模型已被「软删除」：
 
 ```php
 $this->assertSoftDeleted($user);
 ```
 
+<a name="assert-not-deleted"></a>
 #### assertNotSoftDeleted
 
-`assertNotSoftDeleted` 方法可用于断言给定的 Eloquent 模型未被"软删除"：
+`assertNotSoftDeleted` 方法可用于断言给定的 Eloquent 模型未被「软删除」：
 
 ```php
 $this->assertNotSoftDeleted($user);
 ```
 
+<a name="assert-model-exists"></a>
 #### assertModelExists
 
 断言给定的模型或模型集合存在于数据库中：
@@ -250,6 +268,7 @@ $user = User::factory()->create();
 $this->assertModelExists($user);
 ```
 
+<a name="assert-model-missing"></a>
 #### assertModelMissing
 
 断言给定的模型或模型集合不存在于数据库中：
@@ -264,6 +283,7 @@ $user->delete();
 $this->assertModelMissing($user);
 ```
 
+<a name="expects-database-query-count"></a>
 #### expectsDatabaseQueryCount
 
 `expectsDatabaseQueryCount` 方法可以在测试开始时调用，用于指定你期望在测试期间运行的总数据库查询次数。如果实际执行的查询次数与该期望值不完全匹配，测试将失败：

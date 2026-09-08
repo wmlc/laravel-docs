@@ -1,8 +1,24 @@
 # 数据库：入门
 
+- [简介](#introduction)
+    - [配置](#configuration)
+    - [读写连接](#read-and-write-connections)
+    - [PostgreSQL 连接池](#pooled-postgresql-connections)
+- [运行 SQL 查询](#running-queries)
+    - [使用多个数据库连接](#using-multiple-database-connections)
+    - [监听查询事件](#listening-for-query-events)
+    - [监控累计查询时间](#monitoring-cumulative-query-time)
+- [数据库事务](#database-transactions)
+- [连接数据库 CLI](#connecting-to-the-database-cli)
+- [检查你的数据库](#inspecting-your-databases)
+- [监控你的数据库](#monitoring-your-databases)
+
+<a name="introduction"></a>
 ## 简介
 
-几乎每个现代 Web 应用都会与数据库交互。Laravel 借助原生 SQL、[流畅的查询构造器](/topic/Laravel%2013.x/xpv525gv86.html)以及 [Eloquent ORM](/topic/Laravel%2013.x/rwyl2kxvz8.html)，让使用各种受支持的数据库进行交互变得极其简单。目前，Laravel 为五种数据库提供第一方支持：
+几乎每个现代 Web 应用都会与数据库交互。Laravel 借助原生 SQL、[流畅的查询构造器](/docs/{{version}}/queries)以及 [Eloquent ORM](/docs/{{version}}/eloquent)，让使用各种受支持的数据库进行交互变得极其简单。目前，Laravel 为五种数据库提供第一方支持：
+
+<div class="content-list" markdown="1">
 
 - MariaDB 10.3+ ([版本策略](https://mariadb.org/about/#maintenance-policy))
 - MySQL 5.7+ ([版本策略](https://en.wikipedia.org/wiki/MySQL#Release_history))
@@ -10,14 +26,18 @@
 - SQLite 3.26.0+
 - SQL Server 2017+ ([版本策略](https://docs.microsoft.com/en-us/lifecycle/products/?products=sql-server))
 
+</div>
+
 此外，MongoDB 通过 `mongodb/laravel-mongodb` 包提供支持，该包由 MongoDB 官方维护。欲了解更多信息，请查阅 [Laravel MongoDB](https://www.mongodb.com/docs/drivers/php/laravel-mongodb/) 文档。
 
+<a name="configuration"></a>
 ### 配置
 
 Laravel 数据库服务的配置位于应用的 `config/database.php` 配置文件中。在该文件中，你可以定义所有的数据库连接，并指定默认使用哪个连接。该文件中的大多数配置选项都由应用环境变量的值驱动。文件中提供了 Laravel 大多数受支持数据库系统的示例。
 
-默认情况下，Laravel 的示例[环境配置](/topic/Laravel%2013.x/3dykqpoyl0.html)已准备好与 [Laravel Sail](/topic/Laravel%2013.x/e296opw9q7.html)（一个用于在本地机器上开发 Laravel 应用的 Docker 配置）配合使用。不过，你可以根据本地数据库的需要自由修改数据库配置。
+默认情况下，Laravel 的示例[环境配置](/docs/{{version}}/configuration#environment-configuration)已准备好与 [Laravel Sail](/docs/{{version}}/sail)（一个用于在本地机器上开发 Laravel 应用的 Docker 配置）配合使用。不过，你可以根据本地数据库的需要自由修改数据库配置。
 
+<a name="sqlite-configuration"></a>
 #### SQLite 配置
 
 SQLite 数据库包含在文件系统上的一个单独文件中。你可以使用终端中的 `touch` 命令创建一个新 SQLite 数据库：`touch database/database.sqlite`。创建数据库之后，你可以轻松配置环境变量，将数据库的绝路径放入 `DB_DATABASE` 环境变量，从而指向该数据库：
@@ -34,17 +54,19 @@ DB_FOREIGN_KEYS=false
 ```
 
 > [!NOTE]
-> 如果你使用 [Laravel 安装器](/topic/Laravel%2013.x/2wy3lj3ykm.html)创建 Laravel 应用并选择 SQLite 作为数据库，Laravel 会自动创建一个 `database/database.sqlite` 文件并为你运行默认的[数据库迁移](/topic/Laravel%2013.x/x3vo0g4vm1.html)。
+> 如果你使用 [Laravel 安装器](/docs/{{version}}/installation#creating-a-laravel-project)创建 Laravel 应用并选择 SQLite 作为数据库，Laravel 会自动创建一个 `database/database.sqlite` 文件并为你运行默认的[数据库迁移](/docs/{{version}}/migrations)。
 
+<a name="mssql-configuration"></a>
 #### Microsoft SQL Server 配置
 
 要使用 Microsoft SQL Server 数据库，你应当确保已安装 `sqlsrv` 和 `pdo_sqlsrv` PHP 扩展，以及它们可能需要的任何依赖项（例如 Microsoft SQL ODBC 驱动程序）。
 
+<a name="configuration-using-urls"></a>
 #### 使用 URL 进行配置
 
 通常，数据库连接使用多个配置值来配置，例如 `host`、`database`、`username`、`password` 等。这些配置值各自都有对应的环境变量。这意味着在生产服务器上配置数据库连接信息时，你需要管理多个环境变量。
 
-一些托管数据库提供商（如 AWS 和 Heroku）会提供一个单一的数据库"URL"，其中包含所有连接信息，合并为一个字符串。一个数据库 URL 示例可能如下所示：
+一些托管数据库提供商（如 AWS 和 Heroku）会提供一个单一的数据库「URL」，其中包含所有连接信息，合并为一个字符串。一个数据库 URL 示例可能如下所示：
 
 ```html
 mysql://root:password@127.0.0.1/forge?charset=UTF-8
@@ -58,6 +80,7 @@ driver://username:password@host:port/database?options
 
 为方便起见，Laravel 支持将这些 URL 作为使用多个配置选项配置数据库的替代方案。如果存在 `url`（或对应的 `DB_URL` 环境变量）配置选项，它将被用来提取数据库连接和凭据信息。
 
+<a name="read-and-write-connections"></a>
 ### 读写连接
 
 有时你可能希望使用一个数据库连接来执行 SELECT 语句，而使用另一个连接来执行 INSERT、UPDATE 和 DELETE 语句。Laravel 让这件事变得轻而易举，无论你使用的是原生查询、查询构造器还是 Eloquent ORM，都会始终使用正确的连接。
@@ -100,12 +123,14 @@ driver://username:password@host:port/database?options
 
 注意，配置数组中新增了三个键：`read`、`write` 和 `sticky`。`read` 和 `write` 键的值都是数组，包含一个单独的键：`host`。`read` 和 `write` 连接的其余数据库选项会从主 `mysql` 配置数组合并而来。
 
-只有当你希望覆盖主 `mysql` 数组中的值时，才需要将条目放入 `read` 和 `write` 数组。因此，在本例中，`192.168.1.1` 会被用作"读"连接的主机，而 `192.168.1.3` 会被用作"写"连接的主机。数据库凭据、前缀、字符集以及主 `mysql` 数组中的所有其他选项会在两个连接之间共享。当 `host` 配置数组中存在多个值时，每个请求都会随机选择一个数据库主机。
+只有当你希望覆盖主 `mysql` 数组中的值时，才需要将条目放入 `read` 和 `write` 数组。因此，在本例中，`192.168.1.1` 会被用作「读」连接的主机，而 `192.168.1.3` 会被用作「写」连接的主机。数据库凭据、前缀、字符集以及主 `mysql` 数组中的所有其他选项会在两个连接之间共享。当 `host` 配置数组中存在多个值时，每个请求都会随机选择一个数据库主机。
 
+<a name="the-sticky-option"></a>
 #### `sticky` 选项
 
-`sticky` 选项是一个*可选*值，可用于允许读取在当前请求周期内写入数据库的记录。如果启用了 `sticky` 选项，并且当前请求周期内已对数据库执行了"写"操作，那么任何后续的"读"操作都会使用"写"连接。这确保了请求周期内写入的任何数据都能在同一请求中立即从数据库读回。是否采用这种行为由你自行决定。
+`sticky` 选项是一个*可选*值，可用于允许读取在当前请求周期内写入数据库的记录。如果启用了 `sticky` 选项，并且当前请求周期内已对数据库执行了「写」操作，那么任何后续的「读」操作都会使用「写」连接。这确保了请求周期内写入的任何数据都能在同一请求中立即从数据库读回。是否采用这种行为由你自行决定。
 
+<a name="pooled-postgresql-connections"></a>
 ### PostgreSQL 连接池
 
 许多托管的 PostgreSQL 提供商通过 PgBouncer 或连接代理等服务，提供事务模式的连接池。这些连接池非常适合应用查询，但某些结构操作、迁移和维护命令需要直接的数据库连接。
@@ -141,11 +166,13 @@ php artisan db --pooled
 DB::connection('pgsql::direct')->statement('create extension if not exists "uuid-ossp"');
 ```
 
+<a name="running-queries"></a>
 ## 运行 SQL 查询
 
 配置好数据库连接后，你就可以使用 `DB` facade 来运行查询。`DB` facade 为每种查询类型都提供了方法：`select`、`update`、`insert`、`delete` 和 `statement`。
 
-### 执行查询
+<a name="running-a-select-query"></a>
+#### 执行查询
 
 要运行一个基础的 SELECT 查询，可以使用 `DB` facade 的 `select` 方法：
 
@@ -185,6 +212,7 @@ foreach ($users as $user) {
 }
 ```
 
+<a name="selecting-scalar-values"></a>
 #### 选择标量值
 
 有时你的数据库查询可能返回一个单独的标量值。Laravel 允许你使用 `scalar` 方法直接检索该值，而无需从记录对象中获取查询的标量结果：
@@ -195,6 +223,7 @@ $burgers = DB::scalar(
 );
 ```
 
+<a name="selecting-multiple-result-sets"></a>
 #### 选择多个结果集
 
 如果你的应用调用返回多个结果集的存储过程，可以使用 `selectResultSets` 方法来检索存储过程返回的所有结果集：
@@ -205,6 +234,7 @@ $burgers = DB::scalar(
 );
 ```
 
+<a name="using-named-bindings"></a>
 #### 使用命名绑定
 
 除了使用 `?` 表示参数绑定之外，你也可以使用命名绑定来执行查询：
@@ -213,6 +243,7 @@ $burgers = DB::scalar(
 $results = DB::select('select * from users where id = :id', ['id' => 1]);
 ```
 
+<a name="running-an-insert-statement"></a>
 #### 执行插入语句
 
 要执行 `insert` 语句，可以使用 `DB` facade 的 `insert` 方法。与 `select` 一样，该方法接受 SQL 查询作为第一个参数，绑定作为第二个参数：
@@ -223,6 +254,7 @@ use Illuminate\Support\Facades\DB;
 DB::insert('insert into users (id, name) values (?, ?)', [1, 'Marc']);
 ```
 
+<a name="running-an-update-statement"></a>
 #### 执行更新语句
 
 应当使用 `update` 方法来更新数据库中已存在的记录。该方法会返回受该语句影响的行数：
@@ -236,6 +268,7 @@ $affected = DB::update(
 );
 ```
 
+<a name="running-a-delete-statement"></a>
 #### 执行删除语句
 
 应当使用 `delete` 方法来从数据库中删除记录。与 `update` 一样，该方法会返回受影响的行数：
@@ -246,6 +279,7 @@ use Illuminate\Support\Facades\DB;
 $deleted = DB::delete('delete from users');
 ```
 
+<a name="running-a-general-statement"></a>
 #### 执行通用语句
 
 有些数据库语句不返回任何值。对于这类操作，可以使用 `DB` facade 的 `statement` 方法：
@@ -254,6 +288,7 @@ $deleted = DB::delete('delete from users');
 DB::statement('drop table users');
 ```
 
+<a name="running-an-unprepared-statement"></a>
 #### 执行未预处理语句
 
 有时你可能希望执行一条不绑定任何值的 SQL 语句。可以使用 `DB` facade 的 `unprepared` 方法来完成：
@@ -265,6 +300,7 @@ DB::unprepared('update users set votes = 100 where name = "Dries"');
 > [!WARNING]
 > 由于未预处理的语句不会绑定参数，它们可能面临 SQL 注入风险。你绝不应在未预处理的语句中允许出现用户控制的值。
 
+<a name="implicit-commits-in-transactions"></a>
 #### 隐式提交
 
 在事务中使用 `DB` facade 的 `statement` 和 `unprepared` 方法时，必须小心避免会导致[隐式提交](https://dev.mysql.com/doc/refman/8.0/en/implicit-commit.html)的语句。这些语句会导致数据库引擎间接提交整个事务，使 Laravel 无法感知数据库的事务级别。这类语句的一个例子是创建数据库表：
@@ -275,6 +311,7 @@ DB::unprepared('create table a (col varchar(1) null)');
 
 请参阅 MySQL 手册中[触发隐式提交的所有语句列表](https://dev.mysql.com/doc/refman/8.0/en/implicit-commit.html)。
 
+<a name="using-multiple-database-connections"></a>
 ### 使用多个数据库连接
 
 如果你的应用在 `config/database.php` 配置文件中定义了多个连接，可以通过 `DB` facade 提供的 `connection` 方法访问每个连接。传给 `connection` 方法的连接名应当对应于 `config/database.php` 配置文件中列出的某个连接，或者通过 `config` 辅助函数在运行时配置的某个连接：
@@ -291,9 +328,10 @@ $users = DB::connection('sqlite')->select(/* ... */);
 $pdo = DB::connection()->getPdo();
 ```
 
+<a name="listening-for-query-events"></a>
 ### 监听查询事件
 
-如果你希望指定一个为应用执行的每个 SQL 查询调用的闭包，可以使用 `DB` facade 的 `listen` 方法。该方法可用于记录查询或进行调试。你可以在[服务提供者](/topic/Laravel%2013.x/qk942kovw1.html)的 `boot` 方法中注册你的查询监听器闭包：
+如果你希望指定一个为应用执行的每个 SQL 查询调用的闭包，可以使用 `DB` facade 的 `listen` 方法。该方法可用于记录查询或进行调试。你可以在[服务提供者](/docs/{{version}}/providers)的 `boot` 方法中注册你的查询监听器闭包：
 
 ```php
 <?php
@@ -329,9 +367,10 @@ class AppServiceProvider extends ServiceProvider
 }
 ```
 
+<a name="monitoring-cumulative-query-time"></a>
 ### 监控累计查询时间
 
-现代 Web 应用的一个常见性能瓶颈是查询数据库所花费的时间。值得庆幸的是，当 Laravel 在单次请求中查询数据库的时间过长时，它可以调用你选择的闭包或回调。首先，为 `whenQueryingForLongerThan` 方法提供一个查询时间阈值（以毫秒为单位）和闭包。你可以在[服务提供者](/topic/Laravel%2013.x/qk942kovw1.html)的 `boot` 方法中调用该方法：
+现代 Web 应用的一个常见性能瓶颈是查询数据库所花费的时间。值得庆幸的是，当 Laravel 在单次请求中查询数据库的时间过长时，它可以调用你选择的闭包或回调。首先，为 `whenQueryingForLongerThan` 方法提供一个查询时间阈值（以毫秒为单位）和闭包。你可以在[服务提供者](/docs/{{version}}/providers)的 `boot` 方法中调用该方法：
 
 ```php
 <?php
@@ -365,6 +404,7 @@ class AppServiceProvider extends ServiceProvider
 }
 ```
 
+<a name="database-transactions"></a>
 ## 数据库事务
 
 你可以使用 `DB` facade 提供的 `transaction` 方法，在数据库事务中运行一组操作。如果事务闭包中抛出了异常，事务会自动回滚，并重新抛出异常。如果闭包成功执行，事务会自动提交。使用 `transaction` 方法时，你无需手动回滚或提交：
@@ -379,6 +419,7 @@ DB::transaction(function () {
 });
 ```
 
+<a name="handling-deadlocks"></a>
 #### 处理死锁
 
 `transaction` 方法接受一个可选的第二个参数，用于定义发生死锁时事务应当重试的次数。一旦这些尝试耗尽，就会抛出异常：
@@ -393,6 +434,7 @@ DB::transaction(function () {
 }, attempts: 5);
 ```
 
+<a name="manually-using-transactions"></a>
 #### 手动使用事务
 
 如果你希望手动开始一个事务，并完全控制回滚和提交，可以使用 `DB` facade 提供的 `beginTransaction` 方法：
@@ -416,8 +458,9 @@ DB::commit();
 ```
 
 > [!NOTE]
-> `DB` facade 的事务方法控制着[查询构造器](/topic/Laravel%2013.x/xpv525gv86.html)和 [Eloquent ORM](/topic/Laravel%2013.x/rwyl2kxvz8.html) 的事务。
+> `DB` facade 的事务方法控制着[查询构造器](/docs/{{version}}/queries)和 [Eloquent ORM](/docs/{{version}}/eloquent) 的事务。
 
+<a name="connecting-to-the-database-cli"></a>
 ## 连接数据库 CLI
 
 如果你想连接到数据库的命令行界面，可以使用 `db` Artisan 命令：
@@ -432,6 +475,7 @@ php artisan db
 php artisan db mysql
 ```
 
+<a name="inspecting-your-databases"></a>
 ## 检查你的数据库
 
 使用 `db:show` 和 `db:table` Artisan 命令，你可以获得关于数据库及其相关表的宝贵洞察。要查看数据库的概览（包括其大小、类型、打开的连接数以及表的摘要），可以使用 `db:show` 命令：
@@ -470,6 +514,7 @@ $foreignKeys = Schema::getForeignKeys('users');
 $columns = Schema::connection('sqlite')->getColumns('users');
 ```
 
+<a name="table-overview"></a>
 #### 表概览
 
 如果你想获得数据库中某个单独表的概览，可以执行 `db:table` Artisan 命令。该命令会提供数据库表的一般概览，包括其列、类型、属性、键和索引：
@@ -478,11 +523,12 @@ $columns = Schema::connection('sqlite')->getColumns('users');
 php artisan db:table users
 ```
 
+<a name="monitoring-your-databases"></a>
 ## 监控你的数据库
 
 使用 `db:monitor` Artisan 命令，你可以指示 Laravel 在数据库管理的打开连接数超过指定数量时派发一个 `Illuminate\Database\Events\DatabaseBusy` 事件。
 
-首先，你应当安排 `db:monitor` 命令[每分钟运行一次](/topic/Laravel%2013.x/e296olw9q7.html)。该命令接受你希望监控的数据库连接配置名称，以及在派发事件之前可容忍的最大打开连接数：
+首先，你应当安排 `db:monitor` 命令[每分钟运行一次](/docs/{{version}}/scheduling)。该命令接受你希望监控的数据库连接配置名称，以及在派发事件之前可容忍的最大打开连接数：
 
 ```shell
 php artisan db:monitor --databases=mysql,pgsql --max=100

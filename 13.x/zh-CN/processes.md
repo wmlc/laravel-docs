@@ -1,12 +1,34 @@
 # 进程
 
+- [简介](#introduction)
+- [调用进程](#invoking-processes)
+    - [进程选项](#process-options)
+    - [进程输出](#process-output)
+    - [管道](#process-pipelines)
+- [异步进程](#asynchronous-processes)
+    - [进程 ID 与信号](#process-ids-and-signals)
+    - [异步进程输出](#asynchronous-process-output)
+    - [异步进程超时](#asynchronous-process-timeouts)
+- [并发进程](#concurrent-processes)
+    - [为池中进程命名](#naming-pool-processes)
+    - [池进程 ID 与信号](#pool-process-ids-and-signals)
+- [测试](#testing)
+    - [模拟进程](#faking-processes)
+    - [模拟特定进程](#faking-specific-processes)
+    - [模拟进程序列](#faking-process-sequences)
+    - [模拟异步进程生命周期](#faking-asynchronous-process-lifecycles)
+    - [可用的断言](#available-assertions)
+    - [阻止意外进程](#preventing-stray-processes)
+
+<a name="introduction"></a>
 ## 简介
 
-Laravel 对 [Symfony Process 组件](https://symfony.com/doc/current/components/process.html) 提供了一套表达力强、精练的封装，让我们能方便地在 Laravel 应用中调用外部进程。Laravel 的进程特性专注于最常见的用例与出色的开发体验。
+Laravel 围绕 [Symfony Process 组件](https://symfony.com/doc/current/components/process.html)提供了富有表现力、极简的 API，使你能够方便地从 Laravel 应用中调用外部进程。Laravel 的进程功能专注于最常见的用例，并提供出色的开发者体验。
 
+<a name="invoking-processes"></a>
 ## 调用进程
 
-要调用一个进程，可以使用 `Process` 门面提供的 `run` 与 `start` 方法。`run` 方法会调用进程并等待其执行结束；`start` 方法用于异步调用进程。两种方式都会在本节中介绍。首先看一下如何调用一个基础的同步进程并读取结果：
+要调用进程，可以使用 `Process` Facade 提供的 `run` 和 `start` 方法。`run` 方法将调用进程并等待进程完成执行，而 `start` 方法用于异步进程执行。我们将在本文档中讨论这两种方法。首先，让我们看看如何调用一个基本的、同步的进程并检查其结果：
 
 ```php
 use Illuminate\Support\Facades\Process;
@@ -16,7 +38,7 @@ $result = Process::run('ls -la');
 return $result->output();
 ```
 
-当然，`run` 方法返回的 `Illuminate\Contracts\Process\ProcessResult` 实例还提供了多种用于检查结果的有用方法：
+当然，`run` 方法返回的 `Illuminate\Contracts\Process\ProcessResult` 实例提供了多种可用于检查进程结果的实用方法：
 
 ```php
 $result = Process::run('ls -la');
@@ -29,9 +51,10 @@ $result->errorOutput();
 $result->exitCode();
 ```
 
+<a name="throwing-exceptions"></a>
 #### 抛出异常
 
-如果希望在退出码大于零（表示失败）时抛出 `Illuminate\Process\Exceptions\ProcessFailedException` 实例，可以使用 `throw` 与 `throwIf` 方法。如果进程没有失败，则返回原 `ProcessResult` 实例：
+如果你有一个进程结果，并且希望在退出码大于零（表示失败）时抛出 `Illuminate\Process\Exceptions\ProcessFailedException` 实例，可以使用 `throw` 和 `throwIf` 方法。如果进程没有失败，将返回 `ProcessResult` 实例：
 
 ```php
 $result = Process::run('ls -la')->throw();
@@ -39,35 +62,39 @@ $result = Process::run('ls -la')->throw();
 $result = Process::run('ls -la')->throwIf($condition);
 ```
 
+<a name="process-options"></a>
 ### 进程选项
 
-调用进程前，通常需要对它的行为进行一些自定义。Laravel 允许你调整多种进程特性，例如工作目录、超时、环境变量等。
+当然，你可能需要在调用进程之前自定义其行为。幸运的是，Laravel 允许你调整多种进程特性，例如工作目录、超时和环境变量。
 
-#### 工作目录
+<a name="working-directory-path"></a>
+#### 工作目录路径
 
-可以使用 `path` 方法指定进程的工作目录。如果不调用此方法，进程会继承当前执行 PHP 脚本的工作目录：
+你可以使用 `path` 方法指定进程的工作目录。如果未调用此方法，进程将继承当前执行的 PHP 脚本的工作目录：
 
 ```php
 $result = Process::path(__DIR__)->run('ls -la');
 ```
 
+<a name="input"></a>
 #### 输入
 
-可以通过 `input` 方法把数据写入进程的「标准输入」：
+你可以使用 `input` 方法通过进程的"标准输入"提供输入：
 
 ```php
 $result = Process::input('Hello World')->run('cat');
 ```
 
+<a name="timeouts"></a>
 #### 超时
 
-默认情况下，进程执行超过 60 秒后会抛出 `Illuminate\Process\Exceptions\ProcessTimedOutException` 实例。但可以通过 `timeout` 方法自定义这一行为：
+默认情况下，进程在执行超过 60 秒后会抛出 `Illuminate\Process\Exceptions\ProcessTimedOutException` 实例。不过，你可以通过 `timeout` 方法自定义此行为：
 
 ```php
 $result = Process::timeout(120)->run('bash import.sh');
 ```
 
-`timeout` 与 `idleTimeout` 方法也接收 `CarbonInterval` 实例：
+`timeout` 和 `idleTimeout` 方法也接受 `CarbonInterval` 实例：
 
 ```php
 use function Illuminate\Support\minutes;
@@ -75,21 +102,22 @@ use function Illuminate\Support\minutes;
 $result = Process::timeout(minutes(2))->run('bash import.sh');
 ```
 
-如果希望完全禁用进程超时，可以调用 `forever` 方法：
+或者，如果你想完全禁用进程超时，可以调用 `forever` 方法：
 
 ```php
 $result = Process::forever()->run('bash import.sh');
 ```
 
-`idleTimeout` 方法可用于指定进程在没有任何输出时允许运行的最长秒数：
+`idleTimeout` 方法可用于指定进程在未返回任何输出时可运行的最大秒数：
 
 ```php
 $result = Process::timeout(60)->idleTimeout(30)->run('bash import.sh');
 ```
 
+<a name="environment-variables"></a>
 #### 环境变量
 
-可以通过 `env` 方法向进程提供环境变量。被调用的进程还会继承系统定义的全部环境变量：
+可以通过 `env` 方法向进程提供环境变量。被调用的进程还将继承系统定义的所有环境变量：
 
 ```php
 $result = Process::forever()
@@ -97,7 +125,7 @@ $result = Process::forever()
     ->run('bash import.sh');
 ```
 
-如果希望移除被调用进程继承的某个环境变量，可以把该变量设为 `false`：
+如果你想从被调用的进程中移除一个继承的环境变量，可以为该环境变量提供 `false` 值：
 
 ```php
 $result = Process::forever()
@@ -105,20 +133,22 @@ $result = Process::forever()
     ->run('bash import.sh');
 ```
 
+<a name="tty-mode"></a>
 #### TTY 模式
 
-`tty` 方法可以为进程启用 TTY 模式。该模式会把进程的输入输出连接到当前程序的输入输出，使进程可以像 Vim、Nano 那样以编辑器形式打开：
+`tty` 方法可用于为你的进程启用 TTY 模式。TTY 模式将进程的输入和输出连接到程序的输入和输出，使你的进程可以像 Vim 或 Nano 这样的编辑器作为进程打开：
 
 ```php
 Process::forever()->tty()->run('vim');
 ```
 
 > [!WARNING]
-> TTY 模式在 Windows 上不受支持。
+> Windows 上不支持 TTY 模式。
 
+<a name="process-output"></a>
 ### 进程输出
 
-如前所述，可以通过结果实例上的 `output`（stdout）与 `errorOutput`（stderr）方法获取进程输出：
+如前所述，可以使用进程结果上的 `output`（stdout）和 `errorOutput`（stderr）方法访问进程输出：
 
 ```php
 use Illuminate\Support\Facades\Process;
@@ -129,7 +159,7 @@ echo $result->output();
 echo $result->errorOutput();
 ```
 
-还可以通过把一个闭包作为 `run` 方法的第二个参数传入来实时收集输出。该闭包会接收两个参数：输出的「类型」（`stdout` 或 `stderr`）以及输出字符串本身：
+不过，输出也可以通过向 `run` 方法传递闭包作为第二个参数来实时收集。该闭包将接收两个参数：输出的"类型"（`stdout` 或 `stderr`）和输出字符串本身：
 
 ```php
 $result = Process::run('ls -la', function (string $type, string $output) {
@@ -137,7 +167,7 @@ $result = Process::run('ls -la', function (string $type, string $output) {
 });
 ```
 
-Laravel 还提供了 `seeInOutput` 与 `seeInErrorOutput` 方法，便于快速判断进程输出是否包含某个字符串：
+Laravel 还提供了 `seeInOutput` 和 `seeInErrorOutput` 方法，它们提供了一种便捷的方式来判断给定字符串是否包含在进程输出中：
 
 ```php
 if (Process::run('ls -la')->seeInOutput('laravel')) {
@@ -145,9 +175,10 @@ if (Process::run('ls -la')->seeInOutput('laravel')) {
 }
 ```
 
+<a name="disabling-process-output"></a>
 #### 禁用进程输出
 
-如果进程会输出大量数据，而你并不关心，可以完全禁用输出采集以节省内存。要做到这点，在构建进程时调用 `quietly` 方法：
+如果你的进程写入了大量你不关心的输出，可以通过完全禁用输出来节省内存。为此，请在构建进程时调用 `quietly` 方法：
 
 ```php
 use Illuminate\Support\Facades\Process;
@@ -155,9 +186,10 @@ use Illuminate\Support\Facades\Process;
 $result = Process::quietly()->run('bash import.sh');
 ```
 
-### 管道（Pipelines）
+<a name="process-pipelines"></a>
+### 管道
 
-有时希望把一个进程的输出作为另一个进程的输入。这就是通常所说的把进程的输出「管道化」到另一个进程。`Process` 门面提供的 `pipe` 方法可以方便地实现这一点。`pipe` 方法会同步执行管道中的进程，并返回管道中**最后**一个进程的结果：
+有时你可能希望将一个进程的输出作为另一个进程的输入。这通常被称为将一个进程的输出"管道"给另一个进程。`Process` Facade 提供的 `pipe` 方法使这变得容易。`pipe` 方法将同步执行管道中的进程，并返回管道中最后一个进程的进程结果：
 
 ```php
 use Illuminate\Process\Pipe;
@@ -173,7 +205,7 @@ if ($result->successful()) {
 }
 ```
 
-如果不需要定制管道中的各个进程，可以直接向 `pipe` 方法传入命令字符串数组：
+如果你不需要自定义构成管道的单个进程，可以直接将命令字符串数组传递给 `pipe` 方法：
 
 ```php
 $result = Process::pipe([
@@ -182,7 +214,7 @@ $result = Process::pipe([
 ]);
 ```
 
-通过把闭包作为 `pipe` 方法的第二个参数传入，可以实时收集进程输出。闭包会接收两个参数：输出的「类型」（`stdout` 或 `stderr`）以及输出字符串本身：
+可以通过向 `pipe` 方法传递闭包作为第二个参数来实时收集进程输出。该闭包将接收两个参数：输出的"类型"（`stdout` 或 `stderr`）和输出字符串本身：
 
 ```php
 $result = Process::pipe(function (Pipe $pipe) {
@@ -193,7 +225,7 @@ $result = Process::pipe(function (Pipe $pipe) {
 });
 ```
 
-Laravel 还允许通过 `as` 方法为管道内的每个进程分配字符串 key。该 key 也会被传给 `pipe` 方法的输出闭包，方便判断输出归属：
+Laravel 还允许你通过 `as` 方法为管道中的每个进程分配字符串键。此键也将传递给提供给 `pipe` 方法的输出闭包，使你可以判断输出属于哪个进程：
 
 ```php
 $result = Process::pipe(function (Pipe $pipe) {
@@ -204,9 +236,10 @@ $result = Process::pipe(function (Pipe $pipe) {
 });
 ```
 
+<a name="asynchronous-processes"></a>
 ## 异步进程
 
-`run` 方法是同步调用进程的，而 `start` 方法可用于异步调用进程。这允许你的应用在进程于后台执行的同时继续完成其他任务。一旦进程被调用，你可以使用 `running` 方法判断它是否仍在运行：
+虽然 `run` 方法同步调用进程，但 `start` 方法可用于异步调用进程。这允许你的应用在进程后台运行时继续执行其他任务。进程被调用后，你可以使用 `running` 方法判断进程是否仍在运行：
 
 ```php
 $process = Process::timeout(120)->start('bash import.sh');
@@ -218,7 +251,7 @@ while ($process->running()) {
 $result = $process->wait();
 ```
 
-正如下面所示，可以调用 `wait` 方法等待进程执行结束，并获取 `ProcessResult` 实例：
+你可能已经注意到，你可以调用 `wait` 方法，直到进程执行完毕并获取 `ProcessResult` 实例：
 
 ```php
 $process = Process::timeout(120)->start('bash import.sh');
@@ -228,9 +261,10 @@ $process = Process::timeout(120)->start('bash import.sh');
 $result = $process->wait();
 ```
 
+<a name="process-ids-and-signals"></a>
 ### 进程 ID 与信号
 
-可以使用 `id` 方法获取操作系统为运行中的进程分配的进程 ID：
+`id` 方法可用于获取运行进程的操作系统分配的进程 ID：
 
 ```php
 $process = Process::start('bash import.sh');
@@ -238,15 +272,16 @@ $process = Process::start('bash import.sh');
 return $process->id();
 ```
 
-可以使用 `signal` 方法向运行中的进程发送「信号」。预定义信号常量可以在 [PHP 文档](https://www.php.net/manual/en/pcntl.constants.php) 中查找：
+你可以使用 `signal` 方法向正在运行的进程发送"信号"。可以在 [PHP 文档](https://www.php.net/manual/en/pcntl.constants.php)中找到预定义的信号常量列表：
 
 ```php
 $process->signal(SIGUSR2);
 ```
 
-### 异步进程的输出
+<a name="asynchronous-process-output"></a>
+### 异步进程输出
 
-当一个异步进程运行时，可以通过 `output` 与 `errorOutput` 方法读取目前累计的全部输出；不过，你也可以使用 `latestOutput` 与 `latestErrorOutput` 仅读取上次读取后产生的输出：
+异步进程运行时，你可以使用 `output` 和 `errorOutput` 方法访问其当前的完整输出；不过，你可以使用 `latestOutput` 和 `latestErrorOutput` 访问自上次检索输出以来进程产生的输出：
 
 ```php
 $process = Process::timeout(120)->start('bash import.sh');
@@ -259,7 +294,7 @@ while ($process->running()) {
 }
 ```
 
-和 `run` 方法类似，通过给 `start` 方法传一个闭包作为第二参数，也能实时收集异步进程的输出。闭包会接收两个参数：输出的「类型」（`stdout` 或 `stderr`）以及输出字符串本身：
+与 `run` 方法类似，异步进程的输出也可以通过向 `start` 方法传递闭包作为第二个参数来实时收集。该闭包将接收两个参数：输出的"类型"（`stdout` 或 `stderr`）和输出字符串本身：
 
 ```php
 $process = Process::start('bash import.sh', function (string $type, string $output) {
@@ -269,7 +304,7 @@ $process = Process::start('bash import.sh', function (string $type, string $outp
 $result = $process->wait();
 ```
 
-如果不想一直等待进程完成，可以使用 `waitUntil` 方法。当传给 `waitUntil` 的闭包返回 `true` 时，Laravel 会立即停止等待：
+与其等到进程完成，你可以使用 `waitUntil` 方法基于进程输出停止等待。当提供给 `waitUntil` 方法的闭包返回 `true` 时，Laravel 将停止等待进程完成：
 
 ```php
 $process = Process::start('bash import.sh');
@@ -279,9 +314,10 @@ $process->waitUntil(function (string $type, string $output) {
 });
 ```
 
-### 异步进程的超时
+<a name="asynchronous-process-timeouts"></a>
+### 异步进程超时
 
-在异步进程运行过程中，可以使用 `ensureNotTimedOut` 方法确认进程是否已经超时。如果已经超时，该方法会抛出 超时异常：
+异步进程运行时，你可以使用 `ensureNotTimedOut` 方法验证进程是否超时。如果进程已超时，此方法将抛出[超时异常](#timeouts)：
 
 ```php
 $process = Process::timeout(120)->start('bash import.sh');
@@ -295,11 +331,12 @@ while ($process->running()) {
 }
 ```
 
+<a name="concurrent-processes"></a>
 ## 并发进程
 
-Laravel 还内置了一组便捷的能力来管理一组并发、异步的进程，让你能轻松地并行执行许多任务。要开始使用，可以调用 `pool` 方法，它接收一个接收 `Illuminate\Process\Pool` 实例的闭包。
+Laravel 还使管理并发、异步进程池变得轻而易举，让你可以轻松地同时执行许多任务。要开始，请调用 `pool` 方法，它接受一个接收 `Illuminate\Process\Pool` 实例的闭包。
 
-在该闭包内可以定义属于进程池的进程。一旦通过 `start` 方法启动了进程池，就可以通过 `running` 方法访问当前正在运行的进程 [集合](/topic/Laravel%2013.x/4rvgn63ydj.html)：
+在此闭包内，你可以定义属于该池的进程。一旦通过 `start` 方法启动了进程池，你就可以通过 `running` 方法访问正在运行的进程的[集合](/docs/{{version}}/collections)：
 
 ```php
 use Illuminate\Process\Pool;
@@ -320,7 +357,7 @@ while ($pool->running()->isNotEmpty()) {
 $results = $pool->wait();
 ```
 
-如上所示，你可以通过 `wait` 方法等待所有进程池中的进程执行完毕并解析它们的结果。`wait` 方法返回一个可按数组访问的对象，让你能通过 key 获取池中每个进程的 `ProcessResult` 实例：
+如你所见，你可以等待所有池进程完成执行，并通过 `wait` 方法解析它们的结果。`wait` 方法返回一个可数组访问的对象，允许你通过键访问池中每个进程的 `ProcessResult` 实例：
 
 ```php
 $results = $pool->wait();
@@ -328,7 +365,7 @@ $results = $pool->wait();
 echo $results[0]->output();
 ```
 
-为方便起见，也可以使用 `concurrently` 方法来启动一个异步进程池并立刻等待结果。配合 PHP 的数组解构，语法非常简洁：
+或者，为方便起见，可以使用 `concurrently` 方法启动一个异步进程池并立即等待其结果。与 PHP 的数组解构能力结合使用时，这可以提供特别富有表现力的语法：
 
 ```php
 [$first, $second, $third] = Process::concurrently(function (Pool $pool) {
@@ -340,9 +377,10 @@ echo $results[0]->output();
 echo $first->output();
 ```
 
-### 命名进程池
+<a name="naming-pool-processes"></a>
+### 为池中进程命名
 
-按数字 key 获取进程池结果表达力不强；Laravel 允许通过 `as` 方法为每个进程分配一个字符串 key。该 key 还会传给 `start` 方法的闭包，方便判断输出归属：
+通过数字键访问进程池结果不太富有表现力；因此，Laravel 允许你通过 `as` 方法为池中的每个进程分配字符串键。此键也将传递给提供给 `start` 方法的闭包，使你可以判断输出属于哪个进程：
 
 ```php
 $pool = Process::pool(function (Pool $pool) {
@@ -358,27 +396,30 @@ $results = $pool->wait();
 return $results['first']->output();
 ```
 
-### 进程池 ID 与信号
+<a name="pool-process-ids-and-signals"></a>
+### 池进程 ID 与信号
 
-由于进程池的 `running` 方法返回池内全部已调用进程的集合，可以方便地访问底层进程 ID：
+由于进程池的 `running` 方法提供了池中所有已调用进程的集合，你可以轻松访问底层池进程 ID：
 
 ```php
 $processIds = $pool->running()->each->id();
 ```
 
-同时，为方便起见，你可以在进程池上调用 `signal` 方法，向池内所有进程发送信号：
+并且，为方便起见，你可以在进程池上调用 `signal` 方法，向池中的每个进程发送信号：
 
 ```php
 $pool->signal(SIGUSR2);
 ```
 
+<a name="testing"></a>
 ## 测试
 
-许多 Laravel 服务都提供了简单直观的测试支持，Laravel 的进程服务也不例外。`Process` 门面的 `fake` 方法可以指示 Laravel 在调用进程时返回桩（dummy）结果。
+许多 Laravel 服务都提供功能来帮助你轻松且富有表现力地编写测试，Laravel 的进程服务也不例外。`Process` Facade 的 `fake` 方法允许你指示 Laravel 在调用进程时返回桩（stub）/ 虚拟结果。
 
-### Faking 进程
+<a name="faking-processes"></a>
+### 模拟进程
 
-为了演示 Laravel 的进程 fake 能力，假设我们有这样一条调用进程的路由：
+为了探索 Laravel 模拟进程的能力，让我们设想一个调用进程的路由：
 
 ```php
 use Illuminate\Support\Facades\Process;
@@ -391,7 +432,7 @@ Route::get('/import', function () {
 });
 ```
 
-在测试这条路由时，我们可以对 `Process` 门面无参调用 `fake` 方法，让 Laravel 在每次调用进程时返回一个假的、成功的结果。同时，我们还能 断言 某个进程是否被「调用过」：
+测试此路由时，我们可以通过不带参数地调用 `Process` Facade 上的 `fake` 方法，指示 Laravel 为每个被调用的进程返回一个虚拟的、成功的进程结果。此外，我们甚至可以[断言](#available-assertions)某个给定进程已被"运行"：
 
 ```php tab=Pest
 <?php
@@ -405,10 +446,10 @@ test('process is invoked', function () {
 
     $response = $this->get('/import');
 
-    // 简单进程断言……
+    // Simple process assertion...
     Process::assertRan('bash import.sh');
 
-    // 或者，检查进程的配置……
+    // Or, inspecting the process configuration...
     Process::assertRan(function (PendingProcess $process, ProcessResult $result) {
         return $process->command === 'bash import.sh' &&
                $process->timeout === 60;
@@ -434,10 +475,10 @@ class ExampleTest extends TestCase
 
         $response = $this->get('/import');
 
-        // 简单进程断言……
+        // Simple process assertion...
         Process::assertRan('bash import.sh');
 
-        // 或者，检查进程的配置……
+        // Or, inspecting the process configuration...
         Process::assertRan(function (PendingProcess $process, ProcessResult $result) {
             return $process->command === 'bash import.sh' &&
                    $process->timeout === 60;
@@ -446,7 +487,7 @@ class ExampleTest extends TestCase
 }
 ```
 
-如前所述，对 `Process` 门面调用 `fake` 方法会让 Laravel 总返回没有输出的成功结果。但使用 `Process` 门面的 `result` 方法，可以轻松指定 fake 进程的输出与退出码：
+如前所述，在 `Process` Facade 上调用 `fake` 方法将指示 Laravel 始终返回一个没有输出的、成功的进程结果。不过，你可以使用 `Process` Facade 的 `result` 方法轻松指定模拟进程的输出和退出码：
 
 ```php
 Process::fake([
@@ -458,11 +499,12 @@ Process::fake([
 ]);
 ```
 
-### Fake 特定进程
+<a name="faking-specific-processes"></a>
+### 模拟特定进程
 
-在前面的示例中已经看到，`Process` 门面允许通过给 `fake` 方法传一个数组，为不同的进程指定不同的 fake 结果。
+你可能在之前的示例中注意到，`Process` Facade 允许你通过向 `fake` 方法传递数组，为每个进程指定不同的模拟结果。
 
-数组的 key 表示要 fake 的命令模式，对应的值是返回结果。`*` 字符可以用作通配符。任何未被 fake 的进程命令仍会真正执行。可以用 `Process` 门面的 `result` 方法来构造这些命令的桩结果：
+数组的键应表示你想要模拟的命令模式及其关联的结果。`*` 字符可以用作通配符。任何未被模拟的进程命令实际上都会被调用。你可以使用 `Process` Facade 的 `result` 方法为这些命令构造桩 / 模拟结果：
 
 ```php
 Process::fake([
@@ -475,7 +517,7 @@ Process::fake([
 ]);
 ```
 
-如果不需要定制 fake 进程的退出码或错误输出，更简便的方式是直接把 fake 进程结果写成字符串：
+如果你不需要自定义模拟进程的退出码或错误输出，你可能会发现将模拟进程结果指定为简单字符串更方便：
 
 ```php
 Process::fake([
@@ -484,9 +526,10 @@ Process::fake([
 ]);
 ```
 
-### Fake 进程序列
+<a name="faking-process-sequences"></a>
+### 模拟进程序列
 
-如果要测试的代码使用相同命令多次调用进程，可能希望为每次调用分配不同的 fake 结果。可以通过 `Process` 门面的 `sequence` 方法实现：
+如果你正在测试的代码使用相同的命令调用多个进程，你可能希望为每次进程调用分配不同的模拟进程结果。你可以通过 `Process` Facade 的 `sequence` 方法实现这一点：
 
 ```php
 Process::fake([
@@ -496,11 +539,12 @@ Process::fake([
 ]);
 ```
 
-### Fake 异步进程生命周期
+<a name="faking-asynchronous-process-lifecycles"></a>
+### 模拟异步进程生命周期
 
-到目前为止，我们主要讨论了通过 `run` 方法同步调用的进程的 fake。但要测试与通过 `start` 调用的异步进程交互的代码时，可能需要更精细的 fake 描述。
+到目前为止，我们主要讨论了模拟使用 `run` 方法同步调用的进程。但是，如果你试图测试与通过 `start` 调用的异步进程交互的代码，可能需要更复杂的方法来描述模拟进程。
 
-例如，假设有如下与异步进程交互的路由：
+例如，让我们设想以下与异步进程交互的路由：
 
 ```php
 use Illuminate\Support\Facades\Log;
@@ -518,7 +562,7 @@ Route::get('/import', function () {
 });
 ```
 
-要正确 fake 此进程，我们需要能够描述 `running` 方法应该返回多少次 `true`。此外，我们可能希望按顺序指定多行输出。可以使用 `Process` 门面的 `describe` 方法实现：
+为了正确模拟此进程，我们需要能够描述 `running` 方法应返回 `true` 的次数。此外，我们可能希望指定应按顺序返回的多行输出。为此，我们可以使用 `Process` Facade 的 `describe` 方法：
 
 ```php
 Process::fake([
@@ -531,15 +575,17 @@ Process::fake([
 ]);
 ```
 
-我们来拆解上面的示例。通过 `output` 与 `errorOutput` 方法，可以按顺序返回多行输出。`exitCode` 方法用于指定 fake 进程的最终退出码。最后，`iterations` 方法用于指定 `running` 方法应该返回多少次 `true`。
+让我们深入探讨上面的示例。使用 `output` 和 `errorOutput` 方法，我们可以指定应按顺序返回的多行输出。`exitCode` 方法可用于指定模拟进程的最终退出码。最后，`iterations` 方法可用于指定 `running` 方法应返回 `true` 的次数。
 
+<a name="available-assertions"></a>
 ### 可用的断言
 
-如 前文 所述，Laravel 为功能测试提供了多种进程断言。下面分别介绍这些断言。
+如[前面讨论的](#faking-processes)，Laravel 为你的功能测试提供了几个进程断言。我们将在下面讨论每个断言。
 
+<a name="assert-process-ran"></a>
 #### assertRan
 
-断言某个指定的进程被调用过：
+断言给定进程已被调用：
 
 ```php
 use Illuminate\Support\Facades\Process;
@@ -547,15 +593,15 @@ use Illuminate\Support\Facades\Process;
 Process::assertRan('ls -la');
 ```
 
-当进程以参数数组形式被调用时，可以向断言传入同样的数组：
+当进程以参数数组调用时，你可以向断言传递相同的数组：
 
 ```php
 Process::assertRan(['php', 'artisan', 'migrate']);
 ```
 
-`assertRanTimes` 与 `assertDidntRun` 方法也接受数组形式的命令。
+`assertRanTimes` 和 `assertDidntRun` 方法也接受数组命令。
 
-`assertRan` 方法还接受一个闭包，它会接收一个进程实例和进程结果，允许检查进程的配置选项。若该闭包返回 `true`，则断言通过：
+`assertRan` 方法还接受一个闭包，它将接收一个进程实例和一个进程结果，允许你检查进程的已配置选项。如果此闭包返回 `true`，断言将"通过"：
 
 ```php
 Process::assertRan(fn ($process, $result) =>
@@ -565,11 +611,12 @@ Process::assertRan(fn ($process, $result) =>
 );
 ```
 
-传给 `assertRan` 闭包的 `$process` 是 `Illuminate\Process\PendingProcess` 实例，`$result` 是 `Illuminate\Contracts\Process\ProcessResult` 实例。
+传递给 `assertRan` 闭包的 `$process` 是 `Illuminate\Process\PendingProcess` 的一个实例，而 `$result` 是 `Illuminate\Contracts\Process\ProcessResult` 的一个实例。
 
+<a name="assert-process-didnt-run"></a>
 #### assertDidntRun
 
-断言某个指定的进程没有被调用：
+断言给定进程未被调用：
 
 ```php
 use Illuminate\Support\Facades\Process;
@@ -577,7 +624,7 @@ use Illuminate\Support\Facades\Process;
 Process::assertDidntRun('ls -la');
 ```
 
-与 `assertRan` 方法一样，`assertDidntRun` 也接受闭包，闭包会接收一个进程实例和进程结果，允许检查进程的配置选项。若闭包返回 `true`，则断言**失败**：
+与 `assertRan` 方法一样，`assertDidntRun` 方法也接受一个闭包，它将接收一个进程实例和一个进程结果，允许你检查进程的已配置选项。如果此闭包返回 `true`，断言将"失败"：
 
 ```php
 Process::assertDidntRun(fn (PendingProcess $process, ProcessResult $result) =>
@@ -585,9 +632,10 @@ Process::assertDidntRun(fn (PendingProcess $process, ProcessResult $result) =>
 );
 ```
 
+<a name="assert-process-ran-times"></a>
 #### assertRanTimes
 
-断言某个指定的进程被调用了指定次数：
+断言给定进程已被调用给定次数：
 
 ```php
 use Illuminate\Support\Facades\Process;
@@ -595,7 +643,7 @@ use Illuminate\Support\Facades\Process;
 Process::assertRanTimes('ls -la', times: 3);
 ```
 
-`assertRanTimes` 方法也接受闭包，闭包会接收一个 `PendingProcess` 与 `ProcessResult` 实例，允许检查进程的配置选项。若闭包返回 `true` 且进程确实被调用了指定的次数，则断言通过：
+`assertRanTimes` 方法还接受一个闭包，它将接收 `PendingProcess` 和 `ProcessResult` 实例，允许你检查进程的已配置选项。如果此闭包返回 `true` 且进程已被调用指定次数，断言将"通过"：
 
 ```php
 Process::assertRanTimes(function (PendingProcess $process, ProcessResult $result) {
@@ -603,9 +651,10 @@ Process::assertRanTimes(function (PendingProcess $process, ProcessResult $result
 }, times: 3);
 ```
 
+<a name="assert-processes-ran-in-order"></a>
 #### assertRanInOrder
 
-断言进程按指定顺序被调用：
+断言进程已按给定顺序调用：
 
 ```php
 Process::assertRanInOrder([
@@ -614,11 +663,12 @@ Process::assertRanInOrder([
 ]);
 ```
 
-`assertRanInOrder` 接受命令字符串、命令参数数组，或与其他进程断言相同的闭包。
+`assertRanInOrder` 方法接受命令字符串、命令参数数组，或像其他进程断言一样的闭包。
 
-### 防止漏 fake 的进程
+<a name="preventing-stray-processes"></a>
+### 阻止意外进程
 
-如果希望确保在单个测试或整个测试套件中所有被调用的进程都被 fake 了，可以调用 `preventStrayProcesses` 方法。调用该方法后，任何没有对应 fake 结果的进程都会抛出异常，而不是启动真实的进程：
+如果你想确保在你的单个测试或完整测试套件中所有被调用的进程都已被模拟，可以调用 `preventStrayProcesses` 方法。调用此方法后，任何没有对应模拟结果的进程都将抛出异常，而不是启动实际进程：
 
 ```php
 use Illuminate\Support\Facades\Process;
@@ -629,9 +679,9 @@ Process::fake([
     'ls *' => 'Test output...',
 ]);
 
-// 返回 fake 响应……
+// Fake response is returned...
 Process::run('ls -la');
 
-// 抛出异常……
+// An exception is thrown...
 Process::run('bash import.sh');
 ```

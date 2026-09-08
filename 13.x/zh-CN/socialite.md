@@ -1,12 +1,27 @@
 # Laravel Socialite
 
+- [简介](#introduction)
+- [安装](#installation)
+- [升级 Socialite](#upgrading-socialite)
+- [配置](#configuration)
+- [认证](#authentication)
+    - [路由](#routing)
+    - [认证与存储](#authentication-and-storage)
+    - [访问作用域](#access-scopes)
+    - [Slack Bot 作用域](#slack-bot-scopes)
+    - [可选参数](#optional-parameters)
+- [检索用户详情](#retrieving-user-details)
+- [测试](#testing)
+
+<a name="introduction"></a>
 ## 简介
 
-除了典型的基于表单的身份验证外，Laravel 还提供了一种简单便捷的方式，通过 [Laravel Socialite](https://github.com/laravel/socialite) 使用 OAuth 提供方进行身份验证。Socialite 目前支持通过 Facebook、X、LinkedIn、Google、GitHub、GitLab、Bitbucket 和 Slack 进行身份验证。
+除了典型的基于表单的认证之外，Laravel 还提供了一种简单、便捷的方式，通过 [Laravel Socialite](https://github.com/laravel/socialite) 使用 OAuth 提供方进行认证。Socialite 目前支持通过 Facebook、X、LinkedIn、Google、GitHub、GitLab、Bitbucket 和 Slack 进行认证。
 
 > [!NOTE]
 > 其他平台的适配器可通过社区驱动的 [Socialite Providers](https://socialiteproviders.com/) 网站获取。
 
+<a name="installation"></a>
 ## 安装
 
 要开始使用 Socialite，请使用 Composer 包管理器将该包添加到项目的依赖中：
@@ -15,15 +30,17 @@
 composer require laravel/socialite
 ```
 
+<a name="upgrading-socialite"></a>
 ## 升级 Socialite
 
-升级到 Socialite 新的主版本时，请务必仔细查看 [升级指南](https://github.com/laravel/socialite/blob/master/UPGRADE.md)。
+升级到 Socialite 的新主版本时，务必仔细阅读[升级指南](https://github.com/laravel/socialite/blob/master/UPGRADE.md)。
 
+<a name="configuration"></a>
 ## 配置
 
-在使用 Socialite 之前，你需要为应用程序所使用的 OAuth 提供方添加凭据。通常，你可以在所使用服务的控制台中创建一个"开发者应用"来获取这些凭据。
+使用 Socialite 之前，你需要为应用使用的 OAuth 提供方添加凭据。通常，这些凭据可以通过在将要进行认证的服务的仪表板中创建"开发者应用"来获取。
 
-这些凭据应放置在应用程序的 `config/services.php` 配置文件中，并根据应用所需的提供方使用 `facebook`、`x`、`linkedin-openid`、`google`、`github`、`gitlab`、`bitbucket`、`slack` 或 `slack-openid` 作为键名：
+这些凭据应放置在应用的 `config/services.php` 配置文件中，并应根据应用所需的提供方使用 `facebook`、`x`、`linkedin-openid`、`google`、`github`、`gitlab`、`bitbucket`、`slack` 或 `slack-openid` 键：
 
 ```php
 'github' => [
@@ -34,13 +51,15 @@ composer require laravel/socialite
 ```
 
 > [!NOTE]
-> 如果 `redirect` 选项包含相对路径，它会自动解析为完全限定的 URL。
+> 如果 `redirect` 选项包含相对路径，它将自动被解析为完整的 URL。
 
+<a name="authentication"></a>
 ## 认证
 
+<a name="routing"></a>
 ### 路由
 
-要使用 OAuth 提供方对用户进行身份验证，你需要两条路由：一条用于将用户重定向到 OAuth 提供方，另一条用于在身份验证完成后接收来自提供方的回调。下面的示例路由展示了这两条路由的实现：
+要使用 OAuth 提供方认证用户，你需要两个路由：一个用于将用户重定向到 OAuth 提供方，另一个用于在认证后接收来自提供方的回调。下面的示例路由演示了两个路由的实现：
 
 ```php
 use Laravel\Socialite\Socialite;
@@ -56,11 +75,12 @@ Route::get('/auth/callback', function () {
 });
 ```
 
-`Socialite` Facade 提供的 `redirect` 方法负责将用户重定向到 OAuth 提供方，而 `user` 方法会检查传入的 请求，并在用户批准身份验证请求后从提供方获取用户的信息。
+`Socialite` Facade 提供的 `redirect` 方法负责将用户重定向到 OAuth 提供方，而 `user` 方法将检查传入请求，并在用户批准认证请求后从提供方检索用户信息。
 
+<a name="authentication-and-storage"></a>
 ### 认证与存储
 
-从 OAuth 提供方获取用户后，你可以判断该用户是否存在于应用程序的数据库中，并[对用户进行身份验证](/topic/Laravel%2013.x/xq9zrgjvdo.html)。如果用户不存在于应用程序的数据库中，你通常会创建一条新的数据库记录来表示该用户：
+从 OAuth 提供方检索到用户后，你可以判断用户是否存在于应用的数据库中，并[认证该用户](/docs/{{version}}/authentication#authenticate-a-user-instance)。如果用户不存在于应用的数据库中，你通常会在数据库中创建一条新记录来表示该用户：
 
 ```php
 use App\Models\User;
@@ -86,11 +106,12 @@ Route::get('/auth/callback', function () {
 ```
 
 > [!NOTE]
-> 关于特定 OAuth 提供方可用的用户信息，请查阅 获取用户详情 的相关文档。
+> 有关特定 OAuth 提供方可用用户信息的更多信息，请查阅[检索用户详情](#retrieving-user-details)文档。
 
+<a name="access-scopes"></a>
 ### 访问作用域
 
-在重定向用户之前，你可以使用 `scopes` 方法指定应包含在身份验证请求中的"作用域（scopes）"。该方法会将之前指定的所有作用域与你指定的作用域合并：
+在重定向用户之前，你可以使用 `scopes` 方法指定应包含在认证请求中的"作用域"。此方法会将所有先前指定的作用域与你指定的作用域合并：
 
 ```php
 use Laravel\Socialite\Socialite;
@@ -100,7 +121,7 @@ return Socialite::driver('github')
     ->redirect();
 ```
 
-你可以使用 `setScopes` 方法覆盖身份验证请求上的所有现有作用域：
+你可以使用 `setScopes` 方法覆盖认证请求上的所有现有作用域：
 
 ```php
 return Socialite::driver('github')
@@ -108,16 +129,21 @@ return Socialite::driver('github')
     ->redirect();
 ```
 
-### Slack 机器人权限范围
+<a name="slack-bot-scopes"></a>
+### Slack Bot 作用域
 
-Slack 的 API 提供了[不同类型的访问令牌](https://api.slack.com/authentication/token-types)，每种令牌都有自己的一组[权限作用域](https://api.slack.com/scopes)。Socialite 兼容以下两种 Slack 访问令牌类型：
+Slack 的 API 提供[不同类型的访问令牌](https://api.slack.com/authentication/token-types)，每种都有自己的[权限作用域](https://api.slack.com/scopes)集。Socialite 兼容以下两种 Slack 访问令牌类型：
+
+<div class="content-list" markdown="1">
 
 - Bot（以 `xoxb-` 为前缀）
 - User（以 `xoxp-` 为前缀）
 
-默认情况下，`slack` 驱动会生成 `user` 令牌，调用驱动的 `user` 方法将返回用户的详情。
+</div>
 
-如果你的应用程序需要向用户所拥有的外部 Slack 工作区发送通知，那么 Bot 令牌会非常有用。要生成 Bot 令牌，请在将用户重定向到 Slack 进行身份验证之前调用驱动的 `asBotUser` 方法：
+默认情况下，`slack` 驱动会生成一个 `user` 令牌，调用驱动的 `user` 方法将返回用户的详情。
+
+Bot 令牌主要在你的应用将向应用用户拥有的外部 Slack 工作区发送通知时有用。要生成 bot 令牌，请在将用户重定向到 Slack 进行认证之前调用 `asBotUser` 方法：
 
 ```php
 return Socialite::driver('slack')
@@ -126,17 +152,18 @@ return Socialite::driver('slack')
     ->redirect();
 ```
 
-此外，在 Slack 将用户重定向回你的应用程序后，你必须在调用 `user` 方法之前调用 `asBotUser` 方法：
+此外，在 Slack 认证后将用户重定向回你的应用后，你必须在调用 `user` 方法之前调用 `asBotUser` 方法：
 
 ```php
 $user = Socialite::driver('slack')->asBotUser()->user();
 ```
 
-生成 Bot 令牌时，`user` 方法仍会返回一个 `Laravel\Socialite\Two\User` 实例；但只有 `token` 属性会被填充。该令牌可以存储起来，以便[向已验证用户的 Slack 工作区发送通知](/topic/Laravel%2013.x/2ky045l9z8.html)。
+生成 bot 令牌时，`user` 方法仍会返回一个 `Laravel\Socialite\Two\User` 实例；但是，只有 `token` 属性会被填充。可以存储此令牌，以便[向已认证用户的 Slack 工作区发送通知](/docs/{{version}}/notifications#notifying-external-slack-workspaces)。
 
+<a name="optional-parameters"></a>
 ### 可选参数
 
-许多 OAuth 提供方支持在重定向请求上附加其他可选参数。要在请求中包含任何可选参数，请调用 `with` 方法并传入关联数组：
+许多 OAuth 提供方支持重定向请求上的其他可选参数。要在请求中包含任何可选参数，请使用关联数组调用 `with` 方法：
 
 ```php
 use Laravel\Socialite\Socialite;
@@ -147,13 +174,14 @@ return Socialite::driver('google')
 ```
 
 > [!WARNING]
-> 使用 `with` 方法时，注意不要传入 `state` 或 `response_type` 等保留关键字。
+> 使用 `with` 方法时，注意不要传递 `state` 或 `response_type` 等保留关键字。
 
-## 获取用户详情
+<a name="retrieving-user-details"></a>
+## 检索用户详情
 
-用户被重定向回应用程序的身份验证回调路由后，你可以使用 Socialite 的 `user` 方法获取用户的详情。`user` 方法返回的用户对象提供了多种属性和方法，你可以用来将用户信息存储到自己的数据库中。
+用户被重定向回应用的认证回调路由后，你可以使用 Socialite 的 `user` 方法检索用户的详情。`user` 方法返回的用户对象提供了多种属性和方法，你可以用来在自己的数据库中存储有关用户的信息。
 
-根据你所验证的 OAuth 提供方支持的是 OAuth 1.0 还是 OAuth 2.0，该对象上可用的属性和方法会有所不同：
+根据你进行认证的 OAuth 提供方支持 OAuth 1.0 还是 OAuth 2.0，此对象上可能提供不同的属性和方法：
 
 ```php
 use Laravel\Socialite\Socialite;
@@ -179,9 +207,10 @@ Route::get('/auth/callback', function () {
 });
 ```
 
-#### 从令牌获取用户详情
+<a name="retrieving-user-details-from-a-token-oauth2"></a>
+#### 从令牌检索用户详情
 
-如果你已经拥有某个用户的有效访问令牌，可以使用 Socialite 的 `userFromToken` 方法获取该用户的详情：
+如果你已经拥有某个用户的有效访问令牌，可以使用 Socialite 的 `userFromToken` 方法检索其用户详情：
 
 ```php
 use Laravel\Socialite\Socialite;
@@ -189,15 +218,16 @@ use Laravel\Socialite\Socialite;
 $user = Socialite::driver('github')->userFromToken($token);
 ```
 
-如果你通过 iOS 应用使用 Facebook Limited Login，Facebook 会返回一个 OIDC 令牌而非访问令牌。要从 OIDC 令牌中获取用户详情，请向 `userFromToken` 方法提供用于发起登录的 nonce：
+如果你通过 iOS 应用使用 Facebook Limited Login，Facebook 将返回一个 OIDC 令牌而不是访问令牌。要从 OIDC 令牌检索用户详情，请向 `userFromToken` 方法提供用于发起登录的 nonce：
 
 ```php
 $user = Socialite::driver('facebook')->userFromToken($token, $nonce);
 ```
 
+<a name="stateless-authentication"></a>
 #### 无状态认证
 
-`stateless` 方法可用于禁用会话状态验证。当你在基于无状态 API 且不使用基于 Cookie 的会话的应用中添加社交身份验证时，这会很有用：
+`stateless` 方法可用于禁用会话状态验证。在将社交认证添加到不使用基于 Cookie 会话的无状态 API 时，这很有用：
 
 ```php
 use Laravel\Socialite\Socialite;
@@ -205,13 +235,15 @@ use Laravel\Socialite\Socialite;
 return Socialite::driver('google')->stateless()->user();
 ```
 
+<a name="testing"></a>
 ## 测试
 
-Laravel Socialite 提供了一种便捷的方式，可以在不向 OAuth 提供方发出实际请求的情况下测试 OAuth 身份验证流程。`fake` 方法允许你模拟 OAuth 提供方的行为，并定义应当返回的用户数据。
+Laravel Socialite 提供了一种便捷的方式来测试 OAuth 认证流程，而无需向 OAuth 提供方发出实际请求。`fake` 方法允许你模拟 OAuth 提供方的行为，并定义应返回的用户数据。
 
-#### 伪造重定向
+<a name="faking-the-redirect"></a>
+#### 模拟重定向
 
-要测试你的应用程序是否正确将用户重定向到 OAuth 提供方，可以在向重定向路由发出请求之前调用 `fake` 方法。这会使 Socialite 返回一个指向伪造授权 URL 的重定向，而不是重定向到真实的 OAuth 提供方：
+要测试你的应用是否正确地将用户重定向到 OAuth 提供方，你可以在向重定向路由发出请求之前调用 `fake` 方法。这将使 Socialite 返回一个指向假授权 URL 的重定向，而不是重定向到实际的 OAuth 提供方：
 
 ```php
 use Laravel\Socialite\Socialite;
@@ -225,9 +257,10 @@ test('user is redirected to github', function () {
 });
 ```
 
-#### 伪造回调
+<a name="faking-the-callback"></a>
+#### 模拟回调
 
-要测试应用程序的回调路由，你可以调用 `fake` 方法，并提供一个当应用程序向提供方请求用户详情时应返回的 `User` 实例。该 `User` 实例可以使用 `fake` 方法创建：
+要测试应用的回调路由，你可以调用 `fake` 方法并提供一个 `User` 实例，当你的应用向提供方请求用户详情时应返回该实例。`User` 实例可以使用 `fake` 方法创建：
 
 ```php
 use Laravel\Socialite\Socialite;
@@ -252,7 +285,7 @@ test('user can login with github', function () {
 });
 ```
 
-默认情况下，`User` 实例会包含伪造的 OAuth 令牌值。如果需要，你可以通过向 `fake` 方法传入额外的属性来覆盖这些值：
+默认情况下，`User` 实例将包含假的 OAuth 令牌值。如有需要，你可以通过向 `fake` 方法传递额外属性来覆盖这些值：
 
 ```php
 $fakeUser = User::fake([
@@ -266,4 +299,4 @@ $fakeUser = User::fake([
 ]);
 ```
 
-OAuth 1 用户可以使用 `Laravel\Socialite\One\User` 类进行伪造。
+OAuth 1 用户可以使用 `Laravel\Socialite\One\User` 类进行模拟。

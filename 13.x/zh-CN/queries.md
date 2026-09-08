@@ -1,19 +1,59 @@
 # 数据库：查询构造器
 
+- [简介](#introduction)
+- [运行数据库查询](#running-database-queries)
+    - [分块结果](#chunking-results)
+    - [惰性流式处理结果](#streaming-results-lazily)
+    - [聚合](#aggregates)
+- [Select 语句](#select-statements)
+- [原生表达式](#raw-expressions)
+- [连接](#joins)
+- [联合](#unions)
+- [基础 Where 子句](#basic-where-clauses)
+    - [Where 子句](#where-clauses)
+    - [Or Where 子句](#or-where-clauses)
+    - [Where Not 子句](#where-not-clauses)
+    - [Where Any / All / None 子句](#where-any-all-none-clauses)
+    - [JSON Where 子句](#json-where-clauses)
+    - [其他 Where 子句](#additional-where-clauses)
+    - [逻辑分组](#logical-grouping)
+- [高级 Where 子句](#advanced-where-clauses)
+    - [Where Exists 子句](#where-exists-clauses)
+    - [子查询 Where 子句](#subquery-where-clauses)
+    - [全文 Where 子句](#full-text-where-clauses)
+    - [向量相似度子句](#vector-similarity-clauses)
+- [排序、分组、Limit 与 Offset](#ordering-grouping-limit-and-offset)
+    - [排序](#ordering)
+    - [分组](#grouping)
+    - [Limit 与 Offset](#limit-and-offset)
+- [条件子句](#conditional-clauses)
+- [Insert 语句](#insert-statements)
+    - [Upsert](#upserts)
+- [Update 语句](#update-statements)
+    - [更新 JSON 列](#updating-json-columns)
+    - [递增与递减](#increment-and-decrement)
+- [Delete 语句](#delete-statements)
+- [悲观锁](#pessimistic-locking)
+- [可复用的查询组件](#reusable-query-components)
+- [调试](#debugging)
+
+<a name="introduction"></a>
 ## 简介
 
-Laravel 的数据库查询构造器（Query Builder）为创建和运行数据库查询提供了一个便捷、流畅的接口。它可用于在应用中执行大多数数据库操作，并与 Laravel 支持的所有数据库系统完美兼容。
+Laravel 的数据库查询构造器提供了便捷、流畅的接口，用于创建和运行数据库查询。它可以用于执行应用中的大多数数据库操作，并与 Laravel 支持的所有数据库系统完美配合。
 
-Laravel 查询构造器使用 PDO 参数绑定来保护应用免受 SQL 注入攻击。因此，作为查询绑定传入的字符串无需手动清理或转义。
+Laravel 查询构造器使用 PDO 参数绑定来保护你的应用免受 SQL 注入攻击。无需清理或净化作为查询绑定传递给查询构造器的字符串。
 
 > [!WARNING]
-> PDO 不支持对列名进行参数绑定。因此，绝不应该让用户输入决定查询所引用的列名（包括「order by」列）。
+> PDO 不支持绑定列名。因此，你绝不应允许用户输入决定查询引用的列名，包括 "order by" 列。
 
+<a name="running-database-queries"></a>
 ## 运行数据库查询
 
+<a name="retrieving-all-rows-from-a-table"></a>
 #### 从表中检索所有行
 
-你可以使用 `DB` facade 提供的 `table` 方法来开启一条查询。`table` 方法会为指定表返回一个流式查询构造器实例，便于你继续链式追加更多约束，最后通过 `get` 方法取出查询结果：
+你可以使用 `DB` Facade 提供的 `table` 方法开始查询。`table` 方法为给定表返回一个流畅的查询构造器实例，允许你向查询链式添加更多约束，然后最终使用 `get` 方法检索查询结果：
 
 ```php
 <?php
@@ -26,7 +66,7 @@ use Illuminate\View\View;
 class UserController extends Controller
 {
     /**
-     * 展示应用所有用户的列表。
+     * Show a list of all of the application's users.
      */
     public function index(): View
     {
@@ -37,7 +77,7 @@ class UserController extends Controller
 }
 ```
 
-`get` 方法会返回一个 `Illuminate\Support\Collection` 实例，其中包含查询结果，每条结果都是 PHP `stdClass` 对象的一个实例。你可以通过将列作为对象属性访问来获取每个列的值：
+`get` 方法返回一个 `Illuminate\Support\Collection` 实例，其中包含查询结果，每个结果都是 PHP `stdClass` 对象的实例。你可以通过将列作为对象的属性访问来获取每个列的值：
 
 ```php
 use Illuminate\Support\Facades\DB;
@@ -50,11 +90,12 @@ foreach ($users as $user) {
 ```
 
 > [!NOTE]
-> Laravel 集合提供了许多非常强大的方法用于映射与归约数据。更多信息请查阅 [集合文档](/topic/Laravel%2013.x/4rvgn63ydj.html)。
+> Laravel 集合为映射和缩减数据提供了各种非常强大的方法。有关 Laravel 集合的更多信息，请查看[集合文档](/docs/{{version}}/collections)。
 
+<a name="retrieving-a-single-row-column-from-a-table"></a>
 #### 从表中检索单行 / 单列
 
-如果只需要从数据库表中获取一行数据，可以使用 `DB` facade 的 `first` 方法。该方法会返回一个 `stdClass` 对象：
+如果你只需要从数据库表中检索单行，可以使用 `DB` Facade 的 `first` 方法。此方法将返回单个 `stdClass` 对象：
 
 ```php
 $user = DB::table('users')->where('name', 'John')->first();
@@ -62,27 +103,28 @@ $user = DB::table('users')->where('name', 'John')->first();
 return $user->email;
 ```
 
-如果想从数据库表中取出一行数据，但在没有匹配行时抛出 `Illuminate\Database\RecordNotFoundException`，可以使用 `firstOrFail` 方法。如果未捕获 `RecordNotFoundException`，框架会自动向客户端返回 404 HTTP 响应：
+如果你想从数据库表中检索单行，但在未找到匹配行时抛出 `Illuminate\Database\RecordNotFoundException`，可以使用 `firstOrFail` 方法。如果 `RecordNotFoundException` 未被捕获，将自动向客户端发送 404 HTTP 响应：
 
 ```php
 $user = DB::table('users')->where('name', 'John')->firstOrFail();
 ```
 
-如果不需要整行记录，可以使用 `value` 方法从记录中取出单个字段值。它会直接返回该列的值：
+如果你不需要整行，可以使用 `value` 方法从记录中提取单个值。此方法将直接返回列的值：
 
 ```php
 $email = DB::table('users')->where('name', 'John')->value('email');
 ```
 
-要按 `id` 列的值取出一行记录，请使用 `find` 方法：
+要根据 `id` 列值检索单行，请使用 `find` 方法：
 
 ```php
 $user = DB::table('users')->find(3);
 ```
 
+<a name="retrieving-a-list-of-column-values"></a>
 #### 检索列值列表
 
-如果你想取出一个包含单列取值的 `Illuminate\Support\Collection` 实例，可以使用 `pluck` 方法。在下面的示例中，我们会取出一组用户头衔的集合：
+如果你想检索包含单列值的 `Illuminate\Support\Collection` 实例，可以使用 `pluck` 方法。在此示例中，我们将检索用户标题的集合：
 
 ```php
 use Illuminate\Support\Facades\DB;
@@ -94,7 +136,7 @@ foreach ($titles as $title) {
 }
 ```
 
-你可以通过向 `pluck` 方法传入第二个参数，指定结果集合使用的键对应的列：
+你可以通过向 `pluck` 方法提供第二个参数，指定结果集合应使用的键列：
 
 ```php
 $titles = DB::table('users')->pluck('title', 'name');
@@ -104,9 +146,10 @@ foreach ($titles as $name => $title) {
 }
 ```
 
-### 结果分块
+<a name="chunking-results"></a>
+### 分块结果
 
-如果需要处理成千上万条数据库记录，可以考虑使用 `DB` facade 提供的 `chunk` 方法。该方法每次取出一小块结果，并将每个分块传递给一个闭包进行处理。例如，下面的示例会以 100 条记录为一块，逐块检索整个 `users` 表：
+如果你需要处理数千条数据库记录，请考虑使用 `DB` Facade 提供的 `chunk` 方法。此方法一次检索一小块结果，并将每个块提供给闭包进行处理。例如，让我们每次以 100 条记录为一组检索整个 `users` 表：
 
 ```php
 use Illuminate\Support\Collection;
@@ -119,17 +162,17 @@ DB::table('users')->orderBy('id')->chunk(100, function (Collection $users) {
 });
 ```
 
-你可以通过在闭包中返回 `false` 来停止继续处理后续分块：
+你可以通过从闭包返回 `false` 来停止处理更多块：
 
 ```php
 DB::table('users')->orderBy('id')->chunk(100, function (Collection $users) {
-    // 处理记录...
+    // Process the records...
 
     return false;
 });
 ```
 
-如果你在分块取出结果时同时更新数据库记录，分块结果可能会以预期之外的方式发生变化。如果你计划在分块过程中更新取出的记录，那么最佳做法是改用 `chunkById` 方法。该方法会自动基于记录的主键对结果进行分页：
+如果你在分块结果时更新数据库记录，分块结果可能会以意外方式变化。如果你计划在分块时更新检索的记录，最好使用 `chunkById` 方法。此方法将根据记录的主键自动对结果分页：
 
 ```php
 DB::table('users')->where('active', false)
@@ -142,7 +185,7 @@ DB::table('users')->where('active', false)
     });
 ```
 
-由于 `chunkById` 和 `lazyById` 方法会在执行的查询上添加它们自己的「where」条件，你通常应将自己的条件 逻辑分组 到一个闭包内：
+由于 `chunkById` 和 `lazyById` 方法会向执行的查询添加自己的 "where" 条件，你通常应在闭包中[逻辑分组](#logical-grouping)自己的条件：
 
 ```php
 DB::table('users')->where(function ($query) {
@@ -157,11 +200,12 @@ DB::table('users')->where(function ($query) {
 ```
 
 > [!WARNING]
-> 在分块回调内更新或删除记录时，对主键或外键的任何改动都可能影响分块查询，进而可能导致部分记录没有包含在分块结果中。
+> 在分块回调内更新或删除记录时，对主键或外键的任何更改都可能影响分块查询。这可能导致记录不被包含在分块结果中。
 
-### 惰性流式拉取结果
+<a name="streaming-results-lazily"></a>
+### 惰性流式处理结果
 
-`lazy` 方法在以分块方式执行查询这一点上与 chunk 方法 类似。不同之处在于，`lazy()` 方法会返回一个 [LazyCollection](/topic/Laravel%2013.x/4rvgn63ydj.html)，让你像操作单一数据流一样处理结果：
+`lazy` 方法的工作方式与[分块方法](#chunking-results)类似，它分块执行查询。但是，`lazy()` 方法不是将每个块传递给回调，而是返回一个 [LazyCollection](/docs/{{version}}/collections#lazy-collections)，让你可以将结果作为单个流交互：
 
 ```php
 use Illuminate\Support\Facades\DB;
@@ -171,7 +215,7 @@ DB::table('users')->orderBy('id')->lazy()->each(function (object $user) {
 });
 ```
 
-同样地，如果你计划在遍历过程中更新取出的记录，最好改用 `lazyById` 或 `lazyByIdDesc` 方法。这些方法会自动基于记录的主键对结果进行分页：
+同样，如果你计划在迭代时更新检索的记录，最好使用 `lazyById` 或 `lazyByIdDesc` 方法。这些方法将根据记录的主键自动对结果分页：
 
 ```php
 DB::table('users')->where('active', false)
@@ -183,11 +227,12 @@ DB::table('users')->where('active', false)
 ```
 
 > [!WARNING]
-> 在遍历过程中更新或删除记录时，对主键或外键的任何改动都可能影响分块查询，进而可能导致部分记录没有包含在结果中。
+> 在迭代时更新或删除记录时，对主键或外键的任何更改都可能影响分块查询。这可能导致记录不被包含在结果中。
 
-### 聚合查询
+<a name="aggregates"></a>
+### 聚合
 
-查询构造器还提供了多种方法来获取 `count`、`max`、`min`、`avg` 和 `sum` 等聚合值。可以在构建查询后调用这些方法：
+查询构造器还提供了多种检索 `count`、`max`、`min`、`avg` 和 `sum` 等聚合值的方法。你可以在构造查询后调用其中任何方法：
 
 ```php
 use Illuminate\Support\Facades\DB;
@@ -197,7 +242,7 @@ $users = DB::table('users')->count();
 $price = DB::table('orders')->max('price');
 ```
 
-当然，你也可以将这些方法与其它子句组合使用，从而更精细地控制聚合值的计算方式：
+当然，你可以将这些方法与其他子句组合，以微调聚合值的计算方式：
 
 ```php
 $price = DB::table('orders')
@@ -205,9 +250,10 @@ $price = DB::table('orders')
     ->avg('price');
 ```
 
+<a name="determining-if-records-exist"></a>
 #### 判断记录是否存在
 
-除了使用 `count` 方法判断是否有匹配查询约束的记录外，也可以使用 `exists` 和 `doesntExist` 方法：
+与其使用 `count` 方法判断是否存在匹配查询约束的记录，不如使用 `exists` 和 `doesntExist` 方法：
 
 ```php
 if (DB::table('orders')->where('finalized', 1)->exists()) {
@@ -219,11 +265,13 @@ if (DB::table('orders')->where('finalized', 1)->doesntExist()) {
 }
 ```
 
+<a name="select-statements"></a>
 ## Select 语句
 
+<a name="specifying-a-select-clause"></a>
 #### 指定 Select 子句
 
-你可能并不总是希望从数据库表中选择所有列。使用 `select` 方法，你可以为查询指定一个自定义的「select」子句：
+你可能并不总是想从数据库表中选择所有列。使用 `select` 方法，你可以为查询指定自定义的 "select" 子句：
 
 ```php
 use Illuminate\Support\Facades\DB;
@@ -233,13 +281,13 @@ $users = DB::table('users')
     ->get();
 ```
 
-`distinct` 方法允许你强制让查询返回不重复的结果：
+`distinct` 方法允许你强制查询返回不同的结果：
 
 ```php
 $users = DB::table('users')->distinct()->get();
 ```
 
-如果已经有一个查询构造器实例，并且希望向其已有的 select 子句追加一列，可以使用 `addSelect` 方法：
+如果你已有查询构造器实例，并希望向其现有 select 子句添加列，可以使用 `addSelect` 方法：
 
 ```php
 $query = DB::table('users')->select('name');
@@ -247,9 +295,10 @@ $query = DB::table('users')->select('name');
 $users = $query->addSelect('age')->get();
 ```
 
+<a name="raw-expressions"></a>
 ## 原生表达式
 
-有时你可能需要在查询中插入任意字符串。要创建一个原生字符串表达式，可以使用 `DB` facade 提供的 `raw` 方法：
+有时你可能需要在查询中插入任意字符串。要创建原生字符串表达式，可以使用 `DB` Facade 提供的 `raw` 方法：
 
 ```php
 $users = DB::table('users')
@@ -260,15 +309,17 @@ $users = DB::table('users')
 ```
 
 > [!WARNING]
-> 原生语句会作为字符串注入到查询中，因此必须格外小心，避免引入 SQL 注入漏洞。
+> 原生语句将作为字符串注入到查询中，因此你应极其小心地避免产生 SQL 注入漏洞。
 
+<a name="raw-methods"></a>
 ### 原生方法
 
-除了使用 `DB::raw` 方法外，还可以使用以下方法将原生表达式插入查询的不同部分。**请记住，Laravel 无法保证使用原生表达式的查询能够防御 SQL 注入漏洞。**
+除了使用 `DB::raw` 方法之外，你还可以使用以下方法将原生表达式插入查询的不同部分。**请记住，Laravel 无法保证使用原生表达式的任何查询都能免受 SQL 注入漏洞的影响。**
 
+<a name="selectraw"></a>
 #### `selectRaw`
 
-`selectRaw` 方法可以替代 `addSelect(DB::raw(/* ... */))` 的写法。该方法接收一个可选的绑定数组作为第二个参数：
+`selectRaw` 方法可用来代替 `addSelect(DB::raw(/* ... */))`。此方法接受一个可选的绑定数组作为其第二个参数：
 
 ```php
 $orders = DB::table('orders')
@@ -276,9 +327,10 @@ $orders = DB::table('orders')
     ->get();
 ```
 
+<a name="whereraw-orwhereraw"></a>
 #### `whereRaw / orWhereRaw`
 
-`whereRaw` 和 `orWhereRaw` 方法可以将原生「where」子句注入查询。这两个方法都接收一个可选的绑定数组作为第二个参数：
+`whereRaw` 和 `orWhereRaw` 方法可用于将原生 "where" 子句注入到查询中。这些方法接受一个可选的绑定数组作为其第二个参数：
 
 ```php
 $orders = DB::table('orders')
@@ -286,9 +338,10 @@ $orders = DB::table('orders')
     ->get();
 ```
 
+<a name="havingraw-orhavingraw"></a>
 #### `havingRaw / orHavingRaw`
 
-`havingRaw` 和 `orHavingRaw` 方法可以将原生字符串作为「having」子句的值。这两个方法都接收一个可选的绑定数组作为第二个参数：
+`havingRaw` 和 `orHavingRaw` 方法可用于提供原生字符串作为 "having" 子句的值。这些方法接受一个可选的绑定数组作为其第二个参数：
 
 ```php
 $orders = DB::table('orders')
@@ -298,9 +351,10 @@ $orders = DB::table('orders')
     ->get();
 ```
 
+<a name="orderbyraw"></a>
 #### `orderByRaw`
 
-`orderByRaw` 方法可以将原生字符串作为「order by」子句的值：
+`orderByRaw` 方法可用于提供原生字符串作为 "order by" 子句的值：
 
 ```php
 $orders = DB::table('orders')
@@ -308,9 +362,10 @@ $orders = DB::table('orders')
     ->get();
 ```
 
+<a name="groupbyraw"></a>
 #### `groupByRaw`
 
-`groupByRaw` 方法可以将原生字符串作为 `group by` 子句的值：
+`groupByRaw` 方法可用于提供原生字符串作为 `group by` 子句的值：
 
 ```php
 $orders = DB::table('orders')
@@ -319,11 +374,13 @@ $orders = DB::table('orders')
     ->get();
 ```
 
-## Joins（连接）
+<a name="joins"></a>
+## 连接
 
-#### Inner Join 子句
+<a name="inner-join-clause"></a>
+#### 内连接子句
 
-查询构造器也可以用于向查询添加 join 子句。要执行基本的「inner join」，可以在查询构造器实例上使用 `join` 方法。`join` 方法的第一个参数是需要连接的表名，其余参数指定连接的列约束。你甚至可以在一条查询中连接多张表：
+查询构造器也可以用于向查询添加连接子句。要执行基本的 "inner join"，可以在查询构造器实例上使用 `join` 方法。传递给 `join` 方法的第一个参数是你要连接的表名，其余参数指定连接的列约束。你甚至可以在单个查询中连接多个表：
 
 ```php
 use Illuminate\Support\Facades\DB;
@@ -335,9 +392,10 @@ $users = DB::table('users')
     ->get();
 ```
 
-#### Left Join / Right Join 子句
+<a name="left-join-right-join-clause"></a>
+#### 左连接 / 右连接子句
 
-如果你希望执行「left join」或「right join」而非「inner join」，请使用 `leftJoin` 或 `rightJoin` 方法。这些方法的签名与 `join` 方法相同：
+如果你想执行 "left join" 或 "right join" 而不是 "inner join"，请使用 `leftJoin` 或 `rightJoin` 方法。这些方法与 `join` 方法具有相同的签名：
 
 ```php
 $users = DB::table('users')
@@ -349,9 +407,10 @@ $users = DB::table('users')
     ->get();
 ```
 
-#### Cross Join 子句
+<a name="cross-join-clause"></a>
+#### 交叉连接子句
 
-你可以使用 `crossJoin` 方法执行「cross join」。Cross join 会生成第一张表与被连接表之间的笛卡尔积：
+你可以使用 `crossJoin` 方法执行 "cross join"。交叉连接在第一个表和连接的表之间生成笛卡尔积：
 
 ```php
 $sizes = DB::table('sizes')
@@ -359,9 +418,10 @@ $sizes = DB::table('sizes')
     ->get();
 ```
 
-#### 高级 Join 子句
+<a name="advanced-join-clauses"></a>
+#### 高级连接子句
 
-你还可以指定更高级的 join 子句。开始时，可以将一个闭包作为第二个参数传入 `join` 方法。该闭包会接收一个 `Illuminate\Database\Query\JoinClause` 实例，允许你在「join」子句上指定约束：
+你也可以指定更高级的连接子句。要开始，请将闭包作为第二个参数传递给 `join` 方法。该闭包将接收一个 `Illuminate\Database\Query\JoinClause` 实例，它允许你指定 "join" 子句上的约束：
 
 ```php
 DB::table('users')
@@ -371,7 +431,7 @@ DB::table('users')
     ->get();
 ```
 
-如果想在 join 上使用「where」子句，可以使用 `JoinClause` 实例提供的 `where` 与 `orWhere` 方法。这些方法会将列与值进行比较，而不是比较两个列：
+如果你想在连接上使用 "where" 子句，可以使用 `JoinClause` 实例提供的 `where` 和 `orWhere` 方法。这些方法不是比较两列，而是将列与值进行比较：
 
 ```php
 DB::table('users')
@@ -382,9 +442,10 @@ DB::table('users')
     ->get();
 ```
 
+<a name="subquery-joins"></a>
 #### 子查询连接
 
-你可以使用 `joinSub`、`leftJoinSub` 与 `rightJoinSub` 方法将一个查询连接到子查询上。每个方法都接收三个参数：子查询本身、它的表别名，以及一个用于定义关联列的闭包。在下面的示例中，我们会取出一组用户，每个用户记录中还会附带该用户最近发布的博客文章的 `created_at` 时间戳：
+你可以使用 `joinSub`、`leftJoinSub` 和 `rightJoinSub` 方法将查询连接到子查询。这些方法中的每一个都接收三个参数：子查询、其表别名，以及定义相关列的闭包。在此示例中，我们将检索一组用户，其中每个用户记录还包含用户最近发布的博客文章的 `created_at` 时间戳：
 
 ```php
 $latestPosts = DB::table('posts')
@@ -398,14 +459,15 @@ $users = DB::table('users')
     })->get();
 ```
 
-#### Lateral 连接
+<a name="lateral-joins"></a>
+#### 横向连接
 
 > [!WARNING]
-> Lateral join 目前由 PostgreSQL、MySQL >= 8.0.14 和 SQL Server 支持。
+> 横向连接目前受 PostgreSQL、MySQL >= 8.0.14 和 SQL Server 支持。
 
-你可以使用 `joinLateral` 和 `leftJoinLateral` 方法对子查询执行「lateral join」。每个方法接收两个参数：子查询本身与它的表别名。join 条件应在所给子查询的 `where` 子句内指定。Lateral join 会针对每一行进行求值，并且可以引用子查询之外的列。
+你可以使用 `joinLateral` 和 `leftJoinLateral` 方法执行带子查询的 "lateral join"。这些方法中的每一个都接收两个参数：子查询及其表别名。连接条件应在给定子查询的 `where` 子句中指定。横向连接会针对每一行求值，并且可以引用子查询外部的列。
 
-在下面的示例中，我们会取出一组用户以及每位用户的最近三篇博客文章。每个用户最多会在结果集中产生三行——对应其最近的每篇博客文章。join 条件在子查询内通过 `whereColumn` 子句指定，引用当前的用户行：
+在此示例中，我们将检索一组用户以及用户的三篇最新博客文章。每个用户最多可以在结果集中产生三行：分别对应其最新的一篇博客文章。连接条件在子查询内用 `whereColumn` 子句指定，引用当前用户行：
 
 ```php
 $latestPosts = DB::table('posts')
@@ -419,9 +481,10 @@ $users = DB::table('users')
     ->get();
 ```
 
-## Unions（联合）
+<a name="unions"></a>
+## 联合
 
-查询构造器还提供了一个便捷方法，将两条或多条查询「联合」起来。例如，你可以先创建一条初始查询，然后通过 `union` 方法将其与其它查询联合：
+查询构造器还提供了一种便捷的方法来将两个或多个查询"联合"在一起。例如，你可以创建一个初始查询，并使用 `union` 方法将其与更多查询联合：
 
 ```php
 use Illuminate\Support\Facades\DB;
@@ -435,15 +498,17 @@ $users = DB::table('users')
     ->get();
 ```
 
-除了 `union` 方法，查询构造器还提供了 `unionAll` 方法。使用 `unionAll` 方法联合的查询不会去除重复行。`unionAll` 方法的签名与 `union` 方法相同。
+除了 `union` 方法之外，查询构造器还提供 `unionAll` 方法。使用 `unionAll` 方法组合的查询不会移除重复结果。`unionAll` 方法与 `union` 方法具有相同的方法签名。
 
+<a name="basic-where-clauses"></a>
 ## 基础 Where 子句
 
+<a name="where-clauses"></a>
 ### Where 子句
 
-你可以使用查询构造器的 `where` 方法向查询添加「where」子句。最基本的 `where` 方法调用需要三个参数：第一个参数是列名，第二个参数是运算符（可以是数据库支持的任意运算符），第三个参数是与列值比较的值。
+你可以使用查询构造器的 `where` 方法向查询添加 "where" 子句。对 `where` 方法最基本的调用需要三个参数。第一个参数是列名。第二个参数是一个运算符，可以是数据库支持的任何运算符。第三个参数是要与列值进行比较的值。
 
-例如，下面的查询会取出 `votes` 列值等于 `100` 且 `age` 列值大于 `35` 的所有用户：
+例如，以下查询检索 `votes` 列值等于 `100` 且 `age` 列值大于 `35` 的用户：
 
 ```php
 $users = DB::table('users')
@@ -452,13 +517,13 @@ $users = DB::table('users')
     ->get();
 ```
 
-为了方便起见，如果你只想验证某列 `=` 某个值，可以把该值作为第二个参数传给 `where` 方法，Laravel 会默认使用 `=` 运算符：
+为方便起见，如果你想验证某列 `=` 给定值，可以将该值作为第二个参数传递给 `where` 方法。Laravel 将假定你希望使用 `=` 运算符：
 
 ```php
 $users = DB::table('users')->where('votes', 100)->get();
 ```
 
-你也可以向 `where` 方法传入一个关联数组，以便快速按多个列查询：
+你也可以向 `where` 方法提供关联数组，以快速跨多列查询：
 
 ```php
 $users = DB::table('users')->where([
@@ -467,7 +532,7 @@ $users = DB::table('users')->where([
 ])->get();
 ```
 
-如前所述，你可以使用数据库系统支持的任意运算符：
+如前所述，你可以使用数据库系统支持的任何运算符：
 
 ```php
 $users = DB::table('users')
@@ -483,7 +548,7 @@ $users = DB::table('users')
     ->get();
 ```
 
-你也可以向 `where` 函数传入一个条件数组，数组的每个元素都应该是一个包含三个参数的数组（即通常传给 `where` 方法的三个参数）：
+你也可以向 `where` 函数传递一个条件数组。数组的每个元素都应是一个包含通常传递给 `where` 方法的三个参数的数组：
 
 ```php
 $users = DB::table('users')->where([
@@ -493,14 +558,15 @@ $users = DB::table('users')->where([
 ```
 
 > [!WARNING]
-> PDO 不支持对列名进行参数绑定。因此，绝不应该让用户输入决定查询所引用的列名（包括「order by」列）。
+> PDO 不支持绑定列名。因此，你绝不应允许用户输入决定查询引用的列名，包括 "order by" 列。
 
 > [!WARNING]
-> MySQL 和 MariaDB 在字符串与数字比较时会自动将字符串类型转换为整数。在此过程中，非数字字符串会被转换为 `0`，这可能会导致意外结果。例如，如果你的表中有一个 `secret` 列，值为 `aaa`，但你执行 `User::where('secret', 0)`，那一行会被返回。为避免这种情况，请确保在查询中使用之前将所有值类型转换为合适的类型。
+> MySQL 和 MariaDB 会在字符串-数字比较中自动将字符串类型转换为整数。在此过程中，非数字字符串会被转换为 `0`，这可能导致意外结果。例如，如果你的表中有一个值为 `aaa` 的 `secret` 列，并且你运行 `User::where('secret', 0)`，该行将被返回。为避免此问题，请确保在查询中使用之前将所有值类型转换为其适当的类型。
 
+<a name="or-where-clauses"></a>
 ### Or Where 子句
 
-链式调用查询构造器的 `where` 方法时，各「where」子句之间会以 `and` 运算符连接。但你可以使用 `orWhere` 方法，用 `or` 运算符将子句连接到查询中。`orWhere` 方法接收的参数与 `where` 方法相同：
+将查询构造器 `where` 方法的调用链式连接时，"where" 子句将使用 `and` 运算符连接。但是，你可以使用 `orWhere` 方法使用 `or` 运算符将子句连接到查询中。`orWhere` 方法接受与 `where` 方法相同的参数：
 
 ```php
 $users = DB::table('users')
@@ -509,7 +575,7 @@ $users = DB::table('users')
     ->get();
 ```
 
-如果需要将「or」条件用括号分组，可以将一个闭包作为第一个参数传给 `orWhere` 方法：
+如果你需要在括号内分组 "or" 条件，可以将闭包作为第一个参数传递给 `orWhere` 方法：
 
 ```php
 use Illuminate\Database\Query\Builder;
@@ -523,18 +589,19 @@ $users = DB::table('users')
     ->get();
 ```
 
-上面的示例会生成如下 SQL：
+上面的示例将生成以下 SQL：
 
 ```sql
 select * from users where votes > 100 or (name = 'Abigail' and votes > 50)
 ```
 
 > [!WARNING]
-> 为避免在全局作用域生效时出现意外行为，应当始终将 `orWhere` 调用分组。
+> 你应始终对 `orWhere` 调用进行分组，以避免在应用全局作用域时出现意外行为。
 
+<a name="where-not-clauses"></a>
 ### Where Not 子句
 
-`whereNot` 与 `orWhereNot` 方法可用于对一组查询约束取反。例如，下面的查询会排除处于清仓状态或价格低于 10 的商品：
+`whereNot` 和 `orWhereNot` 方法可用于否定给定的查询约束组。例如，以下查询排除正在清仓销售或价格低于十的产品：
 
 ```php
 $products = DB::table('products')
@@ -545,9 +612,10 @@ $products = DB::table('products')
     ->get();
 ```
 
+<a name="where-any-all-none-clauses"></a>
 ### Where Any / All / None 子句
 
-有时你需要将同样的查询约束应用到多个列。例如，你希望取出指定列表中的任一列 `LIKE` 某个值的所有记录。可以使用 `whereAny` 方法来实现：
+有时你可能需要将相同的查询约束应用于多个列。例如，你可能希望检索给定列表中任何列 `LIKE` 给定值的所有记录。你可以使用 `whereAny` 方法实现这一点：
 
 ```php
 $users = DB::table('users')
@@ -560,7 +628,7 @@ $users = DB::table('users')
     ->get();
 ```
 
-上面的查询会生成如下 SQL：
+上面的查询将产生以下 SQL：
 
 ```sql
 SELECT *
@@ -572,7 +640,7 @@ WHERE active = true AND (
 )
 ```
 
-类似地，`whereAll` 方法可用于取出所有给定列都满足指定约束的记录：
+类似地，`whereAll` 方法可用于检索所有给定列都匹配给定约束的记录：
 
 ```php
 $posts = DB::table('posts')
@@ -584,7 +652,7 @@ $posts = DB::table('posts')
     ->get();
 ```
 
-上面的查询会生成如下 SQL：
+上面的查询将产生以下 SQL：
 
 ```sql
 SELECT *
@@ -595,7 +663,7 @@ WHERE published = true AND (
 )
 ```
 
-`whereNone` 方法可用于取出所有给定列都不满足指定约束的记录：
+`whereNone` 方法可用于检索没有任何给定列匹配给定约束的记录：
 
 ```php
 $albums = DB::table('albums')
@@ -608,7 +676,7 @@ $albums = DB::table('albums')
     ->get();
 ```
 
-上面的查询会生成如下 SQL：
+上面的查询将产生以下 SQL：
 
 ```sql
 SELECT *
@@ -620,9 +688,10 @@ WHERE published = true AND NOT (
 )
 ```
 
+<a name="json-where-clauses"></a>
 ### JSON Where 子句
 
-Laravel 也支持在提供 JSON 列类型支持的数据库上查询 JSON 列类型。目前包括 MariaDB 10.3+、MySQL 8.0+、PostgreSQL 12.0+、SQL Server 2017+ 以及 SQLite 3.39.0+。要查询 JSON 列，请使用 `->` 运算符：
+Laravel 还支持在支持 JSON 列类型的数据库上查询 JSON 列类型。目前，这包括 MariaDB 10.3+、MySQL 8.0+、PostgreSQL 12.0+、SQL Server 2017+ 和 SQLite 3.39.0+。要查询 JSON 列，请使用 `->` 运算符：
 
 ```php
 $users = DB::table('users')
@@ -634,7 +703,7 @@ $users = DB::table('users')
     ->get();
 ```
 
-你可以使用 `whereJsonContains` 与 `whereJsonDoesntContain` 方法来查询 JSON 数组：
+你可以使用 `whereJsonContains` 和 `whereJsonDoesntContain` 方法查询 JSON 数组：
 
 ```php
 $users = DB::table('users')
@@ -646,7 +715,7 @@ $users = DB::table('users')
     ->get();
 ```
 
-如果你的应用使用 MariaDB、MySQL 或 PostgreSQL 数据库，可以向 `whereJsonContains` 与 `whereJsonDoesntContain` 方法传入一个值数组：
+如果你的应用使用 MariaDB、MySQL 或 PostgreSQL 数据库，你可以向 `whereJsonContains` 和 `whereJsonDoesntContain` 方法传递一个值数组：
 
 ```php
 $users = DB::table('users')
@@ -658,7 +727,7 @@ $users = DB::table('users')
     ->get();
 ```
 
-此外，你还可以使用 `whereJsonContainsKey` 或 `whereJsonDoesntContainKey` 方法来检索包含或不包含某个 JSON 键的结果：
+此外，你可以使用 `whereJsonContainsKey` 或 `whereJsonDoesntContainKey` 方法检索包含或不包含 JSON 键的结果：
 
 ```php
 $users = DB::table('users')
@@ -682,11 +751,12 @@ $users = DB::table('users')
     ->get();
 ```
 
-### 其它 Where 子句
+<a name="additional-where-clauses"></a>
+### 其他 Where 子句
 
 **whereLike / orWhereLike / whereNotLike / orWhereNotLike**
 
-`whereLike` 方法允许你向查询添加「LIKE」子句以进行模式匹配。这些方法以与具体数据库无关的方式执行字符串匹配查询，并可切换大小写敏感。默认情况下，字符串匹配是大小写不敏感的：
+`whereLike` 方法允许你向查询添加 "LIKE" 子句以进行模式匹配。这些方法提供了一种与数据库无关的字符串匹配查询方式，并能够切换大小写敏感性。默认情况下，字符串匹配不区分大小写：
 
 ```php
 $users = DB::table('users')
@@ -694,7 +764,7 @@ $users = DB::table('users')
     ->get();
 ```
 
-你可以通过 `caseSensitive` 参数启用大小写敏感搜索：
+你可以通过 `caseSensitive` 参数启用区分大小写的搜索：
 
 ```php
 $users = DB::table('users')
@@ -702,7 +772,7 @@ $users = DB::table('users')
     ->get();
 ```
 
-`orWhereLike` 方法允许你添加带 LIKE 条件的「or」子句：
+`orWhereLike` 方法允许你添加带 LIKE 条件的 "or" 子句：
 
 ```php
 $users = DB::table('users')
@@ -711,7 +781,7 @@ $users = DB::table('users')
     ->get();
 ```
 
-`whereNotLike` 方法允许你向查询添加「NOT LIKE」子句：
+`whereNotLike` 方法允许你向查询添加 "NOT LIKE" 子句：
 
 ```php
 $users = DB::table('users')
@@ -719,7 +789,7 @@ $users = DB::table('users')
     ->get();
 ```
 
-类似地，你可以使用 `orWhereNotLike` 添加带 NOT LIKE 条件的「or」子句：
+类似地，你可以使用 `orWhereNotLike` 添加带 NOT LIKE 条件的 "or" 子句：
 
 ```php
 $users = DB::table('users')
@@ -729,11 +799,11 @@ $users = DB::table('users')
 ```
 
 > [!WARNING]
-> `whereLike` 的大小写敏感选项当前在 SQL Server 上不受支持。
+> `whereLike` 的区分大小写搜索选项目前不受 SQL Server 支持。
 
 **whereIn / whereNotIn / orWhereIn / orWhereNotIn**
 
-`whereIn` 方法用于校验某列的值是否包含在给定数组中：
+`whereIn` 方法验证给定列的值是否包含在给定数组中：
 
 ```php
 $users = DB::table('users')
@@ -741,7 +811,7 @@ $users = DB::table('users')
     ->get();
 ```
 
-`whereNotIn` 方法用于校验某列的值是否不在给定数组中：
+`whereNotIn` 方法验证给定列的值不包含在给定数组中：
 
 ```php
 $users = DB::table('users')
@@ -749,7 +819,7 @@ $users = DB::table('users')
     ->get();
 ```
 
-你也可以将一个查询对象作为 `whereIn` 方法的第二个参数传入：
+你也可以提供查询对象作为 `whereIn` 方法的第二个参数：
 
 ```php
 $activeUsers = DB::table('users')->select('id')->where('is_active', 1);
@@ -759,7 +829,7 @@ $comments = DB::table('comments')
     ->get();
 ```
 
-上面的示例会生成如下 SQL：
+上面的示例将产生以下 SQL：
 
 ```sql
 select * from comments where user_id in (
@@ -770,11 +840,11 @@ select * from comments where user_id in (
 ```
 
 > [!WARNING]
-> 如果你要向查询中传入一个很大的整型绑定数组，可以使用 `whereIntegerInRaw` 或 `whereIntegerNotInRaw` 方法以显著降低内存占用。
+> 如果你要向查询添加大型整数绑定数组，`whereIntegerInRaw` 或 `whereIntegerNotInRaw` 方法可大幅减少内存使用。
 
 **whereBetween / orWhereBetween**
 
-`whereBetween` 方法用于校验某列的值是否在两个值之间：
+`whereBetween` 方法验证列值是否介于两个值之间：
 
 ```php
 $users = DB::table('users')
@@ -784,7 +854,7 @@ $users = DB::table('users')
 
 **whereNotBetween / orWhereNotBetween**
 
-`whereNotBetween` 方法用于校验某列的值是否不在两个值之间：
+`whereNotBetween` 方法验证列值是否位于两个值之外：
 
 ```php
 $users = DB::table('users')
@@ -794,7 +864,7 @@ $users = DB::table('users')
 
 **whereBetweenColumns / whereNotBetweenColumns / orWhereBetweenColumns / orWhereNotBetweenColumns**
 
-`whereBetweenColumns` 方法用于校验某列的值是否位于同一行内另外两列对应的两个值之间：
+`whereBetweenColumns` 方法验证列值是否介于同一表行中两列的值之间：
 
 ```php
 $patients = DB::table('patients')
@@ -802,7 +872,7 @@ $patients = DB::table('patients')
     ->get();
 ```
 
-`whereNotBetweenColumns` 方法用于校验某列的值是否不在同一行内另外两列对应的两个值之间：
+`whereNotBetweenColumns` 方法验证列值是否位于同一表行中两列的值之外：
 
 ```php
 $patients = DB::table('patients')
@@ -812,7 +882,7 @@ $patients = DB::table('patients')
 
 **whereValueBetween / whereValueNotBetween / orWhereValueBetween / orWhereValueNotBetween**
 
-`whereValueBetween` 方法用于校验某个给定值是否位于同一行内两列对应的两个值之间（两列类型相同）：
+`whereValueBetween` 方法验证给定值是否介于同一表行中两个相同类型列的值之间：
 
 ```php
 $products = DB::table('products')
@@ -820,7 +890,7 @@ $products = DB::table('products')
     ->get();
 ```
 
-`whereValueNotBetween` 方法用于校验某个值是否不在同一行内两列对应的两个值之间：
+`whereValueNotBetween` 方法验证某个值是否位于同一表行中两列的值之外：
 
 ```php
 $products = DB::table('products')
@@ -830,7 +900,7 @@ $products = DB::table('products')
 
 **whereNull / whereNotNull / orWhereNull / orWhereNotNull**
 
-`whereNull` 方法用于校验给定列的值是否为 `NULL`：
+`whereNull` 方法验证给定列的值是否为 `NULL`：
 
 ```php
 $users = DB::table('users')
@@ -838,7 +908,7 @@ $users = DB::table('users')
     ->get();
 ```
 
-`whereNotNull` 方法用于校验某列的值是否不为 `NULL`：
+`whereNotNull` 方法验证列值不是 `NULL`：
 
 ```php
 $users = DB::table('users')
@@ -848,7 +918,7 @@ $users = DB::table('users')
 
 **whereNullSafeEquals / orWhereNullSafeEquals**
 
-`whereNullSafeEquals` 与 `orWhereNullSafeEquals` 方法可用于将某列的值与给定值比较，并将两个 `NULL` 视为相等：
+`whereNullSafeEquals` 和 `orWhereNullSafeEquals` 方法可用于将列值与给定值进行比较，同时将两个 `NULL` 值视为相等：
 
 ```php
 $lastLoginIp = $request->input('last_login_ip');
@@ -860,7 +930,7 @@ $users = DB::table('users')
 
 **whereDate / whereMonth / whereDay / whereYear / whereTime**
 
-`whereDate` 方法可用于将某列的值与日期比较：
+`whereDate` 方法可用于将列值与日期进行比较：
 
 ```php
 $users = DB::table('users')
@@ -868,7 +938,7 @@ $users = DB::table('users')
     ->get();
 ```
 
-`whereMonth` 方法可用于将某列的值与特定月份比较：
+`whereMonth` 方法可用于将列值与特定月份进行比较：
 
 ```php
 $users = DB::table('users')
@@ -876,7 +946,7 @@ $users = DB::table('users')
     ->get();
 ```
 
-`whereDay` 方法可用于将某列的值与一个月中的某一天比较：
+`whereDay` 方法可用于将列值与月份中的特定日期进行比较：
 
 ```php
 $users = DB::table('users')
@@ -884,7 +954,7 @@ $users = DB::table('users')
     ->get();
 ```
 
-`whereYear` 方法可用于将某列的值与特定年份比较：
+`whereYear` 方法可用于将列值与特定年份进行比较：
 
 ```php
 $users = DB::table('users')
@@ -892,7 +962,7 @@ $users = DB::table('users')
     ->get();
 ```
 
-`whereTime` 方法可用于将某列的值与特定时间比较：
+`whereTime` 方法可用于将列值与特定时间进行比较：
 
 ```php
 $users = DB::table('users')
@@ -902,7 +972,7 @@ $users = DB::table('users')
 
 **wherePast / whereFuture / whereToday / whereBeforeToday / whereAfterToday**
 
-`wherePast` 与 `whereFuture` 方法可用于判断某列的值是否在过去或将来：
+`wherePast` 和 `whereFuture` 方法可用于判断列值是过去还是未来：
 
 ```php
 $invoices = DB::table('invoices')
@@ -914,7 +984,7 @@ $invoices = DB::table('invoices')
     ->get();
 ```
 
-`whereNowOrPast` 与 `whereNowOrFuture` 方法可用于判断某列的值在过去或将来（含当前时刻）：
+`whereNowOrPast` 和 `whereNowOrFuture` 方法可用于判断列值是否在过去或未来（包含当前日期和时间）：
 
 ```php
 $invoices = DB::table('invoices')
@@ -926,7 +996,7 @@ $invoices = DB::table('invoices')
     ->get();
 ```
 
-`whereToday`、`whereBeforeToday` 与 `whereAfterToday` 方法分别用于判断某列的值是否为今天、今天之前或今天之后：
+`whereToday`、`whereBeforeToday` 和 `whereAfterToday` 方法可分别用于判断列值是否是今天、今天之前或今天之后：
 
 ```php
 $invoices = DB::table('invoices')
@@ -942,7 +1012,7 @@ $invoices = DB::table('invoices')
     ->get();
 ```
 
-类似地，`whereTodayOrBefore` 与 `whereTodayOrAfter` 方法可用于判断某列的值是否在今天之前（含今天）或今天之后（含今天）：
+类似地，`whereTodayOrBefore` 和 `whereTodayOrAfter` 方法可用于判断列值是否在今天之前或今天之后（包含今天的日期）：
 
 ```php
 $invoices = DB::table('invoices')
@@ -956,7 +1026,7 @@ $invoices = DB::table('invoices')
 
 **whereColumn / orWhereColumn**
 
-`whereColumn` 方法可用于校验两列是否相等：
+`whereColumn` 方法可用于验证两列是否相等：
 
 ```php
 $users = DB::table('users')
@@ -964,7 +1034,7 @@ $users = DB::table('users')
     ->get();
 ```
 
-你也可以向 `whereColumn` 方法传入一个比较运算符：
+你也可以向 `whereColumn` 方法传递比较运算符：
 
 ```php
 $users = DB::table('users')
@@ -972,7 +1042,7 @@ $users = DB::table('users')
     ->get();
 ```
 
-你也可以向 `whereColumn` 方法传入一组列比较条件数组。这些条件之间会以 `and` 运算符连接：
+你也可以向 `whereColumn` 方法传递列比较数组。这些条件将使用 `and` 运算符连接：
 
 ```php
 $users = DB::table('users')
@@ -982,9 +1052,10 @@ $users = DB::table('users')
     ])->get();
 ```
 
+<a name="logical-grouping"></a>
 ### 逻辑分组
 
-有时你可能需要将若干「where」子句用括号分组，以实现查询所需的逻辑分组。事实上，通常应当始终将 `orWhere` 调用用括号分组，以避免出现意外的查询行为。要实现这一点，可以向 `where` 方法传入一个闭包：
+有时你可能需要在括号内分组多个 "where" 子句，以实现查询所需的逻辑分组。事实上，你通常应始终将 `orWhere` 方法的调用用括号分组，以避免意外的查询行为。为此，你可以向 `where` 方法传递一个闭包：
 
 ```php
 $users = DB::table('users')
@@ -996,20 +1067,22 @@ $users = DB::table('users')
     ->get();
 ```
 
-如你所见，向 `where` 方法传入闭包会指示查询构造器开始一个约束分组。该闭包会接收一个查询构造器实例，你可以使用它来设置需要被包含在括号分组内的约束。上面的示例会生成如下 SQL：
+如你所见，将闭包传入 `where` 方法会指示查询构造器开始一个约束组。该闭包将接收一个查询构造器实例，你可以用它设置应包含在括号组内的约束。上面的示例将产生以下 SQL：
 
 ```sql
 select * from users where name = 'John' and (votes > 100 or title = 'Admin')
 ```
 
 > [!WARNING]
-> 为避免在全局作用域生效时出现意外行为，应当始终将 `orWhere` 调用分组。
+> 你应始终对 `orWhere` 调用进行分组，以避免在应用全局作用域时出现意外行为。
 
+<a name="advanced-where-clauses"></a>
 ## 高级 Where 子句
 
+<a name="where-exists-clauses"></a>
 ### Where Exists 子句
 
-`whereExists` 方法允许你编写「where exists」SQL 子句。`whereExists` 方法接收一个闭包，闭包会接收一个查询构造器实例，便于你定义应当放在「exists」子句内的查询：
+`whereExists` 方法允许你编写 "where exists" SQL 子句。`whereExists` 方法接受一个闭包，该闭包将接收一个查询构造器实例，允许你定义应放置在 "exists" 子句内的查询：
 
 ```php
 $users = DB::table('users')
@@ -1021,7 +1094,7 @@ $users = DB::table('users')
     ->get();
 ```
 
-或者，你也可以向 `whereExists` 方法传入一个查询对象，而非闭包：
+或者，你可以向 `whereExists` 方法提供查询对象而不是闭包：
 
 ```php
 $orders = DB::table('orders')
@@ -1033,7 +1106,7 @@ $users = DB::table('users')
     ->get();
 ```
 
-上述两个示例都会生成如下 SQL：
+以上两个示例都将产生以下 SQL：
 
 ```sql
 select * from users
@@ -1044,9 +1117,10 @@ where exists (
 )
 ```
 
+<a name="subquery-where-clauses"></a>
 ### 子查询 Where 子句
 
-有时你需要构造一个「where」子句，将子查询的结果与给定值进行比较。可以通过向 `where` 方法传入一个闭包和一个值来实现。例如，下面的查询会取出所有持有指定类型近期「membership」的用户：
+有时你可能需要构造一个将子查询结果与给定值进行比较的 "where" 子句。你可以通过向 `where` 方法传递闭包和值来实现。例如，以下查询将检索所有拥有给定类型近期"会员资格"的用户：
 
 ```php
 use App\Models\User;
@@ -1061,7 +1135,7 @@ $users = User::where(function (Builder $query) {
 }, 'Pro')->get();
 ```
 
-或者，你可能需要构造一个「where」子句，将某列与子查询的结果进行比较。可以通过向 `where` 方法传入列名、运算符和闭包来实现。例如，下面的查询会取出所有金额小于平均值的收入记录：
+或者，你可能需要构造一个将列与子查询结果进行比较的 "where" 子句。你可以通过向 `where` 方法传递列、运算符和闭包来实现。例如，以下查询将检索所有金额小于平均值的收入记录：
 
 ```php
 use App\Models\Income;
@@ -1072,12 +1146,13 @@ $incomes = Income::where('amount', '<', function (Builder $query) {
 })->get();
 ```
 
-### 全文检索 Where 子句
+<a name="full-text-where-clauses"></a>
+### 全文 Where 子句
 
 > [!WARNING]
-> 全文检索 where 子句目前由 MariaDB、MySQL 和 PostgreSQL 支持。
+> 全文 where 子句目前受 MariaDB、MySQL 和 PostgreSQL 支持。
 
-`whereFullText` 和 `orWhereFullText` 方法可用于为已经建有 [全文索引](/topic/Laravel%2013.x/x3vo0g4vm1.html) 的列添加全文「where」子句。Laravel 会自动将这些方法转换为底层数据库系统所支持的 SQL。例如，使用 MariaDB 或 MySQL 的应用会生成 `MATCH AGAINST` 子句：
+`whereFullText` 和 `orWhereFullText` 方法可用于为具有[全文索引](/docs/{{version}}/migrations#available-index-types)的列向查询添加全文 "where" 子句。Laravel 将把这些方法转换为底层数据库系统相应的 SQL。例如，将为使用 MariaDB 或 MySQL 的应用生成 `MATCH AGAINST` 子句：
 
 ```php
 $users = DB::table('users')
@@ -1085,12 +1160,13 @@ $users = DB::table('users')
     ->get();
 ```
 
+<a name="vector-similarity-clauses"></a>
 ### 向量相似度子句
 
 > [!NOTE]
-> 向量相似度子句目前在使用 `pgvector` 扩展的 PostgreSQL 连接以及 MariaDB 11.7 或更高版本上受支持。有关定义向量列与索引的信息，请查阅 [迁移文档](/topic/Laravel%2013.x/x3vo0g4vm1.html)。
+> 向量相似度子句目前受使用 `pgvector` 扩展的 PostgreSQL 连接以及 MariaDB 11.7 及以上版本支持。有关定义向量列和索引的信息，请查阅[迁移文档](/docs/{{version}}/migrations#available-column-types)。
 
-`whereVectorSimilarTo` 方法按与给定向量的余弦相似度过滤结果，并按相关度排序。`minSimilarity` 阈值应为 `0.0` 到 `1.0` 之间的值，`1.0` 表示完全相同：
+`whereVectorSimilarTo` 方法通过余弦相似度过滤结果，并按键按相关性排序结果。`minSimilarity` 阈值应为介于 `0.0` 和 `1.0` 之间的值，其中 `1.0` 表示完全相同：
 
 ```php
 $documents = DB::table('documents')
@@ -1099,7 +1175,7 @@ $documents = DB::table('documents')
     ->get();
 ```
 
-当以普通字符串作为向量参数时，Laravel 会使用 [Laravel AI SDK](/topic/Laravel%2013.x/ndvm3dj93j.html) 自动为其生成嵌入向量：
+当将普通字符串作为向量参数时，Laravel 会使用 [Laravel AI SDK](/docs/{{version}}/ai-sdk#embeddings) 自动为其生成嵌入：
 
 ```php
 $documents = DB::table('documents')
@@ -1108,7 +1184,7 @@ $documents = DB::table('documents')
     ->get();
 ```
 
-默认情况下，`whereVectorSimilarTo` 还会按距离（最相似优先）对结果排序。可以通过传入 `false` 作为 `order` 参数来禁用该排序：
+默认情况下，`whereVectorSimilarTo` 也会按距离对结果排序（最相似的在前）。你可以通过传递 `false` 作为 `order` 参数来禁用此排序：
 
 ```php
 $documents = DB::table('documents')
@@ -1118,7 +1194,7 @@ $documents = DB::table('documents')
     ->get();
 ```
 
-如果需要更细粒度的控制，可以分别独立使用 `selectVectorDistance`、`whereVectorDistanceLessThan` 与 `orderByVectorDistance` 方法：
+如果你需要更多控制，可以独立使用 `selectVectorDistance`、`whereVectorDistanceLessThan` 和 `orderByVectorDistance` 方法：
 
 ```php
 $documents = DB::table('documents')
@@ -1130,19 +1206,22 @@ $documents = DB::table('documents')
     ->get();
 ```
 
-在使用 PostgreSQL 时，必须先加载 `pgvector` 扩展才能创建 `vector` 列：
+使用 PostgreSQL 时，必须先加载 `pgvector` 扩展，然后才能创建 `vector` 列：
 
 ```php
 Schema::ensureVectorExtensionExists();
 ```
 
+<a name="ordering-grouping-limit-and-offset"></a>
 ## 排序、分组、Limit 与 Offset
 
+<a name="ordering"></a>
 ### 排序
 
+<a name="orderby"></a>
 #### `orderBy` 方法
 
-`orderBy` 方法允许你按指定列对查询结果进行排序。`orderBy` 方法接收的第一个参数是你希望排序的列，第二个参数决定排序方向，可以是 `asc` 或 `desc`：
+`orderBy` 方法允许你按给定列对查询结果进行排序。`orderBy` 方法接受的第一个参数应是你希望排序的列，第二个参数确定排序方向，可以是 `asc` 或 `desc`：
 
 ```php
 $users = DB::table('users')
@@ -1150,7 +1229,7 @@ $users = DB::table('users')
     ->get();
 ```
 
-要按多列排序，只需按需多次调用 `orderBy` 即可：
+要按多列排序，你可以简单地根据需要多次调用 `orderBy`：
 
 ```php
 $users = DB::table('users')
@@ -1159,7 +1238,7 @@ $users = DB::table('users')
     ->get();
 ```
 
-排序方向是可选的，默认为升序。如果希望按降序排序，可以为 `orderBy` 方法指定第二个参数，或者直接使用 `orderByDesc`：
+排序方向是可选的，默认升序。如果你想按降序排序，可以为 `orderBy` 方法指定第二个参数，或直接使用 `orderByDesc`：
 
 ```php
 $users = DB::table('users')
@@ -1167,7 +1246,7 @@ $users = DB::table('users')
     ->get();
 ```
 
-最后，使用 `->` 运算符，你还可以按 JSON 列中某个值进行排序：
+最后，使用 `->` 运算符，可以按 JSON 列中的值对结果排序：
 
 ```php
 $corporations = DB::table('corporations')
@@ -1176,9 +1255,10 @@ $corporations = DB::table('corporations')
     ->get();
 ```
 
-#### `latest` 与 `oldest` 方法
+<a name="latest-oldest"></a>
+#### `latest` 和 `oldest` 方法
 
-`latest` 与 `oldest` 方法可以让你方便地按日期对结果进行排序。默认情况下，结果会按表的 `created_at` 列排序。你也可以传入希望排序的列名：
+`latest` 和 `oldest` 方法允许你轻松地按日期排序结果。默认情况下，结果将按表的 `created_at` 列排序。或者，你可以传入希望排序的列名：
 
 ```php
 $user = DB::table('users')
@@ -1186,9 +1266,10 @@ $user = DB::table('users')
     ->first();
 ```
 
+<a name="random-ordering"></a>
 #### 随机排序
 
-`inRandomOrder` 方法可用于将查询结果随机排序。例如，你可以使用该方法随机取出一个用户：
+`inRandomOrder` 方法可用于随机排序查询结果。例如，你可以使用此方法获取一个随机用户：
 
 ```php
 $randomUser = DB::table('users')
@@ -1196,9 +1277,10 @@ $randomUser = DB::table('users')
     ->first();
 ```
 
-#### 移除已有排序
+<a name="removing-existing-orderings"></a>
+#### 移除现有排序
 
-`reorder` 方法会移除之前已应用到查询的全部「order by」子句：
+`reorder` 方法会移除先前已应用于查询的所有 "order by" 子句：
 
 ```php
 $query = DB::table('users')->orderBy('name');
@@ -1206,7 +1288,7 @@ $query = DB::table('users')->orderBy('name');
 $unorderedUsers = $query->reorder()->get();
 ```
 
-调用 `reorder` 方法时，你可以传入列名与排序方向，从而移除全部已有「order by」子句并为查询应用一个全新的排序：
+调用 `reorder` 方法时可以传递列和方向，以移除所有现有的 "order by" 子句并对查询应用全新的排序：
 
 ```php
 $query = DB::table('users')->orderBy('name');
@@ -1214,7 +1296,7 @@ $query = DB::table('users')->orderBy('name');
 $usersOrderedByEmail = $query->reorder('email', 'desc')->get();
 ```
 
-为方便起见，你可以使用 `reorderDesc` 方法按降序重新排序查询结果：
+为方便起见，你可以使用 `reorderDesc` 方法按降序对查询结果重新排序：
 
 ```php
 $query = DB::table('users')->orderBy('name');
@@ -1222,11 +1304,13 @@ $query = DB::table('users')->orderBy('name');
 $usersOrderedByEmail = $query->reorderDesc('email')->get();
 ```
 
+<a name="grouping"></a>
 ### 分组
 
-#### `groupBy` 与 `having` 方法
+<a name="groupby-having"></a>
+#### `groupBy` 和 `having` 方法
 
-如你所料，`groupBy` 与 `having` 方法可用于对查询结果进行分组。`having` 方法的签名与 `where` 方法类似：
+正如你可能预期的，`groupBy` 和 `having` 方法可用于对查询结果进行分组。`having` 方法的签名与 `where` 方法类似：
 
 ```php
 $users = DB::table('users')
@@ -1235,7 +1319,7 @@ $users = DB::table('users')
     ->get();
 ```
 
-你可以使用 `havingBetween` 方法按给定区间过滤结果：
+你可以使用 `havingBetween` 方法在给定范围内过滤结果：
 
 ```php
 $report = DB::table('orders')
@@ -1245,7 +1329,7 @@ $report = DB::table('orders')
     ->get();
 ```
 
-你也可以向 `groupBy` 方法传入多个参数，以按多列分组：
+你可以向 `groupBy` 方法传递多个参数以按多列分组：
 
 ```php
 $users = DB::table('users')
@@ -1254,11 +1338,12 @@ $users = DB::table('users')
     ->get();
 ```
 
-要构造更高级的 `having` 语句，请参阅 havingRaw 方法。
+要构建更高级的 `having` 语句，请参阅 [havingRaw](#raw-methods) 方法。
 
+<a name="limit-and-offset"></a>
 ### Limit 与 Offset
 
-你可以使用 `limit` 与 `offset` 方法限制查询返回的结果数量，或在查询中跳过指定数量的结果：
+你可以使用 `limit` 和 `offset` 方法限制查询返回的结果数量，或跳过查询中的给定结果数：
 
 ```php
 $users = DB::table('users')
@@ -1267,9 +1352,10 @@ $users = DB::table('users')
     ->get();
 ```
 
+<a name="conditional-clauses"></a>
 ## 条件子句
 
-有时你希望根据其他条件决定是否向查询应用某些子句。例如，你可能希望仅在传入的 HTTP 请求中包含某个输入值时才应用 `where` 子句。可以使用 `when` 方法来实现：
+有时你可能希望根据另一个条件将某些查询子句应用于查询。例如，你可能只想在给定输入值存在于传入 HTTP 请求时应用 `where` 语句。你可以使用 `when` 方法实现这一点：
 
 ```php
 $role = $request->input('role');
@@ -1281,9 +1367,9 @@ $users = DB::table('users')
     ->get();
 ```
 
-`when` 方法仅在第一个参数为 `true` 时执行给定的闭包。若第一个参数为 `false`，则不会执行该闭包。因此，在上面的示例中，传入 `when` 方法的闭包仅在请求中存在 `role` 字段且其值为真值时才会被调用。
+`when` 方法只在第一个参数为 `true` 时执行给定闭包。如果第一个参数为 `false`，则不会执行闭包。因此，在上面的示例中，只有当 `role` 字段存在于传入请求中且求值为 `true` 时，`when` 方法的闭包才会被调用。
 
-你也可以向 `when` 方法传入第三个参数——另一个闭包。该闭包仅在第一个参数求值为 `false` 时执行。为说明该特性的用法，下面用它来配置查询的默认排序：
+你可以将另一个闭包作为第三个参数传递给 `when` 方法。此闭包只在第一个参数求值为 `false` 时执行。为说明此功能的使用方式，我们将使用它来配置查询的默认排序：
 
 ```php
 $sortByVotes = $request->boolean('sort_by_votes');
@@ -1297,9 +1383,10 @@ $users = DB::table('users')
     ->get();
 ```
 
+<a name="insert-statements"></a>
 ## Insert 语句
 
-查询构造器还提供了 `insert` 方法，可用于向数据库表中插入记录。`insert` 方法接收一个由列名与值组成的数组：
+查询构造器还提供了一个 `insert` 方法，可用于将记录插入数据库表。`insert` 方法接受一个列名和值数组：
 
 ```php
 DB::table('users')->insert([
@@ -1308,7 +1395,7 @@ DB::table('users')->insert([
 ]);
 ```
 
-你可以通过传入一个二维数组来一次插入多条记录。数组中的每个子数组对应一条要插入的记录：
+你可以通过传递数组的数组一次插入多条记录。每个数组表示应插入表中的一条记录：
 
 ```php
 DB::table('users')->insert([
@@ -1317,7 +1404,7 @@ DB::table('users')->insert([
 ]);
 ```
 
-`insertOrIgnore` 方法会在插入数据库记录时忽略错误。使用该方法时，请注意：重复记录错误会被忽略，其它类型的错误也可能被忽略，具体取决于数据库引擎。例如，`insertOrIgnore` 会 [绕过 MySQL 的严格模式](https://dev.mysql.com/doc/refman/en/sql-mode.html#ignore-effect-on-execution)：
+`insertOrIgnore` 方法在将记录插入数据库时会忽略错误。使用此方法时，你应注意重复记录错误会被忽略，而其他类型的错误也可能根据数据库引擎被忽略。例如，`insertOrIgnore` 将[绕过 MySQL 的严格模式](https://dev.mysql.com/doc/refman/en/sql-mode.html#ignore-effect-on-execution)：
 
 ```php
 DB::table('users')->insertOrIgnore([
@@ -1326,7 +1413,7 @@ DB::table('users')->insertOrIgnore([
 ]);
 ```
 
-`insertUsing` 方法会在插入新记录时使用子查询来确定要插入的数据：
+`insertUsing` 方法将使用子查询确定应插入的数据，将新记录插入表：
 
 ```php
 DB::table('pruned_users')->insertUsing([
@@ -1336,9 +1423,10 @@ DB::table('pruned_users')->insertUsing([
 )->where('updated_at', '<=', now()->minus(months: 1)));
 ```
 
-#### 自增 ID
+<a name="auto-incrementing-ids"></a>
+#### 自动递增 ID
 
-如果表有自增 id，可以使用 `insertGetId` 方法插入一条记录并返回该记录的 ID：
+如果表有自动递增的 id，请使用 `insertGetId` 方法插入记录，然后检索 ID：
 
 ```php
 $id = DB::table('users')->insertGetId(
@@ -1347,11 +1435,12 @@ $id = DB::table('users')->insertGetId(
 ```
 
 > [!WARNING]
-> 在使用 PostgreSQL 时，`insertGetId` 方法要求自增列命名为 `id`。如果你希望从其他「sequence」中获取 ID，可以将列名作为第二个参数传给 `insertGetId` 方法。
+> 使用 PostgreSQL 时，`insertGetId` 方法期望自动递增列名为 `id`。如果你想从不同的"序列"检索 ID，可以将列名作为第二个参数传递给 `insertGetId` 方法。
 
-### Upserts
+<a name="upserts"></a>
+### Upsert
 
-`upsert` 方法会插入尚不存在的记录，并使用你指定的新值更新已存在的记录。方法的第一个参数是要插入或更新的值，第二个参数列出在关联表中能唯一标识记录的列，第三个（也是最后一个）参数是一个数组，列出当数据库中已存在匹配记录时应更新的列：
+`upsert` 方法将插入不存在的记录，并使用你可能指定的新值更新已存在的记录。该方法的第一参数由要插入或更新的值组成，而第二个参数列出在关联表中唯一标识记录的列。该方法的第三个也是最后一个参数是如果匹配记录已存在于数据库中时应更新的列数组：
 
 ```php
 DB::table('flights')->upsert(
@@ -1364,14 +1453,15 @@ DB::table('flights')->upsert(
 );
 ```
 
-在上面的示例中，Laravel 会尝试插入两条记录。如果已存在 `departure` 与 `destination` 列值相同的记录，Laravel 会更新那条记录的 `price` 列。
+在上面的示例中，Laravel 将尝试插入两条记录。如果已存在具有相同 `departure` 和 `destination` 列值的记录，Laravel 将更新该记录的 `price` 列。
 
 > [!WARNING]
-> 除 SQL Server 之外的所有数据库，都要求 `upsert` 方法的第二个参数中的列具有「primary」或「unique」索引。此外，MariaDB 与 MySQL 数据库驱动会忽略 `upsert` 方法的第二个参数，并始终使用表的「primary」与「unique」索引来检测已存在的记录。
+> 除 SQL Server 之外的所有数据库都要求 `upsert` 方法第二个参数中的列具有"主"或"唯一"索引。此外，MariaDB 和 MySQL 数据库驱动会忽略 `upsert` 方法的第二个参数，并始终使用表的"主"和"唯一"索引来检测现有记录。
 
+<a name="update-statements"></a>
 ## Update 语句
 
-除了向数据库插入记录外，查询构造器还可以使用 `update` 方法更新已有记录。`update` 方法与 `insert` 方法一样，接收一个由列与值组成的数组，用于指定要更新的列。`update` 方法返回受影响的行数。你可以使用 `where` 子句来限定 `update` 查询：
+除了向数据库插入记录之外，查询构造器还可以使用 `update` 方法更新现有记录。`update` 方法与 `insert` 方法一样，接受指示要更新列的列与值对数组。`update` 方法返回受影响的行数。你可以使用 `where` 子句约束 `update` 查询：
 
 ```php
 $affected = DB::table('users')
@@ -1379,11 +1469,12 @@ $affected = DB::table('users')
     ->update(['votes' => 1]);
 ```
 
-#### Update or Insert
+<a name="update-or-insert"></a>
+#### 更新或插入
 
-有时你希望更新数据库中已存在的记录，如果不存在则创建一条新记录。这种场景下可以使用 `updateOrInsert` 方法。`updateOrInsert` 方法接收两个参数：一个用于查找记录的列与值对数组，以及一个用于指定要更新列与值的数组。
+有时你可能希望更新数据库中的现有记录，如果不存在匹配记录则创建它。在这种场景下，可以使用 `updateOrInsert` 方法。`updateOrInsert` 方法接受两个参数：用于查找记录的条件数组，以及指示要更新列的列与值对数组。
 
-`updateOrInsert` 方法会先使用第一个参数中的列与值对来定位匹配的数据库记录。如果记录存在，则使用第二个参数中的值更新该记录。如果找不到记录，则会插入一条新记录，其属性由两个参数合并而成：
+`updateOrInsert` 方法将使用第一个参数的列与值对尝试定位匹配的数据库记录。如果记录存在，将使用第二个参数中的值更新它。如果找不到记录，将使用两个参数的合并属性插入新记录：
 
 ```php
 DB::table('users')
@@ -1393,7 +1484,7 @@ DB::table('users')
     );
 ```
 
-你也可以向 `updateOrInsert` 方法传入一个闭包，根据匹配记录是否存在，自定义要更新或插入到数据库中的属性：
+你可以向 `updateOrInsert` 方法提供闭包，以根据匹配记录是否存在来自定义要更新或插入数据库的属性：
 
 ```php
 DB::table('users')->updateOrInsert(
@@ -1409,9 +1500,10 @@ DB::table('users')->updateOrInsert(
 );
 ```
 
+<a name="updating-json-columns"></a>
 ### 更新 JSON 列
 
-更新 JSON 列时，应使用 `->` 语法来更新 JSON 对象中对应的键。该操作在 MariaDB 10.3+、MySQL 5.7+ 与 PostgreSQL 9.5+ 上受支持：
+更新 JSON 列时，应使用 `->` 语法更新 JSON 对象中的适当键。此操作受 MariaDB 10.3+、MySQL 5.7+ 和 PostgreSQL 9.5+ 支持：
 
 ```php
 $affected = DB::table('users')
@@ -1419,9 +1511,10 @@ $affected = DB::table('users')
     ->update(['options->enabled' => true]);
 ```
 
-### 自增与自减
+<a name="increment-and-decrement"></a>
+### 递增与递减
 
-查询构造器还提供了便捷方法来对指定列的值进行自增或自减。这两个方法至少都接收一个参数——要修改的列。第二个参数是可选的，用于指定自增或自减的步长：
+查询构造器还提供了便捷的方法来递增或递减给定列的值。这两种方法都至少接受一个参数：要修改的列。可以提供第二个参数来指定列应递增或递减的量：
 
 ```php
 DB::table('users')->increment('votes');
@@ -1433,13 +1526,13 @@ DB::table('users')->decrement('votes');
 DB::table('users')->decrement('votes', 5);
 ```
 
-如果需要，你还可以指定在自增或自减操作期间一并更新的其他列：
+如有需要，你也可以在递增或递减操作期间指定要更新的其他列：
 
 ```php
 DB::table('users')->increment('votes', 1, ['name' => 'John']);
 ```
 
-此外，你还可以使用 `incrementEach` 与 `decrementEach` 方法一次对多个列进行自增或自减：
+此外，你可以使用 `incrementEach` 和 `decrementEach` 方法一次递增或递减多个列：
 
 ```php
 DB::table('users')->incrementEach([
@@ -1448,9 +1541,10 @@ DB::table('users')->incrementEach([
 ]);
 ```
 
+<a name="delete-statements"></a>
 ## Delete 语句
 
-查询构造器的 `delete` 方法可用于从表中删除记录。`delete` 方法返回受影响的行数。你可以在调用 `delete` 方法之前添加「where」子句来限定 `delete` 语句：
+查询构造器的 `delete` 方法可用于从表中删除记录。`delete` 方法返回受影响的行数。你可以通过在调用 `delete` 方法之前添加 "where" 子句来约束 `delete` 语句：
 
 ```php
 $deleted = DB::table('users')->delete();
@@ -1458,9 +1552,10 @@ $deleted = DB::table('users')->delete();
 $deleted = DB::table('users')->where('votes', '>', 100)->delete();
 ```
 
+<a name="pessimistic-locking"></a>
 ## 悲观锁
 
-查询构造器还包含一些函数，可帮助你在执行 `select` 语句时实现「悲观锁」。要使用「shared lock」执行语句，可以调用 `sharedLock` 方法。共享锁会阻止所选行被修改，直到事务提交：
+查询构造器还包含几个函数，帮助你在执行 `select` 语句时实现"悲观锁定"。要执行带 "shared lock" 的语句，可以调用 `sharedLock` 方法。共享锁可防止所选行在你的事务提交之前被修改：
 
 ```php
 DB::table('users')
@@ -1469,7 +1564,7 @@ DB::table('users')
     ->get();
 ```
 
-你也可以使用 `lockForUpdate` 方法。「for update」锁会阻止所选记录被修改，或被另一个共享锁选中：
+或者，你可以使用 `lockForUpdate` 方法。"for update" 锁可防止所选记录被修改或被其他共享锁选中：
 
 ```php
 DB::table('users')
@@ -1478,7 +1573,7 @@ DB::table('users')
     ->get();
 ```
 
-虽然不是必须的，但建议将悲观锁包在 [事务](/topic/Laravel%2013.x/kl9no87vz4.html) 内使用。这样可以保证所取出的数据在整个操作过程中始终不被未修改——若出现问题，事务会回滚所有更改并自动释放锁：
+虽然不是必须的，但建议在[事务](/docs/{{version}}/database#database-transactions)内包裹悲观锁。这可以确保检索到的数据在整个操作完成之前在数据库中保持不变。如果发生失败，事务将回滚任何更改并自动释放锁：
 
 ```php
 DB::transaction(function () {
@@ -1508,9 +1603,10 @@ DB::transaction(function () {
 });
 ```
 
+<a name="reusable-query-components"></a>
 ## 可复用的查询组件
 
-如果你的应用中存在重复的查询逻辑，可以使用查询构造器的 `tap` 与 `pipe` 方法将逻辑提取为可复用对象。假设你的应用中有下面这两条不同的查询：
+如果你的应用中有重复的查询逻辑，可以使用查询构造器的 `tap` 和 `pipe` 方法将逻辑提取到可复用对象中。假设你在应用中有这两个不同的查询：
 
 ```php
 use Illuminate\Database\Query\Builder;
@@ -1538,7 +1634,7 @@ DB::table('flights')
     ->get();
 ```
 
-你可能希望把这两条查询中共用的目的地过滤逻辑提取为一个可复用对象：
+你可能希望将查询之间通用的目的地过滤提取到可复用对象中：
 
 ```php
 <?php
@@ -1564,7 +1660,7 @@ class DestinationFilter
 }
 ```
 
-然后，你可以使用查询构造器的 `tap` 方法将该对象的逻辑应用到查询上：
+然后，你可以使用查询构造器的 `tap` 方法将对象的逻辑应用到查询中：
 
 ```php
 use App\Scopes\DestinationFilter;
@@ -1591,11 +1687,12 @@ DB::table('flights')
     ->get();
 ```
 
+<a name="query-pipes"></a>
 #### 查询管道
 
-`tap` 方法始终会返回查询构造器。如果你希望提取一个会执行查询并返回另一个值的对象，可以使用 `pipe` 方法。
+`tap` 方法总是返回查询构造器。如果你想提取一个执行查询并返回其他值的对象，可以使用 `pipe` 方法。
 
-考虑以下查询对象，它包含整个应用中共享的 [分页](/topic/Laravel%2013.x/3xyq454vmq.html) 逻辑。与 `DestinationFilter` 不同的是（`DestinationFilter` 给查询添加查询条件），`Paginate` 对象会执行查询并返回一个分页器实例：
+请考虑以下包含整个应用中使用的共享[分页](/docs/{{version}}/pagination)逻辑的查询对象。与向查询应用查询条件的 `DestinationFilter` 不同，`Paginate` 对象执行查询并返回分页器实例：
 
 ```php
 <?php
@@ -1623,7 +1720,7 @@ class Paginate
 }
 ```
 
-借助查询构造器的 `pipe` 方法，我们可以利用该对象应用共享的分页逻辑：
+使用查询构造器的 `pipe` 方法，我们可以利用此对象应用共享分页逻辑：
 
 ```php
 $flights = DB::table('flights')
@@ -1631,9 +1728,10 @@ $flights = DB::table('flights')
     ->pipe(new Paginate);
 ```
 
+<a name="debugging"></a>
 ## 调试
 
-你可以在构建查询时使用 `dd` 与 `dump` 方法来打印当前的查询绑定与 SQL。`dd` 方法会输出调试信息并立即停止请求；`dump` 方法会输出调试信息但允许请求继续执行：
+你可以在构建查询时使用 `dd` 和 `dump` 方法转储当前查询绑定和 SQL。`dd` 方法将显示调试信息，然后停止执行请求。`dump` 方法将显示调试信息，但允许请求继续执行：
 
 ```php
 DB::table('users')->where('votes', '>', 100)->dd();
@@ -1641,9 +1739,10 @@ DB::table('users')->where('votes', '>', 100)->dd();
 DB::table('users')->where('votes', '>', 100)->dump();
 ```
 
-可以在查询上调用 `dumpRawSql` 与 `ddRawSql` 方法，打印出所有参数绑定已被正确代入的 SQL：
+可以对查询调用 `dumpRawSql` 和 `ddRawSql` 方法，以转储查询的 SQL 并适当替换所有参数绑定：
 
 ```php
 DB::table('users')->where('votes', '>', 100)->dumpRawSql();
 
 DB::table('users')->where('votes', '>', 100)->ddRawSql();
+```

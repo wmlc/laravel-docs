@@ -1,32 +1,42 @@
 # 契约（Contracts）
 
+- [简介](#introduction)
+    - [契约 vs. Facade](#contracts-vs-facades)
+- [何时使用契约](#when-to-use-contracts)
+- [如何使用契约](#how-to-use-contracts)
+- [契约参考](#contract-reference)
+
+<a name="introduction"></a>
 ## 简介
 
-Laravel 的「契约（contracts）」是一组接口，定义了框架提供的核心服务。例如，`Illuminate\Contracts\Queue\Queue` 契约定义了队列任务所需的方法，而 `Illuminate\Contracts\Mail\Mailer` 契约定义了发送邮件所需的方法。
+Laravel 的“契约（contracts）”是一组定义了框架所提供的核心服务的接口。例如，`Illuminate\Contracts\Queue\Queue` 契约定义了排队任务所需的方法，而 `Illuminate\Contracts\Mail\Mailer` 契约定义了发送电子邮件所需的方法。
 
-每个契约都有框架提供的对应实现。例如，Laravel 提供了一个支持多种驱动的队列实现，以及由 [Symfony Mailer](https://symfony.com/doc/current/mailer.html) 提供支持的邮件实现。
+每个契约都有一个由框架提供的对应实现。例如，Laravel 提供了一个支持多种驱动的队列实现，以及一个由 [Symfony Mailer](https://symfony.com/doc/current/mailer.html) 驱动的邮件实现。
 
-所有 Laravel 契约都托管在 [独立的 GitHub 仓库](https://github.com/illuminate/contracts) 里。该仓库既可作为所有可用契约的快速参考，也是构建与 Laravel 服务交互的扩展包时一个解耦、可独立引用的包。
+所有 Laravel 契约都位于 [它们自己的 GitHub 仓库](https://github.com/illuminate/contracts) 中。这为所有可用的契约提供了一个快速的参考点，同时也是一个单一的、解耦的包，可以在构建与 Laravel 服务交互的包时使用。
 
-### 契约 vs. 门面（Facades）
+<a name="contracts-vs-facades"></a>
+### 契约 vs. Facade
 
-Laravel 的 [门面（facades）](/topic/Laravel%2013.x/569x508yep.html) 与辅助函数让我们无需类型提示、无需从服务容器里解析契约，就能便捷地使用 Laravel 服务。在大多数情况下，每个门面都有一个等价的契约。
+Laravel 的 [Facade](/docs/{{version}}/facades) 和辅助函数提供了一种简单的方式来使用 Laravel 的服务，而无需对契约进行类型提示并从服务容器中解析它们。在大多数情况下，每个 Facade 都有一个对应的契约。
 
-与门面不同，契约允许你在类的构造函数中显式声明依赖——而门面则不需要你在构造函数中显式 require。一些开发者倾向于以这种方式显式声明依赖，因此更愿意使用契约；另一些开发者则更喜欢门面的便捷。**通常，大多数应用在开发阶段使用门面都不会有问题。**
+与不需要在类的构造函数中引入的 Facade 不同，契约允许你为类定义明确的依赖。一些开发者喜欢以这种方式显式定义依赖，因此更喜欢使用契约，而另一些开发者则享受 Facade 的便利。**一般来说，大多数应用程序在开发期间都可以毫无问题地使用 Facade。**
 
+<a name="when-to-use-contracts"></a>
 ## 何时使用契约
 
-是否使用契约、还是使用门面，取决于个人以及团队的偏好。契约与门面都可以用来构建健壮、可测试的 Laravel 应用。二者并非互斥——应用的某些部分可以使用门面，另一些部分则依赖契约。只要保持类的职责清晰，使用契约还是门面在实践中差别很小。
+使用契约还是 Facade 的决定取决于个人品味以及你的开发团队的品味。契约和 Facade 都可以用来创建健壮、经过良好测试的 Laravel 应用程序。契约和 Facade 并不互斥。你的应用程序的某些部分可以使用 Facade，而其他部分则依赖于契约。只要你让你的类的职责保持聚焦，你就会发现使用契约和 Facade 之间几乎没有实际差别。
 
-通常，大多数应用在开发阶段使用门面都不会有问题。如果你正在构建一个需要与多个 PHP 框架集成的扩展包，建议使用 `illuminate/contracts` 包——这样可以在无需在扩展包的 `composer.json` 中 require Laravel 具体实现的前提下，定义与 Laravel 服务的集成方式。
+一般来说，大多数应用程序在开发期间都可以毫无问题地使用 Facade。如果你正在构建一个与多个 PHP 框架集成的包，你可能希望使用 `illuminate/contracts` 包来定义你与 Laravel 服务的集成，而无需在你的包的 `composer.json` 文件中引入 Laravel 的具体实现。
 
+<a name="how-to-use-contracts"></a>
 ## 如何使用契约
 
-那么，如何获得契约的实现呢？其实非常简单。
+那么，你如何获得一个契约的实现呢？其实相当简单。
 
-Laravel 中的许多类型都是通过 [服务容器](/topic/Laravel%2013.x/x3vo054vm1.html) 解析的，包括控制器、事件监听器、中间件、队列任务，甚至路由闭包。因此，要获得契约的实现，只需在类的构造函数中「类型提示」该接口即可。
+Laravel 中许多类型的类都是通过 [服务容器（Service Container）](/docs/{{version}}/container) 解析的，包括控制器、事件监听器、中间件、队列任务，甚至路由闭包。因此，要获得一个契约的实现，你只需在被解析的类的构造函数中对接口进行“类型提示”即可。
 
-例如，请看下面这个事件监听器：
+例如，看看这个事件监听器：
 
 ```php
 <?php
@@ -56,13 +66,16 @@ class CacheOrderInformation
 }
 ```
 
-当事件监听器被解析时，服务容器会读取该类构造函数上的类型提示，并注入相应的值。如需了解服务容器中注册的更多内容，请查阅 [服务容器文档](/topic/Laravel%2013.x/x3vo054vm1.html)。
+当事件监听器被解析时，服务容器会读取类构造函数上的类型提示，并注入适当的值。要详细了解如何在服务容器中注册内容，请查阅 [它的文档](/docs/{{version}}/container)。
 
+<a name="contract-reference"></a>
 ## 契约参考
 
-下表提供了所有 Laravel 契约及其等价的门面的快速参考：
+下表提供了所有 Laravel 契约及其对应 Facade 的快速参考：
 
-| Contract | References Facade |
+<div class="overflow-auto">
+
+| 契约 | 对应 Facade |
 | --- | --- |
 | [Illuminate\Contracts\Auth\Access\Authorizable](https://github.com/illuminate/contracts/blob/{{version}}/Auth/Access/Authorizable.php) | &nbsp; |
 | [Illuminate\Contracts\Auth\Access\Gate](https://github.com/illuminate/contracts/blob/{{version}}/Auth/Access/Gate.php) | `Gate` |
@@ -105,7 +118,7 @@ class CacheOrderInformation
 | [Illuminate\Contracts\Mail\Mailable](https://github.com/illuminate/contracts/blob/{{version}}/Mail/Mailable.php) | &nbsp; |
 | [Illuminate\Contracts\Mail\Mailer](https://github.com/illuminate/contracts/blob/{{version}}/Mail/Mailer.php) | `Mail` |
 | [Illuminate\Contracts\Mail\MailQueue](https://github.com/illuminate/contracts/blob/{{version}}/Mail/MailQueue.php) | `Mail::queue()` |
-| [Illuminate\Contracts\Notifications\Dispatcher](https://github.com/illuminate/contracts/blob/{{version}}/Notifications/Dispatcher.php) | `Notification`|
+| [Illuminate\Contracts\Notifications\Dispatcher](https://github.com/illuminate/contracts/blob/{{version}}/Notifications/Dispatcher.php) | `Notification` |
 | [Illuminate\Contracts\Notifications\Factory](https://github.com/illuminate/contracts/blob/{{version}}/Notifications/Factory.php) | `Notification` |
 | [Illuminate\Contracts\Pagination\LengthAwarePaginator](https://github.com/illuminate/contracts/blob/{{version}}/Pagination/LengthAwarePaginator.php) | &nbsp; |
 | [Illuminate\Contracts\Pagination\Paginator](https://github.com/illuminate/contracts/blob/{{version}}/Pagination/Paginator.php) | &nbsp; |
@@ -142,3 +155,5 @@ class CacheOrderInformation
 | [Illuminate\Contracts\View\Engine](https://github.com/illuminate/contracts/blob/{{version}}/View/Engine.php) | &nbsp; |
 | [Illuminate\Contracts\View\Factory](https://github.com/illuminate/contracts/blob/{{version}}/View/Factory.php) | `View` |
 | [Illuminate\Contracts\View\View](https://github.com/illuminate/contracts/blob/{{version}}/View/View.php) | `View::make()` |
+
+</div>

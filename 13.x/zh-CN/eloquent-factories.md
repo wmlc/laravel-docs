@@ -1,8 +1,26 @@
 # Eloquent：工厂
 
+- [简介](#introduction)
+- [定义模型工厂](#defining-model-factories)
+    - [生成工厂](#generating-factories)
+    - [工厂状态](#factory-states)
+    - [工厂回调](#factory-callbacks)
+- [使用工厂创建模型](#creating-models-using-factories)
+    - [实例化模型](#instantiating-models)
+    - [持久化模型](#persisting-models)
+    - [序列](#sequences)
+- [工厂关联](#factory-relationships)
+    - [Has Many 关联](#has-many-relationships)
+    - [Belongs To 关联](#belongs-to-relationships)
+    - [Many to Many 关联](#many-to-many-relationships)
+    - [多态关联](#polymorphic-relationships)
+    - [在工厂中定义关联](#defining-relationships-within-factories)
+    - [为关联复用已有模型](#recycling-an-existing-model-for-relationships)
+
+<a name="introduction"></a>
 ## 简介
 
-在测试应用或填充数据库时，你可能需要向数据库中插入几条记录。Laravel 允许你使用模型工厂（model factories）为每个 [Eloquent 模型](/topic/Laravel%2013.x/rwyl2kxvz8.html) 定义一组默认属性，而不必手动指定每一列的值。
+在测试应用或填充数据库时，你可能需要向数据库中插入几条记录。Laravel 允许你使用模型工厂（model factories）为每个 [Eloquent 模型](/docs/{{version}}/eloquent) 定义一组默认属性，而不必手动指定每一列的值。
 
 要查看如何编写工厂的示例，请查看应用中的 `database/factories/UserFactory.php` 文件。该工厂包含在所有新的 Laravel 应用中，并包含以下工厂定义：
 
@@ -58,11 +76,13 @@ class UserFactory extends Factory
 > [!NOTE]
 > 你可以通过更新 `config/app.php` 配置文件中的 `faker_locale` 选项，来更改应用的 Faker 区域设置。
 
+<a name="defining-model-factories"></a>
 ## 定义模型工厂
 
+<a name="generating-factories"></a>
 ### 生成工厂
 
-要创建一个工厂，请执行 `make:factory` [Artisan 命令](/topic/Laravel%2013.x/3dykqdoyl0.html)：
+要创建一个工厂，请执行 `make:factory` [Artisan 命令](/docs/{{version}}/artisan)：
 
 ```shell
 php artisan make:factory PostFactory
@@ -70,6 +90,7 @@ php artisan make:factory PostFactory
 
 新的工厂类会被放置在你的 `database/factories` 目录中。
 
+<a name="factory-and-model-discovery-conventions"></a>
 #### 模型与工厂的发现约定
 
 定义好工厂后，你可以使用由 `Illuminate\Database\Eloquent\Factories\HasFactory` trait 提供给模型的静态 `factory` 方法，来实例化该模型的工厂实例。
@@ -115,6 +136,7 @@ class FlightFactory extends Factory
 }
 ```
 
+<a name="factory-states"></a>
 ### 工厂状态
 
 状态操作方法允许你定义可以被任意组合应用到模型工厂的离散修改。例如，你的 `Database\Factories\UserFactory` 工厂可能包含一个 `suspended` 状态方法，用于修改其某个默认属性值。
@@ -137,9 +159,10 @@ public function suspended(): Factory
 }
 ```
 
-#### "Trashed" 状态
+<a name="trashed-state"></a>
+#### 「Trashed」状态
 
-如果你的 Eloquent 模型可以被 [软删除](/topic/Laravel%2013.x/rwyl2kxvz8.html)，你可以调用内置的 `trashed` 状态方法，指示创建的模型应已处于"软删除"状态。你无需手动定义 `trashed` 状态，因为它对所有工厂自动可用：
+如果你的 Eloquent 模型可以被 [软删除](/docs/{{version}}/eloquent#soft-deleting)，你可以调用内置的 `trashed` 状态方法，指示创建的模型应已处于「软删除」状态。你无需手动定义 `trashed` 状态，因为它对所有工厂自动可用：
 
 ```php
 use App\Models\User;
@@ -147,6 +170,7 @@ use App\Models\User;
 $user = User::factory()->trashed()->create();
 ```
 
+<a name="factory-callbacks"></a>
 ### 工厂回调
 
 工厂回调使用 `afterMaking` 和 `afterCreating` 方法进行注册，允许你在生成（make）或创建（create）模型后执行额外的任务。你应该通过在工厂类上定义一个 `configure` 方法来注册这些回调。当工厂被实例化时，Laravel 会自动调用该方法：
@@ -198,8 +222,10 @@ public function suspended(): Factory
 }
 ```
 
+<a name="creating-models-using-factories"></a>
 ## 使用工厂创建模型
 
+<a name="instantiating-models"></a>
 ### 实例化模型
 
 定义好工厂后，你可以使用由 `Illuminate\Database\Eloquent\Factories\HasFactory` trait 提供给模型的静态 `factory` 方法，来实例化该模型的工厂实例。我们来看几个创建模型的示例。首先，使用 `make` 方法创建模型，但不将其持久化到数据库：
@@ -216,14 +242,16 @@ $user = User::factory()->make();
 $users = User::factory()->count(3)->make();
 ```
 
+<a name="applying-states"></a>
 #### 应用状态
 
-你还可以将任意 状态 应用到模型上。如果你希望对模型应用多个状态转换，可以直接调用状态转换方法：
+你还可以将任意状态应用到模型上。如果你希望对模型应用多个状态转换，可以直接调用状态转换方法：
 
 ```php
 $users = User::factory()->count(5)->suspended()->make();
 ```
 
+<a name="overriding-attributes"></a>
 #### 覆盖属性
 
 如果你希望覆盖模型的某些默认值，可以向 `make` 方法传入一个值数组。只有指定的属性会被替换，其余属性仍按工厂指定的默认值设置：
@@ -243,8 +271,9 @@ $user = User::factory()->state([
 ```
 
 > [!NOTE]
-> 使用工厂创建模型时，[批量赋值保护](/topic/Laravel%2013.x/rwyl2kxvz8.html) 会自动被禁用。
+> 使用工厂创建模型时，[批量赋值保护](/docs/{{version}}/eloquent#mass-assignment) 会自动被禁用。
 
+<a name="persisting-models"></a>
 ### 持久化模型
 
 `create` 方法会实例化模型实例，并使用 Eloquent 的 `save` 方法将它们持久化到数据库：
@@ -267,6 +296,7 @@ $user = User::factory()->create([
 ]);
 ```
 
+<a name="sequences"></a>
 ### 序列
 
 有时你可能希望为每个创建的模型轮流使用某个给定模型属性的不同值。你可以通过定义一个作为序列（sequence）的状态转换来实现。例如，你可能希望为每个创建的用户在 `admin` 列的值 `Y` 和 `N` 之间轮换：
@@ -322,8 +352,10 @@ $users = User::factory()
     ->create();
 ```
 
+<a name="factory-relationships"></a>
 ## 工厂关联
 
+<a name="has-many-relationships"></a>
 ### Has Many 关联
 
 接下来，让我们探索如何使用 Laravel 流畅的工厂方法来构建 Eloquent 模型关联。首先，假设我们的应用有一个 `App\Models\User` 模型和一个 `App\Models\Post` 模型。同时，假设 `User` 模型定义了一个与 `Post` 的 `hasMany` 关联。我们可以使用 Laravel 工厂提供的 `has` 方法，创建一个拥有三篇文章的用户。`has` 方法接受一个工厂实例：
@@ -359,6 +391,7 @@ $user = User::factory()
     ->create();
 ```
 
+<a name="has-many-relationships-using-magic-methods"></a>
 #### 使用魔术方法
 
 为方便起见，你可以使用 Laravel 的魔术工厂关联方法来构建关联。例如，下面的示例会使用约定来确定关联模型应通过 `User` 模型上的 `posts` 关联方法来创建：
@@ -401,9 +434,10 @@ $user = User::factory()
     ->create();
 ```
 
+<a name="belongs-to-relationships"></a>
 ### Belongs To 关联
 
-既然我们已经探索了如何使用工厂构建"has many"关联，接下来看看该关联的反向。可以使用 `for` 方法来定义工厂创建模型所归属的父模型。例如，我们可以创建三个属于单个用户的 `App\Models\Post` 模型实例：
+既然我们已经探索了如何使用工厂构建「has many」关联，接下来看看该关联的反向。可以使用 `for` 方法来定义工厂创建模型所归属的父模型。例如，我们可以创建三个属于单个用户的 `App\Models\Post` 模型实例：
 
 ```php
 use App\Models\Post;
@@ -428,9 +462,10 @@ $posts = Post::factory()
     ->create();
 ```
 
+<a name="belongs-to-relationships-using-magic-methods"></a>
 #### 使用魔术方法
 
-为方便起见，你可以使用 Laravel 的魔术工厂关联方法来定义"belongs to"关联。例如，下面的示例会使用约定来确定这三篇文章应属于 `Post` 模型上的 `user` 关联：
+为方便起见，你可以使用 Laravel 的魔术工厂关联方法来定义「belongs to」关联。例如，下面的示例会使用约定来确定这三篇文章应属于 `Post` 模型上的 `user` 关联：
 
 ```php
 $posts = Post::factory()
@@ -441,9 +476,10 @@ $posts = Post::factory()
     ->create();
 ```
 
+<a name="many-to-many-relationships"></a>
 ### Many to Many 关联
 
-与 has many 关联 类似，"many to many" 关联也可以使用 `has` 方法创建：
+与 has many 关联类似，「many to many」 关联也可以使用 `has` 方法创建：
 
 ```php
 use App\Models\Role;
@@ -454,6 +490,7 @@ $user = User::factory()
     ->create();
 ```
 
+<a name="pivot-table-attributes"></a>
 #### 中间表属性
 
 如果你需要定义在连接模型的中间表（pivot）上设置的属性，可以使用 `hasAttached` 方法。该方法将中间表属性名和值的数组作为其第二个参数：
@@ -510,6 +547,7 @@ $users = User::factory()
     ->create();
 ```
 
+<a name="many-to-many-relationships-using-magic-methods"></a>
 #### 使用魔术方法
 
 为方便起见，你可以使用 Laravel 的魔术工厂关联方法来定义 many to many 关联。例如，下面的示例会使用约定来确定关联模型应通过 `User` 模型上的 `roles` 关联方法来创建：
@@ -522,9 +560,10 @@ $user = User::factory()
     ->create();
 ```
 
+<a name="polymorphic-relationships"></a>
 ### 多态关联
 
-[多态关联](/topic/Laravel%2013.x/kpv13d298w.html) 也可以使用工厂创建。多态的"morph many"关联创建方式与典型的"has many"关联相同。例如，如果 `App\Models\Post` 模型与 `App\Models\Comment` 模型存在 `morphMany` 关联：
+[多态关联](/docs/{{version}}/eloquent-relationships#polymorphic-relationships) 也可以使用工厂创建。多态的「morph many」关联创建方式与典型的「has many」关联相同。例如，如果 `App\Models\Post` 模型与 `App\Models\Comment` 模型存在 `morphMany` 关联：
 
 ```php
 use App\Models\Post;
@@ -532,6 +571,7 @@ use App\Models\Post;
 $post = Post::factory()->hasComments(3)->create();
 ```
 
+<a name="morph-to-relationships"></a>
 #### Morph To 关联
 
 不能使用魔术方法来创建 `morphTo` 关联。相反，必须直接使用 `for` 方法，并显式提供关联的名称。例如，假设 `Comment` 模型有一个定义 `morphTo` 关联的 `commentable` 方法。在这种情况下，我们可以通过直接使用 `for` 方法，创建三条属于单篇文章的评论：
@@ -542,9 +582,10 @@ $comments = Comment::factory()->count(3)->for(
 )->create();
 ```
 
+<a name="polymorphic-many-to-many-relationships"></a>
 #### 多态 Many to Many 关联
 
-多态的"many to many"（`morphToMany` / `morphedByMany`）关联可以像非多态的"many to many"关联一样创建：
+多态的「many to many」（`morphToMany` / `morphedByMany`）关联可以像非多态的「many to many」关联一样创建：
 
 ```php
 use App\Models\Tag;
@@ -558,7 +599,7 @@ $video = Video::factory()
     ->create();
 ```
 
-当然，也可以使用魔术 `has` 方法来创建多态"many to many"关联：
+当然，也可以使用魔术 `has` 方法来创建多态「many to many」关联：
 
 ```php
 $video = Video::factory()
@@ -566,9 +607,10 @@ $video = Video::factory()
     ->create();
 ```
 
+<a name="defining-relationships-within-factories"></a>
 ### 在工厂中定义关联
 
-要在模型工厂中定义关联，你通常会将一个新的工厂实例赋值给该关联的外键。这通常针对"反向"关联，例如 `belongsTo` 和 `morphTo` 关联。例如，如果你希望在创建文章时同时创建一个新用户，可以这样做：
+要在模型工厂中定义关联，你通常会将一个新的工厂实例赋值给该关联的外键。这通常针对「反向」关联，例如 `belongsTo` 和 `morphTo` 关联。例如，如果你希望在创建文章时同时创建一个新用户，可以这样做：
 
 ```php
 use App\Models\User;
@@ -609,6 +651,7 @@ public function definition(): array
 }
 ```
 
+<a name="recycling-an-existing-model-for-relationships"></a>
 ### 为关联复用已有模型
 
 如果你有一些模型与另一个模型存在共同的关联，可以使用 `recycle` 方法，确保关联模型的一个单一实例被工厂创建的所有关联所复用。

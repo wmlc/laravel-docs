@@ -1,8 +1,13 @@
 # Eloquent：集合
 
+- [简介](#introduction)
+- [可用方法](#available-methods)
+- [自定义集合](#custom-collections)
+
+<a name="introduction"></a>
 ## 简介
 
-所有返回多个模型结果的 Eloquent 方法，都会返回 `Illuminate\Database\Eloquent\Collection` 类的实例，包括通过 `get` 方法检索到的结果，或是通过关联访问到的结果。Eloquent 集合对象继承自 Laravel 的[基础集合](/topic/Laravel%2013.x/4rvgn63ydj.html)，因此天然继承了数十个用于流畅操作底层 Eloquent 模型数组的方法。务必查阅 Laravel 集合文档，了解所有这些实用方法！
+所有返回多个模型结果的 Eloquent 方法，都会返回 `Illuminate\Database\Eloquent\Collection` 类的实例，包括通过 `get` 方法检索到的结果，或是通过关联访问到的结果。Eloquent 集合对象继承自 Laravel 的[基础集合](/docs/{{version}}/collections)，因此天然继承了数十个用于流畅操作底层 Eloquent 模型数组的方法。务必查阅 Laravel 集合文档，了解所有这些实用方法！
 
 所有集合也都充当迭代器，让你可以像遍历简单的 PHP 数组一样遍历它们：
 
@@ -26,13 +31,15 @@ $names = User::all()->reject(function (User $user) {
 });
 ```
 
+<a name="eloquent-collection-conversion"></a>
 #### Eloquent 集合转换
 
-虽然大多数 Eloquent 集合方法都会返回一个新的 Eloquent 集合实例，但 `collapse`、`flatten`、`flip`、`keys`、`pluck` 和 `zip` 方法会返回[基础集合](/topic/Laravel%2013.x/4rvgn63ydj.html)实例。同样地，如果 `map` 操作返回的集合不包含任何 Eloquent 模型，它会被转换为基础集合实例。
+虽然大多数 Eloquent 集合方法都会返回一个新的 Eloquent 集合实例，但 `collapse`、`flatten`、`flip`、`keys`、`pluck` 和 `zip` 方法会返回[基础集合](/docs/{{version}}/collections)实例。同样地，如果 `map` 操作返回的集合不包含任何 Eloquent 模型，它会被转换为基础集合实例。
 
+<a name="available-methods"></a>
 ## 可用方法
 
-所有 Eloquent 集合都继承自[基础 Laravel 集合](/topic/Laravel%2013.x/4rvgn63ydj.html)对象；因此，它们继承了基础集合类提供的所有强大方法。
+所有 Eloquent 集合都继承自[基础 Laravel 集合](/docs/{{version}}/collections#available-methods)对象；因此，它们继承了基础集合类提供的所有强大方法。
 
 此外，`Illuminate\Database\Eloquent\Collection` 类还提供了一组超集方法，用于协助管理你的模型集合。大多数方法返回 `Illuminate\Database\Eloquent\Collection` 实例；不过，部分方法（如 `modelKeys`）会返回 `Illuminate\Support\Collection` 实例。
 
@@ -57,33 +64,38 @@ $names = User::all()->reject(function (User $user) {
     }
 </style>
 
-append
-contains
-diff
-except
-find
-findOrFail
-fresh
-intersect
-load
-loadMissing
-modelKeys
-makeVisible
-makeHidden
-mergeVisible
-mergeHidden
-only
-partition
-setAppends
-setVisible
-setHidden
-toQuery
-unique
-withoutAppends
+<div class="collection-method-list" markdown="1">
 
+[append](#method-append)
+[contains](#method-contains)
+[diff](#method-diff)
+[except](#method-except)
+[find](#method-find)
+[findOrFail](#method-find-or-fail)
+[fresh](#method-fresh)
+[intersect](#method-intersect)
+[load](#method-load)
+[loadMissing](#method-loadMissing)
+[modelKeys](#method-modelKeys)
+[makeVisible](#method-makeVisible)
+[makeHidden](#method-makeHidden)
+[mergeVisible](#method-mergeVisible)
+[mergeHidden](#method-mergeHidden)
+[only](#method-only)
+[partition](#method-partition)
+[setAppends](#method-setAppends)
+[setVisible](#method-setVisible)
+[setHidden](#method-setHidden)
+[toQuery](#method-toquery)
+[unique](#method-unique)
+[withoutAppends](#method-withoutAppends)
+
+</div>
+
+<a name="method-append"></a>
 #### `append($attributes)` {.collection-method .first-collection-method}
 
-`append` 方法可用于指示集合中的每个模型都应当[追加](/topic/Laravel%2013.x/m892ge6y01.html)某个属性。该方法接受一个属性数组或单个属性：
+`append` 方法可用于指示集合中的每个模型都应当[追加](/docs/{{version}}/eloquent-serialization#appending-values-to-json)某个属性。该方法接受一个属性数组或单个属性：
 
 ```php
 $users->append('team');
@@ -91,6 +103,7 @@ $users->append('team');
 $users->append(['team', 'is_admin']);
 ```
 
+<a name="method-contains"></a>
 #### `contains($key, $operator = null, $value = null)` {.collection-method}
 
 `contains` 方法可用于判断集合是否包含给定的模型实例。该方法接受主键或模型实例：
@@ -101,6 +114,7 @@ $users->contains(1);
 $users->contains(User::find(1));
 ```
 
+<a name="method-diff"></a>
 #### `diff($items)` {.collection-method}
 
 `diff` 方法返回所有未出现在给定集合中的模型：
@@ -111,6 +125,7 @@ use App\Models\User;
 $users = $users->diff(User::whereIn('id', [1, 2, 3])->get());
 ```
 
+<a name="method-except"></a>
 #### `except($keys)` {.collection-method}
 
 `except` 方法返回所有不具有给定主键的模型：
@@ -119,6 +134,7 @@ $users = $users->diff(User::whereIn('id', [1, 2, 3])->get());
 $users = $users->except([1, 2, 3]);
 ```
 
+<a name="method-find"></a>
 #### `find($key)` {.collection-method}
 
 `find` 方法返回主键与给定键匹配的模型。如果 `$key` 是一个模型实例，`find` 会尝试返回主键匹配的模型。如果 `$key` 是一个键数组，`find` 会返回所有主键在该给定数组中的模型：
@@ -129,6 +145,7 @@ $users = User::all();
 $user = $users->find(1);
 ```
 
+<a name="method-find-or-fail"></a>
 #### `findOrFail($key)` {.collection-method}
 
 `findOrFail` 方法返回主键与给定键匹配的模型；如果在集合中找不到匹配的模型，则抛出 `Illuminate\Database\Eloquent\ModelNotFoundException` 异常：
@@ -139,6 +156,7 @@ $users = User::all();
 $user = $users->findOrFail(1);
 ```
 
+<a name="method-fresh"></a>
 #### `fresh($with = [])` {.collection-method}
 
 `fresh` 方法从数据库中检索集合中每个模型的全新实例。此外，任何指定的关联都会被预加载：
@@ -149,6 +167,7 @@ $users = $users->fresh();
 $users = $users->fresh('comments');
 ```
 
+<a name="method-intersect"></a>
 #### `intersect($items)` {.collection-method}
 
 `intersect` 方法返回所有同时也出现在给定集合中的模型：
@@ -159,6 +178,7 @@ use App\Models\User;
 $users = $users->intersect(User::whereIn('id', [1, 2, 3])->get());
 ```
 
+<a name="method-load"></a>
 #### `load($relations)` {.collection-method}
 
 `load` 方法会为集合中的所有模型预加载给定的关联：
@@ -171,6 +191,7 @@ $users->load('comments.author');
 $users->load(['comments', 'posts' => fn ($query) => $query->where('active', 1)]);
 ```
 
+<a name="method-loadMissing"></a>
 #### `loadMissing($relations)` {.collection-method}
 
 如果关联尚未加载，`loadMissing` 方法会为集合中的所有模型预加载给定的关联：
@@ -183,6 +204,7 @@ $users->loadMissing('comments.author');
 $users->loadMissing(['comments', 'posts' => fn ($query) => $query->where('active', 1)]);
 ```
 
+<a name="method-modelKeys"></a>
 #### `modelKeys()` {.collection-method}
 
 `modelKeys` 方法返回集合中所有模型的主键：
@@ -193,38 +215,43 @@ $users->modelKeys();
 // [1, 2, 3, 4, 5]
 ```
 
+<a name="method-makeVisible"></a>
 #### `makeVisible($attributes)` {.collection-method}
 
-`makeVisible` 方法会[让属性在集合中每个模型上可见](/topic/Laravel%2013.x/m892ge6y01.html)，这些属性通常处于"隐藏"状态：
+`makeVisible` 方法会[让属性在集合中每个模型上可见](/docs/{{version}}/eloquent-serialization#hiding-attributes-from-json)，这些属性通常处于「隐藏」状态：
 
 ```php
 $users = $users->makeVisible(['address', 'phone_number']);
 ```
 
+<a name="method-makeHidden"></a>
 #### `makeHidden($attributes)` {.collection-method}
 
-`makeHidden` 方法会[隐藏属性](/topic/Laravel%2013.x/m892ge6y01.html)，这些属性通常在集合中每个模型上处于"可见"状态：
+`makeHidden` 方法会[隐藏属性](/docs/{{version}}/eloquent-serialization#hiding-attributes-from-json)，这些属性通常在集合中每个模型上处于「可见」状态：
 
 ```php
 $users = $users->makeHidden(['address', 'phone_number']);
 ```
 
+<a name="method-mergeVisible"></a>
 #### `mergeVisible($attributes)` {.collection-method}
 
-`mergeVisible` 方法在保留现有可见属性的同时，[让额外的属性可见](/topic/Laravel%2013.x/m892ge6y01.html)：
+`mergeVisible` 方法在保留现有可见属性的同时，[让额外的属性可见](/docs/{{version}}/eloquent-serialization#hiding-attributes-from-json)：
 
 ```php
 $users = $users->mergeVisible(['middle_name']);
 ```
 
+<a name="method-mergeHidden"></a>
 #### `mergeHidden($attributes)` {.collection-method}
 
-`mergeHidden` 方法在保留现有隐藏属性的同时，[隐藏额外的属性](/topic/Laravel%2013.x/m892ge6y01.html)：
+`mergeHidden` 方法在保留现有隐藏属性的同时，[隐藏额外的属性](/docs/{{version}}/eloquent-serialization#hiding-attributes-from-json)：
 
 ```php
 $users = $users->mergeHidden(['last_login_at']);
 ```
 
+<a name="method-only"></a>
 #### `only($keys)` {.collection-method}
 
 `only` 方法返回所有具有给定主键的模型：
@@ -233,6 +260,7 @@ $users = $users->mergeHidden(['last_login_at']);
 $users = $users->only([1, 2, 3]);
 ```
 
+<a name="method-partition"></a>
 #### `partition` {.collection-method}
 
 `partition` 方法返回一个包含 `Illuminate\Database\Eloquent\Collection` 集合实例的 `Illuminate\Support\Collection` 实例：
@@ -245,30 +273,34 @@ dump($partition[0]::class); // Illuminate\Database\Eloquent\Collection
 dump($partition[1]::class); // Illuminate\Database\Eloquent\Collection
 ```
 
+<a name="method-setAppends"></a>
 #### `setAppends($attributes)` {.collection-method}
 
-`setAppends` 方法会临时覆盖集合中每个模型上的[追加属性](/topic/Laravel%2013.x/m892ge6y01.html)：
+`setAppends` 方法会临时覆盖集合中每个模型上的[追加属性](/docs/{{version}}/eloquent-serialization#appending-values-to-json)：
 
 ```php
 $users = $users->setAppends(['is_admin']);
 ```
 
+<a name="method-setVisible"></a>
 #### `setVisible($attributes)` {.collection-method}
 
-`setVisible` 方法会[临时覆盖](/topic/Laravel%2013.x/m892ge6y01.html)集合中每个模型上的所有可见属性：
+`setVisible` 方法会[临时覆盖](/docs/{{version}}/eloquent-serialization#temporarily-modifying-attribute-visibility)集合中每个模型上的所有可见属性：
 
 ```php
 $users = $users->setVisible(['id', 'name']);
 ```
 
+<a name="method-setHidden"></a>
 #### `setHidden($attributes)` {.collection-method}
 
-`setHidden` 方法会[临时覆盖](/topic/Laravel%2013.x/m892ge6y01.html)集合中每个模型上的所有隐藏属性：
+`setHidden` 方法会[临时覆盖](/docs/{{version}}/eloquent-serialization#temporarily-modifying-attribute-visibility)集合中每个模型上的所有隐藏属性：
 
 ```php
 $users = $users->setHidden(['email', 'password', 'remember_token']);
 ```
 
+<a name="method-toquery"></a>
 #### `toQuery()` {.collection-method}
 
 `toQuery` 方法返回一个 Eloquent 查询构造器实例，其中包含针对集合模型主键的 `whereIn` 约束：
@@ -283,6 +315,7 @@ $users->toQuery()->update([
 ]);
 ```
 
+<a name="method-unique"></a>
 #### `unique($key = null, $strict = false)` {.collection-method}
 
 `unique` 方法返回集合中所有唯一的模型。任何与集合中另一个模型拥有相同主键的模型都会被移除：
@@ -291,14 +324,16 @@ $users->toQuery()->update([
 $users = $users->unique();
 ```
 
+<a name="method-withoutAppends"></a>
 #### `withoutAppends()` {.collection-method}
 
-`withoutAppends` 方法会临时移除集合中每个模型上的[追加属性](/topic/Laravel%2013.x/m892ge6y01.html)：
+`withoutAppends` 方法会临时移除集合中每个模型上的[追加属性](/docs/{{version}}/eloquent-serialization#appending-values-to-json)：
 
 ```php
 $users = $users->withoutAppends();
 ```
 
+<a name="custom-collections"></a>
 ## 自定义集合
 
 如果你希望在与某个给定模型交互时使用自定义的 `Collection` 对象，可以向模型添加 `CollectedBy` 属性：

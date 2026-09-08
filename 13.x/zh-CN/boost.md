@@ -1,81 +1,111 @@
 # Laravel Boost
 
+- [简介](#introduction)
+- [安装](#installation)
+    - [配置你的智能体](#set-up-your-agents)
+    - [保持 Boost 资源更新](#keeping-boost-resources-updated)
+- [MCP 服务器](#mcp-server)
+    - [可用 MCP 工具](#available-mcp-tools)
+    - [手动注册 MCP 服务器](#manually-registering-the-mcp-server)
+- [AI 指南](#ai-guidelines)
+    - [可用 AI 指南](#available-ai-guidelines)
+    - [添加自定义 AI 指南](#adding-custom-ai-guidelines)
+    - [覆盖 Boost 的 AI 指南](#overriding-boost-ai-guidelines)
+    - [第三方包的 AI 指南](#third-party-package-ai-guidelines)
+- [智能体技能](#agent-skills)
+    - [可用技能](#available-skills)
+    - [自定义技能](#custom-skills)
+    - [覆盖技能](#overriding-skills)
+    - [第三方包技能](#third-party-package-skills)
+- [指南与技能对比](#guidelines-vs-skills)
+- [项目规则](#project-rules)
+    - [记录规则](#recording-rules)
+    - [推断应用的约定](#inferring-your-applications-conventions)
+    - [禁用项目规则](#disabling-project-rules)
+- [文档 API](#documentation-api)
+- [扩展 Boost](#extending-boost)
+    - [添加对其他 IDE / AI 智能体的支持](#adding-support-for-other-ides-ai-agents)
+
+<a name="introduction"></a>
 ## 简介
 
-Laravel Boost 通过提供 AI agent 所需的准则与 agent skills，加速 AI 辅助开发——帮助 AI agent 编写出遵循 Laravel 最佳实践的高质量 Laravel 应用。
+Laravel Boost 通过提供核心指南与智能体技能（Agent Skills），帮助 AI 智能体编写遵循 Laravel 最佳实践的高质量 Laravel 应用，从而加速 AI 辅助开发。
 
-Boost 同时提供一套强大的 Laravel 生态文档 API——它结合了一个内置的 MCP 工具与超过 17,000 条 Laravel 专属信息的庞大知识库，并通过 embedding 提供语义搜索能力，确保结果准确且贴合上下文。Boost 会指示 Claude Code、Cursor 等 AI agent 使用这套 API，来学习最新的 Laravel 特性与最佳实践。
+Boost 还提供了一个强大的 Laravel 生态文档 API，它将内置的 MCP 工具与一个包含超过 17,000 条 Laravel 专属信息的庞大知识库结合在一起，并借助基于嵌入向量的语义搜索能力来增强效果，从而提供精准、具备上下文感知能力的结果。Boost 会指示诸如 Claude Code 与 Cursor 之类的 AI 智能体使用该 API 来学习最新的 Laravel 特性与最佳实践。
 
+<a name="installation"></a>
 ## 安装
 
-Laravel Boost 可以通过 Composer 安装：
+可以通过 Composer 安装 Laravel Boost：
 
 ```shell
 composer require laravel/boost --dev
 ```
 
-接下来，安装 MCP 服务器与编码准则：
+接下来，安装 MCP 服务器与编码指南：
 
 ```shell
 php artisan boost:install
 ```
 
-`boost:install` 命令会根据你在安装过程中选择的编码 agent，生成对应的 agent 准则与 skill 文件。
+`boost:install` 命令会为你在安装过程中所选的编码智能体生成相应的指南文件与技能文件。
 
-安装好 Laravel Boost 后，就可以配合 Cursor、Claude Code 或你选择的 AI agent 开始编码了。
+安装 Laravel Boost 后，你就可以使用 Cursor、Claude Code 或你选择的任意 AI 智能体开始编码了。
 
 > [!NOTE]
-> 你可以放心把生成的 MCP 配置文件（`.mcp.json`）、准则文件（`CLAUDE.md`、`AGENTS.md`、`junie/` 等）与 `boost.json` 配置文件加入 `.gitignore`，因为这些文件会在运行 `boost:install` 与 `boost:update` 时自动重新生成。
+> 你可以将生成的 MCP 配置文件（`.mcp.json`）、指南文件（`CLAUDE.md`、`AGENTS.md`、`junie/` 等）以及 `boost.json` 配置文件加入应用的 `.gitignore`，因为运行 `boost:install` 与 `boost:update` 时会自动重新生成这些文件。
 
-### 配置 Agent
+<a name="set-up-your-agents"></a>
+### 配置你的智能体
 
 ```text tab=Cursor
 1. 打开命令面板（`Cmd+Shift+P` 或 `Ctrl+Shift+P`）
-2. 在「/open MCP Settings」上按 `回车`
+2. 在 "/open MCP Settings" 上按 `enter`
 3. 打开 `laravel-boost` 的开关
 ```
 
 ```text tab=Claude Code
-Claude Code 的支持通常是自动启用的。如果发现没有启用，请在项目目录打开 shell 并执行以下命令：
+Claude Code 的支持通常会自动启用。如果你发现没有启用，请在项目目录中打开一个 shell 并运行以下命令：
 
 claude mcp add -s local -t stdio laravel-boost php artisan boost:mcp
 ```
 
 ```text tab=Codex
-Codex 的支持通常也是自动启用的。如果发现没有启用，请在项目目录打开 shell 并执行以下命令：
+Codex 的支持通常会自动启用。如果你发现没有启用，请在项目目录中打开一个 shell 并运行以下命令：
 
 codex mcp add laravel-boost -- php "artisan" "boost:mcp"
 ```
 
 ```text tab=Gemini CLI
-Gemini CLI 的支持通常自动启用。如果发现没有启用，请在项目目录打开 shell 并执行以下命令：
+Gemini CLI 的支持通常会自动启用。如果你发现没有启用，请在项目目录中打开一个 shell 并运行以下命令：
 
 gemini mcp add -s project -t stdio laravel-boost php artisan boost:mcp
 ```
 
 ```text tab=GitHub Copilot (VS Code)
 1. 打开命令面板（`Cmd+Shift+P` 或 `Ctrl+Shift+P`）
-2. 在「MCP: List Servers」上按 `回车`
-3. 移动到 `laravel-boost` 并按 `回车`
-4. 选择「Start server」
+2. 在 "MCP: List Servers" 上按 `enter`
+3. 移动到 `laravel-boost` 并按 `enter`
+4. 选择 "Start server"
 ```
 
 ```text tab=Junie
-1. 连按两次 `shift` 打开命令面板
-2. 搜索「MCP Settings」并按 `回车`
+1. 按两次 `shift` 打开命令面板
+2. 搜索 "MCP Settings" 并按 `enter`
 3. 勾选 `laravel-boost` 旁边的复选框
-4. 点击右下角「Apply」
+4. 点击右下角的 "Apply"
 ```
 
+<a name="keeping-boost-resources-updated"></a>
 ### 保持 Boost 资源更新
 
-你可能希望定期更新本地的 Boost 资源（AI 准则与 skill），以确保它们反映你安装的最新 Laravel 生态扩展包版本。可以使用 `boost:update` Artisan 命令来执行：
+你可能希望定期更新本地的 Boost 资源（AI 指南与技能），以确保它们反映你所安装 Laravel 生态包的最新版本。为此，可以使用 `boost:update` Artisan 命令。
 
 ```shell
 php artisan boost:update
 ```
 
-也可以通过加入 Composer 的 `post-update-cmd` 脚本来自动化：
+你也可以通过将其加入 Composer 的 "post-update-cmd" 脚本来自动化这一过程：
 
 ```json
 {
@@ -87,38 +117,45 @@ php artisan boost:update
 }
 ```
 
-默认情况下，`boost:update` 命令只会更新应用内已经发布的 Boost 资源。如果希望 Boost 同时扫描应用中新安装的扩展包，并提示发布它们对应的准则和 skill，可以加上 `--discover` 选项：
+默认情况下，`boost:update` 命令只会更新应用内已发布的现有 Boost 资源。如果你希望 Boost 扫描应用中是否有新安装的扩展包，并主动提供发布它们对应指南与技能的选项，可以使用 `--discover` 选项：
 
 ```shell
 php artisan boost:update --discover
 ```
 
+<a name="mcp-server"></a>
 ## MCP 服务器
 
-Laravel Boost 提供了一个 MCP（Model Context Protocol）服务器，向 AI agent 暴露与 Laravel 应用交互的工具。这些工具让 agent 能够检查应用结构、查询数据库、执行代码，等等。
+Laravel Boost 提供了一个 MCP（Model Context Protocol）服务器，它对外暴露供 AI 智能体与你的 Laravel 应用交互的工具。借助这些工具，智能体能够检查应用的结构、查询数据库、执行代码等。
 
-### 可用的 MCP 工具
+<a name="available-mcp-tools"></a>
+### 可用 MCP 工具
 
-| 名称 | 备注 |
-| --- | --- |
-| Application Info | 读取 PHP & Laravel 版本、数据库引擎、生态扩展包版本列表以及 Eloquent 模型 |
-| Browser Logs | 读取浏览器的日志与错误 |
-| Database Connections | 检查可用的数据库连接，包括默认连接 |
-| Database Query | 对数据库执行查询 |
-| Database Schema | 读取数据库结构 |
-| Get Absolute URL | 把相对路径 URI 转为绝对路径，方便 agent 生成合法 URL |
-| Last Error | 读取应用日志文件中最近一次错误 |
-| Read Log Entries | 读取最近的 N 条日志 |
-| Record Rule | 将一条持久的 项目规则 写入 `.ai/rules`，让未来的 agent 继承 |
-| Search Docs | 查询 Laravel 官方托管的文档 API 服务，获取基于已安装扩展包的文档 |
+<div class="overflow-auto">
 
+| 名称                | 说明                                                                                          |
+| ------------------- | -------------------------------------------------------------------------------------------- |
+| Application Info    | 读取 PHP 与 Laravel 版本、数据库引擎、包含版本的生态包列表，以及 Eloquent 模型               |
+| Browser Logs        | 读取浏览器中的日志与错误                                                                     |
+| Database Connections | 检查可用的数据库连接，包括默认连接                                                          |
+| Database Query      | 针对数据库执行一条查询                                                                       |
+| Database Schema     | 读取数据库结构（schema）                                                                     |
+| Get Absolute URL    | 将相对路径 URI 转换为绝对 URL，以便智能体生成有效的 URL                                      |
+| Last Error          | 读取应用日志文件中的最后一条错误                                                             |
+| Read Log Entries    | 读取最后 N 条日志条目                                                                        |
+| Record Rule         | 将一条持久化的 [项目规则](#project-rules) 记录到 `.ai/rules`，使后续的智能体继承它          |
+| Search Docs         | 查询 Laravel 托管的文档 API 服务，根据已安装的包检索文档                                     |
+
+</div>
+
+<a name="manually-registering-the-mcp-server"></a>
 ### 手动注册 MCP 服务器
 
-有时需要在你选择的编辑器中手动注册 Laravel Boost 的 MCP 服务器。请使用以下信息注册：
+有时你可能需要手动将 Laravel Boost 的 MCP 服务器注册到你选择的编辑器中。应使用以下信息来注册 MCP 服务器：
 
 <table>
-<tr><td><strong>Command</strong></td><td><code>php</code></td></tr>
-<tr><td><strong>Args</strong></td><td><code>artisan boost:mcp</code></td></tr>
+<tr><td><strong>命令</strong></td><td><code>php</code></td></tr>
+<tr><td><strong>参数</strong></td><td><code>artisan boost:mcp</code></td></tr>
 </table>
 
 JSON 示例：
@@ -134,168 +171,196 @@ JSON 示例：
 }
 ```
 
-## AI 准则
+<a name="ai-guidelines"></a>
+## AI 指南
 
-AI 准则是可组合的指令文件，会在启动时加载，向 AI agent 提供 Laravel 生态扩展包的关键上下文。这些准则包含核心约定、最佳实践与框架特有的模式，帮助 agent 生成一致且高质量的代码。
+AI 指南是可组合的指令文件，会在启动时就加载，为 AI 智能体提供关于 Laravel 生态包的必要上下文。这些指南包含了核心约定、最佳实践以及框架特定的模式，帮助智能体生成一致、高质量代码。
 
-### 可用的 AI 准则
+<a name="available-ai-guidelines"></a>
+### 可用 AI 指南
 
-Laravel Boost 为以下扩展包和框架提供 AI 准则。其中 `core` 准则提供通用、与版本无关的建议，适用于指定的扩展包。
+Laravel Boost 为以下包与框架内置了 AI 指南。`core` 指南为给定的包提供适用于所有版本的通用、泛化建议。
 
-| 扩展包 | 支持的版本 |
-| --- | --- |
-| Core & Boost | core |
-| Laravel Framework | core, 10.x, 11.x, 12.x, 13.x |
-| Livewire | core, 2.x, 3.x, 4.x |
-| Flux UI | core, free, pro |
-| Folio | core |
-| Herd | core |
-| Inertia Laravel | core, 1.x, 2.x, 3.x |
-| Inertia React | core, 1.x, 2.x, 3.x |
-| Inertia Vue | core, 1.x, 2.x, 3.x |
-| Inertia Svelte | core, 1.x, 2.x, 3.x |
-| MCP | core |
-| Pennant | core |
-| Pest | core, 3.x, 4.x |
-| PHPUnit | core |
-| Pint | core |
-| Sail | core |
-| Tailwind CSS | core, 3.x, 4.x |
-| Livewire Volt | core |
-| Wayfinder | core |
-| Enforce Tests | conditional |
+<div class="overflow-auto">
 
-> **Note：** 若希望保持 AI 准则的持续更新，请参考 保持 Boost 资源更新 一节。
+| 包                  | 支持的版本                 |
+| ------------------- | -------------------------- |
+| Core & Boost        | core                       |
+| Laravel Framework   | core, 10.x, 11.x, 12.x, 13.x |
+| Livewire            | core, 2.x, 3.x, 4.x        |
+| Flux UI             | core, free, pro            |
+| Folio               | core                       |
+| Herd                | core                       |
+| Inertia Laravel     | core, 1.x, 2.x, 3.x        |
+| Inertia React       | core, 1.x, 2.x, 3.x        |
+| Inertia Vue         | core, 1.x, 2.x, 3.x        |
+| Inertia Svelte      | core, 1.x, 2.x, 3.x        |
+| MCP                 | core                       |
+| Pennant             | core                       |
+| Pest                | core, 3.x, 4.x             |
+| PHPUnit             | core                       |
+| Pint                | core                       |
+| Sail                | core                       |
+| Tailwind CSS        | core, 3.x, 4.x             |
+| Livewire Volt       | core                       |
+| Wayfinder           | core                       |
+| Enforce Tests       | conditional                |
 
-### 添加自定义 AI 准则
+</div>
 
-如果想为 Laravel Boost 增加自定义的 AI 准则，可以把 `.blade.php` 或 `.md` 文件添加到应用的 `.ai/guidelines/*` 目录中。运行 `boost:install` 时，这些文件会自动与 Boost 的准则一同被包含。
+> **注意：** 要让你的 AI 指南保持最新，请参阅 [保持 Boost 资源更新](#keeping-boost-resources-updated) 一节。
 
-### 覆盖 Boost 的 AI 准则
+<a name="adding-custom-ai-guidelines"></a>
+### 添加自定义 AI 指南
 
-可以通过创建路径匹配的自定义准则来覆盖 Boost 内置的 AI 准则。当你创建的自定义准则路径与某条 Boost 已有准则匹配时，Boost 会使用你的版本，而非内置版本。
+若要使用你自己的自定义 AI 指南来扩展 Laravel Boost，请将 `.blade.php` 或 `.md` 文件添加到应用的 `.ai/guidelines/*` 目录中。运行 `boost:install` 时，这些文件会自动与 Laravel Boost 的指南一起被包含。
 
-例如，要覆盖 Boost 内置的「Inertia React v2 Form Guidance」准则，请在 `.ai/guidelines/inertia-react/2/forms.blade.php` 创建文件。运行 `boost:install` 时，Boost 会包含你自定义的准则，而不是默认版本。
+<a name="overriding-boost-ai-guidelines"></a>
+### 覆盖 Boost 的 AI 指南
 
-### 第三方扩展包的 AI 准则
+你可以通过创建路径匹配的自定义指南来覆盖 Boost 内置的 AI 指南。当你创建的自定义指南与某个现有 Boost 指南的路径一致时，Boost 会使用你的自定义版本，而不是内置版本。
 
-如果你是某个第三方扩展包的维护者，希望 Boost 也为它包含 AI 准则，可以在扩展包中添加 `resources/boost/guidelines/core.blade.php` 文件。当你的用户运行 `php artisan boost:install` 时，Boost 会自动加载你的准则。
+例如，要覆盖 Boost 的 "Inertia React v2 Form Guidance" 指南，请在 `.ai/guidelines/inertia-react/2/forms.blade.php` 创建文件。运行 `boost:install` 时，Boost 会包含你的自定义指南，而不是默认的那份。
 
-AI 准则应简洁地概述扩展包的功能、说明需要的文件结构与约定，并示范如何创建或使用其主要特性（可附示例命令或代码片段）。请保持内容简洁、可执行，专注于最佳实践，方便 AI 为你的用户写出正确的代码。示例：
+<a name="third-party-package-ai-guidelines"></a>
+### 第三方包的 AI 指南
+
+如果你维护一个第三方包，并希望 Boost 包含它的 AI 指南，可以通过在包中添加 `resources/boost/guidelines/core.blade.php` 文件来实现。当你的包的使用者运行 `php artisan boost:install` 时，Boost 会自动加载你的指南。
+
+AI 指南应当简要概述你的包的功能、说明必要的文件结构或约定，并解释如何创建或使用其主要特性（附上示例命令或代码片段）。保持简洁、可操作，并聚焦于最佳实践，这样 AI 才能为你的使用者生成正确的代码。下面是一个示例：
 
 ```php
-## Package Name
+## 包名称
 
-This package provides [brief description of functionality].
+本包提供 [功能简述]。
 
-### Features
+### 特性
 
-- Feature 1: [clear & short description].
-- Feature 2: [clear & short description]. Example usage:
+- 特性 1：[清晰且简短的说明]。
+- 特性 2：[清晰且简短的说明]。使用示例：
 
 @verbatim
-<code-snippet name="How to use Feature 2" lang="php">
+<code-snippet name="如何使用特性 2" lang="php">
 $result = PackageName::featureTwo($param1, $param2);
 </code-snippet>
 @endverbatim
 ```
 
-## Agent Skills
+<a name="agent-skills"></a>
+## 智能体技能
 
-[Agent Skills](https://agentskills.io/home) 是一些轻量、专注的知识模块，agent 可以按需加载，适用于特定领域。与启动时加载的准则不同，skill 仅在相关时被加载——既能减小上下文体积，也能提升 AI 生成代码的相关性。
+[Agent Skills](https://agentskills.io/home) 是轻量、针对性的知识模块，智能体在处理特定领域时可按需激活。与在启动时加载的指南不同，技能仅在与当前相关的场景下才加载详细的模式与最佳实践，从而减少上下文膨胀，提升 AI 生成代码的相关性。
 
-运行 `boost:install` 并选择 skill 特性后，系统会根据 `composer.json` 中检测到的扩展包自动安装相应 skill。例如，如果项目引入了 `livewire/livewire`，则会自动安装 `livewire-development` skill。而 Boost 内置的 skill（如 `infer-conventions`）则会无论如何都安装。
+当你运行 `boost:install` 并选择将技能作为一个特性时，技能会根据在 `composer.json` 中检测到的包自动安装。例如，如果你的项目包含 `livewire/livewire`，那么 `livewire-development` 技能会被自动安装。Boost 内置的技能（例如 `infer-conventions`）无论你安装了哪些包都会被安装。
 
-### 可用的 Skill
+<a name="available-skills"></a>
+### 可用技能
 
-| Skill | 扩展包 |
-| --- | --- |
-| fluxui-development | Flux UI |
-| folio-routing | Folio |
-| infer-conventions | Boost |
-| inertia-react-development | Inertia React |
-| inertia-svelte-development | Inertia Svelte |
-| inertia-vue-development | Inertia Vue |
-| livewire-development | Livewire |
-| mcp-development | MCP |
-| pennant-development | Pennant |
-| pest-testing | Pest |
-| tailwindcss-development | Tailwind CSS |
-| volt-development | Volt |
-| wayfinder-development | Wayfinder |
+<div class="overflow-auto">
 
-> **Note：** 若希望保持 skill 持续更新，请参考 保持 Boost 资源更新 一节。
+| 技能                       | 包               |
+| -------------------------- | ---------------- |
+| fluxui-development         | Flux UI          |
+| folio-routing              | Folio            |
+| infer-conventions          | Boost            |
+| inertia-react-development  | Inertia React    |
+| inertia-svelte-development | Inertia Svelte   |
+| inertia-vue-development    | Inertia Vue      |
+| livewire-development       | Livewire         |
+| mcp-development            | MCP              |
+| pennant-development        | Pennant          |
+| pest-testing               | Pest             |
+| tailwindcss-development    | Tailwind CSS     |
+| volt-development           | Volt             |
+| wayfinder-development      | Wayfinder        |
 
-### 自定义 Skill
+</div>
 
-要创建自定义 skill，请在应用的 `.ai/skills/{skill-name}/` 目录下添加 `SKILL.md` 文件。运行 `boost:update` 时，自定义 skill 会与 Boost 内置的 skill 一起被安装。
+> **注意：** 要让你的技能保持最新，请参阅 [保持 Boost 资源更新](#keeping-boost-resources-updated) 一节。
 
-例如，要为应用领域逻辑创建一个自定义 skill：
+<a name="custom-skills"></a>
+### 自定义技能
+
+要创建你自己的自定义技能，请在应用的 `.ai/skills/{skill-name}/` 目录中添加 `SKILL.md` 文件。运行 `boost:update` 时，你的自定义技能会随 Boost 内置技能一起被安装。
+
+例如，要为你的应用领域逻辑创建一个自定义技能：
 
 ```
 .ai/skills/creating-invoices/SKILL.md
 ```
 
-### 覆盖 Skill
+<a name="overriding-skills"></a>
+### 覆盖技能
 
-可以通过创建同名自定义 skill 来覆盖 Boost 内置的 skill。当自定义 skill 的名称与某个 Boost 已存在 skill 匹配时，Boost 会使用你的版本，而不是内置版本。
+你可以通过创建名称匹配的自定义技能来覆盖 Boost 内置的技能。当你创建的自定义技能与某个现有 Boost 技能的名称一致时，Boost 会使用你的自定义版本，而不是内置版本。
 
-例如，要覆盖 Boost 的 `livewire-development` skill，请在 `.ai/skills/livewire-development/SKILL.md` 创建文件。运行 `boost:update` 时，Boost 会包含你自定义的 skill，而不是默认版本。
+例如，要覆盖 Boost 的 `livewire-development` 技能，请在 `.ai/skills/livewire-development/SKILL.md` 创建文件。运行 `boost:update` 时，Boost 会包含你的自定义技能，而不是默认的那份。
 
-### 第三方扩展包的 Skill
+<a name="third-party-package-skills"></a>
+### 第三方包技能
 
-如果你是某个第三方扩展包的维护者，希望 Boost 为它包含 skill，可以在扩展包中添加 `resources/boost/skills/{skill-name}/SKILL.md` 文件。当你的用户运行 `php artisan boost:install` 时，Boost 会根据用户偏好自动安装你的 skill。
+如果你维护一个第三方包，并希望 Boost 包含它的技能，可以通过在包中添加 `resources/boost/skills/{skill-name}/SKILL.md` 文件来实现。当你的包的使用者运行 `php artisan boost:install` 时，Boost 会根据用户偏好自动安装你的技能。
 
-Boost Skill 支持 [Agent Skills 格式](https://agentskills.io/what-are-skills)，应当按一个包含 `SKILL.md` 文件的目录来组织，`SKILL.md` 包含 YAML frontmatter 与 Markdown 指令。`SKILL.md` 必须带有必填的 frontmatter（`name` 与 `description`），可以可选地包含脚本、模板与参考资料。
+Boost 技能遵循 [Agent Skills 格式](https://agentskills.io/what-are-skills)，其结构应为一个包含 `SKILL.md` 文件的文件夹，该文件带有 YAML frontmatter 与 Markdown 指令。`SKILL.md` 文件必须包含必需的 frontmatter（`name` 与 `description`），并可以可选地包含脚本、模板与参考资料。
 
-Skill 应说明需要的文件结构或约定，并展示如何创建或使用其主要特性（可附示例命令或代码片段）。请保持简洁、可执行，专注最佳实践，帮助 AI 为你的用户生成正确的代码：
+技能应当说明必要的文件结构或约定，并解释如何创建或使用其主要特性（附上示例命令或代码片段）。保持简洁、可操作，并聚焦于最佳实践，这样 AI 才能为你的使用者生成正确的代码：
 
 ```markdown
 ---
 name: package-name-development
-description: Build and work with PackageName features, including components and workflows.
+description: 构建并使用 PackageName 特性，包括组件与工作流。
 ---
 
-# Package Name Development
+# Package Name 开发
 
-## When to use this skill
-Use this skill when working with PackageName features...
+## 何时使用此技能
+在处理 PackageName 特性时请使用此技能……
 
-## Features
+## 特性
 
-- Feature 1: [clear & short description].
-- Feature 2: [clear & short description]. Example usage:
+- 特性 1：[清晰且简短的说明]。
+- 特性 2：[清晰且简短的说明]。使用示例：
 
 $result = PackageName::featureTwo($param1, $param2);
 ```
 
-## 准则 vs. Skill
+<a name="guidelines-vs-skills"></a>
+## 指南与技能对比
 
-Laravel Boost 提供了两种不同的方式向 AI agent 提供应用上下文：**准则** 与 **skill**。
+Laravel Boost 提供了两种截然不同的方式为 AI 智能体提供关于你应用的上下文：**指南**与**技能**。
 
-**准则** 会在 AI agent 启动时加载，提供适用于整个代码库的 Laravel 约定与最佳实践的基础上下文。
+**指南**在 AI 智能体启动时被加载，提供关于适用于你整个代码库的 Laravel 约定与最佳实践的必要上下文。
 
-**Skill** 会在处理特定任务时按需加载，包含特定领域（如 Livewire 组件或 Pest 测试）的详细模式。仅在相关时加载 skill 可以减少上下文体积，提升代码质量。
+**技能**在处理特定任务时按需激活，包含面向特定领域的详细模式（如 Livewire 组件或 Pest 测试）。仅在相关时加载技能，可以减少上下文膨胀并提升代码质量。
 
-| 维度 | 准则 | Skill |
-| --- | --- | --- |
-| **加载时机** | 启动时，始终存在 | 按需，在相关时 |
-| **范围** | 广泛、基础 | 专注、任务相关 |
-| **目的** | 核心约定与最佳实践 | 详细的实现模式 |
+<div class="overflow-auto">
 
-准则和 skill 都是用来描述 Laravel 生态体系的。要捕捉你自己的应用约定，应当使用 项目规则。
+| 维度      | 指南                            | 技能                              |
+| --------- | ------------------------------- | --------------------------------- |
+| **加载**  | 启动时，始终存在               | 按需，在相关时加载               |
+| **范围**  | 广泛、基础                     | 聚焦、特定于任务                 |
+| **目的**  | 核心约定与最佳实践             | 详细的实现模式                   |
 
+</div>
+
+指南与技能都描述的是 Laravel 生态。要捕获你自己应用的约定，你应该使用 [项目规则](#project-rules)。
+
+<a name="project-rules"></a>
 ## 项目规则
 
-虽然准则和 skill 教 agent 如何写 Laravel，项目规则则教它们如何写**你的**应用。一条规则就是你在每次新会话中可能需要重新解释的任何事情：
+指南与技能教智能体如何编写 Laravel，而项目规则则教它们如何编写你的应用。所谓规则，就是你本需要在每个新会话中都要再次解释的内容：
 
-- 由你、你的 agent 或你的队友沿途做出的决策。
-- 难以让 agent 主动遵循的风格准则与偏好。
-- 无法从周围代码直接推断出的陷阱与约束。
+<div class="content-list" markdown="1">
 
-规则以 Markdown 文件的形式存放在应用的 `.ai/rules` 目录下，应当提交到源码控制。与仅属于个人、仅本次会话生效的 agent 自身记忆不同，你的规则是与团队以及参与你应用的每个 agent 共享的。
+- 你、你的智能体或你的队友在开发过程中做出的决策。
+- 难以让智能体遵循的样式指南与偏好。
+- 无法从周围代码中推断出的陷阱与约束。
 
-每条规则文件都在 frontmatter 中声明它适用的文件通配：
+</div>
+
+规则以 Markdown 文件的形式存储在应用的 `.ai/rules` 目录中，并应当提交到源码控制。与智能体自身的内存（个人化、会话作用域）不同，你的规则是与你的团队以及每个在你的应用上工作的智能体共享的。
+
+每个规则文件在其 frontmatter 中声明它所适用的文件 glob：
 
 ```markdown
 ---
@@ -303,93 +368,103 @@ paths:
   - app/Http/Controllers/**
 ---
 
-# Http Controllers
+# Http 控制器
 
-## Extend BaseController for tenant scoping
+## 为租户作用域继承 BaseController
 
-All controllers must extend `App\Http\Controllers\BaseController`, which applies the
-current tenant's query scope. Extending Laravel's base controller directly will leak
-data across tenants.
+所有控制器都必须继承 `App\Http\Controllers\BaseController`，它会应用
+当前租户的查询作用域。直接继承 Laravel 的基础控制器会导致数据在租户之间泄漏。
 ```
 
-此外，Boost 维护一个 `.ai/rules/index.md` 文件，把通配映射到对应的规则文件。Boost 会指示 agent 在规划或编辑任何文件之前先查阅这个索引——只有匹配的规则会被加载：
+此外，Boost 维护一个 `.ai/rules/index.md` 文件，用于将 glob 映射到其对应的规则文件。智能体被指示在规划或编辑任何文件之前先查阅该索引，因此规则只在相关时才会被加载：
 
 ```markdown
-# Project Rules Index
+# 项目规则索引
 
-Before planning or editing, find the row whose globs match the file's path and read that rule file.
+在规划或编辑之前，找到 glob 与文件路径匹配的那一行，并读取对应的规则文件。
 
-| Applies to | Rule file |
-| --- | --- |
+| 适用于            | 规则文件              |
+| ----------------- | --------------------- |
 | app/Http/Controllers/** | .ai/rules/controllers.md |
-| app/Models/** | .ai/rules/models.md |
+| app/Models/**          | .ai/rules/models.md       |
 ```
 
 > [!NOTE]
-> 与 `.mcp.json` 和自动生成的准则文件不同，`.ai/rules` 目录应当提交到源码控制，以便与团队共享规则。
+> 与 `.mcp.json` 及生成的指南文件不同，`.ai/rules` 目录应当提交到源码控制，以便你的规则与团队共享。
 
+<a name="recording-rules"></a>
 ### 记录规则
 
-要记录一条规则，只需让 agent「记住」它即可：
+要记录一条规则，你只需让你的智能体记住它即可：
 
 ```text
-Remember that all money values are stored as integer cents, never as floats.
+记住所有金额都以整数分存储，绝不使用浮点数。
 ```
 
-agent 会调用 Boost 的 `record-rule` MCP 工具，并传入一个 `glob`、简短的 `title` 和 `note`。Boost 会把这条规则归档到匹配的区域，必要时新建规则文件，并更新索引。
+智能体会调用 Boost 的 `record-rule` MCP 工具，并传入一个 `glob`、一个简短的 `title` 与一个 `note`。Boost 随后会将这条规则归档到对应的区域，在必要时创建规则文件，并更新索引。
 
-请务必通过 `record-rule` 工具记录规则，而不是手动创建规则文件。Boost 在记录规则时会重新生成 `.ai/rules/index.md`，而 agent 也依赖该索引去发现某文件所对应的规则。手动新增的规则文件在下一次重新生成索引之前都不会被发现。
+你应当始终使用 `record-rule` 工具来记录规则，而不是手动创建规则文件。Boost 在记录规则时会重新生成 `.ai/rules/index.md`，而智能体依赖该索引来发现哪些规则适用于它们正在处理的文件。手动添加的规则文件在索引下一次重新生成之前不会被发现。
 
+<a name="inferring-your-applications-conventions"></a>
 ### 推断应用的约定
 
-逐条记录规则在后续很自然；但一个既有应用已经积累了很多既有约定。`infer-conventions` skill 可以根据你已经写好的代码自举出规则集。要开始使用，请让 agent 调用该 skill：
+逐条记录规则在后续工作中效果很好；然而，一个既有的应用已经包含了多年的约定。`infer-conventions` 技能会从你已经写好的代码中引导生成你的规则。要开始使用，请让你的智能体使用此技能：
 
 ```text
-Use the infer-conventions skill
+使用 infer-conventions 技能
 ```
 
-该 skill 会按一套 Laravel 约定维度清单扫描你的应用——包括 validation、controllers、authorization、models、architecture、testing、frontend、database 与 console 等，再进行一轮开放式扫描，寻找像基类、共享 trait、模块布局这样的模式。
+该技能会按照一份 Laravel 约定维度清单扫描你的应用，包括验证、控制器、授权、模型、架构、测试、前端、数据库与控制台，随后再进行一次开放式的遍历，以发现诸如基类、共享 trait 和模块布局之类的模式。
 
-skill 会记录你代码里实际存在的做法，而不是应该存在的做法；只记录有充分证据的非默认约定，跳过框架默认或 Pint / Rector 已经在强制约束的项；遇到真正混杂的做法，会如实报告，而不是强行记录。在写入规则前，skill 会展示它发现的每条约定及其佐证证据供你确认。如果希望 skill 不再询问、直接记录所有发现的约定，可以告诉它「yolo」。
+该技能记录的是你的代码实际做了什么，而不是它应该做什么。它只记录有充分支撑、非默认的约定，跳过框架默认值以及 Pint 或 Rector 已经强制执行的任何内容，并针对真正混杂的模式如实报告，而不是记录它们。在写入任何规则之前，该技能会先展示它发现的每条约定及其支撑证据，供你确认。如果你希望该技能在无需确认的情况下记录所有发现的约定，可以告诉它 "yolo"。
 
-### 关闭项目规则
+<a name="disabling-project-rules"></a>
+### 禁用项目规则
 
-项目规则默认启用。如果需要整体关闭，可以定义以下环境变量。它会移除 `record-rule` MCP 工具，并停止 Boost 对 `.ai/rules` 目录的管理：
+项目规则默认启用。要完全禁用它们，请定义以下环境变量。这会移除 `record-rule` MCP 工具，并停止 Boost 对 `.ai/rules` 目录的管理：
 
 ```ini
 BOOST_RULES_ENABLED=false
 ```
 
+<a name="documentation-api"></a>
 ## 文档 API
 
-Laravel Boost 提供一个文档 API，向 AI agent 提供超过 17,000 条 Laravel 专属信息的庞大知识库。该 API 使用基于 embedding 的语义搜索来返回精确且贴合上下文的结果。
+Laravel Boost 包含一个文档 API，它为 AI 智能体提供对一个包含超过 17,000 条 Laravel 专属信息的庞大知识库的访问能力。该 API 使用基于嵌入向量的语义搜索来提供精准、具备上下文感知能力的结果。
 
-`Search Docs` MCP 工具让 agent 能够查询 Laravel 官方托管的文档 API 服务，获取对应已安装扩展包的文档。Boost 的 AI 准则与 skill 会自动指示你的编码 agent 使用该 API。
+`Search Docs` MCP 工具允许智能体查询 Laravel 托管的文档 API 服务，根据已安装的包检索文档。Boost 的 AI 指南与技能会自动指示你的编码智能体使用此 API。
 
-| 扩展包 | 支持的版本 |
-| --- | --- |
-| Laravel Framework | 10.x, 11.x, 12.x, 13.x |
-| Filament | 2.x, 3.x, 4.x, 5.x |
-| Flux UI | 2.x Free, 2.x Pro |
-| Inertia | 1.x, 2.x |
-| Livewire | 1.x, 2.x, 3.x, 4.x |
-| Nova | 4.x, 5.x |
-| Pest | 3.x, 4.x |
-| Tailwind CSS | 3.x, 4.x |
+<div class="overflow-auto">
 
+| 包                  | 支持的版本            |
+| ------------------- | --------------------- |
+| Laravel Framework   | 10.x, 11.x, 12.x, 13.x |
+| Filament            | 2.x, 3.x, 4.x, 5.x    |
+| Flux UI             | 2.x Free, 2.x Pro     |
+| Inertia             | 1.x, 2.x              |
+| Livewire            | 1.x, 2.x, 3.x, 4.x    |
+| Nova                | 4.x, 5.x              |
+| Pest                | 3.x, 4.x              |
+| Tailwind CSS        | 3.x, 4.x              |
+
+</div>
+
+<a name="extending-boost"></a>
 ## 扩展 Boost
 
-Boost 默认即可与多种流行的 IDE 与 AI agent 协作。如果你的编码工具暂未支持，也可以创建自己的 agent 并接入 Boost。
+Boost 开箱即用，可与许多流行的 IDE 和 AI 智能体配合工作。如果你的编码工具尚不支持，你可以创建自己的智能体并将其与 Boost 集成。
 
-### 增加对其他 IDE / AI agent 的支持
+<a name="adding-support-for-other-ides-ai-agents"></a>
+### 添加对其他 IDE / AI 智能体的支持
 
-要为新的 IDE 或 AI agent 增加支持，请创建一个继承 `Laravel\Boost\Install\Agents\Agent` 的类，按需实现以下一项或多项契约：
+要添加对新 IDE 或 AI 智能体的支持，请创建一个继承自 `Laravel\Boost\Install\Agents\Agent` 的类，并根据你的需要实现一个或多个以下契约：
 
-- `Laravel\Boost\Contracts\SupportsGuidelines` - 增加 AI 准则支持。
-- `Laravel\Boost\Contracts\SupportsMcp` - 增加 MCP 支持。
-- `Laravel\Boost\Contracts\SupportsSkills` - 增加 Agent Skills 支持。
+- `Laravel\Boost\Contracts\SupportsGuidelines` - 添加对 AI 指南的支持。
+- `Laravel\Boost\Contracts\SupportsMcp` - 添加对 MCP 的支持。
+- `Laravel\Boost\Contracts\SupportsSkills` - 添加对智能体技能（Agent Skills）的支持。
 
-#### 编写 Agent
+<a name="writing-the-agent"></a>
+#### 编写智能体
 
 ```php
 <?php
@@ -409,11 +484,12 @@ class CustomAgent extends Agent implements SupportsGuidelines, SupportsMcp, Supp
 }
 ```
 
-可以参考 [ClaudeCode.php](https://github.com/laravel/boost/blob/main/src/Install/Agents/ClaudeCode.php) 中的示例实现。
+有关示例实现，请参阅 [ClaudeCode.php](https://github.com/laravel/boost/blob/main/src/Install/Agents/ClaudeCode.php)。
 
-#### 注册 Agent
+<a name="registering-the-agent"></a>
+#### 注册智能体
 
-在应用的 `App\Providers\AppServiceProvider` 的 `boot` 方法中注册自定义 agent：
+在你的应用的 `App\Providers\AppServiceProvider` 的 `boot` 方法中注册你的自定义智能体：
 
 ```php
 use Laravel\Boost\Boost;
@@ -424,4 +500,4 @@ public function boot(): void
 }
 ```
 
-注册后，运行 `php artisan boost:install` 时即可在选择列表中看到该 agent。
+注册完成后，运行 `php artisan boost:install` 时你的智能体即可被选用了。

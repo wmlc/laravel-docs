@@ -1,9 +1,18 @@
 # CSRF 保护
 
+- [简介](#csrf-introduction)
+- [阻止 CSRF 请求](#preventing-csrf-requests)
+    - [来源校验](#origin-verification)
+    - [从 CSRF 保护中排除 URI](#csrf-excluding-uris)
+- [X-CSRF-Token](#csrf-x-csrf-token)
+- [X-XSRF-Token](#csrf-x-xsrf-token)
+
+<a name="csrf-introduction"></a>
 ## 简介
 
 跨站请求伪造（cross-site request forgery）是一种恶意利用手段，攻击者借此以已认证用户的身份执行未授权的命令。值得庆幸的是，Laravel 让保护你的应用免受[跨站请求伪造](https://en.wikipedia.org/wiki/Cross-site_request_forgery)（CSRF）攻击变得轻而易举。
 
+<a name="csrf-explanation"></a>
 #### 漏洞原理解释
 
 如果你还不熟悉跨站请求伪造，我们先来讨论一个该漏洞如何被利用的示例。假设你的应用有一个 `/user/email` 路由，它接受一个 `POST` 请求以更改已认证用户的邮箱地址。这个路由很可能期望一个名为 `email` 的输入字段包含用户想要启用的邮箱地址。
@@ -24,15 +33,16 @@
 
 为了防止这个漏洞，我们需要检查每一个进入的 `POST`、`PUT`、`PATCH` 或 `DELETE` 请求，确认其携带一个恶意应用无法访问的会话密钥值。
 
+<a name="preventing-csrf-requests"></a>
 ## 阻止 CSRF 请求
 
-默认包含在 `web` 中间件组中的 `Illuminate\Foundation\Http\Middleware\PreventRequestForgery` [中间件](/topic/Laravel%2013.x/rwyl2exvz8.html)，采用两层防护策略来保护你的应用免受跨站请求伪造攻击。
+默认包含在 `web` 中间件组中的 `Illuminate\Foundation\Http\Middleware\PreventRequestForgery` [中间件](/docs/{{version}}/middleware)，采用两层防护策略来保护你的应用免受跨站请求伪造攻击。
 
 首先，该中间件会检查浏览器的 `Sec-Fetch-Site` 请求头。现代浏览器会在每个请求上自动设置这个请求头，指示请求是来自同源（same origin）、同站（same site）还是跨站（cross-site）来源。如果该请求头表明请求来自同源，则无需任何令牌验证即可立即放行。
 
 如果来源验证未通过——例如因为请求来自不发送 `Sec-Fetch-Site` 请求头的旧版浏览器，或者连接不安全——中间件会回退到传统的 CSRF 令牌验证。
 
-Laravel 会为应用管理的每个活跃[用户会话](/topic/Laravel%2013.x/2ev86noyor.html)自动生成一个 CSRF"令牌"。该令牌用于验证发出请求的用户就是真正在操作应用的用户。由于此令牌存储在用户的会话中，并在每次会话重新生成时随之改变，恶意应用无法访问它。
+Laravel 会为应用管理的每个活跃[用户会话](/docs/{{version}}/session)自动生成一个 CSRF「令牌」。该令牌用于验证发出请求的用户就是真正在操作应用的用户。由于此令牌存储在用户的会话中，并在每次会话重新生成时随之改变，恶意应用无法访问它。
 
 可以通过请求的会话或 `csrf_token` 辅助函数来获取当前会话的 CSRF 令牌：
 
@@ -48,7 +58,7 @@ Route::get('/token', function (Request $request) {
 });
 ```
 
-在你的应用中定义任意"POST"、"PUT"、"PATCH" 或 "DELETE" 类型的 HTML 表单时，都应当在表单中包含一个隐藏的 CSRF `_token` 字段，以便 CSRF 保护中间件能够验证请求。为方便起见，你可以使用 `@csrf` Blade 指令来生成该隐藏的令牌输入字段：
+在你的应用中定义任意「POST」、「PUT」、「PATCH」 或「DELETE」 类型的 HTML 表单时，都应当在表单中包含一个隐藏的 CSRF `_token` 字段，以便 CSRF 保护中间件能够验证请求。为方便起见，你可以使用 `@csrf` Blade 指令来生成该隐藏的令牌输入字段：
 
 ```blade
 <form method="POST" action="/profile">
@@ -59,10 +69,12 @@ Route::get('/token', function (Request $request) {
 </form>
 ```
 
+<a name="csrf-tokens-and-spas"></a>
 #### CSRF 令牌与 SPA
 
-如果你正在构建一个以 Laravel 作为 API 后端的 SPA，应当查阅 [Laravel Sanctum 文档](/topic/Laravel%2013.x/xq9zr3jvdo.html)，了解如何通过 API 进行认证以及防范 CSRF 漏洞的相关信息。
+如果你正在构建一个以 Laravel 作为 API 后端的 SPA，应当查阅 [Laravel Sanctum 文档](/docs/{{version}}/sanctum)，了解如何通过 API 进行认证以及防范 CSRF 漏洞的相关信息。
 
+<a name="origin-verification"></a>
 ### 来源校验
 
 如前所述，Laravel 的请求伪造中间件会首先检查 `Sec-Fetch-Site` 请求头，以确定请求是否来自同源。默认情况下，如果该检查未通过，中间件会回退到 CSRF 令牌验证。
@@ -88,6 +100,7 @@ Route::get('/token', function (Request $request) {
 })
 ```
 
+<a name="csrf-excluding-uris"></a>
 ### 从 CSRF 保护中排除 URI
 
 有时你可能希望将一组 URI 排除在 CSRF 保护之外。例如，如果你使用 [Stripe](https://stripe.com) 处理付款并使用其 webhook 系统，就需要将你的 Stripe webhook 处理器路由排除在 CSRF 保护之外，因为 Stripe 并不知道该向你的路由发送什么 CSRF 令牌。
@@ -105,8 +118,9 @@ Route::get('/token', function (Request $request) {
 ```
 
 > [!NOTE]
-> 为方便起见，在[运行测试](/topic/Laravel%2013.x/e296oqw9q7.html)时，所有路由上的 CSRF 中间件都会自动禁用。
+> 为方便起见，在[运行测试](/docs/{{version}}/testing)时，所有路由上的 CSRF 中间件都会自动禁用。
 
+<a name="csrf-x-csrf-token"></a>
 ## X-CSRF-TOKEN
 
 除了将 CSRF 令牌作为 POST 参数进行检查之外，`PreventRequestForgery` 中间件还会检查 `X-CSRF-TOKEN` 请求头。例如，你可以将令牌存储在一个 HTML `meta` 标签中：
@@ -125,6 +139,7 @@ $.ajaxSetup({
 });
 ```
 
+<a name="csrf-x-xsrf-token"></a>
 ## X-XSRF-TOKEN
 
 Laravel 会将当前的 CSRF 令牌存储在一个加密的 `XSRF-TOKEN` Cookie 中，该 Cookie 会随框架生成的每个响应一同返回。你可以使用这个 Cookie 值来设置 `X-XSRF-TOKEN` 请求头。

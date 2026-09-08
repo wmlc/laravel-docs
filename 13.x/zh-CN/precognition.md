@@ -1,21 +1,36 @@
 # Precognition
 
-## 介绍
+- [简介](#introduction)
+- [实时验证](#live-validation)
+    - [使用 Vue](#using-vue)
+    - [使用 React](#using-react)
+    - [使用 Alpine 与 Blade](#using-alpine)
+    - [配置 Axios](#configuring-axios)
+- [验证数组](#validating-arrays)
+- [自定义验证规则](#customizing-validation-rules)
+- [处理文件上传](#handling-file-uploads)
+- [管理副作用](#managing-side-effects)
+- [测试](#testing)
 
-Laravel Precognition 允许你预测未来 HTTP 请求的结果。Precognition 的主要用例之一是：无需在前端 JavaScript 应用中重复后端的校验规则，即可为前端提供"实时"校验能力。
+<a name="introduction"></a>
+## 简介
 
-当 Laravel 收到"预知请求（precognitive request）"时，它会执行该路由的所有中间件，并解析路由控制器所需的依赖，包括对 [表单请求类（Form Request）](/topic/Laravel%2013.x/e296oew9q7.html)的校验——但它不会真正执行控制器方法。
+Laravel Precognition 允许你预知未来 HTTP 请求的结果。Precognition 的主要用例之一是能够为前端 JavaScript 应用提供"实时"验证，而无需复制应用的后端验证规则。
+
+当 Laravel 收到"precognitive 请求"时，它将执行路由的所有中间件并解析路由的控制器依赖，包括验证[表单请求](/docs/{{version}}/validation#form-request-validation)——但不会真正执行路由的控制器方法。
 
 > [!NOTE]
-> 自 Inertia 2.3 起，原生支持 Precognition。详见 [Inertia Forms 文档](https://inertiajs.com/forms)。更早的 Inertia 版本需要 Precognition 0.x。
+> 自 Inertia 2.3 起，内置了 Precognition 支持。请查阅 [Inertia Forms 文档](https://inertiajs.com/forms)了解更多信息。早期的 Inertia 版本需要 Precognition 0.x。
 
-## 实时校验
+<a name="live-validation"></a>
+## 实时验证
 
+<a name="using-vue"></a>
 ### 使用 Vue
 
-借助 Laravel Precognition，你可以在前端 Vue 应用中提供实时校验体验，而无需在前端重复校验规则。为了演示它的工作方式，我们来构建一个创建新用户的表单。
+使用 Laravel Precognition，你可以为用户提供实时验证体验，而无需在前端 Vue 应用中复制验证规则。为了说明其工作原理，让我们在应用中构建一个创建新用户的表单。
 
-首先，要为某条路由启用 Precognition，需要把 `HandlePrecognitiveRequests` 中间件添加到路由定义里。你还应该创建一个 [表单请求类（Form Request）](/topic/Laravel%2013.x/e296oew9q7.html) 来承载该路由的校验规则：
+首先，要为路由启用 Precognition，应将 `HandlePrecognitiveRequests` 中间件添加到路由定义中。你还应创建一个[表单请求](/docs/{{version}}/validation#form-request-validation)来存放路由的验证规则：
 
 ```php
 use App\Http\Requests\StoreUserRequest;
@@ -26,15 +41,15 @@ Route::post('/users', function (StoreUserRequest $request) {
 })->middleware([HandlePrecognitiveRequests::class]);
 ```
 
-接下来，通过 NPM 安装适用于 Vue 的 Laravel Precognition 前端辅助包：
+接下来，你应该通过 NPM 安装用于 Vue 的 Laravel Precognition 前端辅助库：
 
 ```shell
 npm install laravel-precognition-vue
 ```
 
-安装 Laravel Precognition 包后，你就可以使用 Precognition 的 `useForm` 函数创建一个表单对象，提供 HTTP 方法（`post`）、目标 URL（`/users`）以及初始表单数据。
+安装 Laravel Precognition 包后，你现在可以使用 Precognition 的 `useForm` 函数创建表单对象，提供 HTTP 方法（`post`）、目标 URL（`/users`）和初始表单数据。
 
-要启用实时校验，请在每个输入框的 `change` 事件里调用表单对象的 `validate` 方法，并传入输入框的名字：
+然后，要启用实时验证，在每个输入的 `change` 事件上调用表单的 `validate` 方法，并提供输入的名称：
 
 ```vue
 <script setup>
@@ -78,13 +93,13 @@ const submit = () => form.submit();
 </template>
 ```
 
-现在，随着用户填写表单，Precognition 将基于该路由表单请求类中的校验规则给出实时校验结果。当输入值变更时，会向 Laravel 应用发起一次做了防抖的"预知"校验请求。你可以通过调用表单的 `setValidationTimeout` 函数配置防抖时长：
+现在，当用户填写表单时，Precognition 将根据路由表单请求中的验证规则提供实时验证输出。当表单的输入发生变化时，会向你的 Laravel 应用发送一个防抖的"precognitive"验证请求。你可以通过调用表单的 `setValidationTimeout` 函数配置防抖超时时间：
 
 ```js
 form.setValidationTimeout(3000);
 ```
 
-当一次校验请求在途中时，表单的 `validating` 属性将为 `true`：
+当验证请求正在进行时，表单的 `validating` 属性将为 `true`：
 
 ```html
 <div v-if="form.validating">
@@ -92,7 +107,7 @@ form.setValidationTimeout(3000);
 </div>
 ```
 
-在校验请求或表单提交过程中返回的任何校验错误都会自动写入表单的 `errors` 对象：
+在验证请求或表单提交期间返回的任何验证错误将自动填充到表单的 `errors` 对象中：
 
 ```html
 <div v-if="form.invalid('email')">
@@ -100,7 +115,7 @@ form.setValidationTimeout(3000);
 </div>
 ```
 
-你也可以通过表单的 `hasErrors` 属性判断表单整体是否出错：
+你可以使用表单的 `hasErrors` 属性判断表单是否有任何错误：
 
 ```html
 <div v-if="form.hasErrors">
@@ -108,7 +123,7 @@ form.setValidationTimeout(3000);
 </div>
 ```
 
-你也可以把输入框的名字传给表单的 `valid` 和 `invalid` 函数，分别判断单个输入是否通过校验或未通过校验：
+你还可以通过分别向表单的 `valid` 和 `invalid` 函数传递输入的名称，判断输入是否通过或未通过验证：
 
 ```html
 <span v-if="form.valid('email')">
@@ -121,9 +136,9 @@ form.setValidationTimeout(3000);
 ```
 
 > [!WARNING]
-> 只有当输入框的值发生过变化并收到了校验响应之后，它才会显示为通过或未通过。
+> 表单输入只有在发生变化并收到验证响应后，才会显示为有效或无效。
 
-如果你正在用 Precognition 校验表单里的一部分字段，手动清除错误常常很有用。可以调用表单的 `forgetError` 函数来实现：
+如果你使用 Precognition 验证表单输入的子集，手动清除错误可能会很有用。你可以使用表单的 `forgetError` 函数来实现这一点：
 
 ```html
 <input
@@ -137,9 +152,9 @@ form.setValidationTimeout(3000);
 >
 ```
 
-从前面的例子可以看到，你可以挂接输入框的 `change` 事件，对用户已经交互过的字段进行实时校验；但有时你会需要校验用户还没交互过的字段。这在实现"向导式"表单时很常见——无论用户是否已经交互，下一步之前都需要把可见输入框全部校验一遍。
+正如我们所看到的，你可以挂钩输入的 `change` 事件，在用户交互时验证单个输入；但是，你可能需要验证用户尚未交互的输入。这在构建"向导"时很常见，在进入下一步之前，你希望验证所有可见输入，无论用户是否已与之交互。
 
-要实现这一点，可以调用 `validate` 方法，把要校验的字段名传给 `only` 配置项，并通过 `onSuccess` 与 `onValidationError` 回调处理校验结果：
+使用 Precognition 做到这一点的方法是调用 `validate` 方法，并将你希望验证的字段名称传递给 `only` 配置键。你可以使用 `onSuccess` 或 `onValidationError` 回调处理验证结果：
 
 ```html
 <button
@@ -152,7 +167,7 @@ form.setValidationTimeout(3000);
 >Next Step</button>
 ```
 
-当然，你也可以基于表单提交的响应执行后续逻辑。表单的 `submit` 函数返回一个 Axios 请求 Promise，这样可以方便地拿到响应负载、在提交成功后重置表单输入，或者处理失败请求：
+当然，你也可以执行代码来响应表单提交的结果。表单的 `submit` 函数返回一个 Axios 请求 Promise。这提供了一种便捷的方式，可以访问响应负载、在成功提交时重置表单输入，或处理失败的请求：
 
 ```js
 const submit = () => form.submit()
@@ -166,7 +181,7 @@ const submit = () => form.submit()
     });
 ```
 
-你可以通过检查表单的 `processing` 属性，判断表单提交请求是否还在进行中：
+你可以通过检查表单的 `processing` 属性，判断表单提交请求是否正在进行：
 
 ```html
 <button :disabled="form.processing">
@@ -174,11 +189,12 @@ const submit = () => form.submit()
 </button>
 ```
 
+<a name="using-react"></a>
 ### 使用 React
 
-借助 Laravel Precognition，你可以在前端 React 应用中提供实时校验体验，而无需在前端重复校验规则。为了演示它的工作方式，我们来构建一个创建新用户的表单。
+使用 Laravel Precognition，你可以为用户提供实时验证体验，而无需在前端 React 应用中复制验证规则。为了说明其工作原理，让我们在应用中构建一个创建新用户的表单。
 
-首先，要为某条路由启用 Precognition，需要把 `HandlePrecognitiveRequests` 中间件添加到路由定义里。你还应该创建一个 [表单请求类（Form Request）](/topic/Laravel%2013.x/e296oew9q7.html) 来承载该路由的校验规则：
+首先，要为路由启用 Precognition，应将 `HandlePrecognitiveRequests` 中间件添加到路由定义中。你还应创建一个[表单请求](/docs/{{version}}/validation#form-request-validation)来存放路由的验证规则：
 
 ```php
 use App\Http\Requests\StoreUserRequest;
@@ -189,15 +205,15 @@ Route::post('/users', function (StoreUserRequest $request) {
 })->middleware([HandlePrecognitiveRequests::class]);
 ```
 
-接下来，通过 NPM 安装适用于 React 的 Laravel Precognition 前端辅助包：
+接下来，你应该通过 NPM 安装用于 React 的 Laravel Precognition 前端辅助库：
 
 ```shell
 npm install laravel-precognition-react
 ```
 
-安装 Laravel Precognition 包后，你就可以使用 Precognition 的 `useForm` 函数创建一个表单对象，提供 HTTP 方法（`post`）、目标 URL（`/users`）以及初始表单数据。
+安装 Laravel Precognition 包后，你现在可以使用 Precognition 的 `useForm` 函数创建表单对象，提供 HTTP 方法（`post`）、目标 URL（`/users`）和初始表单数据。
 
-要启用实时校验，应监听每个输入框的 `change` 和 `blur` 事件。在 `change` 事件处理器中，调用表单的 `setData` 函数，把输入框的名字和新的值写入；在 `blur` 事件处理器中调用表单的 `validate` 方法并传入输入框的名字：
+要启用实时验证，你应监听每个输入的 `change` 和 `blur` 事件。在 `change` 事件处理器中，你应使用 `setData` 函数设置表单的数据，传递输入的名称和新值。然后，在 `blur` 事件处理器中调用表单的 `validate` 方法，提供输入的名称：
 
 ```jsx
 import { useForm } from 'laravel-precognition-react';
@@ -242,31 +258,31 @@ export default function Form() {
 };
 ```
 
-现在，随着用户填写表单，Precognition 将基于该路由表单请求类中的校验规则给出实时校验结果。当输入值变更时，会向 Laravel 应用发起一次做了防抖的"预知"校验请求。你可以通过调用表单的 `setValidationTimeout` 函数配置防抖时长：
+现在，当用户填写表单时，Precognition 将根据路由表单请求中的验证规则提供实时验证输出。当表单的输入发生变化时，会向你的 Laravel 应用发送一个防抖的"precognitive"验证请求。你可以通过调用表单的 `setValidationTimeout` 函数配置防抖超时时间：
 
 ```js
 form.setValidationTimeout(3000);
 ```
 
-当一次校验请求在途中时，表单的 `validating` 属性将为 `true`：
+当验证请求正在进行时，表单的 `validating` 属性将为 `true`：
 
 ```jsx
 {form.validating && <div>Validating...</div>}
 ```
 
-在校验请求或表单提交过程中返回的任何校验错误都会自动写入表单的 `errors` 对象：
+在验证请求或表单提交期间返回的任何验证错误将自动填充到表单的 `errors` 对象中：
 
 ```jsx
 {form.invalid('email') && <div>{form.errors.email}</div>}
 ```
 
-你也可以通过表单的 `hasErrors` 属性判断表单整体是否出错：
+你可以使用表单的 `hasErrors` 属性判断表单是否有任何错误：
 
 ```jsx
 {form.hasErrors && <div><!-- ... --></div>}
 ```
 
-你也可以把输入框的名字传给表单的 `valid` 和 `invalid` 函数，分别判断单个输入是否通过校验或未通过校验：
+你还可以通过分别向表单的 `valid` 和 `invalid` 函数传递输入的名称，判断输入是否通过或未通过验证：
 
 ```jsx
 {form.valid('email') && <span>✅</span>}
@@ -275,9 +291,9 @@ form.setValidationTimeout(3000);
 ```
 
 > [!WARNING]
-> 只有当输入框的值发生过变化并收到了校验响应之后，它才会显示为通过或未通过。
+> 表单输入只有在发生变化并收到验证响应后，才会显示为有效或无效。
 
-如果你正在用 Precognition 校验表单里的一部分字段，手动清除错误常常很有用。可以调用表单的 `forgetError` 函数来实现：
+如果你使用 Precognition 验证表单输入的子集，手动清除错误可能会很有用。你可以使用表单的 `forgetError` 函数来实现这一点：
 
 ```jsx
 <input
@@ -291,9 +307,9 @@ form.setValidationTimeout(3000);
 >
 ```
 
-从前面的例子可以看到，你可以挂接输入框的 `blur` 事件，对用户已经交互过的字段进行实时校验；但有时你会需要校验用户还没交互过的字段。这在实现"向导式"表单时很常见——无论用户是否已经交互，下一步之前都需要把可见输入框全部校验一遍。
+正如我们所看到的，你可以挂钩输入的 `blur` 事件，在用户交互时验证单个输入；但是，你可能需要验证用户尚未交互的输入。这在构建"向导"时很常见，在进入下一步之前，你希望验证所有可见输入，无论用户是否已与之交互。
 
-要实现这一点，可以调用 `validate` 方法，把要校验的字段名传给 `only` 配置项，并通过 `onSuccess` 与 `onValidationError` 回调处理校验结果：
+使用 Precognition 做到这一点的方法是调用 `validate` 方法，并将你希望验证的字段名称传递给 `only` 配置键。你可以使用 `onSuccess` 或 `onValidationError` 回调处理验证结果：
 
 ```jsx
 <button
@@ -306,7 +322,7 @@ form.setValidationTimeout(3000);
 >Next Step</button>
 ```
 
-当然，你也可以基于表单提交的响应执行后续逻辑。表单的 `submit` 函数返回一个 Axios 请求 Promise，这样可以方便地拿到响应负载、在提交成功后重置表单输入，或者处理失败请求：
+当然，你也可以执行代码来响应表单提交的结果。表单的 `submit` 函数返回一个 Axios 请求 Promise。这提供了一种便捷的方式，可以访问响应负载、在成功提交表单时重置表单的输入，或处理失败的请求：
 
 ```js
 const submit = (e) => {
@@ -324,7 +340,7 @@ const submit = (e) => {
 };
 ```
 
-你可以通过检查表单的 `processing` 属性，判断表单提交请求是否还在进行中：
+你可以通过检查表单的 `processing` 属性，判断表单提交请求是否正在进行：
 
 ```html
 <button disabled={form.processing}>
@@ -332,11 +348,12 @@ const submit = (e) => {
 </button>
 ```
 
-### 使用 Alpine 和 Blade
+<a name="using-alpine"></a>
+### 使用 Alpine 与 Blade
 
-借助 Laravel Precognition，你可以在前端 Alpine 应用中提供实时校验体验，而无需在前端重复校验规则。为了演示它的工作方式，我们来构建一个创建新用户的表单。
+使用 Laravel Precognition，你可以为用户提供实时验证体验，而无需在前端 Alpine 应用中复制验证规则。为了说明其工作原理，让我们在应用中构建一个创建新用户的表单。
 
-首先，要为某条路由启用 Precognition，需要把 `HandlePrecognitiveRequests` 中间件添加到路由定义里。你还应该创建一个 [表单请求类（Form Request）](/topic/Laravel%2013.x/e296oew9q7.html) 来承载该路由的校验规则：
+首先，要为路由启用 Precognition，应将 `HandlePrecognitiveRequests` 中间件添加到路由定义中。你还应创建一个[表单请求](/docs/{{version}}/validation#form-request-validation)来存放路由的验证规则：
 
 ```php
 use App\Http\Requests\CreateUserRequest;
@@ -347,13 +364,13 @@ Route::post('/users', function (CreateUserRequest $request) {
 })->middleware([HandlePrecognitiveRequests::class]);
 ```
 
-接下来，通过 NPM 安装适用于 Alpine 的 Laravel Precognition 前端辅助包：
+接下来，你应该通过 NPM 安装用于 Alpine 的 Laravel Precognition 前端辅助库：
 
 ```shell
 npm install laravel-precognition-alpine
 ```
 
-然后，在 `resources/js/app.js` 文件里向 Alpine 注册 Precognition 插件：
+然后，在 `resources/js/app.js` 文件中将 Precognition 插件注册到 Alpine：
 
 ```js
 import Alpine from 'alpinejs';
@@ -365,9 +382,9 @@ Alpine.plugin(Precognition);
 Alpine.start();
 ```
 
-安装并注册 Laravel Precognition 包之后，你就可以使用 Precognition 的 `$form` "魔法"创建一个表单对象，提供 HTTP 方法（`post`）、目标 URL（`/users`）以及初始表单数据。
+安装并注册 Laravel Precognition 包后，你现在可以使用 Precognition 的 `$form` "魔术方法"创建表单对象，提供 HTTP 方法（`post`）、目标 URL（`/users`）和初始表单数据。
 
-要启用实时校验，应将表单数据绑定到对应的输入框，然后监听每个输入框的 `change` 事件。在 `change` 事件处理器中调用表单的 `validate` 方法，并传入输入框的名字：
+要启用实时验证，你应将表单的数据绑定到其相关输入，然后监听每个输入的 `change` 事件。在 `change` 事件处理器中，你应调用表单的 `validate` 方法，提供输入的名称：
 
 ```html
 <form x-data="{
@@ -405,13 +422,13 @@ Alpine.start();
 </form>
 ```
 
-现在，随着用户填写表单，Precognition 将基于该路由表单请求类中的校验规则给出实时校验结果。当输入值变更时，会向 Laravel 应用发起一次做了防抖的"预知"校验请求。你可以通过调用表单的 `setValidationTimeout` 函数配置防抖时长：
+现在，当用户填写表单时，Precognition 将根据路由表单请求中的验证规则提供实时验证输出。当表单的输入发生变化时，会向你的 Laravel 应用发送一个防抖的"precognitive"验证请求。你可以通过调用表单的 `setValidationTimeout` 函数配置防抖超时时间：
 
 ```js
 form.setValidationTimeout(3000);
 ```
 
-当一次校验请求在途中时，表单的 `validating` 属性将为 `true`：
+当验证请求正在进行时，表单的 `validating` 属性将为 `true`：
 
 ```html
 <template x-if="form.validating">
@@ -419,7 +436,7 @@ form.setValidationTimeout(3000);
 </template>
 ```
 
-在校验请求或表单提交过程中返回的任何校验错误都会自动写入表单的 `errors` 对象：
+在验证请求或表单提交期间返回的任何验证错误将自动填充到表单的 `errors` 对象中：
 
 ```html
 <template x-if="form.invalid('email')">
@@ -427,7 +444,7 @@ form.setValidationTimeout(3000);
 </template>
 ```
 
-你也可以通过表单的 `hasErrors` 属性判断表单整体是否出错：
+你可以使用表单的 `hasErrors` 属性判断表单是否有任何错误：
 
 ```html
 <template x-if="form.hasErrors">
@@ -435,7 +452,7 @@ form.setValidationTimeout(3000);
 </template>
 ```
 
-你也可以把输入框的名字传给表单的 `valid` 和 `invalid` 函数，分别判断单个输入是否通过校验或未通过校验：
+你还可以通过分别向表单的 `valid` 和 `invalid` 函数传递输入的名称，判断输入是否通过或未通过验证：
 
 ```html
 <template x-if="form.valid('email')">
@@ -448,11 +465,11 @@ form.setValidationTimeout(3000);
 ```
 
 > [!WARNING]
-> 只有当输入框的值发生过变化并收到了校验响应之后，它才会显示为通过或未通过。
+> 表单输入只有在发生变化并收到验证响应后，才会显示为有效或无效。
 
-从前面的例子可以看到，你可以挂接输入框的 `change` 事件，对用户已经交互过的字段进行实时校验；但有时你会需要校验用户还没交互过的字段。这在实现"向导式"表单时很常见——无论用户是否已经交互，下一步之前都需要把可见输入框全部校验一遍。
+正如我们所看到的，你可以挂钩输入的 `change` 事件，在用户交互时验证单个输入；但是，你可能需要验证用户尚未交互的输入。这在构建"向导"时很常见，在进入下一步之前，你希望验证所有可见输入，无论用户是否已与之交互。
 
-要实现这一点，可以调用 `validate` 方法，把要校验的字段名传给 `only` 配置项，并通过 `onSuccess` 与 `onValidationError` 回调处理校验结果：
+使用 Precognition 做到这一点的方法是调用 `validate` 方法，并将你希望验证的字段名称传递给 `only` 配置键。你可以使用 `onSuccess` 或 `onValidationError` 回调处理验证结果：
 
 ```html
 <button
@@ -465,7 +482,7 @@ form.setValidationTimeout(3000);
 >Next Step</button>
 ```
 
-你可以通过检查表单的 `processing` 属性，判断表单提交请求是否还在进行中：
+你可以通过检查表单的 `processing` 属性，判断表单提交请求是否正在进行：
 
 ```html
 <button :disabled="form.processing">
@@ -473,9 +490,10 @@ form.setValidationTimeout(3000);
 </button>
 ```
 
-#### 重新填充旧表单数据
+<a name="repopulating-old-form-data"></a>
+#### 重新填充旧的表单数据
 
-在上面讨论的用户创建示例中，我们使用 Precognition 来做实时校验；但表单本身采用传统的服务端表单提交。因此，表单应当使用服务端表单提交返回的"旧"输入和校验错误进行填充：
+在上面讨论的用户创建示例中，我们使用 Precognition 进行实时验证；但是，我们正在执行传统的服务器端表单提交来提交表单。因此，表单应填充服务器端表单提交返回的任何"旧"输入和验证错误：
 
 ```html
 <form x-data="{
@@ -486,7 +504,7 @@ form.setValidationTimeout(3000);
 }">
 ```
 
-如果你希望通过 XHR 提交表单，也可以使用表单的 `submit` 函数，它返回一个 Axios 请求 Promise：
+另外，如果你想通过 XHR 提交表单，可以使用表单的 `submit` 函数，它返回一个 Axios 请求 Promise：
 
 ```html
 <form
@@ -511,9 +529,10 @@ form.setValidationTimeout(3000);
 >
 ```
 
+<a name="configuring-axios"></a>
 ### 配置 Axios
 
-Precognition 校验库使用 [Axios](https://github.com/axios/axios) HTTP 客户端向后端发送请求。为方便起见，必要时可以定制 Axios 实例。例如，使用 `laravel-precognition-vue` 库时，你可以在应用的 `resources/js/app.js` 文件中为每个外发请求添加额外的请求头：
+Precognition 验证库使用 [Axios](https://github.com/axios/axios) HTTP 客户端向应用的后端发送请求。为方便起见，如果应用需要，可以自定义 Axios 实例。例如，使用 `laravel-precognition-vue` 库时，你可以在应用 `resources/js/app.js` 文件中为每个出站请求添加额外的请求头：
 
 ```js
 import { client } from 'laravel-precognition-vue';
@@ -521,7 +540,7 @@ import { client } from 'laravel-precognition-vue';
 client.axios().defaults.headers.common['Authorization'] = authToken;
 ```
 
-或者，如果你的应用已经有一个配置好的 Axios 实例，你也可以让 Precognition 使用这个实例：
+或者，如果你的应用已经配置了一个 Axios 实例，你可以告诉 Precognition 使用该实例：
 
 ```js
 import Axios from 'axios';
@@ -533,26 +552,28 @@ window.axios.defaults.headers.common['Authorization'] = authToken;
 client.use(window.axios)
 ```
 
-## 校验数组
+<a name="validating-arrays"></a>
+## 验证数组
 
-你可以使用通配符来校验数组或嵌套对象里的字段。每个 `*` 匹配一段路径：
+你可以使用通配符验证数组或嵌套对象中的字段。每个 `*` 匹配单个路径段：
 
 ```js
-// 对数组中所有用户的 email 进行校验...
+// Validate email for all users in an array...
 form.validate('users.*.email');
 
-// 对 profile 对象里的全部字段进行校验...
+// Validate all fields in a profile object...
 form.validate('profile.*');
 
-// 对所有用户的所有字段进行校验...
+// Validate all fields for all users...
 form.validate('users.*.*');
 ```
 
-## 自定义校验规则
+<a name="customizing-validation-rules"></a>
+## 自定义验证规则
 
-可以通过请求的 `isPrecognitive` 方法自定义预知请求期间执行的校验规则。
+可以使用请求的 `isPrecognitive` 方法自定义 precognitive 请求期间执行的验证规则。
 
-例如，在用户创建表单里，我们可能希望只在最终提交时才校验密码是否"未被泄露"。而在预知校验时，我们只需要校验密码必填且至少 8 位即可。通过 `isPrecognitive` 方法，我们可以为表单请求类定制规则：
+例如，在用户创建表单上，我们可能只想在最终表单提交时验证密码"未被泄露"。对于 precognitive 验证请求，我们将简单地验证密码是必需的且至少有 8 个字符。使用 `isPrecognitive` 方法，我们可以自定义表单请求定义的规则：
 
 ```php
 <?php
@@ -565,7 +586,7 @@ use Illuminate\Validation\Rules\Password;
 class StoreUserRequest extends FormRequest
 {
     /**
-     * 获取适用于该请求的校验规则。
+     * Get the validation rules that apply to the request.
      *
      * @return array
      */
@@ -584,15 +605,16 @@ class StoreUserRequest extends FormRequest
 }
 ```
 
+<a name="handling-file-uploads"></a>
 ## 处理文件上传
 
-默认情况下，Laravel Precognition 在预知校验请求中既不上传也不校验文件。这是为了避免大文件被不必要地重复上传。
+默认情况下，Laravel Precognition 不会在 precognitive 验证请求期间上传或验证文件。这确保了大型文件不会被不必要地多次上传。
 
-由于这一行为，你需要确保应用通过 自定义相应表单请求类的校验规则 来指明：这些字段只在完整表单提交时才要求必填：
+由于这种行为，你应确保应用[自定义相应表单请求的验证规则](#customizing-validation-rules)，以指定该字段仅在完整表单提交时才为必填：
 
 ```php
 /**
- * 获取适用于该请求的校验规则。
+ * Get the validation rules that apply to the request.
  *
  * @return array
  */
@@ -610,17 +632,18 @@ protected function rules()
 }
 ```
 
-如果你希望在每次校验请求中都包含文件，可以在客户端表单实例上调用 `validateFiles` 函数：
+如果你想在每个验证请求中都包含文件，可以在客户端表单实例上调用 `validateFiles` 函数：
 
 ```js
 form.validateFiles();
 ```
 
+<a name="managing-side-effects"></a>
 ## 管理副作用
 
-为路由添加 `HandlePrecognitiveRequests` 中间件时，应当考虑其他中间件中是否存在副作用需要在校验请求期间被跳过。
+将 `HandlePrecognitiveRequests` 中间件添加到路由时，你应考虑_其他_中间件中是否有任何在 precognitive 请求期间应跳过的副作用。
 
-例如，你可能有一个中间件，用于累计用户与应用的"交互"次数，但你并不希望把预知请求计为一次交互。为实现这一点，可以在累加交互计数之前先检查请求的 `isPrecognitive` 方法：
+例如，你可能有一个中间件会递增每个用户与应用"交互"的总数，但你可能不希望 precognitive 请求被计为一次交互。为此，我们可以在递增交互计数之前检查请求的 `isPrecognitive` 方法：
 
 ```php
 <?php
@@ -634,7 +657,7 @@ use Illuminate\Http\Request;
 class InteractionMiddleware
 {
     /**
-     * 处理进来的请求。
+     * Handle an incoming request.
      */
     public function handle(Request $request, Closure $next): mixed
     {
@@ -647,11 +670,12 @@ class InteractionMiddleware
 }
 ```
 
+<a name="testing"></a>
 ## 测试
 
-如果你想在测试中发起预知请求，Laravel 的 `TestCase` 提供了一个 `withPrecognition` 辅助方法，它会自动添加 `Precognition` 请求头。
+如果你想在测试中发起 precognitive 请求，Laravel 的 `TestCase` 包含一个 `withPrecognition` 辅助方法，它将添加 `Precognition` 请求头。
 
-此外，如果你希望断言某个预知请求成功（例如没有任何校验错误），可以在响应上调用 `assertSuccessfulPrecognition` 方法：
+此外，如果你想断言 precognitive 请求已成功，例如未返回任何验证错误，可以在响应上使用 `assertSuccessfulPrecognition` 方法：
 
 ```php tab=Pest
 it('validates registration form with precognition', function () {

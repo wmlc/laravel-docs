@@ -1,16 +1,30 @@
 # 贡献指南
 
+- [Bug 报告](#bug-reports)
+- [支持问题](#support-questions)
+- [使用哪个分支？](#which-branch)
+- [编译资源](#compiled-assets)
+- [AI 生成的贡献](#ai-generated-contributions)
+- [安全漏洞](#security-vulnerabilities)
+- [编码风格](#coding-style)
+    - [PHPDoc](#phpdoc)
+    - [StyleCI](#styleci)
+- [行为准则](#code-of-conduct)
+
+<a name="bug-reports"></a>
 ## Bug 报告
 
-为了鼓励积极的协作，Laravel 强烈建议使用 pull request 来解决问题，而不是使用 GitHub issues。我们的多数第一方包都禁用了 GitHub issues。
+为了鼓励积极的协作，Laravel 强烈建议使用 pull request 来解决问题，而不是使用 GitHub issue。我们大部分第一方包都禁用了 GitHub issue。
 
-如果你发现了问题，请创建一个解决该问题的 pull request。你的 pull request 应当包含一个标题，以及对问题和解决方案的清晰描述。你还应当尽可能提供相关信息，以及一个能够复现该问题的代码示例。pull request 的目的是让你自己和其他人都能轻松理解问题并验证修复。
+如果你发现了问题，请创建一个解决问题的 pull request。你的 pull request 应包含标题，以及对问题及其解决方案的清晰描述。你还应该尽可能包含相关的信息，以及能够复现该问题的代码示例。pull request 的目标是让你自己和他人都能轻松理解问题并验证修复。
 
-如果你不知道如何修复问题，可以向编码代理描述该问题，并借助它来尝试提交一个 pull request。
+如果你不知道如何修复问题，请向某个编码代理描述该 issue，并借助它来尝试提交 pull request。
 
-只有被标记为"待审核"（而非"草稿"状态）且新功能的所有测试均已通过的 pull request 才会被审核。停留在"草稿"状态、长期未活跃的 pull request 将在几天后被关闭。
+只有当 pull request 被标记为「ready for review」（而不是处于「draft」状态）且新功能的所有测试都通过时，才会被审查。长时间停留在「draft」状态、不再活跃的 pull request 会在几天后被关闭。
 
-Laravel 源代码托管在 GitHub 上，每个 Laravel 项目都有对应的仓库：
+Laravel 的源代码托管在 GitHub 上，每个 Laravel 项目都有对应的仓库：
+
+<div class="content-list" markdown="1">
 
 - [Laravel AI SDK](https://github.com/laravel/ai)
 - [Laravel Application](https://github.com/laravel/laravel)
@@ -40,9 +54,14 @@ Laravel 源代码托管在 GitHub 上，每个 Laravel 项目都有对应的仓�
 - [Laravel Svelte Starter Kit](https://github.com/laravel/svelte-starter-kit)
 - [Laravel Vue Starter Kit](https://github.com/laravel/vue-starter-kit)
 
+</div>
+
+<a name="support-questions"></a>
 ## 支持问题
 
-Laravel 的 GitHub issue 跟踪器并非用于提供 Laravel 相关的帮助或支持。请改用以下渠道之一：
+Laravel 的 GitHub issue 跟踪器并不用于提供 Laravel 相关的帮助或支持。请改用以下渠道之一：
+
+<div class="content-list" markdown="1">
 
 - [GitHub Discussions](https://github.com/laravel/framework/discussions)
 - [Laracasts Forums](https://laracasts.com/discuss)
@@ -52,45 +71,53 @@ Laravel 的 GitHub issue 跟踪器并非用于提供 Laravel 相关的帮助或�
 - [Larachat](https://larachat.co)
 - [IRC](https://web.libera.chat/?nick=artisan&channels=#laravel)
 
+</div>
+
+<a name="which-branch"></a>
 ## 使用哪个分支？
 
-所有的 bug 修复都应发送到当前支持 bug 修复的最新版本（目前是 `13.x`）。除非修复的是仅在即将发布的版本中才存在的功能，否则**绝不要**将 bug 修复发送到 `master` 分支。
+**所有** bug 修复都应提交到支持 bug 修复的最新版本（当前为 `13.x`）。除非是修复仅存在于即将发布版本中的功能，否则**绝不**应将 bug 修复提交到 `master` 分支。
 
-与当前发行版**完全向后兼容**的**次要**功能可以发送到最新的稳定分支（目前是 `13.x`）。
+与当前版本**完全向后兼容**的**次要**功能，可以提交到最新的稳定分支（当前为 `13.x`）。
 
-带有破坏性变更的**主要**新功能或特性，应始终发送到包含即将发布版本的 `master` 分支。
+带有破坏性变更的**主要**新功能或特性，应始终提交到 `master` 分支，该分支包含即将发布的版本。
 
-## 编译后的资源
+<a name="compiled-assets"></a>
+## 编译资源
 
-如果你提交的更改会影响某个编译后的文件，例如 `laravel/laravel` 仓库中 `resources/css` 或 `resources/js` 下的大部分文件，请不要提交这些编译后的文件。由于体积庞大，维护者无法实际审查它们。这可能被利用来向 Laravel 注入恶意代码。为了从防御角度杜绝这种情况，所有编译后的文件都将由 Laravel 维护者生成并提交。
+如果你提交的改动会影响编译后的文件（例如 `laravel/laravel` 仓库中 `resources/css` 或 `resources/js` 下的大部分文件），请不要提交编译后的文件。由于这些文件体积较大，维护者实际上无法审查。这可能会被利用来向 Laravel 注入恶意代码。为了防御性地防止这种情况，所有编译后的文件将由 Laravel 维护者生成并提交。
 
+<a name="ai-generated-contributions"></a>
 ## AI 生成的贡献
 
-我们感谢每一个提交给 Laravel 的 pull request。但是，主要由 AI 生成、缺乏人工细致审查与考量的大量贡献是不被接受的。
+我们感谢每一个提交给 Laravel 的 pull request。但是，主要由 AI 生成、缺乏深思熟虑的人工审查与考量的重大贡献是不可接受的。
 
-如果你选择使用 AI 工具来协助完成对框架的大型或复杂贡献，在提交之前，你**必须**彻底审查、测试并理解生成的代码。
+如果你选择使用 AI 工具来协助完成对框架的大型或复杂贡献，提交前你必须对生成的代码进行彻底审查、测试并充分理解。
 
 pull request 的描述**必须**完全由贡献者本人撰写。带有 AI 生成描述的 pull request 将被关闭。
 
-**大量开启完全由 AI 生成的 issue 或 pull request 将不被容忍。** 此类 pull request 将在未经审查的情况下被关闭，相关贡献者可能会被禁止访问该仓库。
+**大量开启完全由 AI 生成的 issue 或 pull request 将不被容忍。** 此类 pull request 将在不审查的情况下被关闭，相关贡献者可能会被禁止访问该仓库。
 
-我们鼓励贡献者熟悉现有代码库、参与社区，并提交能够体现自己对所解决问题理解与审慎思考的 pull request。
+我们鼓励贡献者熟悉现有代码库、参与社区交流，并提交能够体现自己对所解决问题有自身理解与审慎考量的 pull request。
 
+<a name="security-vulnerabilities"></a>
 ## 安全漏洞
 
-如果你在 Laravel 中发现安全漏洞，请通过 <a href="mailto:security@laravel.com">security@laravel.com</a> 邮件联系我们的安全团队。所有安全漏洞都会得到及时处理。
+如果你在 Laravel 中发现了安全漏洞，请通过 <a href="mailto:security@laravel.com">security@laravel.com</a> 发送邮件给我们的安全团队。所有安全漏洞都会得到及时处理。
 
-## 代码风格
+<a name="coding-style"></a>
+## 编码风格
 
-Laravel 遵循 [PSR-2](https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-2-coding-style-guide.md) 编码标准以及 [PSR-4](https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-4-autoloader.md) 自动加载标准。
+Laravel 遵循 [PSR-2](https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-2-coding-style-guide.md) 编码标准与 [PSR-4](https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-4-autoloader.md) 自动加载标准。
 
+<a name="phpdoc"></a>
 ### PHPDoc
 
-以下是一个有效的 Laravel 文档块示例。注意 `@param` 属性后跟两个空格、参数类型、再两个空格，最后是变量名：
+下面是一个有效的 Laravel 文档注释块示例。注意 `@param` 属性后有两个空格、参数类型、再两个空格，最后是变量名：
 
 ```php
 /**
- * 在容器中注册一个绑定。
+ * Register a binding with the container.
  *
  * @param  string|array  $abstract
  * @param  \Closure|string|null  $concrete
@@ -105,11 +132,11 @@ public function bind($abstract, $concrete = null, $shared = false)
 }
 ```
 
-当 `@param` 或 `@return` 属性因使用了原生类型而变得冗余时，可以将其删除：
+当 `@param` 或 `@return` 属性由于使用了原生类型而显得冗余时，可以将其删除：
 
 ```php
 /**
- * 执行任务。
+ * Execute the job.
  * [tl! remove]
  * @return void [tl! remove]
  */
@@ -119,11 +146,11 @@ public function handle(AudioProcessor $processor): void
 }
 ```
 
-但是，当原生类型是泛型时，请通过 `@param` 或 `@return` 属性来指明泛型类型：
+但是，当原生类型属于泛型时，请通过 `@param` 或 `@return` 属性来指定泛型类型：
 
 ```php
 /**
- * 获取消息的附件。
+ * Get the attachments for the message.
  * [tl! add]
  * @return array<int, \Illuminate\Mail\Mailables\Attachment> [tl! add]
  */
@@ -135,15 +162,21 @@ public function attachments(): array
 }
 ```
 
+<a name="styleci"></a>
 ### StyleCI
 
-如果你代码的风格不够完美也无需担心！在 pull request 合并后，[StyleCI](https://styleci.io/) 会自动将任何风格修复合并进 Laravel 仓库。这让我们能够专注于贡献的内容，而不是代码风格。
+如果你的代码风格不够完美也不用担心！在 pull request 合并后，[StyleCI](https://styleci.io/) 会自动将任何风格修复合并到 Laravel 仓库中。这让我们可以将精力集中在贡献的内容上，而不是代码风格上。
 
+<a name="code-of-conduct"></a>
 ## 行为准则
 
-Laravel 的行为准则派生自 Ruby 的行为准则。任何违反行为准则的行为都可以向 Taylor Otwell（taylor@laravel.com）举报：
+Laravel 的行为准则改编自 Ruby 的行为准则。任何违反行为准则的行为都可以向 Taylor Otwell（taylor@laravel.com）举报：
 
-- 参与者应当包容对立的观点。
-- 参与者必须确保自己的语言和举止不包含人身攻击与贬损性言论。
-- 在解读他人言行时，参与者应始终假定对方善意。
-- 任何可以被合理地视为骚扰的行为都绝不被容忍。
+<div class="content-list" markdown="1">
+
+- 参与者应包容对立的观点。
+- 参与者必须确保其语言和行为不包含人身攻击与贬低性的个人言论。
+- 在解读他人的言行时，参与者应始终假定其出于善意。
+- 任何可以被合理认定为骚扰的行为都不会被容忍。
+
+</div>

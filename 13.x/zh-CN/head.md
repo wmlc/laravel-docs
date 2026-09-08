@@ -1,20 +1,48 @@
 # Laravel Head
 
+- [简介](#introduction)
+- [安装](#installation)
+- [快速入门](#quickstart)
+- [解析优先级](#resolution-precedence)
+- [定义元数据](#defining-metadata)
+    - [默认值](#defaults)
+    - [路由元数据](#route-metadata)
+    - [运行时元数据](#runtime-metadata)
+    - [错误页面](#error-pages)
+- [Open Graph](#open-graph)
+    - [X / Twitter 卡片](#twitter-cards)
+- [主题颜色](#theme-colors)
+- [应用元数据与图标](#app-metadata-and-icons)
+- [渐进式 Web 应用](#progressive-web-apps)
+- [性能与发现](#performance-and-discovery)
+- [自定义标签](#custom-tags)
+- [结构化数据（Schema）](#schemas)
+    - [面包屑](#breadcrumbs)
+    - [常见问题](#faqs)
+    - [自定义 Schema](#custom-schemas)
+- [渲染](#rendering)
+    - [Blade](#blade)
+    - [Livewire](#livewire)
+    - [Inertia](#inertia)
+
+<a name="introduction"></a>
 ## 简介
 
-[Laravel Head](https://github.com/laravel/head) 提供了一套流畅的 API，用来管理应用文档的 `<head>` 元素——包括标题与 meta 标签、Open Graph 元数据、canonical URL、robots 指令、性能提示与结构化数据。它与 Blade、Livewire 和 Inertia 都能良好协作。
+[Laravel Head](https://github.com/laravel/head) 提供了一个流式（fluent）API 来管理应用的文档 `<head>` 元素，包括标题和 meta 标签、Open Graph 元数据、规范（canonical）URL、robots 指令、性能提示以及结构化数据。它可与 Blade、Livewire 和 Inertia 配合使用。
 
+<a name="installation"></a>
 ## 安装
 
-可以通过 Composer 包管理器安装 Laravel Head：
+你可以使用 Composer 包管理器安装 Laravel Head：
 
 ```shell
 composer require laravel/head
 ```
 
-## 快速上手
+<a name="quickstart"></a>
+## 快速入门
 
-在服务提供者中注册全站默认值：
+在一个服务提供者中注册全站默认值：
 
 ```php
 use Laravel\Head\Facades\Head;
@@ -25,14 +53,14 @@ Head::defaults(fn (HeadBuilder $head) => $head
     ->description('Build something great.'));
 ```
 
-在运行时设置页面级元数据：
+在运行时设置页面专属元数据：
 
 ```php
 Head::title($post->title)
     ->description($post->description);
 ```
 
-在布局里渲染解析好的标签：
+在你的布局中渲染解析出的标签：
 
 ```blade
 <head>
@@ -40,25 +68,28 @@ Head::title($post->title)
 </head>
 ```
 
-## 优先级
+<a name="resolution-precedence"></a>
+## 解析优先级
 
-页面元数据按从低到高的五个层级进行解析：
+页面元数据从五个层级解析，优先级由低到高排列如下：
 
-1. 页面默认值（Page defaults）
-2. 路由组元数据（Route group metadata）
-3. 路由元数据（Route metadata）
-4. 运行时元数据（Runtime metadata）
-5. 错误元数据（Error metadata）
+1. 页面默认值
+2. 路由组元数据
+3. 路由元数据
+4. 运行时元数据
+5. 错误元数据
 
-更高层级会按字段逐项覆盖更低层级。例如，运行时标题会替换路由标题，但不会替换路由描述。下面将分别介绍如何在每一层设置元数据。关于在 Blade、Livewire 和 Inertia 中如何渲染解析后的元数据，请参阅渲染。
+较高的层级会逐字段覆盖较低的层级。例如，运行时标题会替换路由标题，而不会替换路由描述。接下来的各节将介绍如何在每个层级设置元数据。关于在 Blade、Livewire 和 Inertia 中渲染解析出的元数据，请参阅 [渲染](#rendering)。
 
+<a name="defining-metadata"></a>
 ## 定义元数据
 
-Laravel Head 允许你通过全站默认值、路由元数据、运行时调用和错误页定义等方式来定义元数据。
+Laravel Head 允许你使用全站默认值、路由元数据、运行时调用以及错误页面定义来设置元数据。
 
+<a name="defaults"></a>
 ### 默认值
 
-在服务提供者中注册页面默认值：
+在一个服务提供者中注册页面默认值：
 
 ```php
 use Laravel\Head\Enums\OgType;
@@ -76,19 +107,21 @@ Head::defaults(function (HeadBuilder $head) {
 });
 ```
 
-默认值是优先级最低的页面元数据层。若没有路由、运行时或错误元数据显式设置标题，则会原样渲染 `Laravel`。当更高层级设置了页面标题时，会应用继承的后缀，因此 `Head::title('About')` 会渲染为 `About - Laravel`。若希望标题忽略继承的前缀或后缀，可传入 `exact: true`。
+默认值是优先级最低的页面元数据层级。如果没有路由、运行时或错误元数据设置标题，则会原样渲染 `Laravel`。当较高级层设置了页面标题时，会应用继承来的后缀，因此 `Head::title('About')` 会渲染为 `About - Laravel`。对于应忽略继承前缀或后缀的标题，可传入 `exact: true`。
 
-调用 `Head::canonical()` 会使用当前请求 URL 渲染一个 canonical 链接。若要显式指定 URL，可传入字符串，例如 `Head::canonical('/about')`。Canonical URL 默认会被规范化为 `https`，若想保留请求原协议，可传入 `forceHttps: false`。
+调用 `Head::canonical()` 会使用当前请求 URL 渲染一个规范（canonical）URL。要设置显式的 URL，可传入一个字符串，如 `Head::canonical('/about')`。规范 URL 默认会被规范化为 `https`；传入 `forceHttps: false` 可保留请求协议。
 
-Robots 指令可传入原始字符串、`RobotsRule` 枚举值，或混合两者的列表。列表会渲染为逗号分隔的指令，因此 `Head::robots([RobotsRule::NoIndex, RobotsRule::NoFollow])` 会渲染为 `noindex, nofollow`。
+robots 指令可以作为原始字符串、`RobotsRule` 枚举用例，或混合两者的列表传入。列表会被渲染为逗号分隔的指令，因此 `Head::robots([RobotsRule::NoIndex, RobotsRule::NoFollow])` 会渲染为 `noindex, nofollow`。
 
-为方便起见，`searchableByRobots` 方法渲染 `all`，`hiddenFromRobots` 方法渲染 `none`。
+为方便起见，`searchableByRobots` 方法会渲染 `all`，而 `hiddenFromRobots` 方法会渲染 `none`。
 
+<a name="route-metadata"></a>
 ### 路由元数据
 
-你可以直接在路由上定义元数据，对于那些元数据可提前预知的半静态页面尤其有用。
+你可以直接在路由上定义元数据，这对于元数据在事先已知的半静态页面尤为有用。
 
-#### 路由与路由组
+<a name="routes-and-groups"></a>
+#### 路由与组
 
 ```php
 Route::view('/contact', 'contact')
@@ -99,7 +132,7 @@ Route::view('/contact', 'contact')
     );
 ```
 
-共享的路由元数据可以在路由链的任意位置应用到路由组：
+共享的路由元数据可以应用到链中任意位置的组：
 
 ```php
 Route::withHead(robots: 'noindex, nofollow')
@@ -112,7 +145,7 @@ Route::withHead(robots: 'noindex, nofollow')
     });
 ```
 
-也可以为资源路由和单例路由定义元数据：
+你还可以为资源路由和单例路由定义元数据：
 
 ```php
 Route::resource('posts', PostController::class)->withHead(
@@ -124,9 +157,9 @@ Route::singleton('profile', ProfileController::class)->withHead(
 );
 ```
 
-`withHead` 方法通过 Laravel 原生的路由元数据 API 存储纯数组。它等效于以 `head` 为 key 把属性嵌套传入 `metadata` 方法，因此元数据可以与缓存路由兼容。
+`withHead` 方法通过 Laravel 原生的路由元数据 API 存储普通数组。它等价于在 `head` 键下嵌套属性调用 `metadata` 方法，因此该元数据与缓存路由保持兼容。
 
-`withHead` 的具名参数有意仅允许 Laravel Head 内置的路由属性，以便编辑器与静态分析可以发现拼写错误。 由自定义标签构造器注册的路由属性可以通过 `extensions` 透传：
+具名参数被有意限制为 Laravel Head 内置的路由属性，以便编辑器和静态分析能够捕获拼写错误的名称。由自定义标签构建器注册的路由属性可以通过 `extensions` 传入：
 
 ```php
 Route::get('/article', ArticleController::class)->withHead(
@@ -135,27 +168,29 @@ Route::get('/article', ArticleController::class)->withHead(
 );
 ```
 
-#### 支持的属性
+<a name="supported-properties"></a>
+#### 受支持的属性
 
-支持的路由属性与对应的流式构造器方法同名：
+受支持的路由属性映射到与流式构建器方法相同的名称：
 
-| 分类 | 属性 |
+| 类别 | 属性 |
 | --- | --- |
-| Document | `title`, `description`, `canonical`, `robots` |
-| Application metadata | `themeColor`, `applicationName`, `colorScheme`, `referrer`, `viewport`, `appleWebAppTitle`, `webAppCapable`, `appleWebAppStatusBarStyle` |
-| Social | `og`, `ogImage`, `ogVideo`, `ogAudio`, `twitter`, `twitterImage` |
-| Performance | `preload`, `prefetch`, `preconnect`, `dnsPrefetch` |
-| Discovery | `alternates`, `feed`, `icon`, `favicon`, `appleTouchIcon`, `appleTouchStartupImage`, `maskIcon`, `manifest` |
-| Structured data | `schema` |
-| Custom tags | `meta`, `link` |
+| 文档 | `title`、`description`、`canonical`、`robots` |
+| 应用元数据 | `themeColor`、`applicationName`、`colorScheme`、`referrer`、`viewport`、`appleWebAppTitle`、`webAppCapable`、`appleWebAppStatusBarStyle` |
+| 社交 | `og`、`ogImage`、`ogVideo`、`ogAudio`、`twitter`、`twitterImage` |
+| 性能 | `preload`、`prefetch`、`preconnect`、`dnsPrefetch` |
+| 发现 | `alternates`、`feed`、`icon`、`favicon`、`appleTouchIcon`、`appleTouchStartupImage`、`maskIcon`、`manifest` |
+| 结构化数据 | `schema` |
+| 自定义标签 | `meta`、`link` |
 
-嵌套选项名沿用 `camelCase` 命名，与流式 API 一致——例如 `forceHttps`、`siteName`、`secureUrl`。
+嵌套选项名使用与流式 API 相同的 `camelCase` 命名约定，例如 `forceHttps`、`siteName` 和 `secureUrl`。
 
-可重复属性（如 `ogImage`、`preload`、`feed`、`schema`、`icon`、`appleTouchStartupImage`）接受单个值或列表。
+可重复的属性，例如 `ogImage`、`preload`、`feed`、`schema`、`icon` 和 `appleTouchStartupImage`，可以接受单个值或列表。
 
+<a name="runtime-metadata"></a>
 ### 运行时元数据
 
-当某个值必须等到请求到达才能确定（例如正在查看的文章的标题），可以在运行时设置：
+当某个值在请求到达之前尚不可知时（例如正在查看的文章的标题），你可以在运行时设置它：
 
 ```php
 use Laravel\Head\Facades\Head;
@@ -168,7 +203,7 @@ public function __invoke(Post $post): Response
 }
 ```
 
-通过 `Head` 门面进行的运行时调用会覆盖路由元数据，用于依赖于请求的数据。控制器和 action 是进行这种调用最常见的位置：
+通过 `Head` facade 发起的运行时调用会覆盖路由中请求相关的数据元数据。控制器和 action 是发起这些调用最常见的地方：
 
 ```php
 use App\Models\Post;
@@ -183,7 +218,7 @@ public function show(Post $post)
 }
 ```
 
-多次运行时调用会按执行顺序合并。对于 title、description、canonical URL、robots 指令这类单值字段，后面的调用优先。可重复字段会保留多条记录，但若再次传入相同的 key，则会更新原条目。对于 `ogImage` 方法，URL 用作 key：
+多次运行时调用会按执行顺序合并。对于 `title`、`description`、规范 URL 和 robots 指令等单值字段，后一次调用优先。可重复字段会保留多个条目，但再次添加相同的键会更新较早的条目。对于 `ogImage` 方法，URL 即作为键：
 
 ```php
 Head::ogImage('/images/cover.jpg', alt: 'Draft cover')
@@ -200,25 +235,26 @@ Head::ogImage('/images/cover.jpg', alt: 'Draft cover')
 <meta property="og:image:alt" content="Gallery image">
 ```
 
-Open Graph 媒体若继承自默认值，会作为回退。当路由、运行时或错误元数据定义了同类型的媒体时，会替换默认值而非合并——因此页面的 `og:image` 优先于全站默认图片。
+从默认值继承而来的 Open Graph 媒体会作为回退。当路由、运行时或错误元数据定义了自身同类型的媒体时，默认媒体会被替换而非合并，因此页面的 `og:image` 优先于全站默认图片。
 
-可以使用 `when` 与 `unless` 方法以流式方式定义条件性元数据：
+你可以使用 `when` 和 `unless` 方法流畅地定义条件元数据：
 
 ```php
 Head::title($post->title)
     ->when($post->isDraft(), fn ($head) => $head->hiddenFromRobots());
 ```
 
-### 错误页
+<a name="error-pages"></a>
+### 错误页面
 
-通常，应当在应用 `AppServiceProvider` 的 `boot` 方法中注册错误元数据：
+通常，你应该在应用 `AppServiceProvider` 类的 `boot` 方法中注册错误元数据：
 
 ```php
 use Laravel\Head\ErrorPages;
 use Laravel\Head\Facades\Head;
 
 /**
- * 引导应用服务。
+ * 引导任意应用服务。
  */
 public function boot(): void
 {
@@ -234,7 +270,7 @@ public function boot(): void
 }
 ```
 
-`defaults` 与 `status` 方法也接收与 `Head::defaults()` 相同的流式构造器回调：
+`defaults` 和 `status` 方法也接受与 `Head::defaults()` 相同的流式构建器回调：
 
 ```php
 use Laravel\Head\ErrorPages;
@@ -248,13 +284,14 @@ Head::errors(function (ErrorPages $errors) {
 });
 ```
 
-当为某个已注册的错误状态码渲染响应时，这些元数据会凌驾于所有其他层级。
+当为已注册的错误状态渲染响应时，该元数据优先于所有其他层级。
 
-Laravel 在渲染错误视图或执行响应阶段的钩子（例如 Inertia 的 `handleExceptionsUsing()` 方法）时，会自动检测响应状态。如果你在 `$exceptions->render()` 回调中渲染错误响应，请在渲染前调用 `Head::status(404)`，让错误元数据生效。
+Laravel 在渲染错误视图或执行响应阶段的钩子（如 Inertia 的 `handleExceptionsUsing()` 方法）时会自动检测响应状态。如果你在 `$exceptions->render()` 回调内部渲染错误响应，应在渲染之前调用 `Head::status(404)`，以便应用错误元数据。
 
+<a name="open-graph"></a>
 ## Open Graph
 
-可以使用 `og` 方法设置 Open Graph 属性。重复的媒体可以通过顶层方法添加，这些方法接收具名参数：
+你可以使用 `og` 方法设置 Open Graph 属性。可重复的媒体可以使用顶层方法添加，这些方法直接接受具名参数：
 
 ```php
 use Laravel\Head\Enums\ImageType;
@@ -271,14 +308,14 @@ Head::og(type: OgType::Article, title: $post->title)
     );
 ```
 
-`ogImage`、`ogVideo`、`ogAudio` 方法的第一个参数是 URL，也可以传入可选的具名参数，例如 `alt`、`width`、`height`、`type`、`secureUrl`（Open Graph 规范支持时）。
+`ogImage`、`ogVideo` 和 `ogAudio` 方法将 URL 作为第一个参数，并附带可选的具名参数，如 `alt`、`width`、`height`、`type` 和 `secureUrl`（在 Open Graph 规范支持的情况下）。
 
-在 API 接受 `type` 的地方，可以传入 `ImageType` 枚举值——例如 `ImageType::Svg`、`ImageType::Png`、`ImageType::Jpeg`、`ImageType::Webp`。
+你可以在 API 接受图片 `type` 的任何位置传入图片 MIME 类型作为 `ImageType` 枚举用例，例如 `ImageType::Svg`、`ImageType::Png`、`ImageType::Jpeg` 和 `ImageType::Webp`。
 
 > [!NOTE]
-> Document 的 `title` 和 `description` 会自动补齐缺失的 `og:title` 和 `og:description`。
+> 文档的 `title` 和 `description` 会自动填充缺失的 `og:title` 和 `og:description` 值。
 
-如果只需要一张 Open Graph 图片，且没有其他属性，可以把 `image` 具名参数传给 `og` 方法：
+对于没有其它属性的单个 Open Graph 图片，你可以向 `og` 方法传入 `image` 具名参数：
 
 ```php
 Head::og(
@@ -289,11 +326,12 @@ Head::og(
 );
 ```
 
-`og(image: ...)` 和 `ogImage(...)` 会写入同一份底层图片列表，你可以在调用处选用更顺手的形式。可以使用 `meta` 方法来扩展自定义的 Open Graph 字段（例如 product、article 属性）。
+`og(image: ...)` 和 `ogImage(...)` 调用写入同一个底层图片列表，因此你可以在调用处使用更具表现力的那种。`og` 方法用于自定义 Open Graph 扩展（如商品或文章属性）时，可以使用 [`meta`](#custom-tags) 方法。
 
-### X / Twitter Cards
+<a name="twitter-cards"></a>
+### X / Twitter 卡片
 
-若希望从与 Open Graph 共享的 title、description、image 中渲染 X / Twitter cards，可以在默认值里注册 `twitter()`：
+要从 Open Graph 使用的相同标题、描述和图片渲染 X / Twitter 卡片，可以在默认值中注册 `twitter()`：
 
 ```php
 use Laravel\Head\Enums\TwitterCard;
@@ -313,7 +351,7 @@ Head::title('Introducing Laravel Head')
     ->ogImage('https://example.com/social.jpg', alt: 'Introducing Laravel Head');
 ```
 
-这会渲染出与之对应的 Twitter 标签：
+这会渲染匹配的 Twitter 标签：
 
 ```html
 <meta name="twitter:card" content="summary_large_image">
@@ -323,24 +361,25 @@ Head::title('Introducing Laravel Head')
 <meta name="twitter:image:alt" content="Introducing Laravel Head">
 ```
 
-可以在单个页面通过显式的 Twitter 值进行自定义：
+你可以使用显式的 Twitter 值来自定义单个页面：
 
 ```php
 Head::twitter(title: $post->social_title)
     ->twitterImage($post->social_image_url, alt: $post->title);
 ```
 
-路由元数据支持 `twitter` 和 `twitterImage`。
+路由元数据接受 `twitter` 和 `twitterImage`。
 
+<a name="theme-colors"></a>
 ## 主题颜色
 
-可以在全局、按路由或在运行时设置主题颜色：
+你可以在全局、按路由或在运行时设置主题颜色：
 
 ```php
 Head::themeColor('#0f172a');
 ```
 
-这会渲染一个 `<meta name="theme-color">` 标签。对于指定媒体类型的主题颜色，可以使用 `Media` 枚举：
+这会渲染一个 `<meta name="theme-color">` 标签。对于特定媒体的主题颜色，你可以使用 `Media` 枚举：
 
 ```php
 use Laravel\Head\Enums\Media;
@@ -349,7 +388,7 @@ Head::themeColor('#ffffff', media: Media::Light)
     ->themeColor('#111827', media: Media::Dark);
 ```
 
-`Media` 枚举还包含 `Portrait` 和 `Landscape`。`media` 参数也支持自定义的媒体查询字符串。
+`Media` 枚举还包含 `Portrait` 和 `Landscape`。`media` 参数也接受自定义的媒体查询字符串。
 
 路由元数据通过相同的 `camelCase` 键支持单个主题颜色：
 
@@ -359,9 +398,10 @@ Route::view('/dashboard', 'dashboard')->withHead(
 );
 ```
 
+<a name="app-metadata-and-icons"></a>
 ## 应用元数据与图标
 
-Laravel Head 提供了用于常见浏览器与应用元数据的方法：
+Laravel Head 包含用于常见浏览器和应用元数据的方法：
 
 ```php
 use Laravel\Head\Enums\ImageType;
@@ -382,9 +422,9 @@ Head::applicationName('Laravel')
     ->manifest('/site.webmanifest');
 ```
 
-`favicon` 方法是 `icon` 方法的别名，支持相同的 `type`、`sizes`、`media` 参数。
+`favicon` 方法是 `icon` 方法的别名，接受相同的 `type`、`sizes` 和 `media` 参数。
 
-路由元数据使用相同的命名：
+路由元数据使用相同的名称：
 
 ```php
 use Laravel\Head\Enums\ImageType;
@@ -406,9 +446,10 @@ Route::view('/dashboard', 'dashboard')->withHead(
 );
 ```
 
-## 渐进式 Web 应用（PWA）
+<a name="progressive-web-apps"></a>
+## 渐进式 Web 应用
 
-`pwa` 方法用于配置一个可安装 Web 应用所常用的 `<head>` 标签：
+`pwa` 方法配置可安装 Web 应用所需的常见文档 `<head>` 标签：
 
 ```php
 Head::pwa(
@@ -420,13 +461,14 @@ Head::pwa(
 );
 ```
 
-它会渲染应用名称、Web 应用清单链接以及 iOS standalone 元数据。如果提供了主题颜色、Apple 状态栏样式与 Apple touch 图标，也会一并渲染。创建 Web 应用清单与注册 service worker 仍由应用自行负责。
+这会渲染应用名称、Web 应用清单（manifest）链接以及 iOS 独立（standalone）元数据。如果提供，还会渲染主题颜色、Apple 状态栏样式和 Apple 触摸图标。创建 Web 应用清单和注册 service worker 仍由你的应用负责。
 
-可以在默认值或运行时元数据中使用 `pwa` 方法。路由元数据支持上文提到的那些独立属性。
+你可以在默认值或运行时元数据中使用 `pwa` 方法。路由元数据支持上述各个独立的属性。
 
+<a name="performance-and-discovery"></a>
 ## 性能与发现
 
-Laravel Head 可渲染性能提示、分页链接、locale 候选项与 feed 发现：
+Laravel Head 会渲染性能提示、分页链接、语言版本替代（alternates）以及 feed 发现：
 
 ```php
 Head::preload(asset('fonts/inter.woff2'), as: 'font', crossorigin: true)
@@ -443,7 +485,7 @@ Head::preload(asset('fonts/inter.woff2'), as: 'font', crossorigin: true)
     ->feed('/feed.atom', type: 'atom', title: 'Laravel Atom');
 ```
 
-对于本地资源，`preloadAsset()` 与 `prefetchAsset()` 会通过 `asset()` 辅助函数解析 URL，并根据文件扩展名自动识别 `as` 属性。字体 preload 会自动带上 `crossorigin`——尽管是同源字体，preload 规范也要求这样做：
+对于本地资源，`preloadAsset()` 和 `prefetchAsset()` 会通过 `asset()` 辅助函数解析 URL，并从文件扩展名检测 `as` 属性。字体预加载会自动包含 `crossorigin`，即使对于同源字体，预加载规范也要求包含它：
 
 ```php
 Head::preloadAsset('fonts/inter.woff2')
@@ -455,11 +497,12 @@ Head::preloadAsset('fonts/inter.woff2')
 <link rel="prefetch" href="https://example.com/images/next.webp" as="image">
 ```
 
-可以显式传入 `as` 覆盖自动检测。当 `as` 属性无法从扩展名推断时，`preloadAsset` 方法会抛出异常——因为浏览器在没有该属性的情况下会忽略 preload；`prefetchAsset` 方法则会直接省略它。
+你可以显式传入 `as` 来覆盖自动检测。当无法从扩展名检测出 `as` 属性时，`preloadAsset` 方法会抛出异常，因为浏览器会忽略缺少该属性的预加载；而 `prefetchAsset` 方法只会省略它。
 
+<a name="custom-tags"></a>
 ## 自定义标签
 
-对于没有专属方法的标签，可以使用 `meta()` 与 `link()`：
+对于没有专用方法的标签，使用 `meta()` 和 `link()`：
 
 ```php
 Head::meta('format-detection', 'telephone=no')
@@ -471,7 +514,7 @@ Head::meta('format-detection', 'telephone=no')
     ->link('me', 'https://social.example.com/@laravel');
 ```
 
-如果希望某 meta 标签仅在满足匹配条件时被浏览器应用，可以传入媒体查询：
+当浏览器应仅在匹配条件下应用某个 meta 标签时，你可以在该 meta 标签上包含媒体查询：
 
 ```php
 use Laravel\Head\Enums\Media;
@@ -480,7 +523,7 @@ Head::meta('theme-color', '#ffffff', media: Media::Light)
     ->meta('theme-color', '#111827', media: Media::Dark);
 ```
 
-`meta` 方法对常规 meta 标签使用 `name` 属性。对于通常使用 `property` 属性的 key（如 Open Graph（`og:`）或 article 元数据（`article:`）），方法会自动切换：
+`meta` 方法对常规 meta 标签使用 `name` 属性。对于通常使用 `property` 属性的键（例如 Open Graph（`og:`）或文章元数据（`article:`）），该方法会自动切换：
 
 ```php
 Head::meta('description', 'About Laravel')
@@ -492,11 +535,12 @@ Head::meta('description', 'About Laravel')
 <meta property="og:title" content="About Laravel">
 ```
 
-可以显式传入 `property: true` 或 `property: false` 来选择属性类型。
+你可以传入 `property: true` 或 `property: false` 来显式选择其中一个属性。
 
-## Schema
+<a name="schemas"></a>
+## 结构化数据（Schema）
 
-内置的 schema 构造器覆盖了常见的 JSON-LD 类型：
+内置的 schema 构建器覆盖了常见的 JSON-LD 类型：
 
 ```php
 use Laravel\Head\Enums\OfferAvailability;
@@ -514,13 +558,14 @@ Head::schema(
 );
 ```
 
-内置的工厂方法包括：`article`、`blogPosting`、`product`、`offer`、`brand`、`breadcrumbs`、`faq`、`organization`、`person`、`webPage` 和 `webSite`。未知的工厂方法会创建一个通用 schema 对象，因此仍然可以表达自定义的 schema.org 类型。
+内置的工厂方法有 `article`、`blogPosting`、`product`、`offer`、`brand`、`breadcrumbs`、`faq`、`organization`、`person`、`webPage` 和 `webSite`。未知的工厂方法会创建一个通用的 schema 对象，因此你仍然可以表达自定义的 schema.org 类型。
 
-当 JSON-LD schema 数据不合法时，Laravel Head 在非生产环境会抛出异常，在生产环境仅记录警告。
+当 JSON-LD schema 数据无效时，Laravel Head 在非生产环境中会抛出异常，并在生产环境中记录一条警告。
 
-### 面包屑（Breadcrumbs）
+<a name="breadcrumbs"></a>
+### 面包屑
 
-可以逐项或批量添加面包屑项，位置（position）会按添加顺序自动分配：
+面包屑项可以逐个添加，也可以批量添加。位置会按照项的添加顺序自动分配：
 
 ```php
 Head::schema(
@@ -532,7 +577,7 @@ Head::schema(
 );
 ```
 
-也可以用 `item` 方法逐项添加：
+你可以使用 `item` 方法追加单个面包屑项：
 
 ```php
 Schema::breadcrumbs()
@@ -540,9 +585,10 @@ Schema::breadcrumbs()
     ->item('Shop', route('shop.index'));
 ```
 
-### FAQ
+<a name="faqs"></a>
+### 常见问题（FAQ）
 
-FAQ 条目遵循相同的模式。可以使用 `question` 方法逐条添加，或使用 `questions` 方法批量添加：
+FAQ 条目遵循相同的模式。你可以使用 `question` 方法逐个添加，或使用 `questions` 方法批量添加：
 
 ```php
 Head::schema(
@@ -553,9 +599,10 @@ Head::schema(
 );
 ```
 
-### 自定义 Schemas
+<a name="custom-schemas"></a>
+### 自定义 Schema
 
-可以显式注册自定义 schema 类型：
+你可以显式注册自定义的 schema 类型：
 
 ```php
 use DateTimeInterface;
@@ -586,15 +633,17 @@ Head::schema(
 );
 ```
 
+<a name="rendering"></a>
 ## 渲染
 
-Laravel Head 会为当前响应解析出页面元数据标签。具体如何渲染取决于你的应用栈。
+Laravel Head 会将页面元数据解析为针对当前响应的标签。这些标签如何渲染取决于你的应用技术栈。
 
-HTML 渲染器为 `@head` 指令提供支持，并为 Laravel Head 与 Inertia 通过 `head` prop 共享的元素提供渲染能力。数组渲染器为 `Head::toArray()` 提供支持，供那些需要把解析后的元数据作为结构化数据的应用使用。
+HTML 渲染器驱动 `@head` 指令，以及 Laravel Head 通过 `head` prop 与 Inertia 共享的已渲染元素。数组渲染器驱动 `Head::toArray()`，适用于需要将解析出的元数据作为结构化数据的应用。
 
+<a name="blade"></a>
 ### Blade
 
-在布局的 `<head>` 中用 `@head` 指令渲染累积的标签：
+使用 `@head` 指令在你的布局 `<head>` 中渲染累积的标签：
 
 ```blade
 <head>
@@ -603,11 +652,12 @@ HTML 渲染器为 `@head` 指令提供支持，并为 Laravel Head 与 Inertia �
 </head>
 ```
 
-`@head` 指令是同步渲染的，因此页面元数据需要在布局渲染前定义。
+`@head` 指令是同步渲染的，因此你应该在布局渲染之前定义页面元数据。
 
+<a name="livewire"></a>
 ### Livewire
 
-Livewire 应用在文档布局中使用相同的 `@head` 指令：
+Livewire 应用在其文档布局中使用相同的 `@head` 指令：
 
 ```blade
 <head>
@@ -621,11 +671,12 @@ Livewire 应用在文档布局中使用相同的 `@head` 指令：
 </body>
 ```
 
-无需任何 Livewire 专属配置。Laravel Head 的元数据按请求解析，解析器也是请求作用域的。因此每次 `wire:navigate` 访问都会拉取一个全新的文档，`@head` 输出会反映目标路由的元数据。通过 `wire:navigate` 访问的页面会收到正确的路由、运行时和错误元数据，无需在组件内写 head 相关代码。
+无需 Livewire 专属的配置。Laravel Head 元数据按请求解析，且解析器是请求作用域的。因此，每次 `wire:navigate` 访问都会获取一个全新的文档，其 `@head` 输出反映了目标路由的元数据。使用 `wire:navigate` 访问的页面会收到相应的路由、运行时和错误元数据，而无需在组件层面编写 head 代码。
 
+<a name="inertia"></a>
 ### Inertia
 
-在 Inertia 的根模板中使用相同的 `@head` 指令，并配合 Inertia 自身的组件：
+在你的 Inertia 根模板中使用相同的 `@head` 指令，与 Inertia 自身的组件一起：
 
 ```blade
 <html>
@@ -643,7 +694,7 @@ Livewire 应用在文档布局中使用相同的 `@head` 指令：
 </html>
 ```
 
-当安装了 Inertia，Laravel Head 会自动把页面管理的 head 作为已渲染元素字符串数组，通过每个页面对象上的 `head` prop 进行共享：
+安装 Inertia 后，Laravel Head 会自动在每个页面对象上以渲染出的元素字符串数组的形式，在 `head` prop 下共享页面管理的 head：
 
 ```json
 {
@@ -656,7 +707,7 @@ Livewire 应用在文档布局中使用相同的 `@head` 指令：
 }
 ```
 
-在调用 `createInertiaApp()` 的地方启用 Inertia 的 `serverHead` 选项。该选项在 Inertia 3.5 及以上版本可用：
+在你应用调用 `createInertiaApp()` 的地方启用 Inertia 的 `serverHead` 选项。该选项在 Inertia 3.5 及更高版本中可用：
 
 ```js
 createInertiaApp({
@@ -665,14 +716,14 @@ createInertiaApp({
 });
 ```
 
-每个由页面管理的元素都带有稳定的 `data-inertia` key。`@head` 指令会先渲染初始文档，之后 Inertia 会接管这些元素，并在常规访问、[即时访问](https://inertiajs.com/docs/v3/the-basics/instant-visits) 和前进/后退导航期间保持同步。这些元素存在于初始 HTML 响应中，因此爬虫和链接预览 bot 即使不执行 JavaScript 也能读取。无需在客户端使用 `<Head>` 组件。
+每个页面管理的元素都有一个稳定的 `data-inertia` 键。`@head` 指令渲染初始文档，此后 Inertia 接管这些元素，并在标准访问、[即时访问（instant visits）](https://inertiajs.com/docs/v3/the-basics/instant-visits) 以及前进后退导航中保持同步。这些元素存在于初始 HTML 响应中，因此爬虫和链接预览机器人无需执行 JavaScript 即可读取它们。不需要客户端 `<Head>` 组件。
 
-无论是否使用 [服务端渲染（SSR）](https://inertiajs.com/docs/v3/advanced/server-side-rendering) 都可以工作。如果应用有独立的 SSR 入口，请在那里也启用 `serverHead`。Laravel Head 会在 `@head` 与 `<x-inertia::head />` 之间自动去重页面管理的元素——无论两者出现顺序如何，同时保留由 JavaScript SSR 产生的其他 head 元素。
+无论是否使用[服务端渲染（SSR）](https://inertiajs.com/docs/v3/advanced/server-side-rendering)，这都能工作。如果你的应用有独立的 SSR 入口点，也在那里启用 `serverHead`。Laravel Head 会自动对 `@head` 与 `<x-inertia::head />` 之间的页面管理元素去重，无论顺序如何，同时保留由 JavaScript SSR 产生的其它 head 元素。
 
 > [!NOTE]
-> 将 Laravel Head 引入现有 Inertia 应用时，请从 `resources/js/app.tsx` 与 `resources/js/ssr.tsx` 中删除 title 回调，让 Laravel Head 管理最终的文档 title；并把由 Inertia [`<Head>` 组件](https://inertiajs.com/docs/v3/the-basics/title-and-meta) 管理的标签迁移到 Laravel Head，避免重复定义同一元素。
+> 当向已有的 Inertia 应用添加 Laravel Head 时，从 `resources/js/app.tsx` 和 `resources/js/ssr.tsx` 中移除任何标题回调，以便 Laravel Head 能够管理最终的文档标题，并将由 Inertia 的 [`<Head>` 组件](https://inertiajs.com/docs/v3/the-basics/title-and-meta) 管理的标签迁移到 Laravel Head，使两者永远不会定义同一个元素。
 
-`head` prop 不会出现在局部刷新响应中，因此 Inertia 会沿用上一次完整页面的 head。即时访问同样会保留当前 head，直到后台响应到达。如果应用已经在使用 `head` prop，可在服务提供者中修改其名称：
+`head` prop 在局部重载响应中会被省略，因此 Inertia 会保留上一个完整页面的 head。即时访问同样会保留当前 head，直到后台响应到达。如果你的应用已经使用了 `head` prop，可以在服务提供者中更改它的名称：
 
 ```php
 use Laravel\Head\Facades\Head;
@@ -683,13 +734,14 @@ public function boot(): void
 }
 ```
 
-然后通过 `serverHead: '_head'` 让 Inertia 指向同一个 prop。
+然后将 Inertia 指向同一个 prop，使用 `serverHead: '_head'`。
 
+<a name="static-inertia-tags"></a>
 #### 静态 Inertia 标签
 
-大多数标签都应该放在默认值、路由元数据或运行时元数据里，以便 Laravel Head 能为每个页面解析出正确的值。只有首次 HTML 响应里出现、且之后不再由 Inertia 更新的那些文档标签，才适合放在 Inertia globals 中。
+大多数标签应该放在默认值、路由元数据或运行时元数据中，以便 Laravel Head 能为每个页面解析出正确的值。仅在首次 HTML 响应中渲染、且在会话其余时间由 Inertia 保持不变的文档标签，才使用 Inertia 全局标签。
 
-可以在服务提供者中通过 `Head::inertiaGlobals()` 注册它们：
+在一个服务提供者中使用 `Head::inertiaGlobals()` 注册它们：
 
 ```php
 use Laravel\Head\Facades\Head;
@@ -705,6 +757,6 @@ Head::inertiaGlobals(function (HeadBuilder $head) {
 });
 ```
 
-Inertia globals 不会出现在 `head` prop 中、渲染时不带 `data-inertia` 归属属性，并且在第一次响应后不再更新。这类全局标签适合 viewport、color-scheme、favicon、touch icon、manifest 等相对稳定、一次确定即可的浏览器提示。如果某个标签与具体页面相关、会影响 SEO、或者以后可能调整，建议改放在 `defaults`、路由元数据或运行时元数据中。
+Inertia 全局标签从 `head` prop 中排除，渲染时不带 `data-inertia` 所有权属性，并且在首次响应之后永远不会更新。这些全局标签适用于稳定的浏览器提示，例如视口、配色方案、favicon、触摸图标和清单（manifest）。如果某个标签是页面专属的、与 SEO 相关的，或可能在之后被覆盖，则应将其放在默认值、路由元数据或运行时元数据中。
 
-如果应用需要把解析后的元数据作为结构化数据使用，而不是渲染成标签，可以调用 `Head::toArray()`。返回的数据包括 titles、Open Graph 值、JSON-LD schemas 及其他已解析元数据。
+需要将解析出的元数据作为结构化数据而非渲染标签的应用，可以调用 `Head::toArray()`。返回的数据包含标题、Open Graph 值、JSON-LD schema 以及其它解析出的元数据。
