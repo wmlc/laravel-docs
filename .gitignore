@@ -1,2 +1,5 @@
 .idea
 .workbuddy/
+node_modules
+.vitepress
+
