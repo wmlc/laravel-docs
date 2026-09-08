@@ -81,7 +81,7 @@ php artisan sail:add
 <a name="using-devcontainers"></a>
 #### 使用 Devcontainers
 
-如果你想 在 [Devcontainer](https://code.visualstudio.com/docs/remote/containers) 中进行开发，可以为 `sail:install` 命令提供 `--devcontainer` 选项。`--devcontainer` 选项会让 `sail:install` 命令将一个默认的 `.devcontainer/devcontainer.json ` 文件发布到应用根目录：
+如果你想在 [Devcontainer](https://code.visualstudio.com/docs/remote/containers) 中进行开发，可以为 `sail:install` 命令提供 `--devcontainer` 选项。`--devcontainer` 选项会让 `sail:install` 命令将一个默认的 `.devcontainer/devcontainer.json ` 文件发布到应用根目录：
 
 ```shell
 php artisan sail:install --devcontainer
