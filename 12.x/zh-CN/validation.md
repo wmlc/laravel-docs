@@ -79,7 +79,7 @@ use Illuminate\View\View;
 class PostController extends Controller
 {
     /**
-     * Show the form to create a new blog post.
+     * 显示创建新博客文章的表单。
      */
     public function create(): View
     {
@@ -87,11 +87,11 @@ class PostController extends Controller
     }
 
     /**
-     * Store a new blog post.
+     * 存储新的博客文章。
      */
     public function store(Request $request): RedirectResponse
     {
-        // Validate and store the blog post...
+        // 验证并存储博客文章...
 
         $post = /** ... */
 
@@ -111,7 +111,7 @@ class PostController extends Controller
 
 ```php
 /**
- * Store a new blog post.
+ * 存储新的博客文章。
  */
 public function store(Request $request): RedirectResponse
 {
@@ -120,7 +120,7 @@ public function store(Request $request): RedirectResponse
         'body' => 'required',
     ]);
 
-    // The blog post is valid...
+    // 博客文章有效...
 
     return redirect('/posts');
 }
@@ -332,7 +332,7 @@ php artisan make:request StorePostRequest
 
 ```php
 /**
- * Get the validation rules that apply to the request.
+ * 获取应用于该请求的验证规则。
  *
  * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
  */
@@ -352,20 +352,20 @@ public function rules(): array
 
 ```php
 /**
- * Store a new blog post.
+ * 存储新的博客文章。
  */
 public function store(StorePostRequest $request): RedirectResponse
 {
-    // The incoming request is valid...
+    // 传入请求有效...
 
-    // Retrieve the validated input data...
+    // 获取已验证的输入数据...
     $validated = $request->validated();
 
-    // Retrieve a portion of the validated input data...
+    // 获取已验证输入数据的一部分...
     $validated = $request->safe()->only(['name', 'email']);
     $validated = $request->safe()->except(['name', 'email']);
 
-    // Store the blog post...
+    // 存储博客文章...
 
     return redirect('/posts');
 }
@@ -387,7 +387,7 @@ public function store(StorePostRequest $request): RedirectResponse
 use Illuminate\Validation\Validator;
 
 /**
- * Get the "after" validation callables for the request.
+ * 获取该请求的「after」验证可调用对象。
  */
 public function after(): array
 {
@@ -412,7 +412,7 @@ use App\Validation\ValidateUserStatus;
 use Illuminate\Validation\Validator;
 
 /**
- * Get the "after" validation callables for the request.
+ * 获取该请求的「after」验证可调用对象。
  */
 public function after(): array
 {
@@ -433,7 +433,7 @@ public function after(): array
 
 ```php
 /**
- * Indicates if the validator should stop on the first rule failure.
+ * 指示验证器是否应在首个规则失败时停止。
  *
  * @var bool
  */
@@ -447,7 +447,7 @@ protected $stopOnFirstFailure = true;
 
 ```php
 /**
- * The URI that users should be redirected to if validation fails.
+ * 验证失败时用户应被重定向到的 URI。
  *
  * @var string
  */
@@ -458,7 +458,7 @@ protected $redirect = '/dashboard';
 
 ```php
 /**
- * The route that users should be redirected to if validation fails.
+ * 验证失败时用户应被重定向到的路由。
  *
  * @var string
  */
@@ -474,7 +474,7 @@ protected $redirectRoute = 'dashboard';
 use App\Models\Comment;
 
 /**
- * Determine if the user is authorized to make this request.
+ * 判断用户是否有权发起此请求。
  */
 public function authorize(): bool
 {
@@ -502,7 +502,7 @@ return $this->user()->can('update', $this->comment);
 
 ```php
 /**
- * Determine if the user is authorized to make this request.
+ * 判断用户是否有权发起此请求。
  */
 public function authorize(): bool
 {
@@ -520,7 +520,7 @@ public function authorize(): bool
 
 ```php
 /**
- * Get the error messages for the defined validation rules.
+ * 获取所定义验证规则的错误消息。
  *
  * @return array<string, string>
  */
@@ -540,7 +540,7 @@ Laravel 内置的许多验证规则错误消息都包含 `:attribute` 占位符�
 
 ```php
 /**
- * Get custom attributes for validator errors.
+ * 获取验证器错误的自定义属性。
  *
  * @return array<string, string>
  */
@@ -561,7 +561,7 @@ public function attributes(): array
 use Illuminate\Support\Str;
 
 /**
- * Prepare the data for validation.
+ * 为验证准备数据。
  */
 protected function prepareForValidation(): void
 {
@@ -575,7 +575,7 @@ protected function prepareForValidation(): void
 
 ```php
 /**
- * Handle a passed validation attempt.
+ * 处理验证通过的情况。
  */
 protected function passedValidation(): void
 {
@@ -600,7 +600,7 @@ use Illuminate\Support\Facades\Validator;
 class PostController extends Controller
 {
     /**
-     * Store a new blog post.
+     * 存储新的博客文章。
      */
     public function store(Request $request): RedirectResponse
     {
@@ -615,14 +615,14 @@ class PostController extends Controller
                 ->withInput();
         }
 
-        // Retrieve the validated input...
+        // 获取已验证的输入...
         $validated = $validator->validated();
 
-        // Retrieve a portion of the validated input...
+        // 获取已验证输入的一部分...
         $validated = $validator->safe()->only(['name', 'email']);
         $validated = $validator->safe()->except(['name', 'email']);
 
-        // Store the blog post...
+        // 存储博客文章...
 
         return redirect('/posts');
     }
@@ -785,12 +785,12 @@ $validated = $request->safe()->all();
 此外，`Illuminate\Support\ValidatedInput` 实例可以像数组一样被迭代和访问：
 
 ```php
-// Validated data may be iterated...
+// 已验证数据可被迭代...
 foreach ($request->safe() as $key => $value) {
     // ...
 }
 
-// Validated data may be accessed as an array...
+// 已验证数据可像数组一样访问...
 $validated = $request->safe();
 
 $email = $validated['email'];
@@ -1407,10 +1407,10 @@ use Illuminate\Validation\Rule;
 待验证字段必须是数字，且必须包含指定数量的小数位：
 
 ```php
-// Must have exactly two decimal places (9.99)...
+// 必须恰好有两位小数（9.99）...
 'price' => 'decimal:2'
 
-// Must have between 2 and 4 decimal places...
+// 必须有 2 到 4 位小数...
 'price' => 'decimal:2,4'
 ```
 
@@ -2165,16 +2165,16 @@ Validator::make($request->all(), [
 待验证字段的尺寸必须与给定的 _value_ 相匹配。对于字符串数据，_value_ 对应字符数；对于数字数据，_value_ 对应给定的整数值（该属性还必须带有 `numeric` 或 `integer` 规则）；对于数组，_size_ 对应数组的 `count`；对于文件，_size_ 对应以千字节为单位的文件大小。我们来看一些示例：
 
 ```php
-// Validate that a string is exactly 12 characters long...
+// 验证字符串恰好 12 个字符长...
 'title' => 'size:12';
 
-// Validate that a provided integer equals 10...
+// 验证给定的整数等于 10...
 'seats' => 'integer|size:10';
 
-// Validate that an array has exactly 5 elements...
+// 验证数组恰好有 5 个元素...
 'tags' => 'array|size:5';
 
-// Validate that an uploaded file is exactly 512 kilobytes...
+// 验证上传的文件恰好为 512 千字节...
 'image' => 'file|size:512';
 ```
 
@@ -2647,19 +2647,19 @@ $validator = Validator::make($request->all(), [
 `Password` 规则对象让你能够轻松自定义应用的密码复杂度要求，例如指定密码至少需要一个字母、数字、符号或大小写混合的字符：
 
 ```php
-// Require at least 8 characters...
+// 要求至少 8 个字符...
 Password::min(8)
 
-// Require at least one letter...
+// 要求至少一个字母...
 Password::min(8)->letters()
 
-// Require at least one uppercase and one lowercase letter...
+// 要求至少一个大写字母和一个小写字母...
 Password::min(8)->mixedCase()
 
-// Require at least one number...
+// 要求至少一个数字...
 Password::min(8)->numbers()
 
-// Require at least one symbol...
+// 要求至少一个符号...
 Password::min(8)->symbols()
 ```
 
@@ -2674,7 +2674,7 @@ Password::min(8)->uncompromised()
 默认情况下，只要密码在数据泄露中出现过至少一次，就会被视为已泄露。你可以使用 `uncompromised` 方法的第一个参数自定义这一阈值：
 
 ```php
-// Ensure the password appears less than 3 times in the same data leak...
+// 确保密码在同一次数据泄露中出现少于 3 次...
 Password::min(8)->uncompromised(3);
 ```
 
@@ -2698,7 +2698,7 @@ Password::min(8)
 use Illuminate\Validation\Rules\Password;
 
 /**
- * Bootstrap any application services.
+ * 引导任意应用服务。
  */
 public function boot(): void
 {
@@ -2755,7 +2755,7 @@ use Illuminate\Contracts\Validation\ValidationRule;
 class Uppercase implements ValidationRule
 {
     /**
-     * Run the validation rule.
+     * 运行验证规则。
      */
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {
@@ -2809,7 +2809,7 @@ use Illuminate\Contracts\Validation\ValidationRule;
 class Uppercase implements DataAwareRule, ValidationRule
 {
     /**
-     * All of the data under validation.
+     * 所有正在验证的数据。
      *
      * @var array<string, mixed>
      */
@@ -2818,7 +2818,7 @@ class Uppercase implements DataAwareRule, ValidationRule
     // ...
 
     /**
-     * Set the data under validation.
+     * 设置正在验证的数据。
      *
      * @param  array<string, mixed>  $data
      */
@@ -2845,7 +2845,7 @@ use Illuminate\Validation\Validator;
 class Uppercase implements ValidationRule, ValidatorAwareRule
 {
     /**
-     * The validator instance.
+     * 验证器实例。
      *
      * @var \Illuminate\Validation\Validator
      */
@@ -2854,7 +2854,7 @@ class Uppercase implements ValidationRule, ValidatorAwareRule
     // ...
 
     /**
-     * Set the current validator.
+     * 设置当前验证器。
      */
     public function setValidator(Validator $validator): static
     {
