@@ -11,7 +11,7 @@
 <a name="introduction"></a>
 ## 简介
 
-在整份 Laravel 文档中，你会看到许多通过「facades」与 Laravel 各项功能交互的代码示例。Facades 为服务容器（Service Container）中可用的类提供了一个「静态」接口。Laravel 自带了许多 Facades，几乎可以访问 Laravel 的所有功能。
+在整份 Laravel 文档中，你会看到许多通过「facades」与 Laravel 各项功能交互的代码示例。Facades 为[服务容器（Service Container）](/docs/{{version}}/container)中可用的类提供了一个「静态」接口。Laravel 自带了许多 Facades，几乎可以访问 Laravel 的所有功能。
 
 Laravel 的 Facades 充当服务容器中底层类的「静态代理」，既提供了简洁、富有表现力的语法，又比传统的静态方法保持了更好的可测试性与灵活性。如果你没有完全理解 Facades 的工作原理也没关系——顺其自然，继续学习 Laravel 就好。
 

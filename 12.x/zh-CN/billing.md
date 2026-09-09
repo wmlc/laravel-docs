@@ -1627,7 +1627,7 @@ public function priceTaxRates(): array
 $user->subscription('default')->syncTaxRates();
 ```
 
-这也会同步多产品订阅的各项税率。如果你的应用提供多产品订阅，应当确保可计费模型实现了上文讨论的 `priceTaxRates` 方法。
+这也会同步多产品订阅的各项税率。如果你的应用提供多产品订阅，应当确保可计费模型实现了[上文讨论](#subscription-taxes)的 `priceTaxRates` 方法。
 
 <a name="tax-exemption"></a>
 #### 税收豁免
