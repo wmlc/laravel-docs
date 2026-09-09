@@ -243,8 +243,6 @@ Route::middleware(['group-name'])->group(function () {
 
 Laravel 包含预定义的 `web` 和 `api` 中间件组，其中包含你可能想要应用于 Web 和 API 路由的常见中间件。请记住，Laravel 会自动将这些中间件组应用于相应的 `routes/web.php` 和 `routes/api.php` 文件：
 
-<div class="overflow-auto">
-
 | `web` 中间件组                                |
 | --------------------------------------------------------- |
 | `Illuminate\Cookie\Middleware\EncryptCookies`             |
@@ -254,15 +252,9 @@ Laravel 包含预定义的 `web` 和 `api` 中间件组，其中包含你可能�
 | `Illuminate\Foundation\Http\Middleware\PreventRequestForgery` |
 | `Illuminate\Routing\Middleware\SubstituteBindings`        |
 
-</div>
-
-<div class="overflow-auto">
-
 | `api` 中间件组                         |
 | -------------------------------------------------- |
 | `Illuminate\Routing\Middleware\SubstituteBindings` |
-
-</div>
 
 如果你想向这些组追加或前置中间件，可以在应用 `bootstrap/app.php` 文件中使用 `web` 和 `api` 方法。`web` 和 `api` 方法是 `appendToGroup` 方法的便捷替代方案：
 
@@ -353,8 +345,6 @@ Route::get('/profile', function () {
 
 为方便起见，Laravel 的一些内置中间件默认设置了别名。例如，`auth` 中间件是 `Illuminate\Auth\Middleware\Authenticate` 中间件的别名。以下是默认中间件别名列表：
 
-<div class="overflow-auto">
-
 | 别名              | 中间件                                                                                                    |
 | ------------------ | ------------------------------------------------------------------------------------------------------------- |
 | `auth`             | `Illuminate\Auth\Middleware\Authenticate`                                                                     |
@@ -369,8 +359,6 @@ Route::get('/profile', function () {
 | `subscribed`       | `\Spark\Http\Middleware\VerifyBillableIsSubscribed`                                                           |
 | `throttle`         | `Illuminate\Routing\Middleware\ThrottleRequests` 或 `Illuminate\Routing\Middleware\ThrottleRequestsWithRedis` |
 | `verified`         | `Illuminate\Auth\Middleware\EnsureEmailIsVerified`                                                            |
-
-</div>
 
 <a name="sorting-middleware"></a>
 ### 中间件排序

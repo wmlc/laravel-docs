@@ -355,8 +355,6 @@ Livewire 入门套件中包含的认证页面（如登录页面和注册页面�
 
 Fortify 会根据应用 `config/fortify.php` 配置文件中启用的功能自动注册以下认证路由：
 
-<div class="overflow-auto">
-
 | 路由                              | 方法 | 描述                         |
 | ---------------------------------- | ------ | ----------------------------------- |
 | `/login`                           | `GET`    | 显示登录表单                  |
@@ -375,8 +373,6 @@ Fortify 会根据应用 `config/fortify.php` 配置文件中启用的功能自�
 | `/user/confirm-password`           | `POST`   | 确认密码                    |
 | `/two-factor-challenge`            | `GET`    | 显示 2FA 质询表单          |
 | `/two-factor-challenge`            | `POST`   | 验证 2FA 代码                     |
-
-</div>
 
 可以使用 `php artisan route:list` Artisan 命令显示应用中的所有路由。
 
@@ -408,15 +404,11 @@ use Laravel\Fortify\Features;
 
 当用户注册或重置密码时，Fortify 会调用位于应用 `app/Actions/Fortify` 目录中的动作类：
 
-<div class="overflow-auto">
-
 | 文件                          | 描述                           |
 | ----------------------------- | ------------------------------------- |
 | `CreateNewUser.php`           | 验证并创建新用户       |
 | `ResetUserPassword.php`       | 验证并更新用户密码  |
 | `PasswordValidationRules.php` | 定义密码验证规则     |
-
-</div>
 
 例如，要自定义应用的注册逻辑，你应编辑 `CreateNewUser` 动作：
 

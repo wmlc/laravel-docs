@@ -482,16 +482,12 @@ class CurrentWeatherTool extends Tool
 
 可用的注解包括：
 
-<div class="overflow-auto">
-
 | 注解（Annotation） | 类型 | 描述 |
 | ------------------ | ------- | -------------------------------------------------------------------------------------------- |
 | `#[IsReadOnly]`    | boolean | 指示该工具不会修改其环境。                                                                  |
 | `#[IsDestructive]` | boolean | 指示该工具可能执行破坏性更新（仅在非只读时有意义）。                                          |
 | `#[IsIdempotent]`  | boolean | 指示使用相同参数的重复调用没有额外效果（在非只读时）。                                        |
 | `#[IsOpenWorld]`   | boolean | 指示该工具可能与外部实体交互。                                                              |
-
-</div>
 
 注解值可以使用布尔参数显式设置：
 
@@ -1247,15 +1243,11 @@ class UserDashboardResource extends Resource
 
 可用的注解包括：
 
-<div class="overflow-auto">
-
 | 注解（Annotation） | 类型 | 描述 |
 | ----------------- | ------------- | --------------------------------------------------------------------------- |
 | `#[Audience]`     | Role 或数组 | 指定预期的受众（`Role::User`、`Role::Assistant` 或两者）。              |
 | `#[Priority]`     | float | 介于 0.0 和 1.0 之间的数字分数，表示资源的重要性。              |
 | `#[LastModified]` | string | ISO 8601 时间戳，显示资源上次更新的时间。                         |
-
-</div>
 
 <a name="conditional-resource-registration"></a>
 ### 按条件注册资源

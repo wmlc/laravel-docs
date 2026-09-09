@@ -361,8 +361,6 @@ public function boot(): void
 
 每个分页器实例都通过以下方法提供额外的分页信息：
 
-<div class="overflow-auto">
-
 | 方法                                  | 描述                                                                                                  |
 | --------------------------------------- | ------------------------------------------------------------------------------------------------------------ |
 | `$paginator->count()`                   | 获取当前页的条目数。                                                                |
@@ -386,14 +384,10 @@ public function boot(): void
 | `$paginator->setPageName($name)`        | 设置用于存储页码的查询字符串变量。                                                        |
 | `$paginator->through($callback)`        | 使用回调转换每个条目。                                                                        |
 
-</div>
-
 <a name="cursor-paginator-instance-methods"></a>
 ## CursorPaginator 实例方法
 
 每个游标分页器实例都通过以下方法提供额外的分页信息：
-
-<div class="overflow-auto">
 
 | 方法                          | 描述                                                       |
 | ------------------------------- | ----------------------------------------------------------------- |
@@ -413,5 +407,3 @@ public function boot(): void
 | `$paginator->previousPageUrl()` | 获取上一页的 URL。                                |
 | `$paginator->setCursorName()`   | 设置用于存储游标的查询字符串变量。           |
 | `$paginator->url($cursor)`      | 获取给定游标实例的 URL。                          |
-
-</div>

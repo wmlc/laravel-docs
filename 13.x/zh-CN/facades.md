@@ -301,8 +301,6 @@ class PodcastTest extends TestCase
 
 下方列出了每个 facade 及其底层类。这是一个快速深入查看给定 facade 根 API 文档的有用工具。适用的地方还包含了服务容器（Service Container）绑定键。
 
-<div class="overflow-auto">
-
 | Facade | 类 | 服务容器绑定 |
 | --- | --- | --- |
 | App | [Illuminate\Foundation\Application](https://api.laravel.com/docs/{{version}}/Illuminate/Foundation/Application.html) | `app` |
@@ -361,5 +359,3 @@ class PodcastTest extends TestCase
 | View (Instance) | [Illuminate\View\View](https://api.laravel.com/docs/{{version}}/Illuminate/View/View.html) | &nbsp; |
 | View | [Illuminate\View\Factory](https://api.laravel.com/docs/{{version}}/Illuminate/View/Factory.html) | `view` |
 | Vite | [Illuminate\Foundation\Vite](https://api.laravel.com/docs/{{version}}/Illuminate/Foundation/Vite.html) | &nbsp; |
-
-</div>

@@ -781,8 +781,6 @@ class AppServiceProvider extends ServiceProvider
 
 要对每一次缓存操作执行代码，你可以监听缓存分发的各种 [事件](/docs/{{version}}/events)：
 
-<div class="overflow-auto">
-
 | 事件名称                                      |
 |-----------------------------------------------|
 | `Illuminate\Cache\Events\CacheFlushed`          |
@@ -802,8 +800,6 @@ class AppServiceProvider extends ServiceProvider
 | `Illuminate\Cache\Events\RetrievingManyKeys`    |
 | `Illuminate\Cache\Events\WritingKey`            |
 | `Illuminate\Cache\Events\WritingManyKeys`       |
-
-</div>
 
 为了提升性能，你可以通过将 `events` 配置选项设置为 `false` 来禁用缓存事件，针对应用 `config/cache.php` 配置文件中的某个给定缓存存储：
 

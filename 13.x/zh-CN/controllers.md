@@ -324,8 +324,6 @@ Route::softDeletableResources([
 <a name="actions-handled-by-resource-controllers"></a>
 #### 资源控制器处理的动作
 
-<div class="overflow-auto">
-
 | Verb      | URI                    | Action  | Route Name     |
 | --------- | ---------------------- | ------- | -------------- |
 | GET       | `/photos`              | index   | photos.index   |
@@ -335,8 +333,6 @@ Route::softDeletableResources([
 | GET       | `/photos/{photo}/edit` | edit    | photos.edit    |
 | PUT/PATCH | `/photos/{photo}`      | update  | photos.update  |
 | DELETE    | `/photos/{photo}`      | destroy | photos.destroy |
-
-</div>
 
 <a name="customizing-missing-model-behavior"></a>
 #### 自定义模型缺失时的行为
@@ -470,8 +466,6 @@ Route::resource('photos.comments', CommentController::class)->shallow();
 
 这个路由定义会定义以下路由：
 
-<div class="overflow-auto">
-
 | Verb      | URI                               | Action  | Route Name             |
 | --------- | --------------------------------- | ------- | ---------------------- |
 | GET       | `/photos/{photo}/comments`        | index   | photos.comments.index  |
@@ -481,8 +475,6 @@ Route::resource('photos.comments', CommentController::class)->shallow();
 | GET       | `/comments/{comment}/edit`        | edit    | comments.edit          |
 | PUT/PATCH | `/comments/{comment}`             | update  | comments.update        |
 | DELETE    | `/comments/{comment}`             | destroy | comments.destroy       |
-
-</div>
 
 <a name="restful-naming-resource-routes"></a>
 ### 命名资源路由
@@ -592,15 +584,11 @@ Route::singleton('profile', ProfileController::class);
 
 上面的单例资源定义会注册以下路由。如你所见，单例资源不会注册「创建」路由，并且由于该资源只能存在一个实例，注册的路由也不接受标识符：
 
-<div class="overflow-auto">
-
 | Verb      | URI             | Action | Route Name     |
 | --------- | --------------- | ------ | -------------- |
 | GET       | `/profile`      | show   | profile.show   |
 | GET       | `/profile/edit` | edit   | profile.edit   |
 | PUT/PATCH | `/profile`      | update | profile.update |
-
-</div>
 
 单例资源也可以嵌套在标准的资源中：
 
@@ -610,15 +598,11 @@ Route::singleton('photos.thumbnail', ThumbnailController::class);
 
 在这个例子中，`photos` 资源会收到所有[标准资源路由](#actions-handled-by-resource-controllers)；而 `thumbnail` 资源则会是一个单例资源，拥有以下路由：
 
-<div class="overflow-auto">
-
 | Verb      | URI                              | Action | Route Name              |
 | --------- | -------------------------------- | ------ | ----------------------- |
 | GET       | `/photos/{photo}/thumbnail`      | show   | photos.thumbnail.show   |
 | GET       | `/photos/{photo}/thumbnail/edit` | edit   | photos.thumbnail.edit   |
 | PUT/PATCH | `/photos/{photo}/thumbnail`      | update | photos.thumbnail.update |
-
-</div>
 
 <a name="creatable-singleton-resources"></a>
 #### 可创建的单例资源
@@ -631,8 +615,6 @@ Route::singleton('photos.thumbnail', ThumbnailController::class)->creatable();
 
 在这个例子中，会注册以下路由。如你所见，可创建的单例资源还会注册一个 `DELETE` 路由：
 
-<div class="overflow-auto">
-
 | Verb      | URI                                | Action  | Route Name               |
 | --------- | ---------------------------------- | ------- | ------------------------ |
 | GET       | `/photos/{photo}/thumbnail/create` | create  | photos.thumbnail.create  |
@@ -641,8 +623,6 @@ Route::singleton('photos.thumbnail', ThumbnailController::class)->creatable();
 | GET       | `/photos/{photo}/thumbnail/edit`   | edit    | photos.thumbnail.edit    |
 | PUT/PATCH | `/photos/{photo}/thumbnail`        | update  | photos.thumbnail.update  |
 | DELETE    | `/photos/{photo}/thumbnail`        | destroy | photos.thumbnail.destroy |
-
-</div>
 
 如果你希望 Laravel 为单例资源注册 `DELETE` 路由，但不注册创建或存储路由，可以使用 `destroyable` 方法：
 

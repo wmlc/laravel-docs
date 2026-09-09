@@ -822,8 +822,6 @@ php artisan config:publish hashing
 
 Laravel 在认证过程中会派发各种 [events](/docs/{{version}}/events)（事件）。你可以为以下任何事件[定义监听器](/docs/{{version}}/events)（listeners）：
 
-<div class="overflow-auto">
-
 | Event Name                                     |
 | ---------------------------------------------- |
 | `Illuminate\Auth\Events\Registered`            |
@@ -839,5 +837,3 @@ Laravel 在认证过程中会派发各种 [events](/docs/{{version}}/events)（�
 | `Illuminate\Auth\Events\Lockout`               |
 | `Illuminate\Auth\Events\PasswordReset`         |
 | `Illuminate\Auth\Events\PasswordResetLinkSent` |
-
-</div>

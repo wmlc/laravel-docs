@@ -138,8 +138,6 @@ Schedule::exec('node /home/forge/script.js')->daily();
 
 我们已经看到了几个如何将任务配置为在指定时间间隔运行的示例。但是，还有更多的任务调度频率可以分配给任务：
 
-<div class="overflow-auto">
-
 | 方法                             | 描述                                              |
 | ---------------------------------- | -------------------------------------------------------- |
 | `->cron('* * * * *');`             | 按自定义 cron 调度运行任务。                  |
@@ -182,8 +180,6 @@ Schedule::exec('node /home/forge/script.js')->daily();
 | `->yearlyOn(6, 1, '17:00');`       | 每年 6 月 1 日 17:00 运行任务。            |
 | `->timezone('America/New_York');`  | 为任务设置时区。                           |
 
-</div>
-
 这些方法可以与额外的约束组合，以创建仅在每周特定日期运行的、更精细调整的调度。例如，你可以调度一个命令在每周一运行：
 
 ```php
@@ -204,8 +200,6 @@ Schedule::command('foo')
 
 可以在下面找到额外的调度约束列表：
 
-<div class="overflow-auto">
-
 | 方法                                   | 描述                                            |
 | ---------------------------------------- | ------------------------------------------------------ |
 | `->weekdays();`                          | 将任务限制在工作日。                            |
@@ -222,8 +216,6 @@ Schedule::command('foo')
 | `->unlessBetween($startTime, $endTime);` | 将任务限制为不在开始和结束时间之间运行。 |
 | `->when(Closure);`                       | 基于真值测试限制任务。                  |
 | `->environments($env);`                  | 将任务限制在特定环境。               |
-
-</div>
 
 <a name="day-constraints"></a>
 #### 日期约束
@@ -644,8 +636,6 @@ Schedule::command('emails:send')
 
 Laravel 在调度过程中分发各种[事件](/docs/{{version}}/events)。你可以为以下任何事件[定义监听器](/docs/{{version}}/events)：
 
-<div class="overflow-auto">
-
 | 事件名称                                                  |
 | ----------------------------------------------------------- |
 | `Illuminate\Console\Events\ScheduledTaskStarting`           |
@@ -653,5 +643,3 @@ Laravel 在调度过程中分发各种[事件](/docs/{{version}}/events)。你�
 | `Illuminate\Console\Events\ScheduledBackgroundTaskFinished` |
 | `Illuminate\Console\Events\ScheduledTaskSkipped`            |
 | `Illuminate\Console\Events\ScheduledTaskFailed`             |
-
-</div>

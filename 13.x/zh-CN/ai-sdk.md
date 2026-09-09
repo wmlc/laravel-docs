@@ -226,8 +226,6 @@ OpenAI 兼容服务商支持文本生成、流式传输、工具、结构化输�
 
 AI SDK 在其各项功能中支持多种服务商。下表汇总了每个功能可用的服务商：
 
-<div class="overflow-auto">
-
 | 功能 | 服务商 |
 |---|---|
 | Text | OpenAI, OpenAI Compatible, Anthropic, Gemini, Azure, Bedrock, Groq, xAI, DeepSeek, Mistral, Ollama, OpenRouter |
@@ -237,8 +235,6 @@ AI SDK 在其各项功能中支持多种服务商。下表汇总了每个功能�
 | Embeddings | OpenAI, OpenAI Compatible, Gemini, Azure, Bedrock, Cohere, Mistral, Jina, VoyageAI, Ollama, OpenRouter |
 | Reranking | Cohere, Jina, VoyageAI, Bedrock |
 | Files | OpenAI, Anthropic, Gemini, Azure |
-
-</div>
 
 在整个代码中，你可以使用 `Laravel\Ai\Enums\Lab` 枚举来引用服务商，而不是使用纯字符串：
 

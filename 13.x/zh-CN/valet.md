@@ -473,8 +473,6 @@ class LocalValetDriver extends LaravelValetDriver
 <a name="other-valet-commands"></a>
 ## 其他 Valet 命令
 
-<div class="overflow-auto">
-
 | 命令 | 描述 |
 | --- | --- |
 | `valet list` | 显示所有 Valet 命令的列表。 |
@@ -488,8 +486,6 @@ class LocalValetDriver extends LaravelValetDriver
 | `valet stop` | 停止 Valet 守护进程。 |
 | `valet trust` | 为 Brew 和 Valet 添加 sudoers 文件，使 Valet 命令无需输入密码即可运行。 |
 | `valet uninstall` | 卸载 Valet：显示手动卸载说明。传递 `--force` 选项可彻底删除 Valet 的所有资源。 |
-
-</div>
 
 <a name="valet-directories-and-files"></a>
 ## Valet 目录与文件

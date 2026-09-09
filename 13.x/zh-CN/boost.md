@@ -131,8 +131,6 @@ Laravel Boost 提供了一个 MCP（Model Context Protocol）服务器，它对�
 <a name="available-mcp-tools"></a>
 ### 可用 MCP 工具
 
-<div class="overflow-auto">
-
 | 名称                | 说明                                                                                          |
 | ------------------- | -------------------------------------------------------------------------------------------- |
 | Application Info    | 读取 PHP 与 Laravel 版本、数据库引擎、包含版本的生态包列表，以及 Eloquent 模型               |
@@ -145,8 +143,6 @@ Laravel Boost 提供了一个 MCP（Model Context Protocol）服务器，它对�
 | Read Log Entries    | 读取最后 N 条日志条目                                                                        |
 | Record Rule         | 将一条持久化的 [项目规则](#project-rules) 记录到 `.ai/rules`，使后续的智能体继承它          |
 | Search Docs         | 查询 Laravel 托管的文档 API 服务，根据已安装的包检索文档                                     |
-
-</div>
 
 <a name="manually-registering-the-mcp-server"></a>
 ### 手动注册 MCP 服务器
@@ -181,8 +177,6 @@ AI 指南是可组合的指令文件，会在启动时就加载，为 AI 智能�
 
 Laravel Boost 为以下包与框架内置了 AI 指南。`core` 指南为给定的包提供适用于所有版本的通用、泛化建议。
 
-<div class="overflow-auto">
-
 | 包                  | 支持的版本                 |
 | ------------------- | -------------------------- |
 | Core & Boost        | core                       |
@@ -205,8 +199,6 @@ Laravel Boost 为以下包与框架内置了 AI 指南。`core` 指南为给定�
 | Livewire Volt       | core                       |
 | Wayfinder           | core                       |
 | Enforce Tests       | conditional                |
-
-</div>
 
 > **注意：** 要让你的 AI 指南保持最新，请参阅 [保持 Boost 资源更新](#keeping-boost-resources-updated) 一节。
 
@@ -256,8 +248,6 @@ $result = PackageName::featureTwo($param1, $param2);
 <a name="available-skills"></a>
 ### 可用技能
 
-<div class="overflow-auto">
-
 | 技能                       | 包               |
 | -------------------------- | ---------------- |
 | fluxui-development         | Flux UI          |
@@ -273,8 +263,6 @@ $result = PackageName::featureTwo($param1, $param2);
 | tailwindcss-development    | Tailwind CSS     |
 | volt-development           | Volt             |
 | wayfinder-development      | Wayfinder        |
-
-</div>
 
 > **注意：** 要让你的技能保持最新，请参阅 [保持 Boost 资源更新](#keeping-boost-resources-updated) 一节。
 
@@ -333,15 +321,11 @@ Laravel Boost 提供了两种截然不同的方式为 AI 智能体提供关于�
 
 **技能**在处理特定任务时按需激活，包含面向特定领域的详细模式（如 Livewire 组件或 Pest 测试）。仅在相关时加载技能，可以减少上下文膨胀并提升代码质量。
 
-<div class="overflow-auto">
-
 | 维度      | 指南                            | 技能                              |
 | --------- | ------------------------------- | --------------------------------- |
 | **加载**  | 启动时，始终存在               | 按需，在相关时加载               |
 | **范围**  | 广泛、基础                     | 聚焦、特定于任务                 |
 | **目的**  | 核心约定与最佳实践             | 详细的实现模式                   |
-
-</div>
 
 指南与技能都描述的是 Laravel 生态。要捕获你自己应用的约定，你应该使用 [项目规则](#project-rules)。
 
@@ -434,8 +418,6 @@ Laravel Boost 包含一个文档 API，它为 AI 智能体提供对一个包含�
 
 `Search Docs` MCP 工具允许智能体查询 Laravel 托管的文档 API 服务，根据已安装的包检索文档。Boost 的 AI 指南与技能会自动指示你的编码智能体使用此 API。
 
-<div class="overflow-auto">
-
 | 包                  | 支持的版本            |
 | ------------------- | --------------------- |
 | Laravel Framework   | 10.x, 11.x, 12.x, 13.x |
@@ -446,8 +428,6 @@ Laravel Boost 包含一个文档 API，它为 AI 智能体提供对一个包含�
 | Nova                | 4.x, 5.x              |
 | Pest                | 3.x, 4.x              |
 | Tailwind CSS        | 3.x, 4.x              |
-
-</div>
 
 <a name="extending-boost"></a>
 ## 扩展 Boost

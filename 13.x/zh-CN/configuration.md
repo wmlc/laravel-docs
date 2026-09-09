@@ -71,8 +71,6 @@ Laravel 默认的 `.env` 文件包含一些常见的配置值，这些值可能�
 
 `.env` 文件中的所有变量通常都被解析为字符串，因此创建了一些保留值，以便你可以从 `env()` 函数返回更广泛的类型：
 
-<div class="overflow-auto">
-
 | `.env` Value | `env()` Value |
 | ------------ | ------------- |
 | true         | (bool) true   |
@@ -83,8 +81,6 @@ Laravel 默认的 `.env` 文件包含一些常见的配置值，这些值可能�
 | (empty)      | (string) ''   |
 | null         | (null) null   |
 | (null)       | (null) null   |
-
-</div>
 
 如果你需要定义一个值中包含空格的环境变量，可以通过将值用双引号括起来来实现：
 

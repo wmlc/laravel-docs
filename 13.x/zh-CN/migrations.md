@@ -1226,8 +1226,6 @@ Schema::table('users', function (Blueprint $table) {
 
 下表包含所有可用的列修饰符。此列表不包括[索引修饰符](#creating-indexes)：
 
-<div class="overflow-auto">
-
 | 修饰符                            | 描述                                                                                    |
 | ----------------------------------- | ---------------------------------------------------------------------------------------------- |
 | `->after('column')`                 | 将列放在另一列"之后"（MariaDB / MySQL）。                                     |
@@ -1250,8 +1248,6 @@ Schema::table('users', function (Blueprint $table) {
 | `->virtualAs($expression)`          | 创建虚拟生成的列（MariaDB / MySQL / SQLite）。                                  |
 | `->generatedAs($expression)`        | 使用指定的序列选项创建标识列（PostgreSQL）。                        |
 | `->always()`                        | 为标识列定义序列值优先于输入（PostgreSQL）。      |
-
-</div>
 
 <a name="default-expressions"></a>
 #### 默认表达式
@@ -1403,8 +1399,6 @@ Schema::table('users', function (Blueprint $table) {
 
 Laravel 提供了几个与删除常见列类型相关的便捷方法。下表描述了其中每种方法：
 
-<div class="overflow-auto">
-
 | 命令                             | 描述                                           |
 | ----------------------------------- | ----------------------------------------------------- |
 | `$table->dropMorphs('morphable');`  | 删除 `morphable_type` 和 `morphable_id` 列。 |
@@ -1413,8 +1407,6 @@ Laravel 提供了几个与删除常见列类型相关的便捷方法。下表描
 | `$table->dropSoftDeletesTz();`      | `dropSoftDeletes()` 方法的别名。                  |
 | `$table->dropTimestamps();`         | 删除 `created_at` 和 `updated_at` 列。       |
 | `$table->dropTimestampsTz();`       | `dropTimestamps()` 方法的别名。                   |
-
-</div>
 
 <a name="indexes"></a>
 ## 索引
@@ -1456,8 +1448,6 @@ $table->unique('email', 'unique_email');
 
 Laravel 的模式构建器蓝图类提供了创建 Laravel 支持的每种索引类型的方法。每个索引方法接受一个可选的第二个参数来指定索引名称。如果省略，名称将根据用于索引的表和列名以及索引类型派生。下表描述了每种可用的索引方法：
 
-<div class="overflow-auto">
-
 | 命令                                          | 描述                                                    |
 | ------------------------------------------------ | -------------------------------------------------------------- |
 | `$table->primary('id');`                         | 添加主键。                                            |
@@ -1467,8 +1457,6 @@ Laravel 的模式构建器蓝图类提供了创建 Laravel 支持的每种索引
 | `$table->fullText('body');`                      | 添加全文索引（MariaDB / MySQL / PostgreSQL）。         |
 | `$table->fullText('body')->language('english');` | 添加指定语言的全文索引（PostgreSQL）。 |
 | `$table->spatialIndex('location');`              | 添加空间索引（SQLite 除外）。                          |
-
-</div>
 
 <a name="online-index-creation"></a>
 #### 在线索引创建
@@ -1495,8 +1483,6 @@ $table->renameIndex('from', 'to')
 
 要删除索引，你必须指定索引的名称。默认情况下，Laravel 会根据表名、被索引列的名称和索引类型自动分配索引名称。以下是一些示例：
 
-<div class="overflow-auto">
-
 | 命令                                                  | 描述                                                 |
 | -------------------------------------------------------- | ----------------------------------------------------------- |
 | `$table->dropPrimary('users_id_primary');`               | 从 "users" 表删除主键。                  |
@@ -1504,8 +1490,6 @@ $table->renameIndex('from', 'to')
 | `$table->dropIndex('geo_state_index');`                  | 从 "geo" 表删除基本索引。                    |
 | `$table->dropFullText('posts_body_fulltext');`           | 从 "posts" 表删除全文索引。              |
 | `$table->dropSpatialIndex('geo_location_spatialindex');` | 从 "geo" 表删除空间索引（SQLite 除外）。 |
-
-</div>
 
 如果将列数组传递给删除索引的方法，将根据表名、列和索引类型生成约定名称：
 
@@ -1560,8 +1544,6 @@ $table->foreignId('user_id')
 
 还为这些操作提供了另一种富有表现力的语法：
 
-<div class="overflow-auto">
-
 | 方法                        | 描述                                       |
 | ----------------------------- | ------------------------------------------------- |
 | `$table->cascadeOnUpdate();`  | 更新应级联。                           |
@@ -1572,8 +1554,6 @@ $table->foreignId('user_id')
 | `$table->restrictOnDelete();` | 删除应被限制。                     |
 | `$table->nullOnDelete();`     | 删除应将外键值设置为 null。 |
 | `$table->noActionOnDelete();` | 如果存在子记录则阻止删除。          |
-
-</div>
 
 任何额外的[列修饰符](#column-modifiers)都必须在 `constrained` 方法之前调用：
 
@@ -1621,8 +1601,6 @@ Schema::withoutForeignKeyConstraints(function () {
 
 为方便起见，每次迁移操作都会触发一个[事件](/docs/{{version}}/events)。以下所有事件都继承自基础 `Illuminate\Database\Events\MigrationEvent` 类：
 
-<div class="overflow-auto">
-
 | 类                                            | 描述                                      |
 | ------------------------------------------------ | ------------------------------------------------ |
 | `Illuminate\Database\Events\DatabaseRefreshed`   | `migrate:refresh` 命令已完成。      |
@@ -1633,5 +1611,3 @@ Schema::withoutForeignKeyConstraints(function () {
 | `Illuminate\Database\Events\NoPendingMigrations` | 迁移命令未找到待执行的迁移。 |
 | `Illuminate\Database\Events\SchemaDumped`        | 数据库模式转储已完成。             |
 | `Illuminate\Database\Events\SchemaLoaded`        | 已加载现有的数据库模式转储。     |
-
-</div>

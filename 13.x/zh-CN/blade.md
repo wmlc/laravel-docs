@@ -442,8 +442,6 @@ Laravel 应用骨架的最新版本包含一个 `Js` facade，它让你在 Blade
 
 `$loop` 变量还包含许多其他有用的属性：
 
-<div class="overflow-auto">
-
 | 属性 | 说明 |
 | ------------------ | ------------------------------------------------------ |
 | `$loop->index`     | 当前循环迭代的索引（从 0 开始）。 |
@@ -456,8 +454,6 @@ Laravel 应用骨架的最新版本包含一个 `Js` facade，它让你在 Blade
 | `$loop->odd`       | 是否为循环的奇数次迭代。 |
 | `$loop->depth`     | 当前循环的嵌套层级。 |
 | `$loop->parent`    | 在嵌套循环中，父级的循环变量。 |
-
-</div>
 
 <a name="conditional-classes"></a>
 ### 条件类与样式

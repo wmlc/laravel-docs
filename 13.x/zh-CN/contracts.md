@@ -73,8 +73,6 @@ class CacheOrderInformation
 
 下表提供了所有 Laravel 契约及其对应 Facade 的快速参考：
 
-<div class="overflow-auto">
-
 | 契约 | 对应 Facade |
 | --- | --- |
 | [Illuminate\Contracts\Auth\Access\Authorizable](https://github.com/illuminate/contracts/blob/{{version}}/Auth/Access/Authorizable.php) | &nbsp; |
@@ -155,5 +153,3 @@ class CacheOrderInformation
 | [Illuminate\Contracts\View\Engine](https://github.com/illuminate/contracts/blob/{{version}}/View/Engine.php) | &nbsp; |
 | [Illuminate\Contracts\View\Factory](https://github.com/illuminate/contracts/blob/{{version}}/View/Factory.php) | `View` |
 | [Illuminate\Contracts\View\View](https://github.com/illuminate/contracts/blob/{{version}}/View/View.php) | `View::make()` |
-
-</div>

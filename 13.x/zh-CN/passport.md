@@ -1347,15 +1347,11 @@ public function boot(): void
 
 Passport 在签发访问令牌与刷新令牌时会触发事件。你可以[监听这些事件](/docs/{{version}}/events)，以便在你的数据库中清除或吊销其他访问令牌：
 
-<div class="overflow-auto">
-
 | 事件名称                                    |
 | ------------------------------------------- |
 | `Laravel\Passport\Events\AccessTokenCreated`  |
 | `Laravel\Passport\Events\AccessTokenRevoked`  |
 | `Laravel\Passport\Events\RefreshTokenCreated` |
-
-</div>
 
 <a name="testing"></a>
 ## 测试

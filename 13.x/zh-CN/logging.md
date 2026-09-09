@@ -39,8 +39,6 @@ Laravel 的日志基于"频道"。每个频道代表一种写入日志信息的�
 
 每个日志频道都由一个"驱动"驱动。驱动决定了日志消息实际被记录的方式和位置。以下日志频道驱动在每个 Laravel 应用中都是可用的。大多数驱动的条目已经存在于应用的 `config/logging.php` 配置文件中，因此请务必查看此文件以熟悉其内容：
 
-<div class="overflow-auto">
-
 | 名称         | 描述                                                          |
 | ------------ | -------------------------------------------------------------------- |
 | `custom`     | 调用指定工厂来创建频道的驱动。         |
@@ -53,8 +51,6 @@ Laravel 的日志基于"频道"。每个频道代表一种写入日志信息的�
 | `slack`      | 基于 Monolog `SlackWebhookHandler` 的驱动。                        |
 | `stack`      | 用于创建"多频道"频道的包装器。           |
 | `syslog`     | 基于 Monolog `SyslogHandler` 的驱动。                              |
-
-</div>
 
 > [!NOTE]
 > 查看[高级频道自定义](#monolog-channel-customization)文档，以了解有关 `monolog` 和 `custom` 驱动的更多信息。
@@ -80,15 +76,11 @@ Laravel 的日志基于"频道"。每个频道代表一种写入日志信息的�
 
 `single`、`daily` 和 `monthly` 频道有三个可选的配置选项：`bubble`、`permission` 和 `locking`。
 
-<div class="overflow-auto">
-
 | 名称         | 描述                                                                   | 默认值 |
 | ------------ | ----------------------------------------------------------------------------- | ------- |
 | `bubble`     | 指示消息在被处理后是否应冒泡到其他频道。 | `true`  |
 | `locking`    | 在写入日志文件前尝试锁定该文件。                            | `false` |
 | `permission` | 日志文件的权限。                                                   | `0644`  |
-
-</div>
 
 此外，`daily` 和 `monthly` 频道的保留策略可以通过 `max_files` 配置选项进行配置。`LOG_DAILY_DAYS` 环境变量也可用于配置 `daily` 频道的保留时间。
 
