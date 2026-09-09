@@ -2166,23 +2166,25 @@ $browser->assertAuthenticatedAs($user);
 
 Dusk 甚至允许你对 [Vue 组件](https://vuejs.org)数据的状态进行断言。例如，假设你的应用包含以下 Vue 组件：
 
-    // HTML...
+```js
+// HTML...
 
-    <profile dusk="profile-component"></profile>
+<profile dusk="profile-component"></profile>
 
-    // 组件定义...
+// 组件定义...
 
-    Vue.component('profile', {
-        template: '<div>{{ user.name }}</div>',
+Vue.component('profile', {
+    template: '<div>{{ user.name }}</div>',
 
-        data: function () {
-            return {
-                user: {
-                    name: 'Taylor'
-                }
-            };
-        }
-    });
+    data: function () {
+        return {
+            user: {
+                name: 'Taylor'
+            }
+        };
+    }
+});
+```
 
 你可以像这样对 Vue 组件的状态进行断言：
 
