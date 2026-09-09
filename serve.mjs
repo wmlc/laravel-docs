@@ -2,7 +2,7 @@ import { createServer } from 'node:http'
 import { readFile, stat } from 'node:fs/promises'
 import { join, extname } from 'node:path'
 
-const PORT = 8001
+const PORT = 8099
 const DIST = join(import.meta.dirname, '.vitepress', 'dist')
 
 const MIME = {
@@ -54,7 +54,7 @@ const server = createServer(async (req, res) => {
 
 server.listen(PORT, () => {
   console.log(`\n  ✓ Serving docs at http://localhost:${PORT}`)
-  console.log(`    ├── 13.x → http://localhost:${PORT}/13.x/`)
-  console.log(`    └── 12.x → http://localhost:${PORT}/12.x/`)
+  console.log(`    ├── 13.x → http://localhost:${PORT}/docs/13.x/`)
+  console.log(`    └── 12.x → http://localhost:${PORT}/docs/12.x/`)
   console.log(`\n  Press Ctrl+C to stop.\n`)
 })

@@ -1,5 +1,7 @@
 .idea
 .workbuddy/
 node_modules
-.vitepress
+.vitepress/cache/
+.vitepress/dist/
+.vitepress/.temp/
 
