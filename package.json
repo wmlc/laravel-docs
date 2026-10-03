@@ -1,0 +1,15 @@
+{
+  "name": "laravel-docs-site",
+  "version": "1.0.0",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "prepare": "node docs/.vitepress/scripts/prepare.mjs",
+    "dev": "npm run prepare && vitepress dev docs",
+    "build": "npm run prepare && vitepress build docs",
+    "preview": "vitepress preview docs"
+  },
+  "devDependencies": {
+    "vitepress": "^1.5.4"
+  }
+}

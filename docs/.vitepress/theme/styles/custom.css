@@ -1,0 +1,16 @@
+/* Laravel 文档锚点：空标签作为跳转目标，不占据布局空间 */
+.laravel-anchor {
+  position: absolute;
+  width: 0;
+  height: 0;
+}
+
+/* 滚动定位时为顶部固定导航栏留出空间 */
+.vp-doc :where(h2, h3, h4) {
+  scroll-margin-top: 88px;
+}
+
+/* 首页 hero 名称使用 Laravel 品牌色 */
+.VPHero .name span {
+  color: var(--vp-c-brand-1);
+}
