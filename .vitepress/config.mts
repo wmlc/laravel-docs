@@ -39,16 +39,50 @@ export default defineConfig({
           });
           return true;
         }
-        function tryFix() {
-          if (fixVersionLinks()) return;
-          var n = 0, t = setInterval(function() {
-            if (fixVersionLinks() || ++n > 50) clearInterval(t);
-          }, 100);
+
+        function scrollToHash() {
+          var hash = decodeURIComponent(window.location.hash.slice(1));
+          if (!hash) return false;
+          var target = document.getElementById(hash);
+          if (!target) return false;
+          target.scrollIntoView({ block: 'start' });
+          return true;
+        }
+
+        function restoreHashScroll() {
+          if (!window.location.hash || scrollToHash()) return;
+
+          var attempts = 0;
+          var timer;
+          var observer = new MutationObserver(function() {
+            clearTimeout(timer);
+            timer = setTimeout(function() {
+              if (scrollToHash() || ++attempts >= 40) observer.disconnect();
+            }, 0);
+          });
+
+          observer.observe(document.documentElement, { childList: true, subtree: true });
+          setTimeout(function() { observer.disconnect(); }, 5000);
+        }
+
+        function init() {
+          if (!fixVersionLinks()) {
+            var n = 0, t = setInterval(function() {
+              if (fixVersionLinks() || ++n > 50) clearInterval(t);
+            }, 100);
+          }
+          restoreHashScroll();
+          window.addEventListener('hashchange', restoreHashScroll);
+          window.addEventListener('popstate', restoreHashScroll);
+          document.addEventListener('click', function(event) {
+            var link = event.target.closest && event.target.closest('a[href*="#"]');
+            if (link) setTimeout(restoreHashScroll, 0);
+          }, true);
         }
         if (document.readyState === 'loading') {
-          document.addEventListener('DOMContentLoaded', tryFix);
+          document.addEventListener('DOMContentLoaded', init);
         } else {
-          tryFix();
+          init();
         }
       })();
     `]
