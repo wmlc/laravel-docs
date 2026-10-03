@@ -248,7 +248,7 @@ $this->travel(5)->days(function () {
     // Test something five days into the future...
 });
 
-$this->travelTo(now()->mins(days: 10), function () {
+$this->travelTo(now()->minus(days: 10), function () {
     // Test something during a given moment...
 });
 ```
@@ -266,7 +266,7 @@ $this->freezeTime(function (Carbon $time) {
 // Freeze time at the current second and resume normal time after executing closure...
 $this->freezeSecond(function (Carbon $time) {
     // ...
-})
+});
 ```
 
 As you would expect, all of the methods discussed above are primarily useful for testing time sensitive application behavior, such as locking inactive posts on a discussion forum:

@@ -504,6 +504,18 @@ if (! Storage::put('file.jpg', $contents)) {
 ],
 ```
 
+另外，你也可以在文件系统磁盘的配置数组中定义 `report` 选项。当该选项定义为 `true` 时，"写入" 操作失败后，Laravel 会使用应用的异常处理记录底层异常，而不会抛出该异常，也不会中断写操作的返回值：
+
+```php
+'public' => [
+    'driver' => 'local',
+    // ...
+    'report' => true,
+],
+```
+
+如果 `throw` 和 `report` 选项都未定义，磁盘在失败时会静默返回 `false`，底层异常既不会被抛出，也不会被记录。
+
 <a name="prepending-appending-to-files"></a>
 ### 向文件头部和尾部追加内容
 
@@ -524,6 +536,16 @@ Storage::append('file.log', 'Appended Text');
 Storage::copy('old/file.jpg', 'new/file.jpg');
 
 Storage::move('old/file.jpg', 'new/file.jpg');
+```
+
+你可以使用 `copyToDisk` 和 `moveToDisk` 方法将文件复制或移动到另一个磁盘。除非提供第三个参数，否则将使用源文件的路径作为目标磁盘上的路径：
+
+```php
+Storage::disk('local')->copyToDisk('s3', 'reports/report.csv');
+
+Storage::disk('local')->moveToDisk(
+    's3', 'reports/report.csv', 'archive/report.csv'
+);
 ```
 
 <a name="automatic-streaming"></a>

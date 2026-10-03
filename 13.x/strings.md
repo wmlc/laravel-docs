@@ -1188,7 +1188,7 @@ $padded = Str::padRight('James', 10);
 <a name="method-str-password"></a>
 #### `Str::password()` {.collection-method}
 
-The `Str::password` method may be used to generate a secure, random password of a given length. The password will consist of a combination of letters, numbers, symbols, and spaces. By default, passwords are 32 characters long:
+The `Str::password` method may be used to generate a secure, random password of a given length. The password will consist of a combination of letters, numbers, and symbols. By default, passwords are 32 characters long:
 
 ```php
 use Illuminate\Support\Str;
@@ -1446,7 +1446,7 @@ $replaced = Str::replaceMatches(
     pattern: '/[^A-Za-z0-9]++/',
     replace: '',
     subject: '(+1) 501-555-1000'
-)
+);
 
 // '15015551000'
 ```
@@ -1939,7 +1939,7 @@ The `Str::wordWrap` method wraps a string to a given number of characters:
 ```php
 use Illuminate\Support\Str;
 
-$text = "The quick brown fox jumped over the lazy dog."
+$text = "The quick brown fox jumped over the lazy dog.";
 
 Str::wordWrap($text, characters: 20, break: "<br />\n");
 
@@ -1991,7 +1991,7 @@ $string = str('Taylor')->append(' Otwell');
 // 'Taylor Otwell'
 ```
 
-If no argument is provided to the `str` function, the function returns an instance of `Illuminate\Support\Str`:
+If no argument is provided to the `str` function, the function returns an object that proxies method calls to `Illuminate\Support\Str`:
 
 ```php
 $snake = str()->snake('FooBar');
@@ -2335,7 +2335,7 @@ $result = Str::of('The   Laravel   Framework')->deduplicate();
 // The Laravel Framework
 ```
 
-You may specify a different character to deduplicate by passing it in as the second argument to the method:
+You may specify a different character to deduplicate by passing it in as the first argument to the method:
 
 ```php
 use Illuminate\Support\Str;
@@ -2936,7 +2936,7 @@ $string = Str::of('taylor@example.com')->mask('*', 3);
 // tay***************
 ```
 
-If needed, you may provide negative numbers as the third or fourth argument to the `mask` method, which will instruct the method to begin masking at the given distance from the end of the string:
+If needed, you may provide negative numbers as the second or third argument to the `mask` method, which will instruct the method to begin masking at the given distance from the end of the string:
 
 ```php
 $string = Str::of('taylor@example.com')->mask('*', -15, 3);
@@ -3278,7 +3278,7 @@ The `replaceMatches` method replaces all portions of a string matching a pattern
 ```php
 use Illuminate\Support\Str;
 
-$replaced = Str::of('(+1) 501-555-1000')->replaceMatches('/[^A-Za-z0-9]++/', '')
+$replaced = Str::of('(+1) 501-555-1000')->replaceMatches('/[^A-Za-z0-9]++/', '');
 
 // '15015551000'
 ```
@@ -3633,7 +3633,7 @@ The `transliterate` method will attempt to convert a given string into its close
 ```php
 use Illuminate\Support\Str;
 
-$email = Str::of('ⓣⓔⓢⓣ@ⓛⓐⓡⓐⓥⓔⓛ.ⓒⓞⓜ')->transliterate()
+$email = Str::of('ⓣⓔⓢⓣ@ⓛⓐⓡⓐⓥⓔⓛ.ⓒⓞⓜ')->transliterate();
 
 // 'test@laravel.com'
 ```
@@ -4072,7 +4072,7 @@ Str::of('Laravel')->wrap('"');
 
 // "Laravel"
 
-Str::is('is')->wrap(before: 'This ', after: ' Laravel!');
+Str::of('is')->wrap(before: 'This ', after: ' Laravel!');
 
 // This is Laravel!
 ```

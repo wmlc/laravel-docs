@@ -381,7 +381,7 @@ features:
 <a name="mariadb"></a>
 #### MariaDB
 
-启用 MariaDB 会移除 MySQL 并安装 MariaDB。MariaDB 通常作为 MySQL 的替代品（drop-in replacement），因此你仍应在应用的数据库配置中使用 `mysql` 数据库驱动。
+启用 MariaDB 会移除 MySQL 并安装 MariaDB。你的应用应当使用 `mariadb` 数据库驱动，而不是 `mysql`：两者都能建立连接，但只有 `mariadb` 驱动才会发出 MariaDB 专有的 SQL，例如向量距离查询。
 
 <a name="mongodb"></a>
 #### MongoDB

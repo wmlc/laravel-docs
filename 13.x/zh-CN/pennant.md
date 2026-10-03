@@ -148,7 +148,8 @@ class NewApi
 如果你想手动解析基于类的功能实例，可以在 `Feature` Facade 上调用 `instance` 方法：
 
 ```php
-use Illuminate\Support\Facades\Feature;
+use App\Features\NewApi;
+use Laravel\Pennant\Feature;
 
 $instance = Feature::instance(NewApi::class);
 ```
@@ -339,7 +340,7 @@ if ($user->features()->active('new-api')) {
 
 ```php
 // Values...
-$value = $user->features()->value('purchase-button')
+$value = $user->features()->value('purchase-button');
 $values = $user->features()->values(['new-api', 'purchase-button']);
 
 // State...

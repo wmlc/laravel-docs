@@ -302,7 +302,7 @@ use Illuminate\Support\Facades\Schedule;
 
 Schedule::command('report:generate')
     ->timezone('America/New_York')
-    ->at('2:00')
+    ->at('2:00');
 ```
 
 如果你反复为所有计划任务分配相同的时区，可以在应用的 `app` 配置文件中定义一个 `schedule_timezone` 选项，指定应分配给所有调度的时区：

@@ -9,6 +9,7 @@
     - [Timestamps](#timestamps)
     - [Database Connections](#database-connections)
     - [Default Attribute Values](#default-attribute-values)
+    - [Refreshing Attributes After Writes](#refreshing-attributes-after-writes)
     - [Configuring Eloquent Strictness](#configuring-eloquent-strictness)
 - [Retrieving Models](#retrieving-models)
     - [Collections](#collections)
@@ -308,7 +309,7 @@ class Flight extends Model
 }
 ```
 
-如果你需要自定义模型时间戳的格式，可以使用 `Table` 属性上的 `dateFormat` 参数。这决定了日期属性在数据库中的存储方式，以及模型被序列化为数组或 JSON 时的格式：
+如果你需要自定义模型时间戳的格式，可以使用 `Table` 属性上的 `dateFormat` 参数。这决定了日期属性在数据库中的存储方式：
 
 ```php
 <?php
@@ -416,6 +417,29 @@ class Flight extends Model
     ];
 }
 ```
+
+<a name="refreshing-attributes-after-writes"></a>
+### Refreshing Attributes After Writes
+
+如果你的数据库包含生成列（generated columns），可以配置 Eloquent 在模型插入或更新后刷新特定属性。为此，请在模型上定义 `Refreshes` 属性：
+
+```php
+use Illuminate\Database\Eloquent\Attributes\Refreshes;
+
+#[Refreshes('name')]
+class User extends Model
+{
+    // ...
+}
+```
+
+你也可以用数组形式指定多个属性：
+
+```php
+#[Refreshes(['name', 'slug'])]
+```
+
+模型写入后，配置的属性将从数据库中刷新。
 
 <a name="configuring-eloquent-strictness"></a>
 ### Configuring Eloquent Strictness

@@ -194,7 +194,7 @@ The following dependencies are needed for the listed queue drivers. These depend
 <div class="content-list" markdown="1">
 
 - Amazon SQS: `aws/aws-sdk-php ~3.0`
-- Beanstalkd: `pda/pheanstalk ~5.0`
+- Beanstalkd: `pda/pheanstalk ^7.0|^8.0`
 - Redis: `predis/predis ~3.0` or phpredis PHP extension
 - [MongoDB](https://www.mongodb.com/docs/drivers/php/laravel-mongodb/current/queues/): `mongodb/laravel-mongodb`
 
@@ -1502,6 +1502,7 @@ Typically, you should call the `route` method from the `boot` method of a servic
 use App\Concerns\RequiresVideo;
 use App\Jobs\ProcessPodcast;
 use App\Jobs\ProcessVideo;
+use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Support\Facades\Queue;
 
 /**
@@ -1511,6 +1512,7 @@ public function boot(): void
 {
     Queue::route(ProcessPodcast::class, connection: 'redis', queue: 'podcasts');
     Queue::route(RequiresVideo::class, queue: 'video');
+    Queue::route(ShouldBroadcast::class, queue: 'events');
 }
 ```
 
@@ -1675,6 +1677,24 @@ class ProcessPodcast implements ShouldQueue
 
 In this example, the job is released for ten seconds if the application is unable to obtain a Redis lock and will continue to be retried up to 25 times. However, the job will fail if three unhandled exceptions are thrown by the job.
 
+By default, an attempt that ends because the worker process crashed or was killed, such as when it runs out of memory, does not count towards the job's maximum number of exceptions. If you would like these attempts to count as an exception, you may add the `CountCrashesAsExceptions` attribute to your job class:
+
+```php
+use Illuminate\Queue\Attributes\CountCrashesAsExceptions;
+use Illuminate\Queue\Attributes\MaxExceptions;
+use Illuminate\Queue\Attributes\Tries;
+
+#[Tries(25)]
+#[MaxExceptions(3)]
+#[CountCrashesAsExceptions]
+class ProcessPodcast implements ShouldQueue
+{
+    // ...
+}
+```
+
+When this attribute is present, the worker stores a marker in your application's cache while the job is processing. If the marker still exists when the job is next attempted, the previous attempt is counted as an exception.
+
 <a name="stopping-retries-by-exception"></a>
 #### Stopping Retries by Exception
 
@@ -1774,6 +1794,8 @@ ProcessOrder::dispatch($order)
     ->onGroup("customer-{$order->customer_id}");
 ```
 
+If you dispatch a job to an SQS FIFO queue without specifying a message group, Laravel will use the queue name as the message group ID.
+
 SQS FIFO queues support message deduplication to ensure exactly-once processing. Implement a `deduplicationId` method in your job class to provide a custom deduplication ID:
 
 ```php
@@ -1836,12 +1858,15 @@ class ProcessOrder implements ShouldQueue
 
 When utilizing FIFO queues, you will also need to define message groups on listeners, mail, and notifications. Alternatively, you can dispatch queued instances of these objects to a non-FIFO queue.
 
-To define the message group for a [queued event listener](/docs/{{version}}/events#queued-event-listeners), define a `messageGroup` method on the listener. You may also optionally define a `deduplicationId` method:
+To define the message group for a [queued event listener](/docs/{{version}}/events#queued-event-listeners), define a `messageGroup` method on the listener. You may also optionally define a `deduplicator` method, which receives the event and should return a closure that generates the deduplication ID:
 
 ```php
 <?php
 
 namespace App\Listeners;
+
+use App\Events\OrderShipped;
+use Closure;
 
 class SendShipmentNotification
 {
@@ -1856,11 +1881,11 @@ class SendShipmentNotification
     }
 
     /**
-     * Get the job's deduplication ID.
+     * Get the job's deduplicator.
      */
-    public function deduplicationId(): string
+    public function deduplicator(OrderShipped $event): Closure
     {
-        return "shipment-notification-{$this->shipment->id}";
+        return fn () => "shipment-notification-{$event->order->id}";
     }
 }
 ```
@@ -1916,7 +1941,7 @@ QUEUE_CONNECTION=failover
 
 Next, start at least one worker for each connection in your failover connection list:
 
-```bash
+```shell
 php artisan queue:work redis
 php artisan queue:work database
 ```
@@ -2448,7 +2473,7 @@ If you defined your DynamoDB table with a `ttl` attribute, you may define config
 
 ```php
 'batching' => [
-    'driver' => env('QUEUE_FAILED_DRIVER', 'dynamodb'),
+    'driver' => env('QUEUE_BATCHING_DRIVER', 'dynamodb'),
     'key' => env('AWS_ACCESS_KEY_ID'),
     'secret' => env('AWS_SECRET_ACCESS_KEY'),
     'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),

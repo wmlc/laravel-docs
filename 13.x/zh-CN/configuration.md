@@ -180,6 +180,23 @@ APP_URL=eyJpdiI6...
 > [!NOTE]
 > 使用 `--readable` 选项时，原始环境文件中的注释和空行不会包含在加密输出中。
 
+<a name="updating-readable-environment-files"></a>
+#### 更新可读环境文件
+
+更新可读的加密环境文件时，Laravel 会保留未更改的值，并移除源环境文件中已不存在的变量：
+
+```shell
+php artisan env:encrypt --readable --key=3UVsEgGVK36XN82KKeyLFMhvosbZN1aF
+```
+
+如果加密文件不存在，将创建该文件。更新已有文件时，请提供与创建它时相同的加密密钥和加密算法。如果文件无法解密，命令将失败且不会覆盖它。
+
+如需重新加密所有值，请使用 `--force` 选项。该选项允许你更换加密密钥，或替换无效的加密文件：
+
+```shell
+php artisan env:encrypt --readable --force --key=3UVsEgGVK36XN82KKeyLFMhvosbZN1aF
+```
+
 <a name="decryption"></a>
 #### 解密
 

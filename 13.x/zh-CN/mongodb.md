@@ -33,6 +33,12 @@ composer require mongodb/laravel-mongodb
 pecl install mongodb
 ```
 
+另外，你也可以使用官方的 PHP 扩展安装器 [PIE](https://github.com/php/pie) 来安装该扩展：
+
+```shell
+pie install mongodb/mongodb-extension
+```
+
 关于安装 MongoDB PHP 扩展的更多信息，请查看 [MongoDB PHP 扩展安装说明](https://www.php.net/manual/en/mongodb.installation.php)。
 
 <a name="starting-a-mongodb-server"></a>

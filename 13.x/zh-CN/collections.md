@@ -1381,11 +1381,11 @@ $result = $data->groupBy(['skill', function (array $item) {
             10 => ['user' => 1, 'skill' => 1, 'roles' => ['Role_1', 'Role_3']],
             20 => ['user' => 2, 'skill' => 1, 'roles' => ['Role_1', 'Role_2']],
         ],
-        'Role_2' => [
-            20 => ['user' => 2, 'skill' => 1, 'roles' => ['Role_1', 'Role_2']],
-        ],
         'Role_3' => [
             10 => ['user' => 1, 'skill' => 1, 'roles' => ['Role_1', 'Role_3']],
+        ],
+        'Role_2' => [
+            20 => ['user' => 2, 'skill' => 1, 'roles' => ['Role_1', 'Role_2']],
         ],
     ],
     2 => [
@@ -1459,7 +1459,7 @@ collect([1, 2, 3])->hasMany();
 collect([
     ['age' => 2],
     ['age' => 3],
-])->hasMany(fn ($item) => $item['age'] === 2)
+])->hasMany(fn ($item) => $item['age'] === 2);
 
 // false
 ```
@@ -1578,7 +1578,7 @@ $intersect->all();
 <a name="method-intersectassocusing"></a>
 #### `intersectAssocUsing()` {.collection-method}
 
-`intersectAssocUsing` 方法将原集合与另一个集合或数组进行比较，返回在两者中都存在的键值对，并使用自定义比较回调来确定键和值是否相等：
+`intersectAssocUsing` 方法将原集合与另一个集合或数组进行比较，返回在两者中都存在的键值对，并使用自定义比较回调来比较键：
 
 ```php
 $collection = collect([
@@ -2878,7 +2878,7 @@ $chunks->toArray();
 这在与 [eachSpread](#method-eachspread) 方法结合使用时特别有用：
 
 ```php
-$transactions->sliding(2)->eachSpread(function (Collection $previous, Collection $current) {
+$transactions->sliding(2)->eachSpread(function ($previous, $current) {
     $current->total = $previous->total + $current->amount;
 });
 ```
@@ -2933,7 +2933,7 @@ $collection->sole();
 // ['product' => 'Desk', 'price' => 200]
 ```
 
-如果集合中没有任何元素应被 `sole` 方法返回，则会抛出 `\Illuminate\Collections\ItemNotFoundException` 异常。如果应返回的元素不止一个，则会抛出 `\Illuminate\Collections\MultipleItemsFoundException` 异常。
+如果集合中没有任何元素应被 `sole` 方法返回，则会抛出 `\Illuminate\Support\ItemNotFoundException` 异常。如果应返回的元素不止一个，则会抛出 `\Illuminate\Support\MultipleItemsFoundException` 异常。
 
 <a name="method-some"></a>
 #### `some()` {.collection-method}
@@ -3405,11 +3405,7 @@ $collection = collect(['name' => 'Desk', 'price' => 200]);
 
 $collection->toArray();
 
-/*
-    [
-        ['name' => 'Desk', 'price' => 200],
-    ]
-*/
+// ['name' => 'Desk', 'price' => 200]
 ```
 
 > [!WARNING]
@@ -3425,7 +3421,7 @@ $collection = collect(['name' => 'Desk', 'price' => 200]);
 
 $collection->toJson();
 
-// '{"name":"Desk", "price":200}'
+// '{"name":"Desk","price":200}'
 ```
 
 <a name="method-to-pretty-json"></a>
@@ -4149,7 +4145,7 @@ LazyCollection::make(function () {
     }
 
     fclose($handle);
-})->chunk(4)->map(function (array $lines) {
+})->chunk(4)->map(function (LazyCollection $lines) {
     return LogEntry::fromLines($lines);
 })->each(function (LogEntry $logEntry) {
     // 处理日志条目...
@@ -4448,7 +4444,7 @@ if ($lock->get()) {
             ->lazy()
             ->withHeartbeat(
                 CarbonInterval::minutes(4),
-                fn () => $lock->extend(CarbonInterval::minutes(5))
+                fn () => $lock->refresh()
             )
             ->each(fn ($report) => $report->process());
     } finally {

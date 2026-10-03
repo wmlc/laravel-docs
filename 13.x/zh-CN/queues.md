@@ -194,7 +194,7 @@ Amazon SQS 限制了队列消息载荷的最大尺寸。如果你需要分发载
 <div class="content-list" markdown="1">
 
 - Amazon SQS：`aws/aws-sdk-php ~3.0`
-- Beanstalkd：`pda/pheanstalk ~5.0`
+- Beanstalkd：`pda/pheanstalk ^7.0|^8.0`
 - Redis：`predis/predis ~3.0` 或 phpredis PHP 扩展
 - [MongoDB](https://www.mongodb.com/docs/drivers/php/laravel-mongodb/current/queues/)：`mongodb/laravel-mongodb`
 
@@ -1503,6 +1503,7 @@ class ProcessPodcast implements ShouldQueue
 use App\Concerns\RequiresVideo;
 use App\Jobs\ProcessPodcast;
 use App\Jobs\ProcessVideo;
+use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Support\Facades\Queue;
 
 /**
@@ -1512,6 +1513,7 @@ public function boot(): void
 {
     Queue::route(ProcessPodcast::class, connection: 'redis', queue: 'podcasts');
     Queue::route(RequiresVideo::class, queue: 'video');
+    Queue::route(ShouldBroadcast::class, queue: 'events');
 }
 ```
 
@@ -1676,6 +1678,24 @@ class ProcessPodcast implements ShouldQueue
 
 在此示例中，如果应用无法获取 Redis 锁，任务会被释放 10 秒，并将继续被重试最多 25 次。然而，如果该任务抛出了三个未处理的异常，它将会失败。
 
+默认情况下，因工作进程崩溃或被杀死（例如内存耗尽）而结束的尝试，不会计入任务的最大异常数。如果你希望这类尝试也计为一个异常，可以在任务类上添加 `CountCrashesAsExceptions` 属性：
+
+```php
+use Illuminate\Queue\Attributes\CountCrashesAsExceptions;
+use Illuminate\Queue\Attributes\MaxExceptions;
+use Illuminate\Queue\Attributes\Tries;
+
+#[Tries(25)]
+#[MaxExceptions(3)]
+#[CountCrashesAsExceptions]
+class ProcessPodcast implements ShouldQueue
+{
+    // ...
+}
+```
+
+存在该属性时，工作进程会在任务处理期间于应用的缓存中存储一个标记。当任务下一次被尝试时，如果该标记仍然存在，则上一次尝试将被计为一个异常。
+
 <a name="stopping-retries-by-exception"></a>
 #### 通过异常停止重试
 
@@ -1775,6 +1795,8 @@ ProcessOrder::dispatch($order)
     ->onGroup("customer-{$order->customer_id}");
 ```
 
+如果将任务派发到 SQS FIFO 队列但未指定消息组，Laravel 将使用队列名称作为消息组 ID。
+
 SQS FIFO 队列支持消息去重，以确保精确一次处理。在你的任务类上实现一个 `deduplicationId` 方法来提供自定义去重 ID：
 
 ```php
@@ -1837,12 +1859,15 @@ class ProcessOrder implements ShouldQueue
 
 在使用 FIFO 队列时，你还需要在监听器、邮件和通知上定义消息组。或者，你可以将这些对象的可入队实例分发到非 FIFO 队列。
 
-要为 [可入队的事件监听器](/docs/{{version}}/events#queued-event-listeners) 定义消息组，请在监听器上定义一个 `messageGroup` 方法。你也可以可选地定义一个 `deduplicationId` 方法：
+要为 [可入队的事件监听器](/docs/{{version}}/events#queued-event-listeners) 定义消息组，请在监听器上定义一个 `messageGroup` 方法。你也可以可选地定义一个 `deduplicator` 方法，该方法接收事件并应返回一个用于生成去重 ID 的闭包：
 
 ```php
 <?php
 
 namespace App\Listeners;
+
+use App\Events\OrderShipped;
+use Closure;
 
 class SendShipmentNotification
 {
@@ -1857,11 +1882,11 @@ class SendShipmentNotification
     }
 
     /**
-     * 获取任务的去重 ID。
+     * 获取任务的去重器。
      */
-    public function deduplicationId(): string
+    public function deduplicator(OrderShipped $event): Closure
     {
-        return "shipment-notification-{$this->shipment->id}";
+        return fn () => "shipment-notification-{$event->order->id}";
     }
 }
 ```
@@ -1917,7 +1942,7 @@ QUEUE_CONNECTION=failover
 
 接下来，为你的故障转移连接列表中的每个连接至少启动一个处理器：
 
-```bash
+```shell
 php artisan queue:work redis
 php artisan queue:work database
 ```
@@ -2449,7 +2474,7 @@ composer require aws/aws-sdk-php
 
 ```php
 'batching' => [
-    'driver' => env('QUEUE_FAILED_DRIVER', 'dynamodb'),
+    'driver' => env('QUEUE_BATCHING_DRIVER', 'dynamodb'),
     'key' => env('AWS_ACCESS_KEY_ID'),
     'secret' => env('AWS_SECRET_ACCESS_KEY'),
     'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),

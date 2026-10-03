@@ -156,7 +156,7 @@ Hello, @{{ name }}.
 
 有时你可能会向视图传递一个数组，意图将其渲染为 JSON 以便初始化 JavaScript 变量。例如：
 
-```php
+```blade
 <script>
     var app = <?php echo json_encode($array); ?>;
 </script>
@@ -795,7 +795,7 @@ public function boot(): void
 <x-package-alert/>
 ```
 
-或者，你可以使用 `componentNamespace` 方法按约定自动加载组件类。例如，一个 `Nightshade` 包可能拥有位于 `Package\Views\Components` 命名空间中的 `Calendar` 和 `ColorPicker` 组件：
+或者，你可以使用 `componentNamespace` 方法按约定自动加载组件类。例如，一个 `Nightshade` 包可能拥有位于 `Nightshade\Views\Components` 命名空间中的 `Calendar` 和 `ColorPicker` 组件：
 
 ```php
 use Illuminate\Support\Facades\Blade;
@@ -855,9 +855,9 @@ public function shouldRender(): bool
 有时组件是某个组件组的一部分，你可能希望将相关组件分组到单个目录中。例如，想象一个带有以下类结构的"card"组件：
 
 ```text
-App\Views\Components\Card\Card
-App\Views\Components\Card\Header
-App\Views\Components\Card\Body
+App\View\Components\Card\Card
+App\View\Components\Card\Header
+App\View\Components\Card\Body
 ```
 
 由于根 `Card` 组件嵌套在 `Card` 目录中，你可能会认为需要通过 `<x-card.card>` 来渲染该组件。然而，当组件的文件名与组件目录的名称匹配时，Laravel 会自动假定该组件是"根"组件，并允许你在不重复目录名的情况下渲染该组件：
@@ -1019,13 +1019,13 @@ return function (array $data) {
     // $data['slot'];
 
     return '<div {{ $attributes }}>Components content</div>';
-}
+};
 ```
 
 > [!WARNING]
 > `$data` 数组中的元素绝不应被直接嵌入到组件的 `render` 方法返回的 Blade 字符串中，因为这样做可能通过恶意的属性内容允许远程代码执行。
 
-`componentName` 等于 HTML 标签中 `x-` 前缀之后的名称。因此 `<x-alert />` 的 `componentName` 将是 `alert`。`attributes` 元素将包含 HTML 标签上存在的所有属性。`slot` 元素是一个包含组件插槽内容的 `Illuminate\Support\HtmlString` 实例。
+`componentName` 等于 HTML 标签中 `x-` 前缀之后的名称。因此 `<x-alert />` 的 `componentName` 将是 `alert`。`attributes` 元素将包含 HTML 标签上存在的所有属性。`slot` 元素是一个包含组件插槽内容的 `Illuminate\View\ComponentSlot` 实例。
 
 该闭包应返回一个字符串。如果返回的字符串对应于一个已存在的视图，则会渲染该视图；否则，该返回字符串将被作为内联 Blade 视图求值。
 
@@ -1458,7 +1458,7 @@ public function boot(): void
 
 #### 自动加载包组件
 
-或者，你可以使用 `componentNamespace` 方法按约定自动加载组件类。例如，一个 `Nightshade` 包可能拥有位于 `Package\Views\Components` 命名空间中的 `Calendar` 和 `ColorPicker` 组件：
+或者，你可以使用 `componentNamespace` 方法按约定自动加载组件类。例如，一个 `Nightshade` 包可能拥有位于 `Nightshade\Views\Components` 命名空间中的 `Calendar` 和 `ColorPicker` 组件：
 
 ```php
 use Illuminate\Support\Facades\Blade;

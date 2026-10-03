@@ -286,11 +286,11 @@ Below, you can review an example of the JSON response format for validation erro
 
 ```json
 {
-    "message": "The team name must be a string. (and 4 more errors)",
+    "message": "The team name field must be a string. (and 4 more errors)",
     "errors": {
         "team_name": [
-            "The team name must be a string.",
-            "The team name must be at least 1 characters."
+            "The team name field must be a string.",
+            "The team name field must be at least 1 characters."
         ],
         "authorization.role": [
             "The selected authorization.role is invalid."
@@ -299,7 +299,7 @@ Below, you can review an example of the JSON response format for validation erro
             "The users.0.email field is required."
         ],
         "users.2.email": [
-            "The users.2.email must be a valid email address."
+            "The users.2.email field must be a valid email address."
         ]
     }
 }
@@ -1619,7 +1619,7 @@ Validator::make($data, [
 You may also use the `minRatio`, `maxRatio`, and `ratioBetween` methods to fluently define ratio constraints:
 
 ```php
-Rule::dimensions()->ratioBetween(min: 1 / 2, max: 3 / 2)
+Rule::dimensions()->ratioBetween(min: 1 / 2, max: 3 / 2);
 ```
 
 <a name="rule-distinct"></a>
@@ -1932,7 +1932,7 @@ The field under validation must contain a valid color value in [hexadecimal](htt
 <a name="rule-image"></a>
 #### image
 
-The file under validation must be an image (jpg, jpeg, png, bmp, gif, or webp).
+The file under validation must be an image (jpg, jpeg, png, bmp, gif, webp, avif, heic, or heif).
 
 > [!WARNING]
 > By default, the image rule does not allow SVG files due to the possibility of XSS vulnerabilities. If you need to allow SVG files, you may provide the `allow_svg` directive to the `image` rule (`image:allow_svg`).
@@ -2498,19 +2498,19 @@ Validator::make($data, [
 Instead of passing the model key's value to the `ignore` method, you may also pass the entire model instance. Laravel will automatically extract the key from the model:
 
 ```php
-Rule::unique('users')->ignore($user)
+Rule::unique('users')->ignore($user);
 ```
 
 If your table uses a primary key column name other than `id`, you may specify the name of the column when calling the `ignore` method:
 
 ```php
-Rule::unique('users')->ignore($user->id, 'user_id')
+Rule::unique('users')->ignore($user->id, 'user_id');
 ```
 
 By default, the `unique` rule will check the uniqueness of the column matching the name of the attribute being validated. However, you may pass a different column name as the second argument to the `unique` method:
 
 ```php
-Rule::unique('users', 'email_address')->ignore($user->id)
+Rule::unique('users', 'email_address')->ignore($user->id);
 ```
 
 **Adding Additional Where Clauses:**
@@ -2829,7 +2829,7 @@ File::types(['mp3', 'wav'])
 <a name="validating-files-image-files"></a>
 #### Validating Image Files
 
-If your application accepts images uploaded by your users, you may use the `File` rule's `image` constructor method to ensure that the file under validation is an image (jpg, jpeg, png, bmp, gif, or webp).
+If your application accepts images uploaded by your users, you may use the `File` rule's `image` constructor method to ensure that the file under validation is an image (jpg, jpeg, png, bmp, gif, webp, avif, heic, or heif).
 
 In addition, the `dimensions` rule may be used to limit the dimensions of the image:
 
@@ -2868,7 +2868,7 @@ File::image()->dimensions(
     Rule::dimensions()
         ->maxWidth(1000)
         ->maxHeight(500)
-)
+);
 ```
 
 > [!NOTE]
@@ -2892,28 +2892,28 @@ The `Password` rule object allows you to easily customize the password complexit
 
 ```php
 // Require at least 8 characters...
-Password::min(8)
+Password::min(8);
 
 // Require at most 256 characters...
-Password::min(16)->max(256)
+Password::min(16)->max(256);
 
 // Require at least one letter...
-Password::min(8)->letters()
+Password::min(8)->letters();
 
 // Require at least one uppercase and one lowercase letter...
-Password::min(8)->mixedCase()
+Password::min(8)->mixedCase();
 
 // Require at least one number...
-Password::min(8)->numbers()
+Password::min(8)->numbers();
 
 // Require at least one symbol...
-Password::min(8)->symbols()
+Password::min(8)->symbols();
 ```
 
 In addition, you may ensure that a password has not been compromised in a public password data breach leak using the `uncompromised` method:
 
 ```php
-Password::min(8)->uncompromised()
+Password::min(8)->uncompromised();
 ```
 
 Internally, the `Password` rule object uses the [k-Anonymity](https://en.wikipedia.org/wiki/K-anonymity) model to determine if a password has been leaked via the [haveibeenpwned.com](https://haveibeenpwned.com) service without sacrificing the user's privacy or security.
@@ -2921,7 +2921,7 @@ Internally, the `Password` rule object uses the [k-Anonymity](https://en.wikiped
 By default, if a password appears at least once in a data leak, it will be considered compromised. You can customize this threshold using the first argument of the `uncompromised` method:
 
 ```php
-// Ensure the password appears less than 3 times in the same data leak...
+// Ensure the password appears no more than 3 times in the same data leak...
 Password::min(8)->uncompromised(3);
 ```
 
@@ -2934,7 +2934,7 @@ Password::min(8)
     ->mixedCase()
     ->numbers()
     ->symbols()
-    ->uncompromised()
+    ->uncompromised();
 ```
 
 You may convert a `Password` rule object to a string suitable for the HTML `passwordrules` attribute using the `toPasswordRulesString` method:

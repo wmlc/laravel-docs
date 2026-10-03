@@ -1594,7 +1594,7 @@ $user = User::find(1);
 
 $meterUsage = $user->meterEventSummaries($meterId);
 
-$meterUsage->first()->aggregated_value // 10
+$meterUsage->first()->aggregated_value; // 10
 ```
 
 有关计量事件摘要的更多信息，请参阅 Stripe 的 [Meter Event Summary 对象文档](https://docs.stripe.com/api/billing/meter-event_summary/object)。

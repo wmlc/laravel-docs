@@ -14,6 +14,7 @@
     - [通过中间表字段筛选查询](#filtering-queries-via-intermediate-table-columns)
     - [通过中间表字段排序查询](#ordering-queries-via-intermediate-table-columns)
     - [定义自定义中间表模型](#defining-custom-intermediate-table-models)
+        - [自动填充中间表关联](#automatically-hydrating-pivot-relationships)
 - [多态关联](#polymorphic-relationships)
     - [一对一](#one-to-one-polymorphic-relations)
     - [一对多](#one-to-many-polymorphic-relations)
@@ -1014,6 +1015,49 @@ class RoleUser extends Pivot
 }
 ```
 
+<a name="automatically-hydrating-pivot-relationships"></a>
+#### 自动填充中间表关联
+
+当自定义 pivot 模型为声明模型和关联模型定义了 `belongsTo` 关联时，你可以调用 `chaperone` 自动在每个 pivot 模型上填充这些关联。这样通过 pivot 访问模型时就无需额外查询：
+
+```php
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\Pivot;
+
+class RoleUser extends Pivot
+{
+    public function role(): BelongsTo
+    {
+        return $this->belongsTo(Role::class);
+    }
+
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
+    }
+}
+
+class Role extends Model
+{
+    public function users(): BelongsToMany
+    {
+        return $this->belongsToMany(User::class)
+            ->using(RoleUser::class)
+            ->chaperone();
+    }
+}
+```
+
+Eloquent 会尝试推断 pivot 关联的名称。如果你的 pivot 模型使用非标准名称，请将声明方和关联方的关联名称传给 `chaperone`：
+
+```php
+return $this->belongsToMany(User::class)
+    ->using(RoleUser::class)
+    ->chaperone(declaring: 'role', related: 'user');
+```
+
 <a name="polymorphic-relationships"></a>
 ## 多态关联
 
@@ -1843,7 +1887,7 @@ $book->loadCount('genres');
 ```php
 $book->loadCount(['reviews' => function (Builder $query) {
     $query->where('rating', 5);
-}])
+}]);
 ```
 
 <a name="relationship-counting-and-custom-select-statements"></a>
@@ -2311,7 +2355,7 @@ public function boot(): void
 
 禁止延迟加载后，当你的应用尝试延迟加载任何 Eloquent 关联时，Eloquent 会抛出一个 `Illuminate\Database\LazyLoadingViolationException` 异常。
 
-你可以使用 `handleLazyLoadingViolationsUsing` 方法自定义延迟加载违规的行为。例如，使用此方法，你可以指示延迟加载违规仅被记录，而不是通过异常中断应用的执行：
+你可以使用 `handleLazyLoadingViolationUsing` 方法自定义延迟加载违规的行为。例如，使用此方法，你可以指示延迟加载违规仅被记录，而不是通过异常中断应用的执行：
 
 ```php
 Model::handleLazyLoadingViolationUsing(function (Model $model, string $relation) {

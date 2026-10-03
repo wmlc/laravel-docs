@@ -390,6 +390,8 @@ public function withDelay(OrderShipped $event): int
 }
 ```
 
+如果你希望所有队列监听器都使用同一个队列，而不想逐个自定义监听器类，可以改为[将 `ShouldQueue` 契约路由到某个队列](/docs/{{version}}/queues#queue-routing)。
+
 <a name="conditionally-queueing-listeners"></a>
 #### Conditionally Queueing Listeners
 

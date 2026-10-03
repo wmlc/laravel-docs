@@ -1188,7 +1188,7 @@ $padded = Str::padRight('James', 10);
 <a name="method-str-password"></a>
 #### `Str::password()` {.collection-method}
 
-`Str::password` 方法可用于生成指定长度的安全随机密码。密码由字母、数字、符号和空格组合而成。默认情况下，密码长度为 32 个字符：
+`Str::password` 方法可用于生成指定长度的安全随机密码。密码由字母、数字和符号组合而成。默认情况下，密码长度为 32 个字符：
 
 ```php
 use Illuminate\Support\Str;
@@ -1446,7 +1446,7 @@ $replaced = Str::replaceMatches(
     pattern: '/[^A-Za-z0-9]++/',
     replace: '',
     subject: '(+1) 501-555-1000'
-)
+);
 
 // '15015551000'
 ```
@@ -1939,7 +1939,7 @@ Str::wordCount('Hello, world!'); // 2
 ```php
 use Illuminate\Support\Str;
 
-$text = "The quick brown fox jumped over the lazy dog."
+$text = "The quick brown fox jumped over the lazy dog.";
 
 Str::wordWrap($text, characters: 20, break: "<br />\n");
 
@@ -1991,7 +1991,7 @@ $string = str('Taylor')->append(' Otwell');
 // 'Taylor Otwell'
 ```
 
-如果没有向 `str` 函数提供参数，该函数会返回 `Illuminate\Support\Str` 的一个实例：
+如果没有向 `str` 函数提供参数，该函数会返回一个将方法调用代理到 `Illuminate\Support\Str` 的对象：
 
 ```php
 $snake = str()->snake('FooBar');
@@ -2335,7 +2335,7 @@ $result = Str::of('The   Laravel   Framework')->deduplicate();
 // The Laravel Framework
 ```
 
-你可以通过将该字符作为第二个参数传入方法，来指定去重的其他字符：
+你可以通过将该字符作为第一个参数传入方法，来指定去重的其他字符：
 
 ```php
 use Illuminate\Support\Str;
@@ -2936,7 +2936,7 @@ $string = Str::of('taylor@example.com')->mask('*', 3);
 // tay***************
 ```
 
-如果需要，你可以将负数作为 `mask` 方法的第三个或第四个参数，这会让该方法从字符串末尾的给定距离处开始掩盖：
+如果需要，你可以将负数作为 `mask` 方法的第二个或第三个参数，这会让该方法从字符串末尾的给定距离处开始掩盖：
 
 ```php
 $string = Str::of('taylor@example.com')->mask('*', -15, 3);
@@ -3278,7 +3278,7 @@ $replaced = Str::of('the quick brown fox jumps over the lazy dog')->replaceLast(
 ```php
 use Illuminate\Support\Str;
 
-$replaced = Str::of('(+1) 501-555-1000')->replaceMatches('/[^A-Za-z0-9]++/', '')
+$replaced = Str::of('(+1) 501-555-1000')->replaceMatches('/[^A-Za-z0-9]++/', '');
 
 // '15015551000'
 ```
@@ -3633,7 +3633,7 @@ $uri = Str::of('https://example.com')->toUri();
 ```php
 use Illuminate\Support\Str;
 
-$email = Str::of('ⓣⓔⓢⓣ@ⓛⓐⓡⓐⓥⓔⓛ.ⓒⓞⓜ')->transliterate()
+$email = Str::of('ⓣⓔⓢⓣ@ⓛⓐⓡⓐⓥⓔⓛ.ⓒⓞⓜ')->transliterate();
 
 // 'test@laravel.com'
 ```
@@ -4072,7 +4072,7 @@ Str::of('Laravel')->wrap('"');
 
 // "Laravel"
 
-Str::is('is')->wrap(before: 'This ', after: ' Laravel!');
+Str::of('is')->wrap(before: 'This ', after: ' Laravel!');
 
 // This is Laravel!
 ```

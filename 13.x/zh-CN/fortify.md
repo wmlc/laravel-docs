@@ -322,7 +322,7 @@ $request->user()->twoFactorQrCodeSvg();
 你还应该显示用户的双因素恢复码。这些恢复码允许用户在丢失移动设备访问权限时进行认证。如果你使用 Blade 渲染应用的前端，可以通过已认证的用户实例访问恢复码：
 
 ```php
-(array) $request->user()->recoveryCodes()
+(array) $request->user()->recoveryCodes();
 ```
 
 如果你正在构建由 JavaScript 驱动的前端，可以向 `/user/two-factor-recovery-codes` 端点发起 XHR GET 请求。该端点会返回一个包含用户恢复码的 JSON 数组。

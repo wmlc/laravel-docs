@@ -327,7 +327,7 @@ $dominantColor = $image->dominantColor();
 
 Laravel 的图像管理器继承自 Laravel 的基础 `Illuminate\Support\Manager` 类。这意味着你可以使用图像管理器和 `Image` Facade 上可用的 `extend` 方法注册自定义图像驱动。
 
-自定义图像驱动应实现 `Illuminate\Contracts\Image\Driver` 接口。`process` 方法接收原始图像内容和应应用于图像的有序 `Illuminate\Image\ImagePipeline`，并应返回处理后的图像字节：
+自定义图像驱动应实现 `Illuminate\Contracts\Image\Driver` 接口。`process` 方法接收原始图像内容和应应用于图像的有序 `Illuminate\Image\ImagePipeline`，并应返回处理后的图像字节。`dimensions` 方法应返回图像的宽度和高度，而 `dominantColor` 方法应以十六进制字符串返回图像的平均颜色：
 
 ```php
 <?php
@@ -347,6 +347,26 @@ class VipsDriver implements Driver
         // Apply the pipeline's transformations and output options...
 
         return $contents;
+    }
+
+    /**
+     * Get the dimensions of the given image contents.
+     */
+    public function dimensions(string $contents): array
+    {
+        // Read the image's width and height...
+
+        return [0, 0];
+    }
+
+    /**
+     * Get the dominant (average) color of the image as a hex string.
+     */
+    public function dominantColor(string $contents): string
+    {
+        // Calculate the image's average color...
+
+        return '#000000';
     }
 
     /**

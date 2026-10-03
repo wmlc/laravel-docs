@@ -7,8 +7,10 @@
     - [服务器注册](#server-registration)
     - [Web 服务器](#web-servers)
     - [本地服务器](#local-servers)
+    - [缓存提示](#cache-hints)
 - [工具（Tools）](#tools)
     - [创建工具](#creating-tools)
+    - [可搜索工具目录](#searchable-tool-catalogs)
     - [工具输入模式](#tool-input-schemas)
     - [工具输出模式](#tool-output-schemas)
     - [验证工具参数](#validating-tool-arguments)
@@ -173,6 +175,48 @@ Mcp::local('weather', WeatherServer::class);
 
 注册后，你通常不需要手动运行 `mcp:start` Artisan 命令。相反，请配置你的 MCP 客户端（AI 代理）来启动服务器，或使用 [MCP Inspector](#mcp-inspector)。
 
+<a name="cache-hints"></a>
+### 缓存提示
+
+Laravel MCP 会为可缓存的响应附带缓存提示，例如服务器发现、原语列表和资源读取。默认情况下，这些响应被标记为私有，生存时间为零毫秒。
+
+你可以使用 `Cacheable` 属性自定义服务器的默认缓存提示：
+
+```php
+use Laravel\Mcp\Enums\CacheScope;
+use Laravel\Mcp\Server\Attributes\Cacheable;
+
+#[Cacheable(ttlMs: 60_000, scope: CacheScope::Public)]
+class WeatherServer extends Server
+{
+    /**
+     * Get the cache hints for individual MCP methods.
+     *
+     * @return array<string, \Laravel\Mcp\Server\Attributes\Cacheable>
+     */
+    protected function cacheHints(): array
+    {
+        return [
+            'tools/list' => new Cacheable(ttlMs: 30_000, scope: CacheScope::Public),
+        ];
+    }
+}
+```
+
+`CacheScope::Private` 范围会将缓存的响应限制在同一授权上下文中，而 `CacheScope::Public` 允许响应在用户之间共享。缓存提示仅供参考；响应是否真正被缓存由 MCP 客户端或宿主决定。`cacheHints` 返回的方法级提示优先于服务器的 `Cacheable` 属性。
+
+你也可以将 `Cacheable` 属性应用到资源类上，以覆盖服务器对单个资源的缓存提示：
+
+```php
+#[Cacheable(ttlMs: 300_000, scope: CacheScope::Public)]
+class WeatherGuidelinesResource extends Resource
+{
+    // ...
+}
+```
+
+资源的 `Cacheable` 属性优先于方法级提示和服务器的默认提示。
+
 <a name="tools"></a>
 ## 工具（Tools）
 
@@ -252,6 +296,46 @@ class WeatherServer extends Server
 }
 ```
 
+<a name="searchable-tool-catalogs"></a>
+### 可搜索工具目录
+
+拥有大量工具的服务器可以将部分工具放入可搜索目录，而不是向 AI 客户端通告每一个工具。可搜索目录会暴露两个工具：`search_tools`，按工具名称、描述和输入模式搜索目录；以及 `execute_tools`，调用搜索返回的一个或多个工具。
+
+要创建可搜索目录，请在服务器的 `$tools` 属性中将 `ToolSearch` 类用作数组键：
+
+```php
+<?php
+
+namespace App\Mcp\Servers;
+
+use App\Mcp\Tools\CurrentWeatherTool;
+use App\Mcp\Tools\HistoricalWeatherTool;
+use App\Mcp\Tools\WeatherAlertsTool;
+use Laravel\Mcp\Server;
+use Laravel\Mcp\Server\Tools\ToolSearch;
+
+class WeatherServer extends Server
+{
+    /**
+     * The tools registered with this MCP server.
+     *
+     * @var array<int|string, \Laravel\Mcp\Server\Tool|class-string<\Laravel\Mcp\Server\Tool>|array<int, \Laravel\Mcp\Server\Tool|class-string<\Laravel\Mcp\Server\Tool>>>
+     */
+    protected array $tools = [
+        CurrentWeatherTool::class,
+
+        ToolSearch::class => [
+            HistoricalWeatherTool::class,
+            WeatherAlertsTool::class,
+        ],
+    ];
+}
+```
+
+在此示例中，`CurrentWeatherTool` 被直接通告，而历史天气和天气预警工具则通过可搜索目录提供。搜索或执行目录工具时，仍然会遵循工具有条件注册的规则。
+
+单次 `execute_tools` 调用可执行的最大工具数量以及最大响应大小，分别由 `mcp.tool_search.max_tool_calls` 和 `mcp.tool_search.max_output_bytes` 配置值控制。
+
 <a name="tool-name-title-description"></a>
 #### 工具名称、标题与描述
 
@@ -323,7 +407,7 @@ class CurrentWeatherTool extends Tool
 <a name="tool-output-schemas"></a>
 ### 工具输出模式
 
-工具可以定义[输出模式](https://modelcontextprotocol.io/specification/2025-06-18/server/tools#output-schema)，以指定其响应的结构。这可以实现与需要可解析工具结果的 AI 客户端更好的集成。使用 `outputSchema` 方法定义工具的输出结构：
+工具可以定义[输出模式](https://modelcontextprotocol.io/specification/2026-07-28/server/tools#output-schema)，以指定其响应的结构。这可以实现与需要可解析工具结果的 AI 客户端更好的集成。使用 `outputSchema` 方法定义工具的输出结构：
 
 ```php
 <?php
@@ -461,7 +545,7 @@ class CurrentWeatherTool extends Tool
 <a name="tool-annotations"></a>
 ### 工具注解
 
-你可以使用[注解（annotations）](https://modelcontextprotocol.io/specification/2025-06-18/schema#toolannotations)增强你的工具，为 AI 客户端提供额外的元数据。这些注解有助于 AI 模型理解工具的行为和能力。注解通过特性（attribute）添加到工具上：
+你可以使用[注解（annotations）](https://modelcontextprotocol.io/specification/2026-07-28/schema#toolannotations)增强你的工具，为 AI 客户端提供额外的元数据。这些注解有助于 AI 模型理解工具的行为和能力。注解通过特性（attribute）添加到工具上：
 
 ```php
 <?php
@@ -613,7 +697,7 @@ public function handle(Request $request): array
 <a name="structured-responses"></a>
 #### 结构化响应
 
-工具可以使用 `structured` 方法返回[结构化内容](https://modelcontextprotocol.io/specification/2025-06-18/server/tools#structured-content)。这为 AI 客户端提供了可解析的数据，同时保持与 JSON 编码文本表示的向后兼容性：
+工具可以使用 `structured` 方法返回[结构化内容](https://modelcontextprotocol.io/specification/2026-07-28/server/tools#structured-content)。这为 AI 客户端提供了可解析的数据，同时保持与 JSON 编码文本表示的向后兼容性：
 
 ```php
 return Response::structured([
@@ -678,7 +762,7 @@ class CurrentWeatherTool extends Tool
 <a name="prompts"></a>
 ## 提示（Prompts）
 
-[提示（Prompts）](https://modelcontextprotocol.io/specification/2025-06-18/server/prompts)让你的服务器能够共享可重用的提示模板，AI 客户端可以使用这些模板与语言模型交互。它们为构建常见的查询和交互提供了一种标准化的方式。
+[提示（Prompts）](https://modelcontextprotocol.io/specification/2026-07-28/server/prompts)让你的服务器能够共享可重用的提示模板，AI 客户端可以使用这些模板与语言模型交互。它们为构建常见的查询和交互提供了一种标准化的方式。
 
 <a name="creating-prompts"></a>
 ### 创建提示
@@ -942,7 +1026,7 @@ class DescribeWeatherPrompt extends Prompt
 <a name="resources"></a>
 ## 资源（Resources）
 
-[资源（Resources）](https://modelcontextprotocol.io/specification/2025-06-18/server/resources)让你的服务器能够暴露 AI 客户端可以读取并用作与语言模型交互时上下文的数据和内容。它们提供了一种共享静态或动态信息的方式，例如文档、配置或任何有助于为 AI 响应提供信息的数据。
+[资源（Resources）](https://modelcontextprotocol.io/specification/2026-07-28/server/resources)让你的服务器能够暴露 AI 客户端可以读取并用作与语言模型交互时上下文的数据和内容。它们提供了一种共享静态或动态信息的方式，例如文档、配置或任何有助于为 AI 响应提供信息的数据。
 
 <a name="creating-resources"></a>
 ## 创建资源
@@ -1011,7 +1095,7 @@ class WeatherGuidelinesResource extends Resource
 <a name="resource-templates"></a>
 ### 资源模板
 
-[资源模板（Resource templates）](https://modelcontextprotocol.io/specification/2025-06-18/server/resources#resource-templates)让你的服务器能够暴露与带变量的 URI 模式匹配的动态资源。无需为每个资源定义静态 URI，你可以创建一个基于模板模式处理多个 URI 的单个资源。
+[资源模板（Resource templates）](https://modelcontextprotocol.io/specification/2026-07-28/server/resources#resource-templates)让你的服务器能够暴露与带变量的 URI 模式匹配的动态资源。无需为每个资源定义静态 URI，你可以创建一个基于模板模式处理多个 URI 的单个资源。
 
 <a name="creating-resource-templates"></a>
 #### 创建资源模板
@@ -1219,7 +1303,7 @@ class WeatherGuidelinesResource extends Resource
 <a name="resource-annotations"></a>
 ### 资源注解
 
-你可以使用[注解（annotations）](https://modelcontextprotocol.io/specification/2025-06-18/schema#resourceannotations)增强你的资源，为 AI 客户端提供额外的元数据。注解通过特性（attribute）添加到资源上：
+你可以使用[注解（annotations）](https://modelcontextprotocol.io/specification/2026-07-28/schema#annotations)增强你的资源，为 AI 客户端提供额外的元数据。注解通过特性（attribute）添加到资源上：
 
 ```php
 <?php
@@ -1455,7 +1539,7 @@ class ShowWeatherDashboard extends Tool
 }
 ```
 
-每当注册任何 `AppResource` 时，Laravel MCP 会自动通告 `io.modelcontextprotocol/ui` 能力，因此无需额外的服务器配置。
+每当注册任何 `AppResource` 时，Laravel MCP 会在服务器的 `extensions` 能力中自动通告 `io.modelcontextprotocol/ui` 扩展，因此无需额外的服务器配置。
 
 <a name="app-tool-visibility"></a>
 ### 应用工具可见性
@@ -1510,7 +1594,7 @@ Laravel MCP 包含一个专门用于构建 MCP 应用的 [Boost](/docs/{{version
 <a name="metadata"></a>
 ## 元数据（Metadata）
 
-Laravel MCP 还支持 [MCP 规范](https://modelcontextprotocol.io/specification/2025-06-18/basic#meta)中定义的 `_meta` 字段，某些 MCP 客户端或集成需要该字段。元数据可以应用于所有 MCP 原语，包括工具、资源和提示，以及它们的响应。
+Laravel MCP 还支持 [MCP 规范](https://modelcontextprotocol.io/specification/2026-07-28/basic#_meta)中定义的 `_meta` 字段，某些 MCP 客户端或集成需要该字段。元数据可以应用于所有 MCP 原语，包括工具、资源和提示，以及它们的响应。
 
 你可以使用 `withMeta` 方法将元数据附加到单个响应内容：
 
@@ -1735,7 +1819,7 @@ public function handle(Request $request): Response
 ```php
 use Laravel\Mcp\Client;
 
-$client = Client::web('https://mcp.example.com');
+$client = Client::web('https://api.githubcopilot.com/mcp/');
 ```
 
 要连接到作为命令运行的本地 MCP 服务器，请使用 `Client::local` 方法，提供启动服务器所需的命令和任何参数：
@@ -1751,10 +1835,9 @@ $client = Client::local('php', ['artisan', 'mcp:start']);
 ```php
 $client->connect();
 
-$client->ping();
-
 if ($client->connected()) {
-    // ...
+    $capabilities = $client->capabilities();
+    $server = $client->serverInfo();
 }
 
 $client->disconnect();
@@ -1763,7 +1846,7 @@ $client->disconnect();
 你可以使用 `withTimeout` 方法自定义请求超时：
 
 ```php
-$client = Client::web('https://mcp.example.com')->withTimeout(30);
+$client = Client::web('https://api.githubcopilot.com/mcp/')->withTimeout(30);
 ```
 
 <a name="named-clients"></a>
@@ -1775,7 +1858,7 @@ $client = Client::web('https://mcp.example.com')->withTimeout(30);
 use Laravel\Mcp\Client;
 use Laravel\Mcp\Facades\Mcp;
 
-Mcp::registerClient('github', fn () => Client::web('https://mcp.example.com'));
+Mcp::registerClient('github', fn () => Client::web('https://api.githubcopilot.com/mcp/'));
 ```
 
 注册后，你可以通过名称在应用中的任何位置解析该客户端：
@@ -1797,10 +1880,12 @@ $client = Mcp::client('github');
 use Illuminate\Support\Facades\Auth;
 use Laravel\Mcp\Client;
 
-$client = Client::web('https://mcp.example.com')->withToken($token);
+$client = Client::web('https://api.githubcopilot.com/mcp/')->withToken(
+    config('services.github_mcp.token'),
+);
 
-$client = Client::web('https://mcp.example.com')->withToken(
-    fn () => Auth::user()->mcpToken(),
+$client = Client::web('https://api.githubcopilot.com/mcp/')->withToken(
+    fn () => Auth::user()->github_mcp_token,
 );
 ```
 
@@ -1810,14 +1895,16 @@ $client = Client::web('https://mcp.example.com')->withToken(
 use Laravel\Mcp\Client;
 use Laravel\Mcp\Facades\Mcp;
 
-Mcp::registerClient('github', fn () => Client::web('https://mcp.example.com')->withOAuth(
+Mcp::registerClient('github', fn () => Client::web('https://api.githubcopilot.com/mcp/')->withOAuth(
     clientId: config('services.github_mcp.client_id'),
     clientSecret: config('services.github_mcp.client_secret'),
 ));
 ```
 
 > [!NOTE]
-> 当 MCP 服务器支持[动态客户端注册](https://datatracker.ietf.org/doc/html/rfc7591)时，`clientId` 和 `clientSecret` 参数可以省略，在这种情况下，客户端会自动注册自己。
+> `clientId` 和 `clientSecret` 参数可以省略。当授权服务器支持 [Client ID Metadata Document](https://modelcontextprotocol.io/specification/2026-07-28/basic/authorization/client-registration#client-id-metadata-documents) 时，Laravel 会使用它；对于旧版服务器，则回退到[动态客户端注册](https://datatracker.ietf.org/doc/html/rfc7591)。
+
+授权服务器必须在其授权服务器元数据中通告支持 `S256` PKCE 代码挑战方法。如果未通告 PKCE 支持，Laravel 将拒绝本次授权尝试。
 
 接下来，在 `routes/ai.php` 文件中使用 `oAuthRoutesFor` 方法为命名客户端注册 OAuth 路由。你提供的闭包会在授权码已兑换为访问令牌后接收客户端名称和生成的 `TokenSet`：
 
@@ -1835,7 +1922,28 @@ Mcp::oAuthRoutesFor('github', function (string $client, TokenSet $token) {
 });
 ```
 
-这会注册两个命名路由：一个将用户重定向到授权服务器的连接路由（`mcp.oauth.{client}.connect`），以及一个兑换授权码并调用你的处理器的回调路由（`mcp.oauth.{client}.callback`）。默认情况下，两个路由都使用 `web` 中间件组，你可以使用 `middleware` 参数覆盖。
+这会注册三个命名路由：一个将用户重定向到授权服务器的连接路由（`mcp.oauth.{client}.connect`）、一个兑换授权码并调用你的处理器的回调路由（`mcp.oauth.{client}.callback`），以及一个公开的 Client ID Metadata Document 路由（`mcp.oauth.{client}.client-metadata`）。默认情况下，连接路由和回调路由都使用 `web` 中间件组，你可以使用 `middleware` 参数覆盖。元数据路由不使用该中间件，因为授权服务器必须能够获取它。
+
+该元数据文档会将你的应用描述为一个公开 OAuth 客户端，并使用应用的 `APP_URL` 生成客户端 ID 和回调 URL。因此，请确保在生产环境中正确设置了 `APP_URL` 环境变量。你可以自定义元数据路由并提供额外的元数据，方法是使用 `clientMetadataUri` 和 `clientMetadata` 参数：
+
+```php
+use Laravel\Mcp\Client\OAuth\TokenSet;
+use Laravel\Mcp\Facades\Mcp;
+
+Mcp::oAuthRoutesFor(
+    'github',
+    function (string $client, TokenSet $token) {
+        // Store the token...
+
+        return redirect('/dashboard');
+    },
+    clientMetadataUri: 'oauth/github/client.json',
+    clientMetadata: [
+        'client_name' => 'Acme Dashboard',
+        'logo_uri' => 'https://acme.com/logo.png',
+    ],
+);
+```
 
 要开始授权流程，请将用户重定向到连接路由：
 
@@ -1872,8 +1980,9 @@ $tools = Mcp::client('github')->tools(limit: 10);
 ```php
 use Laravel\Mcp\Facades\Mcp;
 
-$result = Mcp::client('github')->callTool('current-weather', [
-    'location' => 'New York',
+$result = Mcp::client('github')->callTool('list_issues', [
+    'owner' => 'laravel',
+    'repo' => 'framework',
 ]);
 
 $result->text(); // The text content of the response...
@@ -1887,8 +1996,9 @@ $result->structuredContent;  // Structured content, if any...
 ```php
 $tools = Mcp::client('github')->tools();
 
-$result = $tools['current-weather']->call([
-    'location' => 'New York',
+$result = $tools['list_issues']->call([
+    'owner' => 'laravel',
+    'repo' => 'framework',
 ]);
 ```
 
@@ -1923,8 +2033,11 @@ $prompts = Mcp::client('github')->prompts(limit: 10);
 ```php
 use Laravel\Mcp\Facades\Mcp;
 
-$result = Mcp::client('github')->getPrompt('describe-weather', [
-    'location' => 'New York',
+$result = Mcp::client('github')->getPrompt('issue_to_fix_workflow', [
+    'owner' => 'laravel',
+    'repo' => 'framework',
+    'title' => 'Fix typo in README',
+    'description' => 'The installation section has a typo.',
 ]);
 
 $result->text(); // The text content of the messages...
@@ -1964,7 +2077,7 @@ $resources = Mcp::client('github')->resources(limit: 10);
 ```php
 use Laravel\Mcp\Facades\Mcp;
 
-$result = Mcp::client('github')->readResource('weather://guidelines');
+$result = Mcp::client('github')->readResource('repo://laravel/framework/contents/README.md');
 
 $result->content(); // The content of the resource, decoding base64 blobs as needed...
 (string) $result; // Equivalent to calling content()...

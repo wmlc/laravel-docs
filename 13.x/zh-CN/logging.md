@@ -46,7 +46,6 @@ Laravel 的日志基于"频道"。每个频道代表一种写入日志信息的�
 | `monthly`    | 基于 Monolog `RotatingFileHandler` 的驱动，按月轮转。  |
 | `errorlog`   | 基于 Monolog `ErrorLogHandler` 的驱动。                           |
 | `monolog`    | Monolog 工厂驱动，可使用任何受支持的 Monolog 处理器。 |
-| `papertrail` | 基于 Monolog `SyslogUdpHandler` 的驱动。                           |
 | `single`     | 基于单个文件或路径的日志频道（`StreamHandler`）。        |
 | `slack`      | 基于 Monolog `SlackWebhookHandler` 的驱动。                        |
 | `stack`      | 用于创建"多频道"频道的包装器。           |

@@ -195,7 +195,7 @@ php artisan route:list -v
 php artisan route:list -vv
 ```
 
-你还可以指示 Laravel 只显示以给定 URI 开头的路由：
+你还可以指示 Laravel 只显示 URI 中包含给定字符串的路由：
 
 ```shell
 php artisan route:list --path=api

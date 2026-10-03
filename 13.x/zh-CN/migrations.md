@@ -1192,13 +1192,19 @@ $table->uuid('id');
 `vector` 方法创建一个 `vector` 等效列：
 
 ```php
-$table->vector('embedding', dimensions: 100);
+$table->vector('embedding', dimensions: 1536);
 ```
 
-使用 PostgreSQL 时，必须先加载 `pgvector` 扩展，然后才能创建 `vector` 列：
+`vector` 列在启用了 `pgvector` 扩展的 PostgreSQL 连接以及 MariaDB 11.7 及以上版本上受支持。使用 PostgreSQL 时，必须先加载 `pgvector`，然后才能创建 `vector` 列：
 
 ```php
 Schema::ensureVectorExtensionExists();
+```
+
+要加速[向量相似度查询](/docs/{{version}}/queries#vector-similarity-clauses)，可以为该列添加向量索引。在 `vector` 列上调用 `index` 方法会创建一个使用余弦距离的向量索引：
+
+```php
+$table->vector('embedding', dimensions: 1536)->index();
 ```
 
 <a name="column-method-year"></a>
@@ -1457,6 +1463,7 @@ Laravel 的模式构建器蓝图类提供了创建 Laravel 支持的每种索引
 | `$table->fullText('body');`                      | 添加全文索引（MariaDB / MySQL / PostgreSQL）。         |
 | `$table->fullText('body')->language('english');` | 添加指定语言的全文索引（PostgreSQL）。 |
 | `$table->spatialIndex('location');`              | 添加空间索引（SQLite 除外）。                          |
+| `$table->vectorIndex('embedding');`              | 添加向量索引（MariaDB / PostgreSQL）。                    |
 
 <a name="online-index-creation"></a>
 #### 在线索引创建
@@ -1464,10 +1471,28 @@ Laravel 的模式构建器蓝图类提供了创建 Laravel 支持的每种索引
 默认情况下，在大型表上创建索引可能会锁定表，并在构建索引期间阻止读取或写入。使用 PostgreSQL 或 SQL Server 时，你可以将 `online` 方法链式附加到索引定义上，以在不锁定表的情况下创建索引，让应用在索引创建期间继续读写数据：
 
 ```php
-$table->string('email')->unique()->online();
+$table->unique('email')->online();
 ```
 
 使用 PostgreSQL 时，这会向索引创建语句添加 `CONCURRENTLY` 选项。使用 SQL Server 时，这会添加 `WITH (online = on)` 选项。
+
+使用 MySQL 时，你可以将 `inplace` 修饰符链式附加到索引或外键定义上，指定该操作应使用 `INPLACE` 算法：
+
+```php
+$table->index('email')->inplace();
+
+$table->foreign('user_id')->references('id')->on('users')->inplace();
+```
+
+`inplace` 修饰符可以与 `lock` 修饰符结合使用，以控制操作期间的表锁定：
+
+```php
+$table->index('email')->inplace()->lock('none');
+```
+
+对外键操作使用 `inplace` 修饰符时，必须禁用外键检查。
+
+有关哪些操作支持 `INPLACE` 算法和锁定模式，请参考 [MySQL 文档](https://dev.mysql.com/doc/refman/8.0/en/innodb-online-ddl-operations.html)。
 
 <a name="renaming-indexes"></a>
 ### 重命名索引
@@ -1475,7 +1500,7 @@ $table->string('email')->unique()->online();
 要重命名索引，可以使用模式构建器蓝图提供的 `renameIndex` 方法。此方法接受当前索引名称作为第一个参数，期望名称作为第二个参数：
 
 ```php
-$table->renameIndex('from', 'to')
+$table->renameIndex('from', 'to');
 ```
 
 <a name="dropping-indexes"></a>
@@ -1490,6 +1515,7 @@ $table->renameIndex('from', 'to')
 | `$table->dropIndex('geo_state_index');`                  | 从 "geo" 表删除基本索引。                    |
 | `$table->dropFullText('posts_body_fulltext');`           | 从 "posts" 表删除全文索引。              |
 | `$table->dropSpatialIndex('geo_location_spatialindex');` | 从 "geo" 表删除空间索引（SQLite 除外）。 |
+| `$table->dropVectorIndex('documents_embedding_vectorindex');` | 从 "documents" 表删除向量索引。             |
 
 如果将列数组传递给删除索引的方法，将根据表名、列和索引类型生成约定名称：
 
@@ -1599,11 +1625,11 @@ Schema::withoutForeignKeyConstraints(function () {
 <a name="events"></a>
 ## 事件
 
-为方便起见，每次迁移操作都会触发一个[事件](/docs/{{version}}/events)。以下所有事件都继承自基础 `Illuminate\Database\Events\MigrationEvent` 类：
+为方便起见，每次迁移操作都会触发一个[事件](/docs/{{version}}/events)。除 `SchemaDumped` 和 `SchemaLoaded` 之外，以下所有事件都实现了 `Illuminate\Contracts\Database\Events\MigrationEvent` 接口：
 
 | 类                                            | 描述                                      |
 | ------------------------------------------------ | ------------------------------------------------ |
-| `Illuminate\Database\Events\DatabaseRefreshed`   | `migrate:refresh` 命令已完成。      |
+| `Illuminate\Database\Events\DatabaseRefreshed`   | `migrate:fresh` 或 `migrate:refresh` 命令已完成。      |
 | `Illuminate\Database\Events\MigrationsStarted`   | 一批迁移即将执行。   |
 | `Illuminate\Database\Events\MigrationsEnded`     | 一批迁移已执行完毕。              |
 | `Illuminate\Database\Events\MigrationStarted`    | 单个迁移即将执行。      |

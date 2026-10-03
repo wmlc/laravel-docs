@@ -27,7 +27,7 @@ export default defineConfig({
     },
 
     socialLinks: [
-      { icon: 'github', link: 'https://github.com/laravel/laravel' }
+      { icon: 'github', link: 'https://github.com/laravel/docs' }
     ],
 
     search: {

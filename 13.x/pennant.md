@@ -148,7 +148,8 @@ class NewApi
 If you would like to manually resolve an instance of a class-based feature, you may invoke the `instance` method on the `Feature` facade:
 
 ```php
-use Illuminate\Support\Facades\Feature;
+use App\Features\NewApi;
+use Laravel\Pennant\Feature;
 
 $instance = Feature::instance(NewApi::class);
 ```
@@ -339,7 +340,7 @@ Of course, the `features` method provides access to many other convenient method
 
 ```php
 // Values...
-$value = $user->features()->value('purchase-button')
+$value = $user->features()->value('purchase-button');
 $values = $user->features()->values(['new-api', 'purchase-button']);
 
 // State...

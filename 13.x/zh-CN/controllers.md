@@ -552,7 +552,7 @@ Laravel 的复数化器支持[多种不同的语言，你可以根据需要自�
 ```text
 /publicacion/crear
 
-/publicacion/{publicaciones}/editar
+/publicacion/{publicacion}/editar
 ```
 
 <a name="restful-supplementing-resource-controllers"></a>
@@ -561,7 +561,7 @@ Laravel 的复数化器支持[多种不同的语言，你可以根据需要自�
 如果你需要为资源控制器添加超出默认资源路由集合的额外路由，应当在调用 `Route::resource` 方法之前定义这些路由；否则，`resource` 方法定义的路由可能会无意中优先于你的补充路由：
 
 ```php
-use App\Http\Controller\PhotoController;
+use App\Http\Controllers\PhotoController;
 
 Route::get('/photos/popular', [PhotoController::class, 'popular']);
 Route::resource('photos', PhotoController::class);

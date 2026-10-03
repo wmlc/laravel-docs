@@ -402,7 +402,7 @@ return $results['first']->output();
 由于进程池的 `running` 方法提供了池中所有已调用进程的集合，你可以轻松访问底层池进程 ID：
 
 ```php
-$processIds = $pool->running()->each->id();
+$processIds = $pool->running()->map->id();
 ```
 
 并且，为方便起见，你可以在进程池上调用 `signal` 方法，向池中的每个进程发送信号：

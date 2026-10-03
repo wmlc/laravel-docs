@@ -41,7 +41,7 @@ $names = User::all()->reject(function (User $user) {
 
 所有 Eloquent 集合都继承自[基础 Laravel 集合](/docs/{{version}}/collections#available-methods)对象；因此，它们继承了基础集合类提供的所有强大方法。
 
-此外，`Illuminate\Database\Eloquent\Collection` 类还提供了一组超集方法，用于协助管理你的模型集合。大多数方法返回 `Illuminate\Database\Eloquent\Collection` 实例；不过，部分方法（如 `modelKeys`）会返回 `Illuminate\Support\Collection` 实例。
+此外，`Illuminate\Database\Eloquent\Collection` 类还提供了一组超集方法，用于协助管理你的模型集合。大多数方法返回 `Illuminate\Database\Eloquent\Collection` 实例；不过，部分方法（如 `pluck`）会返回 `Illuminate\Support\Collection` 实例。
 
 <style>
     .collection-method-list > p {

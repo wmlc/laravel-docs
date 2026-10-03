@@ -436,6 +436,32 @@ protected function casts(): array
 }
 ```
 
+默认情况下，为使用 `AsArrayObject` 或 `AsCollection` 转换的属性赋值为 `null` 时，会将 JSON `null` 值存入数据库。如果你希望 `null` 值改为存储为原生 SQL `NULL` 值，可以在定义转换时调用 `nullable` 方法：
+
+```php
+use Illuminate\Database\Eloquent\Casts\AsCollection;
+
+/**
+ * 获取应被转换的属性。
+ *
+ * @return array<string, string>
+ */
+protected function casts(): array
+{
+    return [
+        'options' => AsCollection::nullable(),
+    ];
+}
+```
+
+`nullable` 方法也可以与自定义集合类结合使用：
+
+```php
+'options' => AsCollection::nullable(OptionCollection::class),
+```
+
+`AsArrayObject` 转换也提供了行为相同的 `nullable` 方法。
+
 如果你希望 `AsCollection` 转换实例化一个自定义集合类，而不是 Laravel 的基础集合类，可以将该集合类名作为转换参数提供：
 
 ```php

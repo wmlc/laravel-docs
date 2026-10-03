@@ -364,7 +364,7 @@ class MongoSessionHandler implements \SessionHandlerInterface
 - `read` 方法应返回与给定 `$sessionId` 关联的会话数据的字符串版本。在驱动中检索或存储会话数据时无需进行任何序列化或其他编码，因为 Laravel 会为你执行序列化。
 - `write` 方法应将与 `$sessionId` 关联的给定 `$data` 字符串写入某个持久化存储系统，例如 MongoDB 或你选择的其他存储系统。同样，你不应执行任何序列化——Laravel 已经为你处理了。
 - `destroy` 方法应从持久化存储中移除与 `$sessionId` 关联的数据。
-- `gc` 方法应销毁所有早于给定 `$lifetime`（一个 UNIX 时间戳）的会话数据。对于 Memcached 和 Redis 这类自过期系统，此方法可以留空。
+- `gc` 方法应销毁所有早于给定 `$lifetime`（单位为秒）的会话数据。对于 Memcached 和 Redis 这类自过期系统，此方法可以留空。
 
 </div>
 

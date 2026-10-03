@@ -14,6 +14,7 @@
     - [Filtering Queries via Intermediate Table Columns](#filtering-queries-via-intermediate-table-columns)
     - [Ordering Queries via Intermediate Table Columns](#ordering-queries-via-intermediate-table-columns)
     - [Defining Custom Intermediate Table Models](#defining-custom-intermediate-table-models)
+        - [Automatically Hydrating Pivot Relationships](#automatically-hydrating-pivot-relationships)
 - [Polymorphic Relationships](#polymorphic-relationships)
     - [One to One](#one-to-one-polymorphic-relations)
     - [One to Many](#one-to-many-polymorphic-relations)
@@ -1014,6 +1015,49 @@ class RoleUser extends Pivot
 }
 ```
 
+<a name="automatically-hydrating-pivot-relationships"></a>
+#### Automatically Hydrating Pivot Relationships
+
+When a custom pivot model defines `belongsTo` relationships for the declaring and related models, you may invoke `chaperone` to automatically hydrate those relationships on each pivot model. This avoids additional queries when accessing the models through the pivot:
+
+```php
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\Pivot;
+
+class RoleUser extends Pivot
+{
+    public function role(): BelongsTo
+    {
+        return $this->belongsTo(Role::class);
+    }
+
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
+    }
+}
+
+class Role extends Model
+{
+    public function users(): BelongsToMany
+    {
+        return $this->belongsToMany(User::class)
+            ->using(RoleUser::class)
+            ->chaperone();
+    }
+}
+```
+
+Eloquent will attempt to infer the pivot relationship names. If your pivot model uses non-standard names, pass the declaring and related relationship names to `chaperone`:
+
+```php
+return $this->belongsToMany(User::class)
+    ->using(RoleUser::class)
+    ->chaperone(declaring: 'role', related: 'user');
+```
+
 <a name="polymorphic-relationships"></a>
 ## Polymorphic Relationships
 
@@ -1842,7 +1886,7 @@ If you need to set additional query constraints on the count query, you may pass
 ```php
 $book->loadCount(['reviews' => function (Builder $query) {
     $query->where('rating', 5);
-}])
+}]);
 ```
 
 <a name="relationship-counting-and-custom-select-statements"></a>
@@ -2310,7 +2354,7 @@ public function boot(): void
 
 After preventing lazy loading, Eloquent will throw a `Illuminate\Database\LazyLoadingViolationException` exception when your application attempts to lazy load any Eloquent relationship.
 
-You may customize the behavior of lazy loading violations using the `handleLazyLoadingViolationsUsing` method. For example, using this method, you may instruct lazy loading violations to only be logged instead of interrupting the application's execution with exceptions:
+You may customize the behavior of lazy loading violations using the `handleLazyLoadingViolationUsing` method. For example, using this method, you may instruct lazy loading violations to only be logged instead of interrupting the application's execution with exceptions:
 
 ```php
 Model::handleLazyLoadingViolationUsing(function (Model $model, string $relation) {

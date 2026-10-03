@@ -392,7 +392,7 @@ $name = $request->string('name')->trim();
 <a name="retrieving-integer-input-values"></a>
 #### 检索整数输入值
 
-要将输入值作为整数检索，可以使用 `integer` 方法。此方法将尝试将输入值转换为整数。如果输入不存在或转换失败，它将返回你指定的默认值。这对于分页或其他数字输入特别有用：
+要将输入值作为整数检索，可以使用 `integer` 方法。此方法将尝试将输入值转换为整数。如果输入不存在，它将返回你指定的默认值。这对于分页或其他数字输入特别有用：
 
 ```php
 $perPage = $request->integer('per_page');

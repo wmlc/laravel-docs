@@ -201,7 +201,7 @@ Route::get('/orders', function () {
 
 ```php
 return $request->user()->id === $server->user_id &&
-       $request->user()->tokenCan('server:update')
+       $request->user()->tokenCan('server:update');
 ```
 
 起初，允许调用 `tokenCan` 方法并对第一方 UI 发起的请求始终返回 `true` 可能看起来很奇怪；但是，能够始终假设 API 令牌可用并可以通过 `tokenCan` 方法检查是很方便的。通过采用这种方法，你可以在应用的授权策略中始终调用 `tokenCan` 方法，而无需担心请求是由应用 UI 触发还是由 API 的第三方消费者发起。
@@ -380,6 +380,7 @@ return Application::configure(basePath: dirname(__DIR__))
         __DIR__.'/../routes/channels.php',
         ['prefix' => 'api', 'middleware' => ['api', 'auth:sanctum']],
     )
+    ->create();
 ```
 
 接下来，为了让 Pusher 的授权请求成功，你需要在初始化 [Laravel Echo](/docs/{{version}}/broadcasting#client-side-installation) 时提供自定义的 Pusher `authorizer`。这允许你的应用配置 Pusher 使用[已为跨域请求正确配置](#cors-and-cookies)的 `axios` 实例：

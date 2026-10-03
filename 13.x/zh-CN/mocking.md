@@ -248,7 +248,7 @@ $this->travel(5)->days(function () {
     // Test something five days into the future...
 });
 
-$this->travelTo(now()->mins(days: 10), function () {
+$this->travelTo(now()->minus(days: 10), function () {
     // Test something during a given moment...
 });
 ```
@@ -266,7 +266,7 @@ $this->freezeTime(function (Carbon $time) {
 // Freeze time at the current second and resume normal time after executing closure...
 $this->freezeSecond(function (Carbon $time) {
     // ...
-})
+});
 ```
 
 正如你所预料的那样，上面讨论的所有方法主要适用于测试对时间敏感的应用行为，例如锁定讨论论坛中不活跃的帖子：

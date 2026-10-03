@@ -6,10 +6,12 @@
     - [Reverb](#reverb)
     - [Pusher Channels](#pusher-channels)
     - [Ably](#ably)
+    - [Mercure](#mercure)
 - [Client Side Installation](#client-side-installation)
     - [Reverb](#client-reverb)
     - [Pusher Channels](#client-pusher-channels)
     - [Ably](#client-ably)
+    - [Mercure](#client-mercure)
 - [Concept Overview](#concept-overview)
     - [Using an Example Application](#using-example-application)
 - [Defining Broadcast Events](#defining-broadcast-events)
@@ -35,6 +37,7 @@
     - [Authorizing Presence Channels](#authorizing-presence-channels)
     - [Joining Presence Channels](#joining-presence-channels)
     - [Broadcasting to Presence Channels](#broadcasting-to-presence-channels)
+- [Encrypted Private Channels](#encrypted-private-channels)
 - [Model Broadcasting](#model-broadcasting)
     - [Model Broadcasting Conventions](#model-broadcasting-conventions)
     - [Listening for Model Broadcasts](#listening-for-model-broadcasts)
@@ -55,7 +58,7 @@ The core concepts behind broadcasting are simple: clients connect to named chann
 <a name="supported-drivers"></a>
 #### Supported Drivers
 
-By default, Laravel includes three server-side broadcasting drivers for you to choose from: [Laravel Reverb](https://reverb.laravel.com), [Pusher Channels](https://pusher.com/channels), and [Ably](https://ably.com).
+By default, Laravel includes four server-side broadcasting drivers for you to choose from: [Laravel Reverb](https://reverb.laravel.com), [Pusher Channels](https://pusher.com/channels), [Ably](https://ably.com), and [Mercure](https://mercure.rocks).
 
 > [!NOTE]
 > Before diving into event broadcasting, make sure you have read Laravel's documentation on [events and listeners](/docs/{{version}}/events).
@@ -71,7 +74,7 @@ php artisan install:broadcasting
 
 The `install:broadcasting` command will prompt you for which event broadcasting service you would like to use. In addition, it will create the `config/broadcasting.php` configuration file and the `routes/channels.php` file where you may register your application's broadcast authorization routes and callbacks.
 
-Laravel supports several broadcast drivers out of the box: [Laravel Reverb](/docs/{{version}}/reverb), [Pusher Channels](https://pusher.com/channels), [Ably](https://ably.com), and a `log` driver for local development and debugging. Additionally, a `null` driver is included which allows you to disable broadcasting during testing. A configuration example is included for each of these drivers in the `config/broadcasting.php` configuration file.
+Laravel supports several broadcast drivers out of the box: [Laravel Reverb](/docs/{{version}}/reverb), [Pusher Channels](https://pusher.com/channels), [Ably](https://ably.com), [Mercure](https://mercure.rocks), and a `log` driver for local development and debugging. Additionally, a `null` driver is included which allows you to disable broadcasting during testing. A configuration example is included for each of these drivers in the `config/broadcasting.php` configuration file.
 
 All of your application's event broadcasting configuration is stored in the `config/broadcasting.php` configuration file. Don't worry if this file does not exist in your application; it will be created when you run the `install:broadcasting` Artisan command.
 
@@ -156,6 +159,24 @@ BROADCAST_CONNECTION=pusher
 
 Finally, you are ready to install and configure [Laravel Echo](#client-side-installation), which will receive the broadcast events on the client-side.
 
+<a name="pusher-manual-installation-encrypted-private-channels"></a>
+#### Encrypted Private Channels
+
+If you plan to use [end-to-end encrypted private channels](#encrypted-private-channels), you should add an `encryption_master_key_base64` option containing a base64 encoded, 32-byte key to the `pusher` connection's `options` array:
+
+```php
+'options' => [
+    // ...
+    'encryption_master_key_base64' => env('PUSHER_ENCRYPTION_MASTER_KEY'),
+],
+```
+
+You may generate a suitable key using the `openssl` command:
+
+```shell
+openssl rand -base64 32
+```
+
 <a name="ably"></a>
 ### Ably
 
@@ -189,6 +210,44 @@ Then, set the `BROADCAST_CONNECTION` environment variable to `ably` in your appl
 
 ```ini
 BROADCAST_CONNECTION=ably
+```
+
+Finally, you are ready to install and configure [Laravel Echo](#client-side-installation), which will receive the broadcast events on the client-side.
+
+<a name="mercure"></a>
+### Mercure
+
+To quickly enable support for Laravel's broadcasting features while using Mercure as your event broadcaster, invoke the `install:broadcasting` Artisan command with the `--mercure` option. This Artisan command will prompt you for your Mercure credentials, install the Mercure PHP and JavaScript SDKs, and update your application's `.env` file with the appropriate variables:
+
+```shell
+php artisan install:broadcasting --mercure
+```
+
+<a name="mercure-manual-installation"></a>
+#### Manual Installation
+
+To install Mercure support manually, you should install the Symfony Mercure component and the JWT library:
+
+```shell
+composer require symfony/mercure:^0.8 web-token/jwt-library:^4.1
+```
+
+Next, you should configure the Mercure connection in your application's `.env` file:
+
+```ini
+BROADCAST_CONNECTION=mercure
+
+MERCURE_URL=https://mercure.example.com/.well-known/mercure
+MERCURE_PUBLIC_URL=https://mercure.example.com/.well-known/mercure
+MERCURE_JWT_SECRET=<your-mercure-jwt-secret>
+```
+
+The `MERCURE_URL` value is the URL Laravel uses to publish updates, while `MERCURE_PUBLIC_URL` is the URL that browser clients use to subscribe. Your Mercure hub must be configured with the same JWT secret.
+
+To use [end-to-end encrypted private channels](#encrypted-private-channels), configure a 32-byte `MERCURE_ENCRYPTION_KEY` environment variable:
+
+```ini
+MERCURE_ENCRYPTION_KEY=<your-32-byte-encryption-key>
 ```
 
 Finally, you are ready to install and configure [Laravel Echo](#client-side-installation), which will receive the broadcast events on the client-side.
@@ -496,10 +555,60 @@ npm run dev
 > [!NOTE]
 > To learn more about compiling your application's JavaScript assets, please consult the documentation on [Vite](/docs/{{version}}/vite).
 
+<a name="client-mercure"></a>
+### Mercure
+
+To use Mercure with Laravel Echo, install the `laravel-echo` package:
+
+```shell
+npm install --save-dev laravel-echo
+```
+
+Next, create an Echo instance with the `mercure` broadcaster. The `host` option defaults to `/.well-known/mercure` on the current origin:
+
+```js tab=JavaScript
+import Echo from 'laravel-echo';
+
+window.Echo = new Echo({
+    broadcaster: 'mercure',
+    host: import.meta.env.VITE_MERCURE_HUB_URL,
+});
+```
+
+```js tab=React
+import { configureEcho } from "@laravel/echo-react";
+
+configureEcho({
+    broadcaster: "mercure",
+});
+```
+
+```js tab=Vue
+import { configureEcho } from "@laravel/echo-vue";
+
+configureEcho({
+    broadcaster: "mercure",
+});
+```
+
+```js tab=Svelte
+import { configureEcho } from "@laravel/echo-svelte";
+
+configureEcho({
+    broadcaster: "mercure",
+});
+```
+
+Define the hub URL in your `.env` file:
+
+```ini
+VITE_MERCURE_HUB_URL="${MERCURE_PUBLIC_URL}"
+```
+
 <a name="concept-overview"></a>
 ## Concept Overview
 
-Laravel's event broadcasting allows you to broadcast your server-side Laravel events to your client-side JavaScript application using a driver-based approach to WebSockets. Currently, Laravel ships with [Laravel Reverb](https://reverb.laravel.com), [Pusher Channels](https://pusher.com/channels), and [Ably](https://ably.com) drivers. The events may be easily consumed on the client-side using the [Laravel Echo](#client-side-installation) JavaScript package.
+Laravel's event broadcasting allows you to broadcast your server-side Laravel events to your client-side JavaScript application using a driver-based approach. Currently, Laravel ships with [Laravel Reverb](https://reverb.laravel.com), [Pusher Channels](https://pusher.com/channels), [Ably](https://ably.com), and [Mercure](https://mercure.rocks) drivers. The events may be easily consumed on the client-side using the [Laravel Echo](#client-side-installation) JavaScript package.
 
 Events are broadcast over "channels", which may be specified as public or private. Any visitor to your application may subscribe to a public channel without any authentication or authorization; however, in order to subscribe to a private channel, a user must be authenticated and authorized to listen on that channel.
 
@@ -705,7 +814,7 @@ public function broadcastAs(): string
 
 If you customize the broadcast name using the `broadcastAs` method, you should make sure to register your listener with a leading `.` character. This will instruct Echo to not prepend the application's namespace to the event:
 
-```javascript
+```js
 .listen('.server.created', function (e) {
     // ...
 });
@@ -768,6 +877,8 @@ public function broadcastQueue(): string
     return 'default';
 }
 ```
+
+If you would like all of your broadcast events to use the same queue without customizing each event class, you may [route the `ShouldBroadcast` contract to a queue](/docs/{{version}}/queues#queue-routing) instead.
 
 If you would like to broadcast your event using the `sync` queue instead of the default queue driver, you can implement the `ShouldBroadcastNow` interface instead of `ShouldBroadcast`:
 
@@ -1563,6 +1674,47 @@ Echo.join(`chat.${roomId}`)
     .listen('NewMessage', (e) => {
         // ...
     });
+```
+
+<a name="encrypted-private-channels"></a>
+## Encrypted Private Channels
+
+Private channels ensure that only authorized users may listen on a channel. However, the event data itself still passes through your broadcasting service in plain text. When using Pusher Channels or Mercure, you may use end-to-end encrypted private channels so that only your application and its authorized clients are able to read the event's data.
+
+To get started, configure an encryption key for [Pusher Channels](#pusher-manual-installation) or [Mercure](#mercure-manual-installation). Then, return an instance of `EncryptedPrivateChannel` from your event's `broadcastOn` method:
+
+```php
+use Illuminate\Broadcasting\EncryptedPrivateChannel;
+
+/**
+ * Get the channels the event should broadcast on.
+ *
+ * @return array<int, \Illuminate\Broadcasting\Channel>
+ */
+public function broadcastOn(): array
+{
+    return [
+        new EncryptedPrivateChannel('orders.'.$this->order->id),
+    ];
+}
+```
+
+Encrypted private channels are authorized exactly like private channels, so an `orders.{orderId}` authorization callback in your application's `routes/channels.php` file will also authorize the encrypted `orders.1` channel.
+
+In your JavaScript application, you may subscribe to the channel using Echo's `encryptedPrivate` method:
+
+```js
+Echo.encryptedPrivate(`orders.${orderId}`)
+    .listen('OrderShipmentStatusUpdated', (e) => {
+        console.log(e.order);
+    });
+```
+
+When using Pusher Channels, the default `pusher-js` build does not include the code needed to decrypt messages. Instead, you should import the `with-encryption` build when [configuring Echo](#pusher-client-manual-installation):
+
+```js
+import Pusher from 'pusher-js/with-encryption';
+window.Pusher = Pusher;
 ```
 
 <a name="model-broadcasting"></a>

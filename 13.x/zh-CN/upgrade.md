@@ -213,7 +213,7 @@ Laravel 现在会验证调用者为 `uniqueBy` 提供非空值，并在值无效
 
 Laravel 现在会为 MySQL 语法编译包含 `ORDER BY` 和 `LIMIT` 的完整 `DELETE ... JOIN` 查询。
 
-在以前的版本中，`ORDER BY` / `LIMIT` 子句在连接删除时可能被静默忽略。在 Laravel 13 中，这些子句会包含在生成的 SQL 中。因此，不支持此语法的数据库引擎（例如标准的 MySQL / MariaDB 变体）现在可能抛出 `QueryException`，而不是执行无界删除。
+在以前的版本中，`ORDER BY` / `LIMIT` 子句在连接删除时可能被静默忽略。在 Laravel 13 中，这些子句会包含在生成的 SQL 中。因此，不支持此语法的数据库引擎（MySQL，以及 11.8.1 之前的 MariaDB）现在可能抛出 `QueryException`，而不是执行无界删除。
 
 <a name="eloquent"></a>
 ### Eloquent
@@ -475,7 +475,7 @@ Arr::first($array, function ($value) {
 
 Bootstrap 3 默认值的内部分页视图名称现在改为显式名称：
 
-```nothing
+```text
 // Laravel <= 12.x
 pagination::default
 pagination::simple-default

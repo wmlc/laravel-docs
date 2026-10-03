@@ -111,7 +111,7 @@ Envoy 允许你轻松地在多台服务器上运行任务。首先，在你的 `
 
 有时，你可能需要在运行 Envoy 任务之前执行任意 PHP 代码。你可以使用 `@setup` 指令定义一个应该在任务执行前运行的 PHP 代码块：
 
-```php
+```blade
 @setup
     $now = new DateTime;
 @endsetup

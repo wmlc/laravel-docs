@@ -6,10 +6,12 @@
     - [Reverb](#reverb)
     - [Pusher Channels](#pusher-channels)
     - [Ably](#ably)
+    - [Mercure](#mercure)
 - [客户端安装](#client-side-installation)
     - [Reverb](#client-reverb)
     - [Pusher Channels](#client-pusher-channels)
     - [Ably](#client-ably)
+    - [Mercure](#client-mercure)
 - [概念概览](#concept-overview)
     - [使用示例应用](#using-example-application)
 - [定义广播事件](#defining-broadcast-events)
@@ -35,6 +37,7 @@
     - [授权在线状态频道](#authorizing-presence-channels)
     - [加入在线状态频道](#joining-presence-channels)
     - [向在线状态频道广播](#broadcasting-to-presence-channels)
+- [加密私有频道](#encrypted-private-channels)
 - [模型广播](#model-broadcasting)
     - [模型广播约定](#model-broadcasting-conventions)
     - [监听模型广播](#listening-for-model-broadcasts)
@@ -55,7 +58,7 @@
 <a name="supported-drivers"></a>
 #### 支持的驱动
 
-默认情况下，Laravel 内置了三种服务端广播驱动供你选择：[Laravel Reverb](https://reverb.laravel.com)、[Pusher Channels](https://pusher.com/channels) 与 [Ably](https://ably.com)。
+默认情况下，Laravel 内置了四种服务端广播驱动供你选择：[Laravel Reverb](https://reverb.laravel.com)、[Pusher Channels](https://pusher.com/channels)、[Ably](https://ably.com) 与 [Mercure](https://mercure.rocks)。
 
 > [!NOTE]
 > 在深入事件广播之前，请确保你已阅读 Laravel 关于 [事件与监听器](/docs/{{version}}/events) 的文档。
@@ -71,7 +74,7 @@ php artisan install:broadcasting
 
 `install:broadcasting` 命令会提示你选择希望使用的事件广播服务。此外，它还会创建 `config/broadcasting.php` 配置文件以及 `routes/channels.php` 文件，你可以在其中注册应用的广播授权路由与回调。
 
-Laravel 开箱即用地支持多种广播驱动：[Laravel Reverb](/docs/{{version}}/reverb)、[Pusher Channels](https://pusher.com/channels)、[Ably](https://ably.com)，以及一个用于本地开发与调试的 `log` 驱动。此外，还包含一个 `null` 驱动，让你在测试期间禁用广播。`config/broadcasting.php` 配置文件中为上述每个驱动都包含了一份配置示例。
+Laravel 开箱即用地支持多种广播驱动：[Laravel Reverb](/docs/{{version}}/reverb)、[Pusher Channels](https://pusher.com/channels)、[Ably](https://ably.com)、[Mercure](https://mercure.rocks)，以及一个用于本地开发与调试的 `log` 驱动。此外，还包含一个 `null` 驱动，让你在测试期间禁用广播。`config/broadcasting.php` 配置文件中为上述每个驱动都包含了一份配置示例。
 
 你应用的所有事件广播配置都存储在 `config/broadcasting.php` 配置文件中。如果此文件在你的应用中不存在也不必担心；当你运行 `install:broadcasting` Artisan 命令时它会自动创建。
 
@@ -156,6 +159,24 @@ BROADCAST_CONNECTION=pusher
 
 最后，你就可以安装并配置 [Laravel Echo](#client-side-installation)，它将在客户端接收广播事件。
 
+<a name="pusher-manual-installation-encrypted-private-channels"></a>
+#### 加密私有频道
+
+如果你计划使用[端到端加密的私有频道](#encrypted-private-channels)，应该在 `pusher` 连接的 `options` 数组中添加一个 `encryption_master_key_base64` 选项，该选项包含一个 base64 编码的 32 字节密钥：
+
+```php
+'options' => [
+    // ...
+    'encryption_master_key_base64' => env('PUSHER_ENCRYPTION_MASTER_KEY'),
+],
+```
+
+你可以使用 `openssl` 命令生成合适的密钥：
+
+```shell
+openssl rand -base64 32
+```
+
 <a name="ably"></a>
 ### Ably
 
@@ -189,6 +210,44 @@ ABLY_KEY=your-ably-key
 
 ```ini
 BROADCAST_CONNECTION=ably
+```
+
+最后，你就可以安装并配置 [Laravel Echo](#client-side-installation)，它将在客户端接收广播事件。
+
+<a name="mercure"></a>
+### Mercure
+
+要在使用 Mercure 作为事件广播器时快速启用对 Laravel 广播特性的支持，请使用 `--mercure` 选项调用 `install:broadcasting` Artisan 命令。该 Artisan 命令会提示你输入 Mercure 凭据、安装 Mercure 的 PHP 与 JavaScript SDK，并使用相应的变量更新应用的 `.env` 文件：
+
+```shell
+php artisan install:broadcasting --mercure
+```
+
+<a name="mercure-manual-installation"></a>
+#### 手动安装
+
+要手动安装 Mercure 支持，你应该安装 Symfony Mercure 组件和 JWT 库：
+
+```shell
+composer require symfony/mercure:^0.8 web-token/jwt-library:^4.1
+```
+
+接下来，你应该在应用的 `.env` 文件中配置 Mercure 连接：
+
+```ini
+BROADCAST_CONNECTION=mercure
+
+MERCURE_URL=https://mercure.example.com/.well-known/mercure
+MERCURE_PUBLIC_URL=https://mercure.example.com/.well-known/mercure
+MERCURE_JWT_SECRET=<your-mercure-jwt-secret>
+```
+
+`MERCURE_URL` 的值是 Laravel 用于发布更新的 URL，而 `MERCURE_PUBLIC_URL` 是浏览器客户端用于订阅的 URL。你的 Mercure hub 必须配置为使用相同的 JWT 密钥。
+
+要使用[端到端加密的私有频道](#encrypted-private-channels)，请配置一个 32 字节的 `MERCURE_ENCRYPTION_KEY` 环境变量：
+
+```ini
+MERCURE_ENCRYPTION_KEY=<your-32-byte-encryption-key>
 ```
 
 最后，你就可以安装并配置 [Laravel Echo](#client-side-installation)，它将在客户端接收广播事件。
@@ -495,6 +554,56 @@ npm run dev
 
 > [!NOTE]
 > 要了解更多关于编译应用 JavaScript 资源文件的信息，请查阅 [Vite](/docs/{{version}}/vite) 文档。
+
+<a name="client-mercure"></a>
+### Mercure
+
+要在 Laravel Echo 中使用 Mercure，请安装 `laravel-echo` 包：
+
+```shell
+npm install --save-dev laravel-echo
+```
+
+接下来，使用 `mercure` 广播器创建一个 Echo 实例。`host` 选项默认为当前源上的 `/.well-known/mercure`：
+
+```js tab=JavaScript
+import Echo from 'laravel-echo';
+
+window.Echo = new Echo({
+    broadcaster: 'mercure',
+    host: import.meta.env.VITE_MERCURE_HUB_URL,
+});
+```
+
+```js tab=React
+import { configureEcho } from "@laravel/echo-react";
+
+configureEcho({
+    broadcaster: "mercure",
+});
+```
+
+```js tab=Vue
+import { configureEcho } from "@laravel/echo-vue";
+
+configureEcho({
+    broadcaster: "mercure",
+});
+```
+
+```js tab=Svelte
+import { configureEcho } from "@laravel/echo-svelte";
+
+configureEcho({
+    broadcaster: "mercure",
+});
+```
+
+在 `.env` 文件中定义 hub URL：
+
+```ini
+VITE_MERCURE_HUB_URL="${MERCURE_PUBLIC_URL}"
+```
 
 <a name="concept-overview"></a>
 ## 概念概览
@@ -1564,6 +1673,47 @@ Echo.join(`chat.${roomId}`)
     .listen('NewMessage', (e) => {
         // ……
     });
+```
+
+<a name="encrypted-private-channels"></a>
+## 加密私有频道
+
+私有频道确保只有获得授权的用户才能监听某个频道。然而，事件数据本身仍会以明文形式经过你的广播服务传输。使用 Pusher Channels 或 Mercure 时，你可以使用端到端加密的私有频道，这样只有你的应用及其获得授权的客户端才能读取事件数据。
+
+要开始使用，请为 [Pusher Channels](#pusher-manual-installation) 或 [Mercure](#mercure-manual-installation) 配置加密密钥。然后，从事件的 `broadcastOn` 方法中返回 `EncryptedPrivateChannel` 的实例：
+
+```php
+use Illuminate\Broadcasting\EncryptedPrivateChannel;
+
+/**
+ * Get the channels the event should broadcast on.
+ *
+ * @return array<int, \Illuminate\Broadcasting\Channel>
+ */
+public function broadcastOn(): array
+{
+    return [
+        new EncryptedPrivateChannel('orders.'.$this->order->id),
+    ];
+}
+```
+
+加密私有频道的授权方式与私有频道完全相同，因此应用 `routes/channels.php` 文件中的 `orders.{orderId}` 授权回调同样会授权加密的 `orders.1` 频道。
+
+在 JavaScript 应用中，可以使用 Echo 的 `encryptedPrivate` 方法订阅该频道：
+
+```js
+Echo.encryptedPrivate(`orders.${orderId}`)
+    .listen('OrderShipmentStatusUpdated', (e) => {
+        console.log(e.order);
+    });
+```
+
+使用 Pusher Channels 时，默认的 `pusher-js` 构建版本不包含解密消息所需的代码。此时应在[配置 Echo](#pusher-client-manual-installation)时导入 `with-encryption` 构建版本：
+
+```js
+import Pusher from 'pusher-js/with-encryption';
+window.Pusher = Pusher;
 ```
 
 <a name="model-broadcasting"></a>

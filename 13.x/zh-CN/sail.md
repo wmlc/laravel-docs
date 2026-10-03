@@ -370,6 +370,15 @@ MAIL_ENCRYPTION=null
 
 Sail 运行时，你可以通过 http://localhost:8025 访问 Mailpit Web 界面。
 
+如果你在安装 Sail 时选择了安装 [Mailtrap Local](https://github.com/mailtrap/mailtrap-local) 服务，或者之后通过 `sail:add` Artisan 命令添加了它，那么应用的 `compose.yaml` 文件中将包含该邮件捕获服务的配置项。Mailtrap Local 的默认主机为 `mailtrap-local`，可通过 3535 端口访问：
+
+```ini
+MAIL_HOST=mailtrap-local
+MAIL_PORT=3535
+```
+
+Sail 运行时，你可以通过 http://localhost:3550 访问 Mailtrap Local Web 界面。
+
 <a name="sail-container-cli"></a>
 ## 容器 CLI
 

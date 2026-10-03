@@ -30,7 +30,7 @@
 <a name="introduction"></a>
 ## Introduction
 
-Artisan is the command line interface included with Laravel. Artisan exists at the root of your application as the `artisan` script and provides a number of helpful commands that can assist you while you build your application. To view a list of all available Artisan commands, you may use the `list` command:
+Artisan is the command line interface included with Laravel. Artisan exists at the root of your application as the `artisan` script and provides a number of helpful commands you can use while building your application. To view a list of all available Artisan commands, you may use the `list` command:
 
 ```shell
 php artisan list
@@ -155,7 +155,7 @@ class SendEmails extends Command
 ```
 
 > [!NOTE]
-> For greater code reuse, it is good practice to keep your console commands light and let them defer to application services to accomplish their tasks. In the example above, note that we inject a service class to do the "heavy lifting" of sending the e-mails.
+> For greater code reuse, it is good practice to keep your console commands light and let them defer to application services to accomplish their tasks. In the example above, note that we inject a service class to do the "heavy lifting" of sending the emails.
 
 <a name="exit-codes"></a>
 #### Exit Codes
@@ -932,7 +932,7 @@ The default processes are:
 
 | Name | Command |
 | --- | --- |
-| `server` | `php artisan serve --host=localhost` |
+| `server` | `php artisan serve` |
 | `queue` | `php artisan queue:listen --tries=1 --timeout=0` |
 | `logs` | `php artisan pail --timeout=0` |
 | `vite` | `npm run dev` |

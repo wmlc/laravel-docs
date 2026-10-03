@@ -30,7 +30,7 @@
 <a name="introduction"></a>
 ## 简介
 
-Artisan 是 Laravel 内置的命令行界面。Artisan 以 `artisan` 脚本的形式存在于应用程序的根目录，并提供了许多有用的命令，可在构建应用程序时为你提供帮助。要查看所有可用 Artisan 命令的列表，可以使用 `list` 命令：
+Artisan 是 Laravel 内置的命令行界面。Artisan 以 `artisan` 脚本的形式存在于应用程序的根目录，并提供了许多有用的命令，可在构建应用程序时使用。要查看所有可用 Artisan 命令的列表，可以使用 `list` 命令：
 
 ```shell
 php artisan list
@@ -932,7 +932,7 @@ php artisan dev
 
 | Name | Command |
 | --- | --- |
-| `server` | `php artisan serve --host=localhost` |
+| `server` | `php artisan serve` |
 | `queue` | `php artisan queue:listen --tries=1 --timeout=0` |
 | `logs` | `php artisan pail --timeout=0` |
 | `vite` | `npm run dev` |

@@ -440,7 +440,7 @@ $this->assertThrows(
 ```php
 $this->assertThrows(
     fn () => (new ProcessOrder)->execute(),
-    fn (OrderInvalid $e) => $e->orderId() === 123;
+    fn (OrderInvalid $e) => $e->orderId() === 123
 );
 ```
 
@@ -753,7 +753,7 @@ Route::get('/users', function () {
         'meta' => [...],
         'users' => User::all(),
     ];
-})
+});
 ```
 
 测试这些路由时，你可以使用 `has` 方法来断言集合中的项目数量。此外，你还可以使用 `has` 方法来限定一系列断言的范围：

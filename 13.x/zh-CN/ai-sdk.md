@@ -5,6 +5,7 @@
     - [配置](#configuration)
     - [自定义 Base URL](#custom-base-urls)
     - [OpenAI 兼容服务商](#openai-compatible-providers)
+    - [按需服务商](#on-demand-providers)
     - [服务商支持](#provider-support)
 - [智能体](#agents)
     - [提示](#prompting)
@@ -36,9 +37,13 @@
     - [查询嵌入](#querying-embeddings)
     - [缓存嵌入](#caching-embeddings)
 - [重排序](#reranking)
+- [分类](#classification)
+    - [是或否决策](#yes-or-no-decisions)
+    - [从集合中选择](#choosing-from-collections)
 - [文件](#files)
 - [向量存储](#vector-stores)
     - [向存储中添加文件](#adding-files-to-stores)
+- [用量](#usage)
 - [故障转移](#failover)
 - [测试](#testing)
     - [智能体](#testing-agents)
@@ -47,6 +52,7 @@
     - [转录](#testing-transcriptions)
     - [嵌入](#testing-embeddings)
     - [重排序](#testing-reranking)
+    - [分类](#testing-classification)
     - [文件](#testing-files)
     - [向量存储](#testing-vector-stores)
 - [事件](#events)
@@ -97,6 +103,7 @@ OPENAI_COMPATIBLE_API_KEY=
 OPENAI_COMPATIBLE_URL=
 OPENROUTER_API_KEY=
 JINA_API_KEY=
+TYPESAFE_API_KEY=
 VOYAGEAI_API_KEY=
 XAI_API_KEY=
 ```
@@ -221,6 +228,51 @@ OpenAI 兼容服务商支持文本生成、流式传输、工具、结构化输�
 > [!NOTE]
 > OpenAI 兼容与 Groq 服务商不支持说话人分离（diarization）。在使用这些服务商时调用 `diarize` 方法将抛出异常。
 
+<a name="on-demand-providers"></a>
+### 按需服务商
+
+有时你可能需要使用未在应用配置文件中定义的服务商凭据，例如多租户应用中为每个租户存储在数据库里的 API Key。你可以使用 `Ai::build` 方法从一个配置数组创建服务商。该数组的结构应与应用 `config/ai.php` 配置文件中的服务商条目相同：
+
+```php
+use App\Ai\Agents\SalesCoach;
+use Laravel\Ai\Ai;
+
+$response = (new SalesCoach)->prompt('Analyze this sales transcript...', provider: [
+    Ai::build([
+        'driver' => 'anthropic',
+        'key' => $user->anthropic_key,
+    ]),
+]);
+```
+
+按需服务商可以用在任何接受服务商的位置，包括[故障转移](#failover)列表，以及生成图像、音频、转录和嵌入时。要为按需服务商指定模型，请在其配置中包含一个 `models` 数组：
+
+```php
+$response = (new SalesCoach)->prompt('Analyze this sales transcript...', provider: [
+    Ai::build(['driver' => 'anthropic', 'key' => $user->anthropic_key]),
+    Ai::build([
+        'driver' => 'openai',
+        'key' => $user->openai_key,
+        'models' => ['text' => ['default' => 'gpt-6']],
+    ]),
+]);
+```
+
+当某个智能体应始终使用某个按需服务商时，你可以从智能体的 `provider` 方法返回该服务商。由于该服务商会在使用智能体时重新构建，这种方式同样适用于[队列中的](#queueing)智能体：
+
+```php
+use Laravel\Ai\Ai;
+use Laravel\Ai\Providers\Provider;
+
+public function provider(): Provider
+{
+    return Ai::build($this->user->aiConfiguration());
+}
+```
+
+> [!NOTE]
+> 你应当按上述示例那样将按需服务商放在数组中传递。如果你在其配置数组中为按需服务商指定了 `name`，该名称可能与内置服务商或 `config/ai.php` 配置文件中定义的服务商不匹配。
+
 <a name="provider-support"></a>
 ### 服务商支持
 
@@ -230,11 +282,12 @@ AI SDK 在其各项功能中支持多种服务商。下表汇总了每个功能�
 |---|---|
 | Text | OpenAI, OpenAI Compatible, Anthropic, Gemini, Azure, Bedrock, Groq, xAI, DeepSeek, Mistral, Ollama, OpenRouter |
 | Images | OpenAI, Gemini, xAI, Azure, Bedrock, OpenRouter |
-| TTS | OpenAI, ElevenLabs, Gemini, Mistral |
-| STT | OpenAI, OpenAI Compatible, ElevenLabs, Groq, Mistral, Gemini |
+| TTS | OpenAI, ElevenLabs, Gemini, Mistral, OpenRouter |
+| STT | OpenAI, OpenAI Compatible, ElevenLabs, Groq, Mistral, Gemini, OpenRouter |
 | Embeddings | OpenAI, OpenAI Compatible, Gemini, Azure, Bedrock, Cohere, Mistral, Jina, VoyageAI, Ollama, OpenRouter |
-| Reranking | Cohere, Jina, VoyageAI, Bedrock |
-| Files | OpenAI, Anthropic, Gemini, Azure |
+| Reranking | Cohere, Jina, VoyageAI, Bedrock, OpenRouter |
+| Classification | TypeSafe, OpenRouter |
+| Files | OpenAI, Anthropic, Gemini, Azure, OpenRouter |
 
 在整个代码中，你可以使用 `Laravel\Ai\Enums\Lab` 枚举来引用服务商，而不是使用纯字符串：
 
@@ -393,24 +446,36 @@ foreach ($response->steps as $step) {
 如果你的智能体实现了 `Conversational` 接口，则可以使用 `messages` 方法返回先前的对话上下文（如适用）：
 
 ```php
-use App\Models\History;
-use Laravel\Ai\Messages\Message;
-
 /**
  * 获取迄今为止组成的对话消息列表。
  */
 public function messages(): iterable
 {
-    return History::where('user_id', $this->user->id)
+    return $this->user->history()
         ->latest()
         ->limit(50)
         ->get()
         ->reverse()
-        ->map(function ($message) {
-            return new Message($message->role, $message->content);
-        })->all();
+        ->map(fn ($message) => new Message(
+            $message->role, $message->content,
+        ))->all();
 }
 ```
+
+如果你的智能体没有实现 `Conversational` 接口，可以使用 `withMessages` 方法为单次运行提供对话历史，例如由应用前端提交的历史：
+
+```php
+use Laravel\Ai\Messages\Message;
+
+$response = (new SalesCoach)
+    ->withMessages([
+        new Message('user', 'Analyze this sales transcript...'),
+        new Message('assistant', 'The rep never asked for the close.'),
+    ])
+    ->prompt('What should they say next time?');
+```
+
+实现了 `Conversational` 接口的智能体会自行加载历史，因此将两种方式结合使用将抛出 `LogicException` 异常。
 
 <a name="remembering-conversations"></a>
 #### 记忆对话
@@ -485,7 +550,21 @@ $response = (new SalesCoach)
     ->prompt('Tell me more about that.');
 ```
 
-使用 `RemembersConversations` Trait 时，之前的消息会在提示时自动加载并包含在对话上下文中。新的消息（用户与助手双方）会在每次交互后自动存储。
+`continueOrStart` 方法可用于延续给定的对话，或在给定 ID 为 `null` 时开启新对话：
+
+```php
+$response = (new SalesCoach)
+    ->continueOrStart($conversationId, as: $user)
+    ->prompt('Hello!');
+```
+
+使用 `RemembersConversations` Trait 时，之前的消息会在提示时自动加载并包含在对话上下文中。新的消息（用户与助手双方）会在每次交互后自动存储。每个响应还包含已存储的对话与消息的 ID：
+
+```php
+$response->conversationId;
+$response->userMessageId;
+$response->assistantMessageId;
+```
 
 <a name="conversation-participants"></a>
 #### 对话参与者
@@ -500,7 +579,7 @@ $response = (new SalesCoach)
 
 参与者的 morph 类与主键会随对话一起存储。因此，具有相同主键的不同类型模型（例如 `User` ID `1` 与 `Team` ID `1`）拥有各自独立的对话历史。`forUser` 方法是 `forParticipant` 的别名。
 
-你可以使用 `continueLastConversation` 方法延续参与者最近的对话：
+你可以使用 `continueLastConversation` 方法延续参与者与该智能体最近的对话。对话以智能体为作用域，因此只有该智能体参与过的对话才会被延续：
 
 ```php
 $response = (new SalesCoach)
@@ -527,7 +606,65 @@ $participant = $conversation->participant;
 如果你的应用使用了多种参与者模型类型，应考虑定义 [Eloquent morph map](/docs/{{version}}/eloquent-relationships#custom-polymorphic-types)，以便存储的参与者类型不与你的模型类名耦合。
 
 > [!WARNING]
-> `continue` 方法不会验证给定参与者是否拥有该对话。在延续对话之前，你的应用应当对其访问进行授权。
+> `continue` 和 `continueOrStart` 方法不会验证给定参与者是否拥有该对话。在延续对话之前，你的应用应当对其访问进行授权。
+
+<a name="inspecting-stored-conversations"></a>
+#### 查看已存储的对话
+
+当向用户展示某次对话时，你往往需要消息 ID、时间戳和工具调用等细节。你可以从服务容器中解析对话存储，从而在不直接查询 AI SDK 各表的前提下读取已存储的消息：
+
+```php
+use Laravel\Ai\Contracts\ConversationStore;
+
+$store = app(ConversationStore::class);
+```
+
+消息按最新优先、使用游标进行分页，并以 `StoredMessage` 实例返回，其中包含每条消息的 ID、时间戳、用量、元数据和附件：
+
+```php
+$messages = $store->paginateConversationMessages($conversationId, perPage: 25);
+
+foreach ($messages as $message) {
+    $message->id;
+    $message->role;
+    $message->content;
+    $message->createdAt;
+    $message->usage;
+    $message->status;
+}
+```
+
+每个回合（由一次用户提示和助手回复构成）都会存储为一个步骤列表。一个步骤是对服务商的一次请求，因此模型调用工具的回合会包含多个步骤。每个工具结果都记录在产生它的工具调用上。`toolCalls`、`providerToolCalls` 和 `toolResults` 方法会按顺序将这些步骤扁平化，因此你无需自行遍历：
+
+```php
+$message->steps;
+
+$message->toolCalls();
+$message->providerToolCalls();
+$message->toolResults();
+```
+
+工具调用在执行完毕后才会包含 `result`。包含 `approval_reason` 但尚无 `result` 的工具调用仍在等待[工具审批](#human-tool-approval)。
+
+`status` 属性包含一个 `Laravel\Ai\Enums\MessageStatus` 实例。执行到一半失败的回合会连同其已完成的步骤一起存储为 `Failed`，因此失败之前运行过的工具调用仍会保留在历史中。当对话继续时，任何没有记录结果的工具调用都会以「已中断」标记发送给模型，因为 Laravel 无法确定它是否已执行。
+
+在通过应用前端提供的 ID 延续对话之前，你应当验证该对话是为给定参与者存储的：
+
+```php
+abort_unless($store->conversationBelongsTo(
+    $conversationId, $user->getMorphClass(), $user->getKey()
+), 403);
+```
+
+如果最近的回合正处于等待[工具审批](#human-tool-approval)的暂停状态，你可以在页面刷新后渲染其待处理的工具调用，而无需恢复本次运行：
+
+```php
+foreach ($store->pendingApprovalsFor($conversationId) as $approval) {
+    // $approval->id, $approval->tool, $approval->arguments, $approval->reason...
+}
+```
+
+这些方法分别由 `PaginatesConversations`、`VerifiesConversationOwnership` 和 `ResolvesPendingApprovals` 契约定义。内置的数据库存储实现了全部三个契约，而自定义存储只需实现自己需要的契约。
 
 <a name="structured-output"></a>
 ### 结构化输出
@@ -721,8 +858,25 @@ foreach ($stream as $event) {
 }
 ```
 
-<a name="streaming-using-the-vercel-ai-sdk-protocol"></a>
-#### 使用 Vercel AI SDK 流协议进行流式传输
+响应还包含模型的推理过程以及它引用的来源。使用 `RemembersConversations` Trait 时，两者都会与助手消息一起存储：
+
+```php
+use Laravel\Ai\Responses\StreamedAgentResponse;
+
+(new SalesCoach)
+    ->stream('Analyze this sales transcript...')
+    ->then(function (StreamedAgentResponse $response) {
+        $response->reasoning; // '' unless the model returned reasoning text...
+        $response->meta->citations;
+    });
+```
+
+`prompt` 方法返回的响应同样可以获取推理过程。
+
+<a name="stream-protocols"></a>
+#### 流协议
+
+默认情况下，流式响应使用 AI SDK 自有的事件格式。不过，你也可以改用前端流协议，从而将你的智能体与现有的聊天界面搭配使用，而无需自行构建。
 
 你可以通过在可流式响应上调用 `usingVercelDataProtocol` 方法，使用 [Vercel AI SDK 流协议](https://ai-sdk.dev/docs/ai-sdk-ui/stream-protocol) 来流式传输事件：
 
@@ -734,6 +888,93 @@ Route::get('/coach', function () {
         ->stream('Analyze this sales transcript...')
         ->usingVercelDataProtocol();
 });
+```
+
+如果应用前端会分配自己的消息 ID，你可以传入该 ID：
+
+```php
+->usingVercelDataProtocol($request->string('messageId'));
+```
+
+另外，也可以使用 `usingAgentUserInteractionProtocol` 方法，通过 [Agent User Interaction（AG-UI）协议](https://docs.ag-ui.com) 进行流式传输：
+
+```php
+Route::post('/coach', function (Request $request) {
+    return (new SalesCoach)
+        ->forUser($request->user())
+        ->stream($request->string('prompt'))
+        ->usingAgentUserInteractionProtocol();
+});
+```
+
+`threadId` 和 `runId` 参数是可选的，默认分别使用对话 ID 和调用 ID：
+
+```php
+->usingAgentUserInteractionProtocol(
+    threadId: $request->input('threadId'),
+    runId: $request->input('runId'),
+);
+```
+
+要使用 AI SDK 尚未实现的协议，你可以将自定义的 `Laravel\Ai\Streaming\Protocols\StreamProtocol` 实现传给 `usingProtocol` 方法：
+
+```php
+use App\Ai\Protocols\CustomProtocol;
+
+return (new SalesCoach)
+    ->stream('Analyze this sales transcript...')
+    ->usingProtocol(new CustomProtocol);
+```
+
+<a name="chat-requests"></a>
+<a name="frontend-integration"></a>
+#### 前端集成
+
+使用 Vercel 的 `useChat` 或 CopilotKit 等库构建的聊天界面，本身就能渲染消息、工具调用和审批提示，因此你的应用只需处理它们发来的请求。每个请求包含对话历史、最新用户消息以及所有的工具审批响应。
+
+`Vercel::chat` 和 `AgentUserInteraction::chat` 方法会将这类请求转换为可直接传给智能体 `stream` 方法的对象：
+
+```php
+use Laravel\Ai\Vercel\Vercel;
+
+Route::post('/chat', function (Request $request) {
+    $chat = Vercel::chat($request);
+
+    return (new SupportAgent)
+        ->withMessages($chat->history())
+        ->stream($chat)
+        ->usingProtocol($chat->protocol());
+});
+```
+
+如果请求中包含[审批决策](#human-tool-approval)，智能体将使用这些决策继续执行。否则，智能体会以请求中最新用户消息和附件作为提示。`protocol` 方法返回客户端所使用的协议。
+
+> [!NOTE]
+> 实现了 `Conversational` 接口的智能体会自行加载历史，因此可以省略 `withMessages` 方法。
+
+`AgentUserInteraction::chat` 方法为 AG-UI 客户端提供相同的 API，并额外提供请求的线程 ID 与运行 ID：
+
+```php
+use Laravel\Ai\AgentUserInteraction\AgentUserInteraction;
+
+$chat = AgentUserInteraction::chat($request);
+
+$chat->threadId();
+$chat->runId();
+```
+
+你也可以将已存储的消息转换回客户端期望的格式，从而让客户端展示之前的对话，例如在页面刷新之后：
+
+```php
+$messages = $conversation->messages()->oldest()->get();
+
+return ['messages' => Vercel::toUiMessages($messages)];
+```
+
+`AgentUserInteraction::toClientState` 方法为 AG-UI 客户端执行相同的转换，并额外返回待处理的审批中断：
+
+```php
+return AgentUserInteraction::toClientState($messages);
 ```
 
 <a name="broadcasting"></a>
@@ -756,7 +997,7 @@ foreach ($stream as $event) {
 
 ```php
 (new SalesCoach)->broadcastOnQueue(
-    'Analyze this sales transcript...'
+    'Analyze this sales transcript...',
     new Channel('channel-name'),
 );
 ```
@@ -881,6 +1122,25 @@ public function tools(): iterable
         new RandomNumberGenerator,
     ];
 }
+```
+
+<a name="runtime-tool-overrides"></a>
+#### 运行时工具覆盖
+
+你可以使用 `withTools` 方法替换智能体实例所声明的工具。这对于按租户或按功能开关切换工具集非常有用：
+
+```php
+$response = (new SupportAgent)
+    ->withTools([new LookupOrder])
+    ->prompt('Where is order 12345?');
+```
+
+你也可以传入一个闭包，它会接收到智能体已声明的工具，从而允许你追加或过滤它们：
+
+```php
+$response = (new SupportAgent)
+    ->withTools(fn (array $tools) => [...$tools, new LookupOrder])
+    ->prompt('Where is order 12345?');
 ```
 
 <a name="validating-tool-arguments"></a>
@@ -1223,6 +1483,30 @@ new FileSearch(stores: ['store_id'], where: fn (FileSearchQuery $query) =>
 );
 ```
 
+<a name="code-execution"></a>
+#### 代码执行
+
+`CodeExecution` 服务商工具允许智能体在由 AI 服务商托管的沙箱中运行代码。这对于执行计算和分析数据非常有用。
+
+**支持的服务商：** Anthropic、OpenAI、Azure、Gemini、xAI
+
+```php
+use Laravel\Ai\Providers\Tools\CodeExecution;
+
+public function tools(): iterable
+{
+    return [new CodeExecution];
+}
+```
+
+使用 OpenAI 或 Azure 时，你可以通过服务商选项将[已存储文件](#files)提供给沙箱：
+
+```php
+(new CodeExecution)->withProviderOptions([
+    'container' => ['type' => 'auto', 'file_ids' => ['file_123']],
+]);
+```
+
 <a name="sub-agents"></a>
 ### 子智能体
 
@@ -1268,31 +1552,13 @@ class CustomerSupportAgent implements Agent, HasTools
 要自定义子智能体向父智能体暴露的方式，请在子智能体上实现 `CanActAsTool` 接口，并定义一个面向工具的名称与描述：
 
 ```php
-<?php
-
-namespace App\Ai\Agents;
-
-use App\Ai\Tools\LookupOrder;
 use Laravel\Ai\Attributes\Provider;
-use Laravel\Ai\Contracts\Agent;
 use Laravel\Ai\Contracts\CanActAsTool;
-use Laravel\Ai\Contracts\HasTools;
 use Laravel\Ai\Enums\Lab;
-use Laravel\Ai\Promptable;
 
 #[Provider(Lab::Anthropic)]
 class RefundsAgent implements Agent, CanActAsTool, HasTools
 {
-    use Promptable;
-
-    /**
-     * 获取智能体应遵循的指令。
-     */
-    public function instructions(): string
-    {
-        return 'You are a refunds specialist. Use order details and the refund policy to give concise eligibility guidance.';
-    }
-
     /**
      * 获取智能体的工具名称。
      */
@@ -1309,26 +1575,32 @@ class RefundsAgent implements Agent, CanActAsTool, HasTools
         return 'Determine whether an order is eligible for a refund and explain the next step.';
     }
 
-    /**
-     * 获取智能体可用的工具。
-     *
-     * @return Tool[]
-     */
-    public function tools(): iterable
-    {
-        return [
-            new LookupOrder,
-        ];
-    }
+    // ...
 }
 ```
 
 如果子智能体未实现 `CanActAsTool`，Laravel 将使用该智能体的类短名（basename）作为工具名称，并给出一个通用描述，要求父智能体传入一个清晰、自包含的任务描述。每次子智能体调用都是隔离运行的，不会接收到父智能体的对话历史。
 
+当父智能体处于[流式传输](#streaming)状态时，其子智能体也会进行流式传输。父智能体会发出 `ToolResult` 事件，其中包含子智能体到目前为止已产生的文本。这些事件被标记为初步事件（preliminary），之后还会跟加工具调用的最终结果，因此你在手动遍历事件时可以跳过它们：
+
+```php
+use Laravel\Ai\Streaming\Events\ToolResult;
+
+foreach ($stream as $event) {
+    if ($event instanceof ToolResult && $event->preliminary) {
+        continue;
+    }
+
+    // ...
+}
+```
+
+`text`、`usage` 和 `toolResults` 等响应值会忽略这些初步事件。[Vercel 协议](#stream-protocols) 会将其渲染为原生的流式工具输出，因此 `useChat` 无需任何自定义代码即可显示进度；而 AG-UI 协议则将其报告为活动快照。完成后的响应的文本、推理、引用和用量都包含子智能体的相应内容。
+
 <a name="middleware"></a>
 ### 中间件
 
-智能体支持中间件，允许你在提示发送给服务商之前拦截并修改它。你可以使用 `make:agent-middleware` Artisan 命令创建中间件：
+智能体支持中间件，允许你在每个生成步骤发送给服务商之前拦截并修改它。中间件每个步骤调用一次，因此一次运行如果包含三个步骤，就会调用三次。你可以使用 `make:agent-middleware` Artisan 命令创建中间件：
 
 ```shell
 php artisan make:agent-middleware LogPrompts
@@ -1364,7 +1636,7 @@ class SalesCoach implements Agent, HasMiddleware
 }
 ```
 
-每个中间件类都应定义一个 `handle` 方法，该方法接收 `AgentPrompt` 与一个 `Closure`，用于将提示传递给下一个中间件：
+每个中间件类都应定义一个 `handle` 方法，该方法接收一个 `PendingStep` 与一个 `Closure`，用于将该步骤传递给下一个中间件：
 
 ```php
 <?php
@@ -1372,32 +1644,87 @@ class SalesCoach implements Agent, HasMiddleware
 namespace App\Ai\Middleware;
 
 use Closure;
-use Laravel\Ai\Prompts\AgentPrompt;
+use Illuminate\Support\Facades\Log;
+use Laravel\Ai\PendingStep;
 
 class LogPrompts
 {
     /**
-     * 处理传入的提示。
+     * 处理待定的生成步骤。
      */
-    public function handle(AgentPrompt $prompt, Closure $next)
+    public function handle(PendingStep $step, Closure $next)
     {
-        Log::info('Prompting agent', ['prompt' => $prompt->prompt]);
+        Log::info('Prompting agent', ['model' => $step->model]);
 
-        return $next($prompt);
+        return $next($step);
     }
 }
 ```
 
-你可以使用响应上的 `then` 方法，在智能体处理完成后执行代码。这同时适用于同步响应与流式响应：
+除了即将发送的 `provider`、`model`、`instructions`、`messages` 和 `tools` 之外，该步骤还暴露已完成的步骤、它们合并后的用量以及本次运行的进度：
 
 ```php
-public function handle(AgentPrompt $prompt, Closure $next)
+$step->steps;
+$step->usage;
+
+$step->number;
+$step->isFirstStep();
+$step->isFinalStep;
+```
+
+`withModel`、`withInstructions`、`withMessages`、`withTools`、`onlyTools`、`withoutTools`、`withToolChoice`、`withMaxTokens` 和 `withProviderOptions` 方法各自都会返回该步骤的一个副本。例如，你可以在智能体用过某个开销较高的工具后将其移除：
+
+```php
+public function handle(PendingStep $step, Closure $next)
 {
-    return $next($prompt)->then(function (AgentResponse $response) {
+    if (! $step->isFirstStep()) {
+        $step = $step->withoutTools('SearchDocumentation');
+    }
+
+    return $next($step);
+}
+```
+
+或者，你可以通过对对话中部进行摘要，让长时间的工具调用循环保持在上下文窗口之内：
+
+```php
+use App\Ai\Agents\Summarizer;
+use Laravel\Ai\Messages\UserMessage;
+
+public function handle(PendingStep $step, Closure $next)
+{
+    if (count($step->messages) > 40) {
+        $summary = (new Summarizer)->prompt(
+            collect(array_slice($step->messages, 1, -10))->map->content->implode("\n"),
+        )->text;
+
+        $step = $step->withMessages([
+            $step->messages[0],
+            new UserMessage("Summary of the conversation so far: {$summary}"),
+            ...array_slice($step->messages, -10),
+        ]);
+    }
+
+    return $next($step);
+}
+```
+
+传给 `withMessages` 方法的消息只改变当前步骤所发送的内容。后续步骤和已存储的对话仍会使用完整的、未摘要的历史。
+
+你可以使用 `then` 方法在模型已回答该步骤、但其工具调用尚未执行时执行代码。这同时适用于同步响应与流式响应：
+
+```php
+use Laravel\Ai\Gateway\StepResponse;
+
+public function handle(PendingStep $step, Closure $next)
+{
+    return $next($step)->then(function (StepResponse $response) {
         Log::info('Agent responded', ['text' => $response->text]);
     });
 }
 ```
+
+中间件必须返回 `$next` 的结果，或返回自己的 `StepResponse` 以在不调用模型的情况下回答该步骤（例如提供缓存响应时）。返回其他任何值都会抛出 `LogicException` 异常。
 
 <a name="anonymous-agents"></a>
 ### 匿名智能体
@@ -1411,7 +1738,7 @@ $response = agent(
     instructions: 'You are an expert at software development.',
     messages: [],
     tools: [],
-)->prompt('Tell me about Laravel')
+)->prompt('Tell me about Laravel');
 ```
 
 匿名智能体也可以产生结构化输出：
@@ -1425,7 +1752,7 @@ $response = agent(
     schema: fn (JsonSchema $schema) => [
         'number' => $schema->integer()->required(),
     ],
-)->prompt('Generate a random number less than 100')
+)->prompt('Generate a random number less than 100');
 ```
 
 <a name="agent-configuration"></a>
@@ -1548,6 +1875,34 @@ class SalesCoach implements Agent, HasProviderOptions
 
 上面的 Anthropic 示例也通过 `cache_control` 启用了 [提示词缓存](#prompt-caching)。
 
+[图像](#images)、[音频](#audio)、[转录](#transcription)、[嵌入](#embeddings)和[重排序](#reranking)构建器同样接受服务商选项：
+
+```php
+use Laravel\Ai\Audio;
+
+$audio = Audio::of('I love coding with Laravel.')
+    ->withProviderOptions(['speed' => 1.25])
+    ->generate();
+```
+
+你也可以传入闭包而非数组，该闭包会接收到当前使用的服务商。
+
+<a name="custom-http-headers"></a>
+#### 自定义 HTTP 请求头
+
+在应用 `config/ai.php` 配置文件中为某个服务商配置的请求头，会随该服务商的每次请求一起发送。若希望按请求发送请求头（例如 AI 网关所使用元数据），可以使用 `withHeaders` 方法。该方法可用于图像、音频、转录、嵌入和重排序构建器，也可用于[文件上传](#files)：
+
+```php
+use Laravel\Ai\Embeddings;
+
+$embeddings = Embeddings::for($chunks)
+    ->withHeaders(['cf-aig-metadata' => json_encode(['team' => $team->id])])
+    ->withProviderOptions(['dimensions' => 1024])
+    ->generate();
+```
+
+请求头也可以通过闭包给出，该闭包会接收到当前使用的服务商。请求头不会包含在请求体中，也不会影响[嵌入缓存键](#caching-embeddings)。
+
 <a name="prompt-caching"></a>
 ### 提示词缓存
 
@@ -1557,6 +1912,8 @@ class SalesCoach implements Agent, HasProviderOptions
 $response->usage->cacheReadInputTokens;
 $response->usage->cacheWriteInputTokens;
 ```
+
+这两个计数都是输入 token 总数的子集，更多说明请参阅[用量文档](#usage)。
 
 `anthropic` 与 `bedrock` 服务商只有在被要求时才会缓存。`CacheInstructions` 与 `CacheToolDefinitions` 属性会在智能体的指令与工具定义末尾放置一个缓存断点，这样每次对话都从该缓存读取此前缀，而不必再次写入：
 
@@ -1594,7 +1951,7 @@ class SalesCoach implements Agent
 ## 人工工具审批
 
 > [!WARNING]
-> 工具审批需要一个 `Conversational` 智能体，其对话历史会被持久化，以便暂停的调用可以恢复。`RemembersConversations` Trait 提供了所需的持久化。
+> 工具审批要求在运行恢复时能访问暂停回合的历史。你应当使用 `Conversational` 智能体（例如使用 `RemembersConversations` Trait 的智能体），或使用 [`withMessages` 方法](#conversation-context)从应用前端提供历史。两者都不使用的智能体在工具暂停时将抛出 `ApprovalNotResumableException` 异常。
 
 执行敏感或不可逆操作的工具，可能需要在执行前经过人工审批。要使一个工具可审批，请实现 `Approvable` 契约并使用 `InteractsWithApprovals` Trait。可审批工具默认需要审批：
 
@@ -1690,6 +2047,9 @@ if ($response->hasPendingApprovals()) {
 }
 ```
 
+> [!IMPORTANT]
+> 暂停的回合是根据其对话和待处理工具调用进行匹配的，而不是根据发起暂停的参与者。因此，你的应用应当在恢复对话之前对其访问进行授权（如[完整审批流程](#complete-approval-flow)中所示），或使用对话存储的 `conversationBelongsTo` 方法验证访问权限。
+
 要恢复智能体，请延续对话并提供一个 `Decisions` 实例，其中包含对每个待处理工具调用的决策。决策可以批准该调用、拒绝它，或在执行前编辑其参数：
 
 ```php
@@ -1720,7 +2080,20 @@ $response = (new FileAssistant)
 
 工具审批由 `prompt`、`stream`、`queue`、`broadcast`、`broadcastNow` 与 `broadcastOnQueue` 方法支持。
 
-在流式传输与广播过程中，暂停由 `tool_approval_request` 事件表示。在使用 [Vercel AI SDK 流协议](#streaming-using-the-vercel-ai-sdk-protocol) 时，审批请求与结果通过该协议原生的工具审批部件（part）发出。
+在流式传输与广播过程中，暂停由 `tool_approval_request` 事件表示。在使用 [Vercel AI SDK 流协议](#stream-protocols) 时，审批请求与结果通过该协议原生的工具审批部件（part）发出，而 Agent User Interaction 协议则将其报告为中断（interrupts）。
+
+使用这两种协议的客户端会与其余对话内容一起提交其决策，因此[聊天请求](#frontend-integration)可以直接传给智能体：
+
+```php
+$chat = Vercel::chat($request);
+
+return (new FileAssistant)
+    ->continue($conversationId, as: $request->user())
+    ->stream($chat)
+    ->usingProtocol($chat->protocol());
+```
+
+当一个暂停的回合被恢复时，恢复后的步骤会被合并进该回合，因此每个回合都存储为一条助手消息。响应的 `assistantMessageId` 包含被暂停消息的 ID，并且该消息的用量同时包含暂停与恢复两部分。
 
 对于入队的智能体，生成的响应会传递给 `then` 回调，Laravel 还会分发一个 `ToolApprovalRequested` 事件。
 
@@ -1729,7 +2102,7 @@ Laravel 会在请求模型继续之前，存储已审批工具的结果。如果
 <a name="complete-approval-flow"></a>
 ### 完整审批流程
 
-以下路由演示了一个完整的审批流程。`GET` 路由返回聊天界面，而 `POST` 路由接受来自聊天界面的新文本提示或审批决策。本示例假设应用的 `User` 模型使用了 `HasConversations` Trait：
+以下路由演示了一个完整的审批流程，接受来自聊天界面的新文本提示或审批决策。本示例假设应用的 `User` 模型使用了 `HasConversations` Trait：
 
 ```php
 use App\Ai\Agents\FileAssistant;
@@ -1740,14 +2113,6 @@ use Illuminate\Validation\Rule;
 use Laravel\Ai\Approvals\Decision;
 use Laravel\Ai\Approvals\Decisions;
 use Laravel\Ai\Models\Conversation;
-
-Route::get('/chat/{conversation}', function (Request $request, Conversation $conversation) {
-    Gate::authorize('view', $conversation);
-
-    return view('chat', [
-        'conversation' => $conversation,
-    ]);
-})->middleware('auth');
 
 Route::post('/chat/{conversation}', function (Request $request, Conversation $conversation) {
     Gate::authorize('view', $conversation);
@@ -1781,7 +2146,7 @@ Route::post('/chat/{conversation}', function (Request $request, Conversation $co
 })->middleware('auth');
 ```
 
-当响应状态为 `awaiting_approval` 时，聊天界面应当渲染待处理的审批，并使用工具调用 ID 作为每个决策的键，将用户的选择提交到同一个端点：
+当响应状态为 `awaiting_approval` 时，聊天界面应当渲染待处理的审批，并使用工具调用 ID 作为每个决策的键，将用户的选择提交到同一个端点。否则，界面可以提交一个普通的 `message` 值：
 
 ```json
 {
@@ -1794,14 +2159,6 @@ Route::post('/chat/{conversation}', function (Request $request, Conversation $co
             "result": "The invoice must be retained."
         }
     }
-}
-```
-
-对于普通的聊天消息，界面可以改为提交一个 `message` 值：
-
-```json
-{
-    "message": "Delete the old invoice."
 }
 ```
 
@@ -1845,6 +2202,18 @@ $image = Image::of('Update this photo of me to be in the style of an impressioni
     ])
     ->landscape()
     ->generate();
+```
+
+一些服务商可以在单次请求中生成多张图像。OpenAI、Azure 和 xAI 接受 `n` [服务商选项](#provider-options)，响应中将包含返回的每一张图像：
+
+```php
+$response = Image::of('A donut sitting on the kitchen counter')
+    ->withProviderOptions(['n' => 4])
+    ->generate();
+
+count($response);           // 4
+$response->images;          // A collection of generated images...
+$response->firstImage();    // The first generated image...
 ```
 
 生成的图像可以轻松存储到应用 `config/filesystems.php` 配置文件中配置的默认磁盘上：
@@ -2223,11 +2592,12 @@ $response->first()->score;    // 0.95
 $response->first()->index;    // 1（原始位置）
 ```
 
-`limit` 方法可用于限制返回的结果数量：
+`limit` 方法可用于限制返回的结果数量，而 `timeout` 方法可用于指定 HTTP 超时时间（秒），默认为 30：
 
 ```php
 $response = Reranking::of($documents)
     ->limit(5)
+    ->timeout(60)
     ->rerank('search query');
 ```
 
@@ -2258,8 +2628,142 @@ $reranked = $posts->rerank(
     by: 'content',
     query: 'Laravel tutorials',
     limit: 10,
-    provider: Lab::Cohere
+    provider: Lab::Cohere,
+    timeout: 60,
 );
+```
+
+<a name="classification"></a>
+## 分类
+
+> [!WARNING]
+> 分类目前处于实验阶段，其 API 可能会在 AI SDK 未来的次要版本中发生变化。
+
+分类允许你针对给定的字符串或数据数组提出一组固定的问题，并获得每个问题带有概率支撑的类型化答案，而不是自由形式的文本。这对于路由、内容审核和评分非常有用，你需要在这些场景中将答案与阈值比较，或在测试中对其作出断言。
+
+可以使用 `Laravel\Ai\Classification` 类对内容进行分类。每个问题都有一个键，响应中可以使用该键取出对应的答案：
+
+```php
+use Laravel\Ai\Classification;
+use Laravel\Ai\Classification\Boolean;
+use Laravel\Ai\Classification\Choice;
+use Laravel\Ai\Classification\Score;
+
+$result = Classification::of($supportRequest)
+    ->questions([
+        'urgent' => new Boolean('Does this request need an immediate response?', [
+            'true' => 'Explicitly time-sensitive',
+            'false' => 'No urgency expressed',
+        ]),
+        'department' => new Choice('Which team should handle this request?', [
+            'billing' => 'Payments, invoices, and refunds',
+            'technical' => 'Bugs, outages, and integrations',
+            'sales' => 'Pricing, plans, and upgrades',
+        ]),
+        'frustration' => new Score('How frustrated is the customer?', [
+            'Calm',
+            'Frustrated',
+            'Very angry',
+        ]),
+    ])
+    ->classify();
+```
+
+`Boolean` 问题返回该答案为「真」的概率。`isTrue` 方法可用于判断该概率是否达到给定阈值，阈值默认为 `0.5`：
+
+```php
+$result['urgent']->probability;             // 0.94
+$result['urgent']->isTrue(threshold: 0.8);  // true
+```
+
+`Choice` 问题返回给定选项之一以及每个选项的概率。`confidence` 属性表示服务商在整组概率上的确定程度，当服务商无法度量它时为 `null`：
+
+```php
+$result['department']->choice;                      // 'technical'
+$result['department']->probabilityOf('technical');  // 0.87
+$result['department']->probabilities;               // ['billing' => 0.08, 'technical' => 0.87, 'sales' => 0.05]
+$result['department']->confidence;                  // 0.82
+```
+
+`Score` 问题返回在所提供有序级别上的位置。`score` 属性经过概率加权，可能落在两个级别之间，而 `level` 和 `label` 方法则描述最可能的级别：
+
+```php
+$result['frustration']->score;          // 1.24, the probability-weighted level
+$result['frustration']->level();        // 1, the most probable level
+$result['frustration']->label();        // 'Frustrated'
+$result['frustration']->normalized();   // 0.62, the score as a fraction of the highest level
+$result['frustration']->probabilities;  // [0.12, 0.52, 0.36]
+```
+
+当单句描述不足以说明时，传给 `Boolean` 问题的判据、传给 `Choice` 问题的选项描述，以及传给 `Score` 问题的级别，都可以是一个数组。`Choice` 问题至少需要两个选项，而 `Score` 问题至少需要两个级别。
+
+响应可以被遍历、计数并以数组方式访问。此外，可以使用 `answer` 方法取出单个答案，而 `collect` 方法会以[集合](/docs/{{version}}/collections)形式返回全部答案：
+
+```php
+$result->answer('urgent');
+$result->collect();
+
+$result->usage;
+$result->meta->provider;
+```
+
+<a name="yes-or-no-decisions"></a>
+### 是或否决策
+
+对于单个是或否决策，可以使用 Laravel `Stringable` 类上提供的 `decide` 方法，它返回一个布尔值而非完整响应。你可以描述「是」和「否」各自的含义，并指定答案需要达到的概率，该概率默认为 `0.5`：
+
+```php
+use Illuminate\Support\Str;
+
+if (Str::of($message)->decide('Is this spam?')) {
+    // ...
+}
+
+$spam = Str::of($message)->decide('Is this spam?', criteria: [
+    'true' => 'Unsolicited bulk mail.',
+    'false' => 'A genuine message from a customer.',
+], threshold: 0.9);
+```
+
+<a name="choosing-from-collections"></a>
+### 从集合中选择
+
+要快速从一组选项中选出单个项目，可以使用 Laravel `Collection` 类上的 `decide` 方法。该方法接受一个问题和待分类的文本，并返回集合中被选中的项目。
+
+字符串集合和枚举集合可以直接使用，而其他项目应通过 `by` 参数指定名称。你也可以通过 `describe` 参数提供字段、字段数组或闭包，以便向模型提供每个选项的更多细节：
+
+```php
+$department = collect(['billing', 'technical', 'sales'])
+    ->decide('Which team should handle this request?', $ticket->body);
+
+$priority = collect(Priority::cases())
+    ->decide('How urgent is this request?', $ticket->body);
+
+$department = Department::all()->decide(
+    'Which department should handle this request?',
+    $ticket->body,
+    by: 'name',
+    describe: 'description',
+);
+```
+
+通过 `describe` 参数定义的描述，会作为模型判断文本是否匹配该选项的依据；当仅凭选项名称无法确定时，这尤为有用。当向 `describe` 参数传入闭包时，它会接收到每个项目，并应返回一个描述该项目的字符串或数组：
+
+```php
+$priority = collect(Priority::cases())->decide(
+    'How urgent is this request?',
+    $ticket->body,
+    describe: fn (Priority $priority) => $priority->description(),
+);
+```
+
+当字符串集合以字符串为键时，其键将用作选项，值用作对应描述，并返回被选中的键。如果给定了 `threshold`，而所选选项的概率低于该值，则返回 `null`：
+
+```php
+$department = collect([
+    'billing' => 'Payments, invoices, and refunds',
+    'technical' => 'Bugs, outages, and integrations',
+])->decide('Which team should handle this request?', $ticket->body, threshold: 0.6) ?? 'triage';
 ```
 
 <a name="files"></a>
@@ -2306,7 +2810,7 @@ use App\Ai\Agents\SalesCoach;
 use Laravel\Ai\Files;
 
 $response = (new SalesCoach)->prompt(
-    'Analyze the attached sales transcript...'
+    'Analyze the attached sales transcript...',
     attachments: [
         Files\Document::fromId('file-id') // 附加一个已存储的文档……
     ]
@@ -2494,6 +2998,58 @@ $store->remove('file_id');
 $store->remove('file_abc123', deleteFile: true);
 ```
 
+当向 Gemini 存储添加文件时，Laravel 会等待导入完成，以便在调用返回后文档即可被搜索。如果导入失败或超过五分钟，将抛出 `Laravel\Ai\Exceptions\AiException` 异常，因此你可能需要通过[队列任务](/docs/{{version}}/queues)来添加 Gemini 文件。
+
+<a name="usage"></a>
+## 用量
+
+每个响应都包含一个 `usage` 属性，其中含有服务商报告的 token 计数。输入与输出计数是总量，因此被计为缓存或推理 token 的 token 也包含在各自所属的总量中：
+
+```php
+$response = (new SalesCoach)->prompt('Analyze this sales transcript...');
+
+$response->usage->inputTokens;
+$response->usage->outputTokens;
+$response->usage->totalTokens();
+```
+
+文本生成会返回一个 `Laravel\Ai\Responses\Data\TextUsage` 实例，它会进一步拆分这些总量。当服务商未报告某个值时，该值为 `null` 而非 `0`：
+
+```php
+$response->usage->cacheReadInputTokens; // Subset of the input tokens read from a prompt cache...
+$response->usage->cacheWriteInputTokens; // Subset of the input tokens written to a prompt cache...
+$response->usage->reasoningTokens; // Subset of the output tokens spent on reasoning...
+
+$response->usage->uncachedInputTokens(); // Input tokens that were neither read from nor written to the cache...
+```
+
+缓存读取、缓存写入和未缓存输入的计费费率各不相同，因此你应当分别对这三个计数定价，而不是只使用输入总量。
+
+其余各项能力返回的用量对象包含各自特有的计数：
+
+<div class="overflow-auto">
+
+| 能力 | 用量对象 | 新增内容 |
+|---|---|---|
+| 文本、分类 | `TextUsage` | 缓存读取、缓存写入和推理 token |
+| 图像 | `ImageUsage` | `imageInputTokens` 和 `imageOutputTokens` |
+| 转录 | `TranscriptionUsage` | `audioSeconds`，即被转录音频的时长 |
+| 重排序 | `RerankingUsage` | `searchUnits`，部分服务商按此计费而非按 token 计费 |
+| 音频、嵌入 | `Usage` | |
+
+</div>
+
+并非每个服务商都会报告每一项计数，服务商未报告的计数将为 `null`：
+
+```php
+use Laravel\Ai\Image;
+use Laravel\Ai\Transcription;
+
+Image::of('A donut sitting on the kitchen counter')->generate()->usage->imageOutputTokens;
+
+Transcription::fromPath('/home/laravel/meeting.mp3')->generate()->usage->audioSeconds;
+```
+
 <a name="failover"></a>
 ## 故障转移
 
@@ -2586,6 +3142,24 @@ FileAssistant::fake([
 $response = (new FileAssistant)->prompt('Delete the invoice.');
 
 $response->hasPendingApprovals(); // true
+```
+
+此外，你还可以伪造一个包含推理的响应。该伪造会发出推理事件，因此在流式运行中也会报告推理内容：
+
+```php
+use Laravel\Ai\Responses\AgentResponse;
+
+SalesCoach::fake([
+    AgentResponse::fakeWithReasoning('They asked about pricing.', 'Plans start at $10.'),
+]);
+
+$response = (new SalesCoach)->stream('What does it cost?');
+
+foreach ($response as $event) {
+    // ...
+}
+
+$response->reasoning; // 'They asked about pricing.'
 ```
 
 > **Note:** 当在一个返回结构化输出、且未显式提供伪造输出的智能体上调用 `Agent::fake()` 时，Laravel 会自动生成与你的智能体所定义输出 schema 匹配的伪造数据。
@@ -2915,6 +3489,54 @@ Reranking::assertNotReranked(
 Reranking::assertNothingReranked();
 ```
 
+<a name="testing-classification"></a>
+### 分类
+
+可以通过在 `Classification` 类上调用 `fake` 方法来伪造分类。如果未提供自定义响应，Laravel 会自动生成与每个问题形状相匹配的答案：
+
+```php
+use Laravel\Ai\Classification;
+use Laravel\Ai\Prompts\ClassificationPrompt;
+use Laravel\Ai\Responses\Data\BooleanAnswer;
+use Laravel\Ai\Responses\Data\ChoiceAnswer;
+
+// Automatically generate fake answers...
+Classification::fake();
+
+// Provide answers for specific questions...
+Classification::fake([
+    [
+        'urgent' => new BooleanAnswer(0.94),
+        'department' => new ChoiceAnswer('technical', [
+            'billing' => 0.08,
+            'technical' => 0.87,
+            'sales' => 0.05,
+        ], confidence: 0.82),
+    ],
+]);
+
+// Build answers from the prompt...
+Classification::fake(fn (ClassificationPrompt $prompt) => [
+    'urgent' => new BooleanAnswer($prompt->contains('ASAP') ? 1.0 : 0.0),
+]);
+```
+
+伪造响应中被省略的问题仍会收到生成的答案，因此你的测试只需提供要做断言的答案。
+
+分类完成后，你可以对所执行的操作做出断言：
+
+```php
+Classification::assertClassified(function (ClassificationPrompt $prompt) {
+    return $prompt->contains('refund') && $prompt->asks('department');
+});
+
+Classification::assertNotClassified(
+    fn (ClassificationPrompt $prompt) => $prompt->asks('sentiment')
+);
+
+Classification::assertNothingClassified();
+```
+
 <a name="testing-files"></a>
 ### 文件
 
@@ -2940,7 +3562,7 @@ Document::fromString('Hello, Laravel!', mimeType: 'text/plain')
 // 做出断言……
 Files::assertStored(fn (StorableFile $file) =>
     (string) $file === 'Hello, Laravel!' &&
-        $file->mimeType() === 'text/plain';
+        $file->mimeType() === 'text/plain'
 );
 
 Files::assertNotStored(fn (StorableFile $file) =>
@@ -3039,6 +3661,8 @@ Laravel AI SDK 会分发多种 [事件](/docs/{{version}}/events)，包括：
 - `AgentPrompted`
 - `AgentStreamed`
 - `AudioGenerated`
+- `Classified`
+- `Classifying`
 - `CreatingStore`
 - `EmbeddingsGenerated`
 - `FileAddedToStore`

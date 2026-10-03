@@ -362,12 +362,13 @@ class ProcessPodcast implements ShouldQueue, Silenced
 ],
 ```
 
-`autoScalingStrategy` 配置选项决定 Horizon 将如何为队列分配更多工作进程。你可以从两种策略中进行选择：
+`autoScalingStrategy` 配置选项决定 Horizon 将如何为队列分配更多工作进程。你可以从三种策略中进行选择：
 
 <div class="content-list" markdown="1">
 
 - `time` 策略将根据清空队列所需的总估计时间分配工作进程。
 - `size` 策略将根据队列中的任务总数分配工作进程。
+- `log` 策略将根据队列中任务数量的对数分配工作进程。这可以避免规模明显更大的队列获得不成比例的大批工作进程。
 
 </div>
 

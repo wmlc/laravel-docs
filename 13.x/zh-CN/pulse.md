@@ -247,7 +247,7 @@ public function boot(): void
 
 大多数 Pulse 记录器会自动根据 Laravel 触发的框架事件捕获条目。不过，[服务器记录器](#servers-recorder)和一些第三方卡片必须定期轮询信息。要使用这些卡片，你必须在所有单独的应用服务器上运行 `pulse:check` 守护进程：
 
-```php
+```shell
 php artisan pulse:check
 ```
 
@@ -491,7 +491,7 @@ PULSE_REDIS_CONNECTION=pulse
 
 使用 Redis 摄取时，你需要运行 `pulse:work` 命令来监视流，并将条目从 Redis 移入 Pulse 的数据库表。
 
-```php
+```shell
 php artisan pulse:work
 ```
 

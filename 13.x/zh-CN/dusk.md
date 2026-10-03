@@ -2003,7 +2003,7 @@ $browser->assertAriaAttribute($selector, $attribute, $value);
 例如，给定标记 `<button aria-label="Add"></button>`，你可以像下面这样对 `aria-label` 属性作出断言：
 
 ```php
-$browser->assertAriaAttribute('button', 'label', 'Add')
+$browser->assertAriaAttribute('button', 'label', 'Add');
 ```
 
 <a name="assert-data-attribute"></a>
@@ -2018,7 +2018,7 @@ $browser->assertDataAttribute($selector, $attribute, $value);
 例如，给定标记 `<tr id="row-1" data-content="attendees"></tr>`，你可以像下面这样对 `data-content` 属性作出断言：
 
 ```php
-$browser->assertDataAttribute('#row-1', 'content', 'attendees')
+$browser->assertDataAttribute('#row-1', 'content', 'attendees');
 ```
 
 <a name="assert-visible"></a>

@@ -557,6 +557,35 @@ php artisan scout:sync-index-settings
 
 模型的 `toSearchableEmbedding` 方法可以返回源文本（Scout 使用 [Laravel AI SDK](/docs/{{version}}/ai-sdk) 嵌入），或预计算的嵌入数组。更新配置后，运行 `scout:sync-index-settings` 命令。
 
+另外，你也可以将嵌入的 `driver` 设置为 `meilisearch`，从而使用 Meilisearch 的原生嵌入。在此模式下，Meilisearch 使用已配置的 embedder 生成文档和查询嵌入，因此无需 `dimensions` 选项和 `toSearchableEmbedding` 方法：
+
+```php
+'meilisearch' => [
+    'index-settings' => [
+        Article::class => [
+            'embedders' => [
+                'default' => [
+                    'source' => 'openAi',
+                    'apiKey' => env('OPENAI_API_KEY'),
+                    'model' => 'text-embedding-3-small',
+                    'documentTemplate' => 'An article titled {{ doc.title }}: {{ doc.body }}',
+                ],
+            ],
+        ],
+    ],
+    'model-settings' => [
+        Article::class => [
+            'embedding' => [
+                'embedder' => 'default',
+                'driver' => 'meilisearch',
+            ],
+        ],
+    ],
+],
+```
+
+使用原生嵌入时，Scout 不会为已索引文档生成或添加向量。你仍然可以通过 `vector` 搜索选项提供预计算的查询向量。
+
 <a name="meilisearch-data-types"></a>
 #### 可搜索数据类型
 
@@ -615,6 +644,40 @@ User::class => [
         ],
     ],
 ],
+```
+
+<a name="typesense-embeddings"></a>
+#### 嵌入
+
+要启用语义和混合搜索，请在模型的 Typesense 配置中定义 `embedding` 设置和向量字段。默认情况下，Scout 使用 [Laravel AI SDK](/docs/{{version}}/ai-sdk) 生成嵌入：
+
+```php
+use App\Models\Article;
+
+'model-settings' => [
+    Article::class => [
+        'collection-schema' => [
+            'fields' => [
+                ['name' => 'title', 'type' => 'string'],
+                ['name' => 'embedding', 'type' => 'float[]', 'num_dim' => 1536],
+            ],
+        ],
+        'search-parameters' => ['query_by' => 'title'],
+        'embedding' => [
+            'attribute' => 'embedding',
+            'dimensions' => 1536,
+        ],
+    ],
+],
+```
+
+模型的 `toSearchableEmbedding` 方法应返回 Scout 需要嵌入的源文本，或一个预计算的嵌入数组：
+
+```php
+public function toSearchableEmbedding(): string|array
+{
+    return $this->title.' '.$this->body;
+}
 ```
 
 <a name="typesense-dynamic-search-parameters"></a>
@@ -962,7 +1025,7 @@ $orders = Order::search('Star Trek')->raw();
 <a name="semantic-search"></a>
 ### 语义搜索
 
-数据库、Meilisearch 和 Turbopuffer 引擎支持语义搜索，它根据查询的含义匹配记录。当 Scout 生成嵌入时，语义和混合搜索需要 [Laravel AI SDK](/docs/{{version}}/ai-sdk)。Turbopuffer 的[原生嵌入](#turbopuffer-configuration)和预计算查询向量不需要 Laravel AI SDK。
+数据库、Meilisearch、Typesense 和 Turbopuffer 引擎支持语义搜索，它根据查询的含义匹配记录。当 Scout 生成嵌入时，语义和混合搜索需要 [Laravel AI SDK](/docs/{{version}}/ai-sdk)。[Typesense 的原生嵌入](#typesense-embeddings)、[Turbopuffer 的原生嵌入](#turbopuffer-configuration)和预计算查询向量不需要 Laravel AI SDK。
 
 为所选引擎配置嵌入后，在搜索查询上调用 `semantic` 方法：
 

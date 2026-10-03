@@ -107,7 +107,7 @@ return response($content)->withoutHeader(['X-Debug', 'X-Powered-By']);
 <a name="cache-control-middleware"></a>
 #### 缓存控制中间件
 
-Laravel 包含一个 `cache.headers` 中间件，可用于快速为一组路由设置 `Cache-Control` 请求头。指令应使用相应 cache-control 指令的"蛇形命名"等效形式提供，并用分号分隔。如果在指令列表中指定了 `etag`，响应内容的 MD5 哈希将自动设置为 ETag 标识符：
+Laravel 包含一个 `cache.headers` 中间件，可用于快速为一组路由设置 `Cache-Control` 请求头。指令应使用相应 cache-control 指令的"蛇形命名"等效形式提供，并用分号分隔。如果在指令列表中指定了 `etag`，响应内容的 xxh128 哈希将自动设置为 ETag 标识符：
 
 ```php
 Route::middleware('cache.headers:public;max_age=30;s_maxage=300;stale_while_revalidate=600;etag')->group(function () {

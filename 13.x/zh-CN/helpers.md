@@ -1050,7 +1050,7 @@ $array = [
 
 Arr::query($array);
 
-// name=Taylor&order[column]=created_at&order[direction]=desc
+// name=Taylor&order%5Bcolumn%5D=created_at&order%5Bdirection%5D=desc
 ```
 
 <a name="method-array-random"></a>
@@ -2674,7 +2674,7 @@ event(new UserRegistered($user));
 默认情况下，`fake` 函数会使用 `config/app.php` 配置中的 `app.faker_locale` 配置选项。通常这个配置选项通过 `APP_FAKER_LOCALE` 环境变量设置。你也可以在调用 `fake` 函数时传入区域设置。每个区域设置都会解析出一个独立的单例：
 
 ```php
-fake('nl_NL')->name()
+fake('nl_NL')->name();
 ```
 
 <a name="method-filled"></a>
@@ -3616,7 +3616,7 @@ it('checks if ready three times', function () {
         Sleep::for(2)->seconds(),
         Sleep::for(3)->seconds(),
     ]);
-}
+});
 ```
 
 ```php tab=PHPUnit

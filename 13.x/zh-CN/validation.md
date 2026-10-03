@@ -286,11 +286,11 @@ $request->validate([
 
 ```json
 {
-    "message": "The team name must be a string. (and 4 more errors)",
+    "message": "The team name field must be a string. (and 4 more errors)",
     "errors": {
         "team_name": [
-            "The team name must be a string.",
-            "The team name must be at least 1 characters."
+            "The team name field must be a string.",
+            "The team name field must be at least 1 characters."
         ],
         "authorization.role": [
             "The selected authorization.role is invalid."
@@ -299,7 +299,7 @@ $request->validate([
             "The users.0.email field is required."
         ],
         "users.2.email": [
-            "The users.2.email must be a valid email address."
+            "The users.2.email field must be a valid email address."
         ]
     }
 }
@@ -1619,7 +1619,7 @@ Validator::make($data, [
 你也可以使用 `minRatio`、`maxRatio` 和 `ratioBetween` 方法流畅地定义宽高比约束：
 
 ```php
-Rule::dimensions()->ratioBetween(min: 1 / 2, max: 3 / 2)
+Rule::dimensions()->ratioBetween(min: 1 / 2, max: 3 / 2);
 ```
 
 <a name="rule-distinct"></a>
@@ -1932,7 +1932,7 @@ Validator::make($data, [
 <a name="rule-image"></a>
 #### image
 
-正在验证的文件必须是图片（jpg、jpeg、png、bmp、gif 或 webp）。
+正在验证的文件必须是图片（jpg、jpeg、png、bmp、gif、webp、avif、heic 或 heif）。
 
 > [!WARNING]
 > 默认情况下，`image` 规则不允许 SVG 文件，因为可能存在 XSS 漏洞。如果你需要允许 SVG 文件，可以向 `image` 规则提供 `allow_svg` 指令（`image:allow_svg`）。
@@ -2499,19 +2499,19 @@ Validator::make($data, [
 除了将模型键的值传递给 `ignore` 方法之外，你也可以传递整个模型实例。Laravel 将自动从模型中提取键：
 
 ```php
-Rule::unique('users')->ignore($user)
+Rule::unique('users')->ignore($user);
 ```
 
 如果你的表使用的主键列名不是 `id`，你可以在调用 `ignore` 方法时指定列名：
 
 ```php
-Rule::unique('users')->ignore($user->id, 'user_id')
+Rule::unique('users')->ignore($user->id, 'user_id');
 ```
 
 默认情况下，`unique` 规则将检查与正在验证的属性名称匹配的列的唯一性。但是，你可以将不同的列名作为第二个参数传递给 `unique` 方法：
 
 ```php
-Rule::unique('users', 'email_address')->ignore($user->id)
+Rule::unique('users', 'email_address')->ignore($user->id);
 ```
 
 **添加额外的 Where 子句：**
@@ -2830,7 +2830,7 @@ File::types(['mp3', 'wav'])
 <a name="validating-files-image-files"></a>
 #### 验证图片文件
 
-如果你的应用接受用户上传的图片，你可以使用 `File` 规则的 `image` 构造方法，确保正在验证的文件是图片（jpg、jpeg、png、bmp、gif 或 webp）。
+如果你的应用接受用户上传的图片，你可以使用 `File` 规则的 `image` 构造方法，确保正在验证的文件是图片（jpg、jpeg、png、bmp、gif、webp、avif、heic 或 heif）。
 
 此外，可以使用 `dimensions` 规则限制图片的尺寸：
 
@@ -2869,7 +2869,7 @@ File::image()->dimensions(
     Rule::dimensions()
         ->maxWidth(1000)
         ->maxHeight(500)
-)
+);
 ```
 
 > [!NOTE]
@@ -2893,28 +2893,28 @@ $validator = Validator::make($request->all(), [
 
 ```php
 // Require at least 8 characters...
-Password::min(8)
+Password::min(8);
 
 // Require at most 256 characters...
-Password::min(16)->max(256)
+Password::min(16)->max(256);
 
 // Require at least one letter...
-Password::min(8)->letters()
+Password::min(8)->letters();
 
 // Require at least one uppercase and one lowercase letter...
-Password::min(8)->mixedCase()
+Password::min(8)->mixedCase();
 
 // Require at least one number...
-Password::min(8)->numbers()
+Password::min(8)->numbers();
 
 // Require at least one symbol...
-Password::min(8)->symbols()
+Password::min(8)->symbols();
 ```
 
 此外，你可以使用 `uncompromised` 方法确保密码未在公开的密码数据泄露中遭到破坏：
 
 ```php
-Password::min(8)->uncompromised()
+Password::min(8)->uncompromised();
 ```
 
 在内部，`Password` 规则对象使用 [k-匿名性](https://en.wikipedia.org/wiki/K-anonymity)模型，通过 [haveibeenpwned.com](https://haveibeenpwned.com) 服务确定密码是否已被泄露，而不会牺牲用户的隐私或安全。
@@ -2922,7 +2922,7 @@ Password::min(8)->uncompromised()
 默认情况下，如果密码在数据泄露中至少出现一次，它将被视为已受损。你可以使用 `uncompromised` 方法的第一个参数自定义此阈值：
 
 ```php
-// Ensure the password appears less than 3 times in the same data leak...
+// Ensure the password appears no more than 3 times in the same data leak...
 Password::min(8)->uncompromised(3);
 ```
 
@@ -2935,7 +2935,7 @@ Password::min(8)
     ->mixedCase()
     ->numbers()
     ->symbols()
-    ->uncompromised()
+    ->uncompromised();
 ```
 
 你可以使用 `toPasswordRulesString` 方法将 `Password` 规则对象转换为适合 HTML `passwordrules` 属性的字符串：
