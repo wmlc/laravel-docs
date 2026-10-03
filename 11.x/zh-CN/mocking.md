@@ -51,57 +51,65 @@ public function test_something_can_be_mocked(): void
 
 为了让这件事更方便，你可以使用 Laravel 基础测试用例类提供的 `mock` 方法。例如，下面的例子与上面的例子等价：
 
-    use App\Service;
-    use Mockery\MockInterface;
+```php
+use App\Service;
+use Mockery\MockInterface;
 
-    $mock = $this->mock(Service::class, function (MockInterface $mock) {
-        $mock->shouldReceive('process')->once();
-    });
+$mock = $this->mock(Service::class, function (MockInterface $mock) {
+    $mock->shouldReceive('process')->once();
+});
+```
 
 如果你只需要模拟对象的少数几个方法，可以使用 `partialMock` 方法。未被模拟的方法在被调用时会正常执行：
 
-    use App\Service;
-    use Mockery\MockInterface;
+```php
+use App\Service;
+use Mockery\MockInterface;
 
-    $mock = $this->partialMock(Service::class, function (MockInterface $mock) {
-        $mock->shouldReceive('process')->once();
-    });
+$mock = $this->partialMock(Service::class, function (MockInterface $mock) {
+    $mock->shouldReceive('process')->once();
+});
+```
 
 同理，如果你想对某个对象[设置探针](http://docs.mockery.io/en/latest/reference/spies.html)，Laravel 基础测试用例类提供了 `spy` 方法作为 `Mockery::spy` 方法的便捷封装。探针与模拟类似；不过探针会记录探针与被测试代码之间的任何交互，让你在代码执行完毕后做出断言：
 
-    use App\Service;
+```php
+use App\Service;
 
-    $spy = $this->spy(Service::class);
+$spy = $this->spy(Service::class);
 
-    // ...
+// ...
 
-    $spy->shouldHaveReceived('process');
+$spy->shouldHaveReceived('process');
+```
 
 <a name="mocking-facades"></a>
 ## 模拟 Facade
 
 与传统的静态方法调用不同，[Facade](/docs/{{version}}/facades)（包括[实时 Facade](/docs/{{version}}/facades#real-time-facades)）可以被模拟。这相比传统静态方法带来巨大优势，让你享有与传统依赖注入相同的可测试性。测试时，你可能经常想模拟控制器中对某个 Laravel Facade 的调用。例如，考虑以下控制器动作：
 
-    <?php
+```php
+<?php
 
-    namespace App\Http\Controllers;
+namespace App\Http\Controllers;
 
-    use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Cache;
 
-    class UserController extends Controller
+class UserController extends Controller
+{
+    /**
+     * 获取应用中所有用户的列表。
+     */
+    public function index(): array
     {
-        /**
-         * 获取应用中所有用户的列表。
-         */
-        public function index(): array
-        {
-            $value = Cache::get('key');
+        $value = Cache::get('key');
 
-            return [
-                // ...
-            ];
-        }
+        return [
+            // ...
+        ];
     }
+}
+```
 
 我们可以使用 `shouldReceive` 方法模拟对 `Cache` Facade 的调用，该方法会返回一个 [Mockery](https://github.com/padraic/mockery) 模拟对象。由于 Facade 实际上由 Laravel [服务容器](/docs/{{version}}/container)解析和管理，它们的可测试性远高于典型的静态类。例如，让我们模拟对 `Cache` Facade 的 `get` 方法的调用：
 
@@ -237,27 +245,31 @@ public function test_time_can_be_manipulated(): void
 
 你也可以向各个时间旅行方法提供一个闭包。该闭包会在时间冻结于指定时间点的情况下被调用。闭包执行完毕后，时间会恢复正常：
 
-    $this->travel(5)->days(function () {
-        // 测试五天之后的事情……
-    });
+```php
+$this->travel(5)->days(function () {
+    // 测试五天之后的事情……
+});
 
-    $this->travelTo(now()->subDays(10), function () {
-        // 测试某个特定时刻的事情……
-    });
+$this->travelTo(now()->subDays(10), function () {
+    // 测试某个特定时刻的事情……
+});
+```
 
 `freezeTime` 方法可用于冻结当前时间。同理，`freezeSecond` 方法会冻结当前时间，但定位到当前这一秒的开始：
 
-    use Illuminate\Support\Carbon;
+```php
+use Illuminate\Support\Carbon;
 
-    // 冻结时间，并在执行闭包后恢复正常时间……
-    $this->freezeTime(function (Carbon $time) {
-        // ...
-    });
+// 冻结时间，并在执行闭包后恢复正常时间……
+$this->freezeTime(function (Carbon $time) {
+    // ...
+});
 
-    // 在当前秒处冻结时间，并在执行闭包后恢复正常时间……
-    $this->freezeSecond(function (Carbon $time) {
-        // ...
-    })
+// 在当前秒处冻结时间，并在执行闭包后恢复正常时间……
+$this->freezeSecond(function (Carbon $time) {
+    // ...
+})
+```
 
 不出所料，上面讨论的所有方法主要适用于测试对时间敏感的应用行为，例如在论坛中锁定非活跃帖子：
 

@@ -27,51 +27,57 @@ Bcrypt 是哈希密码的绝佳选择，因为它的"工作因子"（work factor
 
 你可以通过在 `Hash` Facade 上调用 `make` 方法来哈希密码：
 
-    <?php
+```php
+<?php
 
-    namespace App\Http\Controllers;
+namespace App\Http\Controllers;
 
-    use App\Http\Controllers\Controller;
-    use Illuminate\Http\Request;
-    use Illuminate\Support\Facades\Hash;
+use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 
-    class PasswordController extends Controller
+class PasswordController extends Controller
+{
+    /**
+     * 更新用户密码。
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function update(Request $request)
     {
-        /**
-         * 更新用户密码。
-         *
-         * @param  \Illuminate\Http\Request  $request
-         * @return \Illuminate\Http\Response
-         */
-        public function update(Request $request)
-        {
-            // 验证新密码长度...
+        // 验证新密码长度...
 
-            $request->user()->fill([
-                'password' => Hash::make($request->newPassword)
-            ])->save();
-        }
+        $request->user()->fill([
+            'password' => Hash::make($request->newPassword)
+        ])->save();
     }
+}
+```
 
 <a name="adjusting-the-bcrypt-work-factor"></a>
 #### 调整 Bcrypt 工作因子
 
 如果你使用 Bcrypt 算法，`make` 方法允许你通过 `rounds` 选项管理算法的工作因子；不过，Laravel 管理的默认工作因子对大多数应用来说已经足够：
 
-    $hashed = Hash::make('password', [
-        'rounds' => 12,
-    ]);
+```php
+$hashed = Hash::make('password', [
+    'rounds' => 12,
+]);
+```
 
 <a name="adjusting-the-argon2-work-factor"></a>
 #### 调整 Argon2 工作因子
 
 如果你使用 Argon2 算法，`make` 方法允许你通过 `memory`、`time` 和 `threads` 选项管理算法的工作因子；不过，Laravel 管理的默认值对大多数应用来说已经足够：
 
-    $hashed = Hash::make('password', [
-        'memory' => 1024,
-        'time' => 2,
-        'threads' => 2,
-    ]);
+```php
+$hashed = Hash::make('password', [
+    'memory' => 1024,
+    'time' => 2,
+    'threads' => 2,
+]);
+```
 
 > **Note**
 > 欲了解更多有关这些选项的信息，请参阅 [PHP 官方关于 Argon 哈希的文档](https://secure.php.net/manual/en/function.password-hash.php)。
@@ -81,15 +87,19 @@ Bcrypt 是哈希密码的绝佳选择，因为它的"工作因子"（work factor
 
 `Hash` Facade 提供的 `check` 方法可用于验证给定的明文字符串是否与给定的哈希值匹配：
 
-    if (Hash::check('plain-text', $hashedPassword)) {
-        // 密码匹配...
-    }
+```php
+if (Hash::check('plain-text', $hashedPassword)) {
+    // 密码匹配...
+}
+```
 
 <a name="determining-if-a-password-needs-to-be-rehashed"></a>
 ### 判断密码是否需要重新哈希
 
 `Hash` Facade 提供的 `needsRehash` 方法可用于判断自密码哈希以来，哈希器所使用的工作因子是否已变更。一些应用选择在应用的认证过程中执行此检查：
 
-    if (Hash::needsRehash($hashed)) {
-        $hashed = Hash::make('plain-text');
-    }
+```php
+if (Hash::needsRehash($hashed)) {
+    $hashed = Hash::make('plain-text');
+}
+```

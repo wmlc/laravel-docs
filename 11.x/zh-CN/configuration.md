@@ -97,7 +97,9 @@ APP_NAME="My Application"
 
 当应用收到请求时，`.env` 文件中列出的所有变量都会被加载到 PHP 的 `$_ENV` 超全局数组中。不过，你可以在配置文件中使用 `env` 函数从这些变量中获取值。事实上，如果你查看 Laravel 的配置文件，会发现许多选项已经在使用该函数：
 
-    'debug' => env('APP_DEBUG', false),
+```php
+'debug' => env('APP_DEBUG', false),
+```
 
 传给 `env` 函数的第二个值是"默认值"。如果给定键不存在对应的环境变量，就会返回该值。
 
@@ -106,19 +108,23 @@ APP_NAME="My Application"
 
 当前应用环境由 `.env` 文件中的 `APP_ENV` 变量决定。你可以通过 `App` [Facade](/docs/{{version}}/facades)上的 `environment` 方法访问该值：
 
-    use Illuminate\Support\Facades\App;
+```php
+use Illuminate\Support\Facades\App;
 
-    $environment = App::environment();
+$environment = App::environment();
+```
 
 你也可以向 `environment` 方法传参，判断环境是否与给定值匹配。如果环境与给定值之一匹配，该方法会返回 `true`：
 
-    if (App::environment('local')) {
-        // 环境是 local
-    }
+```php
+if (App::environment('local')) {
+    // 环境是 local
+}
 
-    if (App::environment(['local', 'staging'])) {
-        // 环境是 local 或 staging……
-    }
+if (App::environment(['local', 'staging'])) {
+    // 环境是 local 或 staging……
+}
+```
 
 > [!NOTE]
 > 通过定义服务器级 `APP_ENV` 环境变量，可以覆盖当前应用环境的检测结果。
@@ -192,28 +198,34 @@ php artisan env:decrypt --force
 
 你可以在应用中的任何位置通过 `Config` Facade 或全局 `config` 函数轻松访问配置值。访问配置值时可以使用"点"语法，其中包含你希望访问的文件名和选项名。你也可以指定一个默认值，在配置选项不存在时返回该值：
 
-    use Illuminate\Support\Facades\Config;
+```php
+use Illuminate\Support\Facades\Config;
 
-    $value = Config::get('app.timezone');
+$value = Config::get('app.timezone');
 
-    $value = config('app.timezone');
+$value = config('app.timezone');
 
-    // 如果配置值不存在，则获取默认值……
-    $value = config('app.timezone', 'Asia/Seoul');
+// 如果配置值不存在，则获取默认值……
+$value = config('app.timezone', 'Asia/Seoul');
+```
 
 要在运行时设置配置值，可以调用 `Config` Facade 的 `set` 方法，或给 `config` 函数传入一个数组：
 
-    Config::set('app.timezone', 'America/Chicago');
+```php
+Config::set('app.timezone', 'America/Chicago');
 
-    config(['app.timezone' => 'America/Chicago']);
+config(['app.timezone' => 'America/Chicago']);
+```
 
 为了便于静态分析，`Config` Facade 还提供了带类型的配置读取方法。如果读取到的配置值与预期类型不符，将抛出异常：
 
-    Config::string('config-key');
-    Config::integer('config-key');
-    Config::float('config-key');
-    Config::boolean('config-key');
-    Config::array('config-key');
+```php
+Config::string('config-key');
+Config::integer('config-key');
+Config::float('config-key');
+Config::boolean('config-key');
+Config::array('config-key');
+```
 
 <a name="configuration-caching"></a>
 ## 配置缓存

@@ -34,66 +34,74 @@ Laravel 的 `Illuminate\Http\Request` 类提供了一种面向对象的方式，
 
 要通过依赖注入获取当前 HTTP 请求的实例，你应当在路由闭包或控制器方法上类型提示 `Illuminate\Http\Request` 类。传入的请求实例会由 Laravel 的[服务容器（Service Container）](/docs/{{version}}/container)自动注入：
 
-    <?php
+```php
+<?php
 
-    namespace App\Http\Controllers;
+namespace App\Http\Controllers;
 
-    use Illuminate\Http\RedirectResponse;
-    use Illuminate\Http\Request;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 
-    class UserController extends Controller
+class UserController extends Controller
+{
+    /**
+     * 存储一个新用户。
+     */
+    public function store(Request $request): RedirectResponse
     {
-        /**
-         * 存储一个新用户。
-         */
-        public function store(Request $request): RedirectResponse
-        {
-            $name = $request->input('name');
+        $name = $request->input('name');
 
-            // 存储用户...
+        // 存储用户...
 
-            return redirect('/users');
-        }
+        return redirect('/users');
     }
+}
+```
 
 如前所述，你也可以在路由闭包上类型提示 `Illuminate\Http\Request` 类。闭包执行时，服务容器会自动把传入的请求注入其中：
 
-    use Illuminate\Http\Request;
+```php
+use Illuminate\Http\Request;
 
-    Route::get('/', function (Request $request) {
-        // ...
-    });
+Route::get('/', function (Request $request) {
+    // ...
+});
+```
 
 <a name="dependency-injection-route-parameters"></a>
 #### 依赖注入与路由参数
 
 如果你的控制器方法还期望接收来自路由参数的输入，就应当把路由参数列在其他依赖之后。例如，如果你的路由这样定义：
 
-    use App\Http\Controllers\UserController;
+```php
+use App\Http\Controllers\UserController;
 
-    Route::put('/user/{id}', [UserController::class, 'update']);
+Route::put('/user/{id}', [UserController::class, 'update']);
+```
 
 你依然可以类型提示 `Illuminate\Http\Request`，并通过如下方式定义控制器方法来访问 `id` 路由参数：
 
-    <?php
+```php
+<?php
 
-    namespace App\Http\Controllers;
+namespace App\Http\Controllers;
 
-    use Illuminate\Http\RedirectResponse;
-    use Illuminate\Http\Request;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 
-    class UserController extends Controller
+class UserController extends Controller
+{
+    /**
+     * 更新指定的用户。
+     */
+    public function update(Request $request, string $id): RedirectResponse
     {
-        /**
-         * 更新指定的用户。
-         */
-        public function update(Request $request, string $id): RedirectResponse
-        {
-            // 更新用户...
+        // 更新用户...
 
-            return redirect('/users');
-        }
+        return redirect('/users');
     }
+}
+```
 
 <a name="request-path-and-method"></a>
 ### 请求路径、主机与方法
@@ -105,35 +113,45 @@ Laravel 的 `Illuminate\Http\Request` 类提供了一种面向对象的方式，
 
 `path` 方法返回请求的路径信息。因此，如果传入请求的目标是 `http://example.com/foo/bar`，`path` 方法会返回 `foo/bar`：
 
-    $uri = $request->path();
+```php
+$uri = $request->path();
+```
 
 <a name="inspecting-the-request-path"></a>
 #### 检查请求路径 / 路由
 
 `is` 方法允许你验证传入请求的路径是否匹配给定模式。使用该方法时，你可以用 `*` 字符作为通配符：
 
-    if ($request->is('admin/*')) {
-        // ...
-    }
+```php
+if ($request->is('admin/*')) {
+    // ...
+}
+```
 
 借助 `routeIs` 方法，你可以判断传入请求是否匹配了某个[命名路由](/docs/{{version}}/routing#named-routes)：
 
-    if ($request->routeIs('admin.*')) {
-        // ...
-    }
+```php
+if ($request->routeIs('admin.*')) {
+    // ...
+}
+```
 
 <a name="retrieving-the-request-url"></a>
 #### 获取请求 URL
 
 要获取传入请求的完整 URL，可以使用 `url` 或 `fullUrl` 方法。`url` 方法返回不带查询字符串的 URL，而 `fullUrl` 方法则包含查询字符串：
 
-    $url = $request->url();
+```php
+$url = $request->url();
 
-    $urlWithQueryString = $request->fullUrl();
+$urlWithQueryString = $request->fullUrl();
+```
 
 如果你想把查询字符串数据追加到当前 URL 上，可以调用 `fullUrlWithQuery` 方法。该方法会把给定的查询字符串变量数组与当前查询字符串合并：
 
-    $request->fullUrlWithQuery(['type' => 'phone']);
+```php
+$request->fullUrlWithQuery(['type' => 'phone']);
+```
 
 如果你想获取不含某个给定查询字符串参数的当前 URL，可以使用 `fullUrlWithoutQuery` 方法：
 
@@ -146,50 +164,64 @@ $request->fullUrlWithoutQuery(['type']);
 
 你可以通过 `host`、`httpHost` 和 `schemeAndHttpHost` 方法获取传入请求的"主机"：
 
-    $request->host();
-    $request->httpHost();
-    $request->schemeAndHttpHost();
+```php
+$request->host();
+$request->httpHost();
+$request->schemeAndHttpHost();
+```
 
 <a name="retrieving-the-request-method"></a>
 #### 获取请求方法
 
 `method` 方法会返回该请求的 HTTP 动词。你可以使用 `isMethod` 方法验证 HTTP 动词是否匹配给定字符串：
 
-    $method = $request->method();
+```php
+$method = $request->method();
 
-    if ($request->isMethod('post')) {
-        // ...
-    }
+if ($request->isMethod('post')) {
+    // ...
+}
+```
 
 <a name="request-headers"></a>
 ### 请求头
 
 你可以使用 `header` 方法从 `Illuminate\Http\Request` 实例中获取请求头。如果请求中不存在该头，则会返回 `null`。不过，`header` 方法还接受一个可选的第二个参数，用于在请求中不存在该头时返回：
 
-    $value = $request->header('X-Header-Name');
+```php
+$value = $request->header('X-Header-Name');
 
-    $value = $request->header('X-Header-Name', 'default');
+$value = $request->header('X-Header-Name', 'default');
+```
 
 `hasHeader` 方法可用于判断请求中是否包含某个给定的头：
 
-    if ($request->hasHeader('X-Header-Name')) {
-        // ...
-    }
+```php
+if ($request->hasHeader('X-Header-Name')) {
+    // ...
+}
+```
 
 为方便起见，可以使用 `bearerToken` 方法从 `Authorization` 头中获取 Bearer 令牌。如果不存在该头，则会返回一个空字符串：
 
-    $token = $request->bearerToken();
+```php
+$token = $request->bearerToken();
+```
 
 <a name="request-ip-address"></a>
 ### 请求 IP 地址
 
 `ip` 方法可用于获取向你的应用发起请求的客户端 IP 地址：
 
-    $ipAddress = $request->ip();
+```php
+$ipAddress = $request->ip();
+```
 
 如果你想获取一组 IP 地址（包括代理转发的所有客户端 IP 地址），可以使用 `ips` 方法。"原始"客户端 IP 地址会位于数组末尾：
 
-    $ipAddresses = $request->ips();
+```php
+$ipAddresses = $request->ips();
+```
 
 一般来说，IP 地址应当被视为不可信、由用户控制的输入，仅用于提供信息。
 
@@ -198,23 +230,31 @@ $request->fullUrlWithoutQuery(['type']);
 
 Laravel 提供了多种方法，用于通过 `Accept` 头检查传入请求所请求的内容类型。首先，`getAcceptableContentTypes` 方法会返回一个数组，其中包含该请求所接受的所有内容类型：
 
-    $contentTypes = $request->getAcceptableContentTypes();
+```php
+$contentTypes = $request->getAcceptableContentTypes();
+```
 
 `accepts` 方法接受一个内容类型数组，如果其中任何一种内容类型被该请求接受，就返回 `true`；否则返回 `false`：
 
-    if ($request->accepts(['text/html', 'application/json'])) {
-        // ...
-    }
+```php
+if ($request->accepts(['text/html', 'application/json'])) {
+    // ...
+}
+```
 
 你可以使用 `prefers` 方法，从给定的内容类型数组中判断哪一种最受该请求偏好。如果所提供的内容类型都不被该请求接受，则返回 `null`：
 
-    $preferred = $request->prefers(['text/html', 'application/json']);
+```php
+$preferred = $request->prefers(['text/html', 'application/json']);
+```
 
 由于许多应用只提供 HTML 或 JSON，你可以使用 `expectsJson` 方法快速判断传入请求是否期望 JSON 响应：
 
-    if ($request->expectsJson()) {
-        // ...
-    }
+```php
+if ($request->expectsJson()) {
+    // ...
+}
+```
 
 <a name="psr7-requests"></a>
 ### PSR-7 请求
@@ -228,11 +268,13 @@ composer require nyholm/psr7
 
 安装好这些库之后，你可以在路由闭包或控制器方法上类型提示请求接口，从而获取 PSR-7 请求：
 
-    use Psr\Http\Message\ServerRequestInterface;
+```php
+use Psr\Http\Message\ServerRequestInterface;
 
-    Route::get('/', function (ServerRequestInterface $request) {
-        // ...
-    });
+Route::get('/', function (ServerRequestInterface $request) {
+    // ...
+});
+```
 
 > [!NOTE]
 > 如果你从路由或控制器返回 PSR-7 响应实例，它会被自动转换回 Laravel 响应实例，并由框架输出。
@@ -248,92 +290,124 @@ composer require nyholm/psr7
 
 你可以使用 `all` 方法把传入请求的全部输入数据获取为一个 `array`。无论传入请求来自 HTML 表单还是 XHR 请求，都可以使用该方法：
 
-    $input = $request->all();
+```php
+$input = $request->all();
+```
 
 借助 `collect` 方法，你可以把传入请求的全部输入数据获取为一个[集合](/docs/{{version}}/collections)：
 
-    $input = $request->collect();
+```php
+$input = $request->collect();
+```
 
 `collect` 方法还允许你把传入请求的输入子集获取为一个集合：
 
-    $request->collect('users')->each(function (string $user) {
-        // ...
-    });
+```php
+$request->collect('users')->each(function (string $user) {
+    // ...
+});
+```
 
 <a name="retrieving-an-input-value"></a>
 #### 获取单个输入值
 
 通过几个简单的方法，你就可以访问 `Illuminate\Http\Request` 实例上的全部用户输入，而不必担心请求使用的是哪个 HTTP 动词。无论使用何种 HTTP 动词，都可以用 `input` 方法获取用户输入：
 
-    $name = $request->input('name');
+```php
+$name = $request->input('name');
+```
 
 你可以把一个默认值作为 `input` 方法的第二个参数传入。如果请求中不存在所请求的输入值，就会返回该值：
 
-    $name = $request->input('name', 'Sally');
+```php
+$name = $request->input('name', 'Sally');
+```
 
 处理包含数组输入的表单时，使用"点"记法来访问数组：
 
-    $name = $request->input('products.0.name');
+```php
+$name = $request->input('products.0.name');
 
-    $names = $request->input('products.*.name');
+$names = $request->input('products.*.name');
+```
 
 你也可以不带参数调用 `input` 方法，以便把所有输入值获取为一个关联数组：
 
-    $input = $request->input();
+```php
+$input = $request->input();
+```
 
 <a name="retrieving-input-from-the-query-string"></a>
 #### 从查询字符串获取输入
 
 `input` 方法会从整个请求载荷（包括查询字符串）中获取值，而 `query` 方法只从查询字符串中获取值：
 
-    $name = $request->query('name');
+```php
+$name = $request->query('name');
+```
 
 如果不存在所请求的查询字符串值数据，就会返回该方法的第二个参数：
 
-    $name = $request->query('name', 'Helen');
+```php
+$name = $request->query('name', 'Helen');
+```
 
 你也可以不带参数调用 `query` 方法，以便把所有查询字符串值获取为一个关联数组：
 
-    $query = $request->query();
+```php
+$query = $request->query();
+```
 
 <a name="retrieving-json-input-values"></a>
 #### 获取 JSON 输入值
 
 当向你的应用发送 JSON 请求时，只要请求的 `Content-Type` 头被正确设置为 `application/json`，你就可以通过 `input` 方法访问 JSON 数据。你甚至可以用"点"语法获取嵌套在 JSON 数组 / 对象中的值：
 
-    $name = $request->input('user.name');
+```php
+$name = $request->input('user.name');
+```
 
 <a name="retrieving-stringable-input-values"></a>
 #### 获取 Stringable 输入值
 
 除了把请求输入数据获取为基本类型 `string`，你还可以使用 `string` 方法把请求数据获取为 [`Illuminate\Support\Stringable`](/docs/{{version}}/strings) 实例：
 
-    $name = $request->string('name')->trim();
+```php
+$name = $request->string('name')->trim();
+```
 
 <a name="retrieving-integer-input-values"></a>
 #### 获取整数输入值
 
 要以整数形式获取输入值，你可以使用 `integer` 方法。该方法会尝试把输入值转换为整数。如果输入不存在或转换失败，它会返回你指定的默认值。这在分页或其他数值输入场景中尤其有用：
 
-    $perPage = $request->integer('per_page');
+```php
+$perPage = $request->integer('per_page');
+```
 
 <a name="retrieving-boolean-input-values"></a>
 #### 获取布尔输入值
 
 处理复选框之类的 HTML 元素时，你的应用收到的"真值"实际上可能是字符串，例如 "true" 或 "on"。为方便起见，你可以使用 `boolean` 方法把这些值获取为布尔值。对于 1、"1"、true、"true"、"on" 和 "yes"，`boolean` 方法返回 `true`；其他所有值均返回 `false`：
 
-    $archived = $request->boolean('archived');
+```php
+$archived = $request->boolean('archived');
+```
 
 <a name="retrieving-date-input-values"></a>
 #### 获取日期输入值
 
 为方便起见，包含日期 / 时间的输入值可以使用 `date` 方法获取为 Carbon 实例。如果请求中不存在指定名称的输入值，将返回 `null`：
 
-    $birthday = $request->date('birthday');
+```php
+$birthday = $request->date('birthday');
+```
 
 `date` 方法接受的第二个和第三个参数可分别用于指定日期的格式和时区：
 
-    $elapsed = $request->date('elapsed', '!H:i', 'Europe/Madrid');
+```php
+$elapsed = $request->date('elapsed', '!H:i', 'Europe/Madrid');
+```
 
 如果输入值存在但格式无效，将抛出 `InvalidArgumentException`；因此建议在调用 `date` 方法之前先验证输入。
 
@@ -342,22 +416,28 @@ composer require nyholm/psr7
 
 与 [PHP 枚举](https://www.php.net/manual/en/language.types.enumerations.php)对应的输入值也可以从请求中获取。如果请求中不存在指定名称的输入值，或者该枚举没有与输入值匹配的支撑值，将返回 `null`。`enum` 方法的第一个和第二个参数分别接受输入值的名称和枚举类：
 
-    use App\Enums\Status;
+```php
+use App\Enums\Status;
 
-    $status = $request->enum('status', Status::class);
+$status = $request->enum('status', Status::class);
+```
 
 如果输入值是一组与 PHP 枚举对应的值的数组，你可以使用 `enums` 方法把这些值获取为枚举实例数组：
 
-    use App\Enums\Product;
+```php
+use App\Enums\Product;
 
-    $products = $request->enums('products', Product::class);
+$products = $request->enums('products', Product::class);
+```
 
 <a name="retrieving-input-via-dynamic-properties"></a>
 #### 通过动态属性获取输入
 
 你也可以通过 `Illuminate\Http\Request` 实例上的动态属性访问用户输入。例如，如果应用中某个表单包含 `name` 字段，你可以这样访问该字段的值：
 
-    $name = $request->name;
+```php
+$name = $request->name;
+```
 
 使用动态属性时，Laravel 会先在请求载荷中查找该参数的值。如果不存在，Laravel 会在匹配到的路由参数中查找该字段。
 
@@ -366,13 +446,15 @@ composer require nyholm/psr7
 
 如果你需要获取输入数据的一个子集，可以使用 `only` 和 `except` 方法。这两个方法都接受单个 `array` 或一份动态参数列表：
 
-    $input = $request->only(['username', 'password']);
+```php
+$input = $request->only(['username', 'password']);
 
-    $input = $request->only('username', 'password');
+$input = $request->only('username', 'password');
 
-    $input = $request->except(['credit_card']);
+$input = $request->except(['credit_card']);
 
-    $input = $request->except('credit_card');
+$input = $request->except('credit_card');
+```
 
 > [!WARNING]
 > `only` 方法会返回你请求的所有键 / 值对；但请求中不存在的键 / 值对不会被返回。
@@ -382,96 +464,124 @@ composer require nyholm/psr7
 
 你可以使用 `has` 方法判断请求中是否存在某个值。如果请求中存在该值，`has` 方法返回 `true`：
 
-    if ($request->has('name')) {
-        // ...
-    }
+```php
+if ($request->has('name')) {
+    // ...
+}
+```
 
 传入数组时，`has` 方法会判断所有指定的值是否都存在：
 
-    if ($request->has(['name', 'email'])) {
-        // ...
-    }
+```php
+if ($request->has(['name', 'email'])) {
+    // ...
+}
+```
 
 只要任一指定值存在，`hasAny` 方法就返回 `true`：
 
-    if ($request->hasAny(['name', 'email'])) {
-        // ...
-    }
+```php
+if ($request->hasAny(['name', 'email'])) {
+    // ...
+}
+```
 
 如果请求中存在某个值，`whenHas` 方法会执行给定的闭包：
 
-    $request->whenHas('name', function (string $input) {
-        // ...
-    });
+```php
+$request->whenHas('name', function (string $input) {
+    // ...
+});
+```
 
 你还可以向 `whenHas` 方法传入第二个闭包，当指定值在请求中不存在时执行它：
 
-    $request->whenHas('name', function (string $input) {
-        // "name" 值存在……
-    }, function () {
-        // "name" 值不存在……
-    });
+```php
+$request->whenHas('name', function (string $input) {
+    // "name" 值存在……
+}, function () {
+    // "name" 值不存在……
+});
+```
 
 如果你想判断请求中是否存在某个值且该值不是空字符串，可以使用 `filled` 方法：
 
-    if ($request->filled('name')) {
-        // ...
-    }
+```php
+if ($request->filled('name')) {
+    // ...
+}
+```
 
 如果你想判断请求中缺少某个值或该值为空字符串，可以使用 `isNotFilled` 方法：
 
-    if ($request->isNotFilled('name')) {
-        // ...
-    }
+```php
+if ($request->isNotFilled('name')) {
+    // ...
+}
+```
 
 传入数组时，`isNotFilled` 方法会判断所有指定的值是否都缺失或为空：
 
-    if ($request->isNotFilled(['name', 'email'])) {
-        // ...
-    }
+```php
+if ($request->isNotFilled(['name', 'email'])) {
+    // ...
+}
+```
 
 只要任一指定值不是空字符串，`anyFilled` 方法就返回 `true`：
 
-    if ($request->anyFilled(['name', 'email'])) {
-        // ...
-    }
+```php
+if ($request->anyFilled(['name', 'email'])) {
+    // ...
+}
+```
 
 如果请求中存在某个值且该值不是空字符串，`whenFilled` 方法会执行给定的闭包：
 
-    $request->whenFilled('name', function (string $input) {
-        // ...
-    });
+```php
+$request->whenFilled('name', function (string $input) {
+    // ...
+});
+```
 
 你还可以向 `whenFilled` 方法传入第二个闭包，当指定值"未填充"时执行它：
 
-    $request->whenFilled('name', function (string $input) {
-        // "name" 值已填充……
-    }, function () {
-        // "name" 值未填充……
-    });
+```php
+$request->whenFilled('name', function (string $input) {
+    // "name" 值已填充……
+}, function () {
+    // "name" 值未填充……
+});
+```
 
 要判断请求中是否缺少某个键，可以使用 `missing` 和 `whenMissing` 方法：
 
-    if ($request->missing('name')) {
-        // ...
-    }
+```php
+if ($request->missing('name')) {
+    // ...
+}
 
-    $request->whenMissing('name', function () {
-        // "name" 值缺失……
-    }, function () {
-        // "name" 值存在……
-    });
+$request->whenMissing('name', function () {
+    // "name" 值缺失……
+}, function () {
+    // "name" 值存在……
+});
+```
 
 <a name="merging-additional-input"></a>
 ### 合并额外输入
 
 有时你可能需要手动把额外输入合并到请求已有的输入数据中。为此，你可以使用 `merge` 方法。如果请求中已存在某个输入键，传入 `merge` 方法的数据会覆盖它：
 
-    $request->merge(['votes' => 0]);
+```php
+$request->merge(['votes' => 0]);
+```
 
 如果相应的键尚未存在于请求的输入数据中，可以使用 `mergeIfMissing` 方法把输入合并到请求中：
 
-    $request->mergeIfMissing(['votes' => 0]);
+```php
+$request->mergeIfMissing(['votes' => 0]);
+```
 
 <a name="old-input"></a>
 ### 旧输入
@@ -483,37 +593,47 @@ Laravel 允许你在下一个请求期间保留上一个请求的输入。该特
 
 `Illuminate\Http\Request` 类上的 `flash` 方法会把当前输入闪存到[会话](/docs/{{version}}/session)，以便在用户下一次请求应用时可用：
 
-    $request->flash();
+```php
+$request->flash();
+```
 
 你也可以使用 `flashOnly` 和 `flashExcept` 方法把请求数据的一个子集闪存到会话中。这些方法有助于把密码等敏感信息排除在会话之外：
 
-    $request->flashOnly(['username', 'email']);
+```php
+$request->flashOnly(['username', 'email']);
 
-    $request->flashExcept('password');
+$request->flashExcept('password');
+```
 
 <a name="flashing-input-then-redirecting"></a>
 #### 闪存输入后重定向
 
 由于你通常希望把输入闪存到会话后再重定向回上一页，可以使用 `withInput` 方法把输入闪存链到重定向上：
 
-    return redirect('/form')->withInput();
+```php
+return redirect('/form')->withInput();
 
-    return redirect()->route('user.create')->withInput();
+return redirect()->route('user.create')->withInput();
 
-    return redirect('/form')->withInput(
-        $request->except('password')
-    );
+return redirect('/form')->withInput(
+    $request->except('password')
+);
+```
 
 <a name="retrieving-old-input"></a>
 #### 获取旧输入
 
 要获取上一个请求中闪存的输入，请调用 `Illuminate\Http\Request` 实例上的 `old` 方法。`old` 方法会从[会话](/docs/{{version}}/session)中取出此前闪存的输入数据：
 
-    $username = $request->old('username');
+```php
+$username = $request->old('username');
+```
 
 Laravel 还提供了一个全局 `old` 辅助函数。如果你在 [Blade 模板](/docs/{{version}}/blade)中显示旧输入，使用 `old` 辅助函数重新填充表单会更方便。如果给定字段没有旧输入，将返回 `null`：
 
-    <input type="text" name="username" value="{{ old('username') }}">
+```blade
+<input type="text" name="username" value="{{ old('username') }}">
+```
 
 <a name="cookies"></a>
 ### Cookie
@@ -523,7 +643,9 @@ Laravel 还提供了一个全局 `old` 辅助函数。如果你在 [Blade 模板
 
 Laravel 框架创建的所有 Cookie 都经过加密并使用认证码签名，也就是说客户端一旦篡改就会被视为无效。要从请求中获取 Cookie 值，请在 `Illuminate\Http\Request` 实例上使用 `cookie` 方法：
 
-    $value = $request->cookie('name');
+```php
+$value = $request->cookie('name');
+```
 
 <a name="input-trimming-and-normalization"></a>
 ## 输入裁剪与规范化
@@ -534,27 +656,31 @@ Laravel 框架创建的所有 Cookie 都经过加密并使用认证码签名，�
 
 如果你想对所有请求禁用该行为，可以在应用的 `bootstrap/app.php` 文件中调用 `$middleware->remove` 方法，把这两个中间件从应用的中间件栈中移除：
 
-    use Illuminate\Foundation\Http\Middleware\ConvertEmptyStringsToNull;
-    use Illuminate\Foundation\Http\Middleware\TrimStrings;
+```php
+use Illuminate\Foundation\Http\Middleware\ConvertEmptyStringsToNull;
+use Illuminate\Foundation\Http\Middleware\TrimStrings;
 
-    ->withMiddleware(function (Middleware $middleware) {
-        $middleware->remove([
-            ConvertEmptyStringsToNull::class,
-            TrimStrings::class,
-        ]);
-    })
+->withMiddleware(function (Middleware $middleware) {
+    $middleware->remove([
+        ConvertEmptyStringsToNull::class,
+        TrimStrings::class,
+    ]);
+})
+```
 
 如果你想对应用中的一部分请求禁用字符串裁剪和空字符串转换，可以在应用的 `bootstrap/app.php` 文件中使用 `trimStrings` 和 `convertEmptyStringsToNull` 中间件方法。两个方法都接受一个闭包数组，闭包应返回 `true` 或 `false`，表示是否跳过输入规范化：
 
-    ->withMiddleware(function (Middleware $middleware) {
-        $middleware->convertEmptyStringsToNull(except: [
-            fn (Request $request) => $request->is('admin/*'),
-        ]);
+```php
+->withMiddleware(function (Middleware $middleware) {
+    $middleware->convertEmptyStringsToNull(except: [
+        fn (Request $request) => $request->is('admin/*'),
+    ]);
 
-        $middleware->trimStrings(except: [
-            fn (Request $request) => $request->is('admin/*'),
-        ]);
-    })
+    $middleware->trimStrings(except: [
+        fn (Request $request) => $request->is('admin/*'),
+    ]);
+})
+```
 
 <a name="files"></a>
 ## 文件
@@ -564,33 +690,41 @@ Laravel 框架创建的所有 Cookie 都经过加密并使用认证码签名，�
 
 你可以使用 `file` 方法或动态属性从 `Illuminate\Http\Request` 实例中获取上传的文件。`file` 方法返回 `Illuminate\Http\UploadedFile` 类的实例，该类继承 PHP 的 `SplFileInfo` 类，并提供多种与文件交互的方法：
 
-    $file = $request->file('photo');
+```php
+$file = $request->file('photo');
 
-    $file = $request->photo;
+$file = $request->photo;
+```
 
 你可以使用 `hasFile` 方法判断请求中是否存在文件：
 
-    if ($request->hasFile('photo')) {
-        // ...
-    }
+```php
+if ($request->hasFile('photo')) {
+    // ...
+}
+```
 
 <a name="validating-successful-uploads"></a>
 #### 校验上传是否成功
 
 除了检查文件是否存在之外，还可以通过 `isValid` 方法验证上传过程中是否出现问题：
 
-    if ($request->file('photo')->isValid()) {
-        // ...
-    }
+```php
+if ($request->file('photo')->isValid()) {
+    // ...
+}
+```
 
 <a name="file-paths-extensions"></a>
 #### 文件路径与扩展名
 
 `UploadedFile` 类还包含访问文件完全限定路径和扩展名的方法。`extension` 方法会根据文件内容尝试猜测其扩展名。猜测出的扩展名可能与客户端提供的扩展名不同：
 
-    $path = $request->photo->path();
+```php
+$path = $request->photo->path();
 
-    $extension = $request->photo->extension();
+$extension = $request->photo->extension();
+```
 
 <a name="other-file-methods"></a>
 #### 其他文件方法
@@ -606,15 +740,19 @@ Laravel 框架创建的所有 Cookie 都经过加密并使用认证码签名，�
 
 `store` 方法还接受一个可选的第二个参数，用于指定存储文件所用的磁盘名称。该方法会返回文件相对于磁盘根目录的路径：
 
-    $path = $request->photo->store('images');
+```php
+$path = $request->photo->store('images');
 
-    $path = $request->photo->store('images', 's3');
+$path = $request->photo->store('images', 's3');
+```
 
 如果你不希望自动生成文件名，可以使用 `storeAs` 方法，它接受路径、文件名和磁盘名称作为参数：
 
-    $path = $request->photo->storeAs('images', 'filename.jpg');
+```php
+$path = $request->photo->storeAs('images', 'filename.jpg');
 
-    $path = $request->photo->storeAs('images', 'filename.jpg', 's3');
+$path = $request->photo->storeAs('images', 'filename.jpg', 's3');
+```
 
 > [!NOTE]
 > 想了解更多关于 Laravel 文件存储的信息，请查看完整的[文件存储文档](/docs/{{version}}/filesystem)。
@@ -626,23 +764,27 @@ Laravel 框架创建的所有 Cookie 都经过加密并使用认证码签名，�
 
 要解决这个问题，你可以启用 Laravel 应用中自带的 `Illuminate\Http\Middleware\TrustProxies` 中间件，它让你可以快速自定义应用应当信任的负载均衡器或代理。受信任的代理应通过应用的 `bootstrap/app.php` 文件中的 `trustProxies` 中间件方法指定：
 
-    ->withMiddleware(function (Middleware $middleware) {
-        $middleware->trustProxies(at: [
-            '192.168.1.1',
-            '10.0.0.0/8',
-        ]);
-    })
+```php
+->withMiddleware(function (Middleware $middleware) {
+    $middleware->trustProxies(at: [
+        '192.168.1.1',
+        '10.0.0.0/8',
+    ]);
+})
+```
 
 除了配置受信任的代理之外，你还可以配置应当信任哪些代理头：
 
-    ->withMiddleware(function (Middleware $middleware) {
-        $middleware->trustProxies(headers: Request::HEADER_X_FORWARDED_FOR |
-            Request::HEADER_X_FORWARDED_HOST |
-            Request::HEADER_X_FORWARDED_PORT |
-            Request::HEADER_X_FORWARDED_PROTO |
-            Request::HEADER_X_FORWARDED_AWS_ELB
-        );
-    })
+```php
+->withMiddleware(function (Middleware $middleware) {
+    $middleware->trustProxies(headers: Request::HEADER_X_FORWARDED_FOR |
+        Request::HEADER_X_FORWARDED_HOST |
+        Request::HEADER_X_FORWARDED_PORT |
+        Request::HEADER_X_FORWARDED_PROTO |
+        Request::HEADER_X_FORWARDED_AWS_ELB
+    );
+})
+```
 
 > [!NOTE]
 > 如果你使用 AWS Elastic Load Balancing，`headers` 值应为 `Request::HEADER_X_FORWARDED_AWS_ELB`。如果你的负载均衡器使用 [RFC 7239](https://www.rfc-editor.org/rfc/rfc7239#section-4) 的标准 `Forwarded` 头，`headers` 值应为 `Request::HEADER_FORWARDED`。有关 `headers` 值中可用的常量，请参阅 Symfony 关于[信任代理](https://symfony.com/doc/7.0/deployment/proxies.html)的文档。
@@ -652,9 +794,11 @@ Laravel 框架创建的所有 Cookie 都经过加密并使用认证码签名，�
 
 如果你使用 Amazon AWS 或其他"云"负载均衡器提供商，可能并不清楚实际负载均衡器的 IP 地址。这种情况下，可以使用 `*` 信任所有代理：
 
-    ->withMiddleware(function (Middleware $middleware) {
-        $middleware->trustProxies(at: '*');
-    })
+```php
+->withMiddleware(function (Middleware $middleware) {
+    $middleware->trustProxies(at: '*');
+})
+```
 
 <a name="configuring-trusted-hosts"></a>
 ## 配置受信任的主机
@@ -665,18 +809,24 @@ Laravel 框架创建的所有 Cookie 都经过加密并使用认证码签名，�
 
 要启用 `TrustHosts` 中间件，请在应用的 `bootstrap/app.php` 文件中调用 `trustHosts` 中间件方法。通过该方法的 `at` 参数，你可以指定应用应当响应哪些主机名。其他 `Host` 头的传入请求将被拒绝：
 
-    ->withMiddleware(function (Middleware $middleware) {
-        $middleware->trustHosts(at: ['laravel.test']);
-    })
+```php
+->withMiddleware(function (Middleware $middleware) {
+    $middleware->trustHosts(at: ['laravel.test']);
+})
+```
 
 默认情况下，来自应用 URL 子域的请求也会被自动信任。如果你想禁用该行为，可以使用 `subdomains` 参数：
 
-    ->withMiddleware(function (Middleware $middleware) {
-        $middleware->trustHosts(at: ['laravel.test'], subdomains: false);
-    })
+```php
+->withMiddleware(function (Middleware $middleware) {
+    $middleware->trustHosts(at: ['laravel.test'], subdomains: false);
+})
+```
 
 如果你需要访问应用的配置文件或数据库来确定受信任的主机，可以向 `at` 参数传入一个闭包：
 
-    ->withMiddleware(function (Middleware $middleware) {
-        $middleware->trustHosts(at: fn () => config('app.trusted_hosts'));
-    })
+```php
+->withMiddleware(function (Middleware $middleware) {
+    $middleware->trustHosts(at: fn () => config('app.trusted_hosts'));
+})
+```

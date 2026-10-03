@@ -488,9 +488,11 @@ sail share
 
 通过 `share` 命令共享站点时，你应当使用应用 `bootstrap/app.php` 文件中的 `trustProxies` 中间件方法配置应用的可信代理。否则，`url` 和 `route` 等 URL 生成辅助函数将无法在生成 URL 时确定正确使用的 HTTP 主机：
 
-    ->withMiddleware(function (Middleware $middleware) {
-        $middleware->trustProxies(at: '*');
-    })
+```php
+->withMiddleware(function (Middleware $middleware) {
+    $middleware->trustProxies(at: '*');
+})
+```
 
 如果你想为共享站点选择子域名，可以在执行 `share` 命令时提供 `subdomain` 选项：
 

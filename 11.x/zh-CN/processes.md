@@ -618,16 +618,18 @@ Process::assertRanTimes(function (PendingProcess $process, ProcessResult $result
 
 如果你希望确保在某个单独测试或整个测试套件中被调用的所有进程都已模拟，可以调用 `preventStrayProcesses` 方法。调用该方法之后，任何没有对应模拟结果的进程都会抛出异常，而不是真正启动进程：
 
-    use Illuminate\Support\Facades\Process;
+```php
+use Illuminate\Support\Facades\Process;
 
-    Process::preventStrayProcesses();
+Process::preventStrayProcesses();
 
-    Process::fake([
-        'ls *' => 'Test output...',
-    ]);
+Process::fake([
+    'ls *' => 'Test output...',
+]);
 
-    // Fake response is returned...
-    Process::run('ls -la');
+// Fake response is returned...
+Process::run('ls -la');
 
-    // An exception is thrown...
-    Process::run('bash import.sh');
+// An exception is thrown...
+Process::run('bash import.sh');
+```

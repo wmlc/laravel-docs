@@ -39,39 +39,43 @@ APP_PREVIOUS_KEYS="base64:2nLsGFGzyoae2ax3EF2Lyq/hH6QghBGLIq5uL+Gp8/w="
 
 你可以使用 `Crypt` Facade 提供的 `encryptString` 方法加密一个值。所有加密值都使用 OpenSSL 和 AES-256-CBC 密码进行加密。此外，所有加密值都会用消息认证码（MAC）签名。集成其中的消息认证码可以阻止任何被恶意用户篡改过的值被解密：
 
-    <?php
+```php
+<?php
 
-    namespace App\Http\Controllers;
+namespace App\Http\Controllers;
 
-    use Illuminate\Http\RedirectResponse;
-    use Illuminate\Http\Request;
-    use Illuminate\Support\Facades\Crypt;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Crypt;
 
-    class DigitalOceanTokenController extends Controller
+class DigitalOceanTokenController extends Controller
+{
+    /**
+     * 为用户保存一个 DigitalOcean API 令牌。
+     */
+    public function store(Request $request): RedirectResponse
     {
-        /**
-         * 为用户保存一个 DigitalOcean API 令牌。
-         */
-        public function store(Request $request): RedirectResponse
-        {
-            $request->user()->fill([
-                'token' => Crypt::encryptString($request->token),
-            ])->save();
+        $request->user()->fill([
+            'token' => Crypt::encryptString($request->token),
+        ])->save();
 
-            return redirect('/secrets');
-        }
+        return redirect('/secrets');
     }
+}
+```
 
 <a name="decrypting-a-value"></a>
 #### 解密一个值
 
 你可以使用 `Crypt` Facade 提供的 `decryptString` 方法解密值。如果值无法被正确解密（例如消息认证码无效），系统会抛出 `Illuminate\Contracts\Encryption\DecryptException`：
 
-    use Illuminate\Contracts\Encryption\DecryptException;
-    use Illuminate\Support\Facades\Crypt;
+```php
+use Illuminate\Contracts\Encryption\DecryptException;
+use Illuminate\Support\Facades\Crypt;
 
-    try {
-        $decrypted = Crypt::decryptString($encryptedValue);
-    } catch (DecryptException $e) {
-        // ...
-    }
+try {
+    $decrypted = Crypt::decryptString($encryptedValue);
+} catch (DecryptException $e) {
+    // ...
+}
+```

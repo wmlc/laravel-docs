@@ -74,13 +74,15 @@ Laravel 的队列配置选项存放在你应用的 `config/queue.php` 配置文�
 
 请注意，`queue` 配置文件中的每个连接配置示例都包含一个 `queue` 属性。当任务被发送到某个连接时，默认就会被分发到该队列。换句话说，如果你分发任务时没有显式指定它应该分发到哪个队列，那么该任务就会被放入连接配置 `queue` 属性所定义的队列中：
 
-    use App\Jobs\ProcessPodcast;
+```php
+use App\Jobs\ProcessPodcast;
 
-    // 该任务会发送到默认连接的默认队列……
-    ProcessPodcast::dispatch();
+// 该任务会发送到默认连接的默认队列……
+ProcessPodcast::dispatch();
 
-    // 该任务会发送到默认连接的 "emails" 队列……
-    ProcessPodcast::dispatch()->onQueue('emails');
+// 该任务会发送到默认连接的 "emails" 队列……
+ProcessPodcast::dispatch()->onQueue('emails');
+```
 
 有些应用可能从不需要把任务推送到多个队列，而是更倾向于只使用一个简单队列。不过，对于希望按优先级安排任务处理顺序或对任务进行分块的应用，把任务推送到多个队列会格外有用，因为 Laravel 队列工作进程允许你按优先级指定要处理哪些队列。例如，如果你把任务推送到 `high` 队列，可以运行一个为它们赋予更高处理优先级的工作进程：
 
@@ -114,14 +116,16 @@ php artisan migrate
 
 如果你的 Redis 队列连接使用了 Redis 集群，那么队列名称必须包含[键哈希标签](https://redis.io/docs/reference/cluster-spec/#hash-tags)。这是为了确保某个队列的所有 Redis 键都被放入同一个哈希槽中：
 
-    'redis' => [
-        'driver' => 'redis',
-        'connection' => env('REDIS_QUEUE_CONNECTION', 'default'),
-        'queue' => env('REDIS_QUEUE', '{default}'),
-        'retry_after' => env('REDIS_QUEUE_RETRY_AFTER', 90),
-        'block_for' => null,
-        'after_commit' => false,
-    ],
+```php
+'redis' => [
+    'driver' => 'redis',
+    'connection' => env('REDIS_QUEUE_CONNECTION', 'default'),
+    'queue' => env('REDIS_QUEUE', '{default}'),
+    'retry_after' => env('REDIS_QUEUE_RETRY_AFTER', 90),
+    'block_for' => null,
+    'after_commit' => false,
+],
+```
 
 **阻塞**
 
@@ -129,14 +133,16 @@ php artisan migrate
 
 根据队列负载情况调整该值，可能比持续轮询 Redis 数据库以获取新任务更高效。例如，你可以把该值设为 `5`，表示驱动在等待任务可用时应阻塞五秒：
 
-    'redis' => [
-        'driver' => 'redis',
-        'connection' => env('REDIS_QUEUE_CONNECTION', 'default'),
-        'queue' => env('REDIS_QUEUE', 'default'),
-        'retry_after' => env('REDIS_QUEUE_RETRY_AFTER', 90),
-        'block_for' => 5,
-        'after_commit' => false,
-    ],
+```php
+'redis' => [
+    'driver' => 'redis',
+    'connection' => env('REDIS_QUEUE_CONNECTION', 'default'),
+    'queue' => env('REDIS_QUEUE', 'default'),
+    'retry_after' => env('REDIS_QUEUE_RETRY_AFTER', 90),
+    'block_for' => 5,
+    'after_commit' => false,
+],
+```
 
 > [!WARNING]
 > 把 `block_for` 设为 `0` 会导致队列工作进程无限期阻塞，直到有任务可用为止。这也会导致 `SIGTERM` 等信号在下一个任务处理完成之前无法被处理。
@@ -177,34 +183,36 @@ php artisan make:job ProcessPodcast
 
 任务类非常简单，通常只包含一个 `handle` 方法，在任务被队列处理时调用。要开始上手，我们来看一个任务类示例。在这个例子中，我们假装自己经营着一项播客发布服务，需要在播客文件发布之前对其进行处理：
 
-    <?php
+```php
+<?php
 
-    namespace App\Jobs;
+namespace App\Jobs;
 
-    use App\Models\Podcast;
-    use App\Services\AudioProcessor;
-    use Illuminate\Contracts\Queue\ShouldQueue;
-    use Illuminate\Foundation\Queue\Queueable;
+use App\Models\Podcast;
+use App\Services\AudioProcessor;
+use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Foundation\Queue\Queueable;
 
-    class ProcessPodcast implements ShouldQueue
+class ProcessPodcast implements ShouldQueue
+{
+    use Queueable;
+
+    /**
+     * 创建一个新的任务实例。
+     */
+    public function __construct(
+        public Podcast $podcast,
+    ) {}
+
+    /**
+     * 执行该任务。
+     */
+    public function handle(AudioProcessor $processor): void
     {
-        use Queueable;
-
-        /**
-         * 创建一个新的任务实例。
-         */
-        public function __construct(
-            public Podcast $podcast,
-        ) {}
-
-        /**
-         * 执行该任务。
-         */
-        public function handle(AudioProcessor $processor): void
-        {
-            // 处理已上传的播客……
-        }
+        // 处理已上传的播客……
     }
+}
+```
 
 在这个例子中，请注意我们能够直接把一个 [Eloquent 模型](/docs/{{version}}/eloquent)传入队列任务的构造函数。由于该任务使用了 `Queueable` Trait，Eloquent 模型及其已加载的关联会在任务处理时被优雅地序列化与反序列化。
 
@@ -217,13 +225,15 @@ php artisan make:job ProcessPodcast
 
 如果你希望完全掌控容器如何向 `handle` 方法注入依赖项，可以使用容器的 `bindMethod` 方法。`bindMethod` 方法接受一个回调，该回接收收到的任务和容器。在回调内部，你可以随意调用 `handle` 方法。通常，你应该在 `App\Providers\AppServiceProvider` [服务提供者（Service Provider）](/docs/{{version}}/providers)的 `boot` 方法中调用该方法：
 
-    use App\Jobs\ProcessPodcast;
-    use App\Services\AudioProcessor;
-    use Illuminate\Contracts\Foundation\Application;
+```php
+use App\Jobs\ProcessPodcast;
+use App\Services\AudioProcessor;
+use Illuminate\Contracts\Foundation\Application;
 
-    $this->app->bindMethod([ProcessPodcast::class, 'handle'], function (ProcessPodcast $job, Application $app) {
-        return $job->handle($app->make(AudioProcessor::class));
-    });
+$this->app->bindMethod([ProcessPodcast::class, 'handle'], function (ProcessPodcast $job, Application $app) {
+    return $job->handle($app->make(AudioProcessor::class));
+});
+```
 
 > [!WARNING]
 > 二进制数据（例如原始图片内容）在传给队列任务之前，应当先通过 `base64_encode` 函数处理。否则，任务在放入队列时可能无法正确序列化为 JSON。
@@ -235,26 +245,30 @@ php artisan make:job ProcessPodcast
 
 或者，为了阻止关联被序列化，你可以在设置属性值时调用模型上的 `withoutRelations` 方法。该方法会返回一个不含已加载关联的模型实例：
 
-    /**
-     * 创建一个新的任务实例。
-     */
-    public function __construct(
-        Podcast $podcast,
-    ) {
-        $this->podcast = $podcast->withoutRelations();
-    }
+```php
+/**
+ * 创建一个新的任务实例。
+ */
+public function __construct(
+    Podcast $podcast,
+) {
+    $this->podcast = $podcast->withoutRelations();
+}
+```
 
 如果你使用 PHP 的构造函数属性提升，并且希望指明某个 Eloquent 模型不应序列化其关联，可以使用 `WithoutRelations` 属性：
 
-    use Illuminate\Queue\Attributes\WithoutRelations;
+```php
+use Illuminate\Queue\Attributes\WithoutRelations;
 
-    /**
-     * 创建一个新的任务实例。
-     */
-    public function __construct(
-        #[WithoutRelations]
-        public Podcast $podcast,
-    ) {}
+/**
+ * 创建一个新的任务实例。
+ */
+public function __construct(
+    #[WithoutRelations]
+    public Podcast $podcast,
+) {}
+```
 
 如果某个任务接收到的是一个 Eloquent 模型集合或数组，而不是单个模型，那么该集合中的模型在任务被反序列化并执行时不会恢复其关联。这是为了避免处理大量模型的任务造成过度的资源消耗。
 
@@ -266,50 +280,54 @@ php artisan make:job ProcessPodcast
 
 有时你可能希望确保在任意时刻，队列上某个特定任务只有一个实例。可以在任务类上实现 `ShouldBeUnique` 接口来实现。该接口不要求你在类中定义任何额外方法：
 
-    <?php
+```php
+<?php
 
-    use Illuminate\Contracts\Queue\ShouldQueue;
-    use Illuminate\Contracts\Queue\ShouldBeUnique;
+use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Contracts\Queue\ShouldBeUnique;
 
-    class UpdateSearchIndex implements ShouldQueue, ShouldBeUnique
-    {
-        ...
-    }
+class UpdateSearchIndex implements ShouldQueue, ShouldBeUnique
+{
+    ...
+}
+```
 
 在上面的例子中，`UpdateSearchIndex` 任务是唯一的。因此，如果该任务的另一个实例已经在队列中且尚未处理完成，那么该任务就不会被分发。
 
 在某些情况下，你可能希望定义一个使任务保持唯一的特定"键"，或者希望指定一个超时时间，超过该时间后任务就不再保持唯一。为此，你可以在任务类上定义 `uniqueId` 和 `uniqueFor` 属性或方法：
 
-    <?php
+```php
+<?php
 
-    use App\Models\Product;
-    use Illuminate\Contracts\Queue\ShouldQueue;
-    use Illuminate\Contracts\Queue\ShouldBeUnique;
+use App\Models\Product;
+use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Contracts\Queue\ShouldBeUnique;
 
-    class UpdateSearchIndex implements ShouldQueue, ShouldBeUnique
+class UpdateSearchIndex implements ShouldQueue, ShouldBeUnique
+{
+    /**
+     * 产品实例。
+     *
+     * @var \App\Product
+     */
+    public $product;
+
+    /**
+     * 任务的唯一锁在多少秒之后释放。
+     *
+     * @var int
+     */
+    public $uniqueFor = 3600;
+
+    /**
+     * 获取该任务的唯一 ID。
+     */
+    public function uniqueId(): string
     {
-        /**
-         * 产品实例。
-         *
-         * @var \App\Product
-         */
-        public $product;
-
-        /**
-         * 任务的唯一锁在多少秒之后释放。
-         *
-         * @var int
-         */
-        public $uniqueFor = 3600;
-
-        /**
-         * 获取该任务的唯一 ID。
-         */
-        public function uniqueId(): string
-        {
-            return $this->product->id;
-        }
+        return $this->product->id;
     }
+}
+```
 
 在上面的例子中，`UpdateSearchIndex` 任务以产品 ID 作为唯一标识。因此，在已有任务完成处理之前，任何使用相同产品 ID 的新分发都会被忽略。此外，如果已有任务在一小时内未被处理，唯一锁就会被释放，另一个具有相同唯一键的任务就可以被分发到队列中。
 
@@ -321,37 +339,41 @@ php artisan make:job ProcessPodcast
 
 默认情况下，唯一任务会在任务完成处理或所有重试尝试都失败之后被"解锁"。不过，在某些情况下，你可能希望任务在被处理之前就立即解锁。为此，你的任务应当实现 `ShouldBeUniqueUntilProcessing` 契约，而不是 `ShouldBeUnique` 契约：
 
-    <?php
+```php
+<?php
 
-    use App\Models\Product;
-    use Illuminate\Contracts\Queue\ShouldQueue;
-    use Illuminate\Contracts\Queue\ShouldBeUniqueUntilProcessing;
+use App\Models\Product;
+use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Contracts\Queue\ShouldBeUniqueUntilProcessing;
 
-    class UpdateSearchIndex implements ShouldQueue, ShouldBeUniqueUntilProcessing
-    {
-        // ...
-    }
+class UpdateSearchIndex implements ShouldQueue, ShouldBeUniqueUntilProcessing
+{
+    // ...
+}
+```
 
 <a name="unique-job-locks"></a>
 #### 唯一任务锁
 
 在幕后，当一个 `ShouldBeUnique` 任务被分发时，Laravel 会尝试获取一个以 `uniqueId` 为键的[锁](/docs/{{version}}/cache#atomic-locks)。如果未能获取该锁，任务就不会被分发。当任务完成处理或所有重试尝试都失败时，该锁会被释放。默认情况下，Laravel 会使用默认缓存驱动来获取该锁。不过，如果你希望使用其它驱动来获取锁，可以定义一个 `uniqueVia` 方法，返回应当使用的缓存驱动：
 
-    use Illuminate\Contracts\Cache\Repository;
-    use Illuminate\Support\Facades\Cache;
+```php
+use Illuminate\Contracts\Cache\Repository;
+use Illuminate\Support\Facades\Cache;
 
-    class UpdateSearchIndex implements ShouldQueue, ShouldBeUnique
+class UpdateSearchIndex implements ShouldQueue, ShouldBeUnique
+{
+    ...
+
+    /**
+     * 获取唯一任务锁所使用的缓存驱动。
+     */
+    public function uniqueVia(): Repository
     {
-        ...
-
-        /**
-         * 获取唯一任务锁所使用的缓存驱动。
-         */
-        public function uniqueVia(): Repository
-        {
-            return Cache::driver('redis');
-        }
+        return Cache::driver('redis');
     }
+}
+```
 
 > [!NOTE]
 > 如果你只需要限制某个任务的并发处理，请改用 [`WithoutOverlapping`](/docs/{{version}}/queues#preventing-job-overlaps) 任务中间件。
@@ -361,88 +383,96 @@ php artisan make:job ProcessPodcast
 
 Laravel 允许你通过[加密](/docs/{{version}}/encryption)确保任务数据的隐私性与完整性。要开始使用，只需在任务类上添加 `ShouldBeEncrypted` 接口。把该接口添加到类之后，Laravel 会在把任务推入队列之前自动对其加密：
 
-    <?php
+```php
+<?php
 
-    use Illuminate\Contracts\Queue\ShouldBeEncrypted;
-    use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Contracts\Queue\ShouldBeEncrypted;
+use Illuminate\Contracts\Queue\ShouldQueue;
 
-    class UpdateSearchIndex implements ShouldQueue, ShouldBeEncrypted
-    {
-        // ...
-    }
+class UpdateSearchIndex implements ShouldQueue, ShouldBeEncrypted
+{
+    // ...
+}
+```
 
 <a name="job-middleware"></a>
 ## 任务中间件
 
 任务中间件允许你在队列任务的执行前后包裹自定义逻辑，从而减少任务本身中的样板代码。例如，考虑下面这个 `handle` 方法，它利用 Laravel 的 Redis 速率限制功能，只允许每五秒处理一个任务：
 
-    use Illuminate\Support\Facades\Redis;
+```php
+use Illuminate\Support\Facades\Redis;
 
-    /**
-     * 执行该任务。
-     */
-    public function handle(): void
-    {
-        Redis::throttle('key')->block(0)->allow(1)->every(5)->then(function () {
-            info('Lock obtained...');
+/**
+ * 执行该任务。
+ */
+public function handle(): void
+{
+    Redis::throttle('key')->block(0)->allow(1)->every(5)->then(function () {
+        info('Lock obtained...');
 
-            // 处理任务……
-        }, function () {
-            // 未能获取锁……
+        // 处理任务……
+    }, function () {
+        // 未能获取锁……
 
-            return $this->release(5);
-        });
-    }
+        return $this->release(5);
+    });
+}
+```
 
 虽然这段代码是有效的，但 `handle` 方法的实现会变得杂乱无章，因为其中塞满了 Redis 速率限制逻辑。此外，这段速率限制逻辑还必须在任何其它需要限速的任务中重复一遍。
 
 我们可以在 `handle` 方法中做速率限制，也可以改为定义一个负责速率限制的任务中间件。Laravel 并没有为任务中间件指定默认位置，因此你可以把任务中间件放在应用中的任意位置。在这个例子中，我们会把中间件放在 `app/Jobs/Middleware` 目录下：
 
-    <?php
+```php
+<?php
 
-    namespace App\Jobs\Middleware;
+namespace App\Jobs\Middleware;
 
-    use Closure;
-    use Illuminate\Support\Facades\Redis;
+use Closure;
+use Illuminate\Support\Facades\Redis;
 
-    class RateLimited
+class RateLimited
+{
+    /**
+     * 处理队列中的任务。
+     *
+     * @param  \Closure(object): void  $next
+     */
+    public function handle(object $job, Closure $next): void
     {
-        /**
-         * 处理队列中的任务。
-         *
-         * @param  \Closure(object): void  $next
-         */
-        public function handle(object $job, Closure $next): void
-        {
-            Redis::throttle('key')
-                ->block(0)->allow(1)->every(5)
-                ->then(function () use ($job, $next) {
-                    // 已获取锁……
+        Redis::throttle('key')
+            ->block(0)->allow(1)->every(5)
+            ->then(function () use ($job, $next) {
+                // 已获取锁……
 
-                    $next($job);
-                }, function () use ($job) {
-                    // 未能获取锁……
+                $next($job);
+            }, function () use ($job) {
+                // 未能获取锁……
 
-                    $job->release(5);
-                });
-        }
+                $job->release(5);
+            });
     }
+}
+```
 
 如你所见，与[路由中间件](/docs/{{version}}/middleware)一样，任务中间件会接收到正在处理的任务，以及一个应当被调用以继续处理该任务的回调。
 
 创建任务中间件之后，可以通过任务的 `middleware` 方法把它们返回出来以挂到任务上。`make:job` Artisan 命令生成的任务存根中并不存在该方法，因此你需要手动把它添加到任务类中：
 
-    use App\Jobs\Middleware\RateLimited;
+```php
+use App\Jobs\Middleware\RateLimited;
 
-    /**
-     * 获取该任务应当经过的中间件。
-     *
-     * @return array<int, object>
-     */
-    public function middleware(): array
-    {
-        return [new RateLimited];
-    }
+/**
+ * 获取该任务应当经过的中间件。
+ *
+ * @return array<int, object>
+ */
+public function middleware(): array
+{
+    return [new RateLimited];
+}
+```
 
 > [!NOTE]
 > 任务中间件也可以挂到可入队的事件监听器、邮件和通知上。
@@ -454,52 +484,60 @@ Laravel 允许你通过[加密](/docs/{{version}}/encryption)确保任务数据�
 
 例如，你可能希望允许用户每小时备份一次数据，而对高级客户不施加此类限制。为此，你可以在 `AppServiceProvider` 的 `boot` 方法中定义一个 `RateLimiter`：
 
-    use Illuminate\Cache\RateLimiting\Limit;
-    use Illuminate\Support\Facades\RateLimiter;
+```php
+use Illuminate\Cache\RateLimiting\Limit;
+use Illuminate\Support\Facades\RateLimiter;
 
-    /**
-     * 引导任何应用服务。
-     */
-    public function boot(): void
-    {
-        RateLimiter::for('backups', function (object $job) {
-            return $job->user->vipCustomer()
-                ? Limit::none()
-                : Limit::perHour(1)->by($job->user->id);
-        });
-    }
+/**
+ * 引导任何应用服务。
+ */
+public function boot(): void
+{
+    RateLimiter::for('backups', function (object $job) {
+        return $job->user->vipCustomer()
+            ? Limit::none()
+            : Limit::perHour(1)->by($job->user->id);
+    });
+}
+```
 
 在上面的例子中，我们定义了一个按小时计的速率限制；不过，你也可以轻松地使用 `perMinute` 方法定义一个按分钟计的速率限制。此外，你可以把任意值传给速率限制的 `by` 方法，不过该值最常用于按客户对速率限制进行分块：
 
-    return Limit::perMinute(50)->by($job->user->id);
+```php
+return Limit::perMinute(50)->by($job->user->id);
+```
 
 定义速率限制之后，你可以使用 `Illuminate\Queue\Middleware\RateLimited` 中间件把速率限制器挂到任务上。每当任务超出速率限制时，该中间件都会根据速率限制的时长，把任务以一个适当的延迟重新放回队列。
 
-    use Illuminate\Queue\Middleware\RateLimited;
+```php
+use Illuminate\Queue\Middleware\RateLimited;
 
-    /**
-     * 获取该任务应当经过的中间件。
-     *
-     * @return array<int, object>
-     */
-    public function middleware(): array
-    {
-        return [new RateLimited('backups')];
-    }
+/**
+ * 获取该任务应当经过的中间件。
+ *
+ * @return array<int, object>
+ */
+public function middleware(): array
+{
+    return [new RateLimited('backups')];
+}
+```
 
 把一个受速率限制的任务重新放回队列，仍然会增加该任务的总 `attempts` 计数。你可能希望相应地调整任务类上的 `tries` 和 `maxExceptions` 属性。或者，你也可以使用 [`retryUntil` 方法](#time-based-attempts)来定义任务不再被尝试之前的时长。
 
 如果你不希望某个任务在被速率限制时重试，可以使用 `dontRelease` 方法：
 
-    /**
-     * 获取该任务应当经过的中间件。
-     *
-     * @return array<int, object>
-     */
-    public function middleware(): array
-    {
-        return [(new RateLimited('backups'))->dontRelease()];
-    }
+```php
+/**
+ * 获取该任务应当经过的中间件。
+ *
+ * @return array<int, object>
+ */
+public function middleware(): array
+{
+    return [(new RateLimited('backups'))->dontRelease()];
+}
+```
 
 > [!NOTE]
 > 如果你使用 Redis，可以使用 `Illuminate\Queue\Middleware\RateLimitedWithRedis` 中间件，它针对 Redis 做了调优，比基础的速率限制中间件更高效。
@@ -511,53 +549,61 @@ Laravel 内置了 `Illuminate\Queue\Middleware\WithoutOverlapping` 中间件，�
 
 例如，假设你有一个更新用户信用评分的队列任务，并且希望防止同一用户 ID 的信用评分更新任务发生重叠。为此，可以从任务的 `middleware` 方法中返回 `WithoutOverlapping` 中间件：
 
-    use Illuminate\Queue\Middleware\WithoutOverlapping;
+```php
+use Illuminate\Queue\Middleware\WithoutOverlapping;
 
-    /**
-     * 获取该任务应当经过的中间件。
-     *
-     * @return array<int, object>
-     */
-    public function middleware(): array
-    {
-        return [new WithoutOverlapping($this->user->id)];
-    }
+/**
+ * 获取该任务应当经过的中间件。
+ *
+ * @return array<int, object>
+ */
+public function middleware(): array
+{
+    return [new WithoutOverlapping($this->user->id)];
+}
+```
 
 同类型的任何重叠任务都会被重新放回队列。你还可以指定重新放回的任务在再次被尝试之前必须经过的秒数：
 
-    /**
-     * 获取该任务应当经过的中间件。
-     *
-     * @return array<int, object>
-     */
-    public function middleware(): array
-    {
-        return [(new WithoutOverlapping($this->order->id))->releaseAfter(60)];
-    }
+```php
+/**
+ * 获取该任务应当经过的中间件。
+ *
+ * @return array<int, object>
+ */
+public function middleware(): array
+{
+    return [(new WithoutOverlapping($this->order->id))->releaseAfter(60)];
+}
+```
 
 如果你希望立即删除任何重叠的任务，使其不再被重试，可以使用 `dontRelease` 方法：
 
-    /**
-     * 获取该任务应当经过的中间件。
-     *
-     * @return array<int, object>
-     */
-    public function middleware(): array
-    {
-        return [(new WithoutOverlapping($this->order->id))->dontRelease()];
-    }
+```php
+/**
+ * 获取该任务应当经过的中间件。
+ *
+ * @return array<int, object>
+ */
+public function middleware(): array
+{
+    return [(new WithoutOverlapping($this->order->id))->dontRelease()];
+}
+```
 
 `WithoutOverlapping` 中间件基于 Laravel 的原子锁特性实现。有时你的任务可能意外失败或超时，导致锁没有被释放。因此，你可以使用 `expireAfter` 方法显式定义锁的过期时间。例如，下面的例子会指示 Laravel 在任务开始处理三分钟后释放 `WithoutOverlapping` 锁：
 
-    /**
-     * 获取该任务应当经过的中间件。
-     *
-     * @return array<int, object>
-     */
-    public function middleware(): array
-    {
-        return [(new WithoutOverlapping($this->order->id))->expireAfter(180)];
-    }
+```php
+/**
+ * 获取该任务应当经过的中间件。
+ *
+ * @return array<int, object>
+ */
+public function middleware(): array
+{
+    return [(new WithoutOverlapping($this->order->id))->expireAfter(180)];
+}
+```
 
 > [!WARNING]
 > `WithoutOverlapping` 中间件要求缓存驱动支持[锁](/docs/{{version}}/cache#atomic-locks)。目前，`memcached`、`redis`、`dynamodb`、`database`、`file` 和 `array` 缓存驱动支持原子锁。
@@ -602,90 +648,100 @@ Laravel 内置了 `Illuminate\Queue\Middleware\ThrottlesExceptions` 中间件，
 
 例如，假设某个队列任务与一个开始抛出异常的第三方 API 交互。要限制异常，可以从任务的 `middleware` 方法中返回 `ThrottlesExceptions` 中间件。通常，该中间件应当与实现了[基于时间的尝试](#time-based-attempts)的任务搭配使用：
 
-    use DateTime;
-    use Illuminate\Queue\Middleware\ThrottlesExceptions;
+```php
+use DateTime;
+use Illuminate\Queue\Middleware\ThrottlesExceptions;
 
-    /**
-     * 获取该任务应当经过的中间件。
-     *
-     * @return array<int, object>
-     */
-    public function middleware(): array
-    {
-        return [new ThrottlesExceptions(10, 5 * 60)];
-    }
+/**
+ * 获取该任务应当经过的中间件。
+ *
+ * @return array<int, object>
+ */
+public function middleware(): array
+{
+    return [new ThrottlesExceptions(10, 5 * 60)];
+}
 
-    /**
-     * 确定任务应当超时的时间点。
-     */
-    public function retryUntil(): DateTime
-    {
-        return now()->addMinutes(30);
-    }
+/**
+ * 确定任务应当超时的时间点。
+ */
+public function retryUntil(): DateTime
+{
+    return now()->addMinutes(30);
+}
+```
 
 该中间件接受的第一个构造函数参数是任务在被限制之前可以抛出的异常数量，第二个构造函数参数是任务被限制之后再次尝试之前应当经过的秒数。在上面的代码示例中，如果任务连续抛出 10 次异常，我们会等待 5 分钟后再尝试该任务，同时受 30 分钟的时间上限约束。
 
 当任务抛出异常但尚未达到异常阈值时，任务通常会立即重试。不过，你可以在把中间件挂到任务上时调用 `backoff` 方法，指定这类任务应当延迟多少分钟：
 
-    use Illuminate\Queue\Middleware\ThrottlesExceptions;
+```php
+use Illuminate\Queue\Middleware\ThrottlesExceptions;
 
-    /**
-     * 获取该任务应当经过的中间件。
-     *
-     * @return array<int, object>
-     */
-    public function middleware(): array
-    {
-        return [(new ThrottlesExceptions(10, 5 * 60))->backoff(5)];
-    }
+/**
+ * 获取该任务应当经过的中间件。
+ *
+ * @return array<int, object>
+ */
+public function middleware(): array
+{
+    return [(new ThrottlesExceptions(10, 5 * 60))->backoff(5)];
+}
+```
 
 在内部，该中间件使用 Laravel 的缓存系统来实现速率限制，并使用任务的类名作为缓存"键"。你可以在把中间件挂到任务上时调用 `by` 方法覆盖该键。如果有多个任务与同一个第三方服务交互，并且你希望它们共享同一个限制"桶"，这会很有用：
 
-    use Illuminate\Queue\Middleware\ThrottlesExceptions;
+```php
+use Illuminate\Queue\Middleware\ThrottlesExceptions;
 
-    /**
-     * 获取该任务应当经过的中间件。
-     *
-     * @return array<int, object>
-     */
-    public function middleware(): array
-    {
-        return [(new ThrottlesExceptions(10, 10 * 60))->by('key')];
-    }
+/**
+ * 获取该任务应当经过的中间件。
+ *
+ * @return array<int, object>
+ */
+public function middleware(): array
+{
+    return [(new ThrottlesExceptions(10, 10 * 60))->by('key')];
+}
+```
 
 默认情况下，该中间件会限制每一个异常。你可以在把中间件挂到任务上时调用 `when` 方法来改变这一行为。这样一来，只有当传给 `when` 方法的闭包返回 `true` 时，异常才会被限制：
 
-    use Illuminate\Http\Client\HttpClientException;
-    use Illuminate\Queue\Middleware\ThrottlesExceptions;
+```php
+use Illuminate\Http\Client\HttpClientException;
+use Illuminate\Queue\Middleware\ThrottlesExceptions;
 
-    /**
-     * 获取该任务应当经过的中间件。
-     *
-     * @return array<int, object>
-     */
-    public function middleware(): array
-    {
-        return [(new ThrottlesExceptions(10, 10 * 60))->when(
-            fn (Throwable $throwable) => $throwable instanceof HttpClientException
-        )];
-    }
+/**
+ * 获取该任务应当经过的中间件。
+ *
+ * @return array<int, object>
+ */
+public function middleware(): array
+{
+    return [(new ThrottlesExceptions(10, 10 * 60))->when(
+        fn (Throwable $throwable) => $throwable instanceof HttpClientException
+    )];
+}
+```
 
 如果你希望把被限制的异常上报给应用的异常处理器，可以在把中间件挂到任务上时调用 `report` 方法。此外，你还可以向 `report` 方法提供一个闭包，只有当该闭包返回 `true` 时才会上报异常：
 
-    use Illuminate\Http\Client\HttpClientException;
-    use Illuminate\Queue\Middleware\ThrottlesExceptions;
+```php
+use Illuminate\Http\Client\HttpClientException;
+use Illuminate\Queue\Middleware\ThrottlesExceptions;
 
-    /**
-     * 获取该任务应当经过的中间件。
-     *
-     * @return array<int, object>
-     */
-    public function middleware(): array
-    {
-        return [(new ThrottlesExceptions(10, 10 * 60))->report(
-            fn (Throwable $throwable) => $throwable instanceof HttpClientException
-        )];
-    }
+/**
+ * 获取该任务应当经过的中间件。
+ *
+ * @return array<int, object>
+ */
+public function middleware(): array
+{
+    return [(new ThrottlesExceptions(10, 10 * 60))->report(
+        fn (Throwable $throwable) => $throwable instanceof HttpClientException
+    )];
+}
+```
 
 > [!NOTE]
 > 如果你使用 Redis，可以使用 `Illuminate\Queue\Middleware\ThrottlesExceptionsWithRedis` 中间件，它针对 Redis 做了调优，比基础的异常限制中间件更高效。
@@ -695,71 +751,79 @@ Laravel 内置了 `Illuminate\Queue\Middleware\ThrottlesExceptions` 中间件，
 
 `Skip` 中间件允许你指定某个任务应当被跳过 / 删除，而无需修改任务本身的逻辑。如果给定条件求值为 `true`，`Skip::when` 方法会删除该任务；如果条件求值为 `false`，`Skip::unless` 方法会删除该任务：
 
-    use Illuminate\Queue\Middleware\Skip;
+```php
+use Illuminate\Queue\Middleware\Skip;
 
-    /**
-    * 获取该任务应当经过的中间件。
-    */
-    public function middleware(): array
-    {
-        return [
-            Skip::when($someCondition),
-        ];
-    }
+/**
+* 获取该任务应当经过的中间件。
+*/
+public function middleware(): array
+{
+    return [
+        Skip::when($someCondition),
+    ];
+}
+```
 
 你也可以向 `when` 和 `unless` 方法传入 `Closure`，以进行更复杂的条件求值：
 
-    use Illuminate\Queue\Middleware\Skip;
+```php
+use Illuminate\Queue\Middleware\Skip;
 
-    /**
-    * 获取该任务应当经过的中间件。
-    */
-    public function middleware(): array
-    {
-        return [
-            Skip::when(function (): bool {
-                return $this->shouldSkip();
-            }),
-        ];
-    }
+/**
+* 获取该任务应当经过的中间件。
+*/
+public function middleware(): array
+{
+    return [
+        Skip::when(function (): bool {
+            return $this->shouldSkip();
+        }),
+    ];
+}
+```
 
 <a name="dispatching-jobs"></a>
 ## 分发任务
 
 写好任务类之后，你可以使用任务自身的 `dispatch` 方法来分发它。传给 `dispatch` 方法的参数会被交给任务的构造函数：
 
-    <?php
+```php
+<?php
 
-    namespace App\Http\Controllers;
+namespace App\Http\Controllers;
 
-    use App\Http\Controllers\Controller;
-    use App\Jobs\ProcessPodcast;
-    use App\Models\Podcast;
-    use Illuminate\Http\RedirectResponse;
-    use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
+use App\Jobs\ProcessPodcast;
+use App\Models\Podcast;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 
-    class PodcastController extends Controller
+class PodcastController extends Controller
+{
+    /**
+     * 存储一个新的播客。
+     */
+    public function store(Request $request): RedirectResponse
     {
-        /**
-         * 存储一个新的播客。
-         */
-        public function store(Request $request): RedirectResponse
-        {
-            $podcast = Podcast::create(/* ... */);
+        $podcast = Podcast::create(/* ... */);
 
-            // ...
+        // ...
 
-            ProcessPodcast::dispatch($podcast);
+        ProcessPodcast::dispatch($podcast);
 
-            return redirect('/podcasts');
-        }
+        return redirect('/podcasts');
     }
+}
+```
 
 如果你希望按条件分发任务，可以使用 `dispatchIf` 和 `dispatchUnless` 方法：
 
-    ProcessPodcast::dispatchIf($accountActive, $podcast);
+```php
+ProcessPodcast::dispatchIf($accountActive, $podcast);
 
-    ProcessPodcast::dispatchUnless($accountSuspended, $podcast);
+ProcessPodcast::dispatchUnless($accountSuspended, $podcast);
+```
 
 在全新的 Laravel 应用中，`sync` 驱动是默认的队列驱动。该驱动会在当前请求的前台同步执行任务，这在本地开发中往往很方便。如果你希望真正开始把任务入队以便在后台处理，可以在应用的 `config/queue.php` 配置文件中指定其它队列驱动。
 
@@ -768,37 +832,41 @@ Laravel 内置了 `Illuminate\Queue\Middleware\ThrottlesExceptions` 中间件，
 
 如果你希望指定某个任务在分发之后的一段时间内不能被队列工作进程处理，可以在分发任务时使用 `delay` 方法。例如，我们来指定某个任务在分发后 10 分钟内不能被处理：
 
-    <?php
+```php
+<?php
 
-    namespace App\Http\Controllers;
+namespace App\Http\Controllers;
 
-    use App\Http\Controllers\Controller;
-    use App\Jobs\ProcessPodcast;
-    use App\Models\Podcast;
-    use Illuminate\Http\RedirectResponse;
-    use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
+use App\Jobs\ProcessPodcast;
+use App\Models\Podcast;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 
-    class PodcastController extends Controller
+class PodcastController extends Controller
+{
+    /**
+     * 存储一个新的播客。
+     */
+    public function store(Request $request): RedirectResponse
     {
-        /**
-         * 存储一个新的播客。
-         */
-        public function store(Request $request): RedirectResponse
-        {
-            $podcast = Podcast::create(/* ... */);
+        $podcast = Podcast::create(/* ... */);
 
-            // ...
+        // ...
 
-            ProcessPodcast::dispatch($podcast)
-                ->delay(now()->addMinutes(10));
+        ProcessPodcast::dispatch($podcast)
+            ->delay(now()->addMinutes(10));
 
-            return redirect('/podcasts');
-        }
+        return redirect('/podcasts');
     }
+}
+```
 
 在某些情况下，任务可能配置了默认延迟。如果你需要绕过该延迟并立即分发任务，可以使用 `withoutDelay` 方法：
 
-    ProcessPodcast::dispatch($podcast)->withoutDelay();
+```php
+ProcessPodcast::dispatch($podcast)->withoutDelay();
+```
 
 > [!WARNING]
 > Amazon SQS 队列服务的最大延迟时间为 15 分钟。
@@ -808,50 +876,56 @@ Laravel 内置了 `Illuminate\Queue\Middleware\ThrottlesExceptions` 中间件，
 
 或者，如果你的 Web 服务器使用 FastCGI，`dispatchAfterResponse` 方法会把任务的分发推迟到 HTTP 响应发送到用户浏览器之后。这样即便某个队列任务仍在执行，用户也可以开始使用应用。这通常只应用于耗时约一秒的任务，例如发送电子邮件。由于它们在当前 HTTP 请求内被处理，以这种方式分发的任务不需要运行队列工作进程才能被处理：
 
-    use App\Jobs\SendNotification;
+```php
+use App\Jobs\SendNotification;
 
-    SendNotification::dispatchAfterResponse();
+SendNotification::dispatchAfterResponse();
+```
 
 你也可以 `dispatch` 一个闭包，并把 `afterResponse` 方法链式接到 `dispatch` 辅助函数上，以便在 HTTP 响应发送到浏览器之后执行闭包：
 
-    use App\Mail\WelcomeMessage;
-    use Illuminate\Support\Facades\Mail;
+```php
+use App\Mail\WelcomeMessage;
+use Illuminate\Support\Facades\Mail;
 
-    dispatch(function () {
-        Mail::to('taylor@example.com')->send(new WelcomeMessage);
-    })->afterResponse();
+dispatch(function () {
+    Mail::to('taylor@example.com')->send(new WelcomeMessage);
+})->afterResponse();
+```
 
 <a name="synchronous-dispatching"></a>
 ### 同步分发
 
 如果你希望立即（同步）分发某个任务，可以使用 `dispatchSync` 方法。使用该方法时，任务不会入队，而会在当前进程中立即执行：
 
-    <?php
+```php
+<?php
 
-    namespace App\Http\Controllers;
+namespace App\Http\Controllers;
 
-    use App\Http\Controllers\Controller;
-    use App\Jobs\ProcessPodcast;
-    use App\Models\Podcast;
-    use Illuminate\Http\RedirectResponse;
-    use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
+use App\Jobs\ProcessPodcast;
+use App\Models\Podcast;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 
-    class PodcastController extends Controller
+class PodcastController extends Controller
+{
+    /**
+     * 存储一个新的播客。
+     */
+    public function store(Request $request): RedirectResponse
     {
-        /**
-         * 存储一个新的播客。
-         */
-        public function store(Request $request): RedirectResponse
-        {
-            $podcast = Podcast::create(/* ... */);
+        $podcast = Podcast::create(/* ... */);
 
-            // 创建播客……
+        // 创建播客……
 
-            ProcessPodcast::dispatchSync($podcast);
+        ProcessPodcast::dispatchSync($podcast);
 
-            return redirect('/podcasts');
-        }
+        return redirect('/podcasts');
     }
+}
+```
 
 <a name="jobs-and-database-transactions"></a>
 ### 任务与数据库事务
@@ -860,11 +934,13 @@ Laravel 内置了 `Illuminate\Queue\Middleware\ThrottlesExceptions` 中间件，
 
 幸运的是，Laravel 提供了几种规避这个问题的方法。首先，你可以在队列连接的配置数组中设置 `after_commit` 连接选项：
 
-    'redis' => [
-        'driver' => 'redis',
-        // ...
-        'after_commit' => true,
-    ],
+```php
+'redis' => [
+    'driver' => 'redis',
+    // ...
+    'after_commit' => true,
+],
+```
 
 当 `after_commit` 选项为 `true` 时，你可以在数据库事务中分发任务；不过，Laravel 会等到未结束的父数据库事务提交之后才真正分发任务。当然，如果没有正在进行的数据库事务，任务会立即被分发。
 
@@ -878,39 +954,47 @@ Laravel 内置了 `Illuminate\Queue\Middleware\ThrottlesExceptions` 中间件，
 
 即使你没有把 `after_commit` 队列连接配置选项设为 `true`，你仍然可以指明某个特定任务应在所有未结束的数据库事务提交之后才被分发。为此，可以把 `afterCommit` 方法链式接到你的分发操作上：
 
-    use App\Jobs\ProcessPodcast;
+```php
+use App\Jobs\ProcessPodcast;
 
-    ProcessPodcast::dispatch($podcast)->afterCommit();
+ProcessPodcast::dispatch($podcast)->afterCommit();
+```
 
 同理，如果 `after_commit` 配置选项被设为 `true`，你也可以指明某个特定任务应当立即分发，而不等待任何未结束的数据库事务提交：
 
-    ProcessPodcast::dispatch($podcast)->beforeCommit();
+```php
+ProcessPodcast::dispatch($podcast)->beforeCommit();
+```
 
 <a name="job-chaining"></a>
 ### 任务链
 
 任务链允许你指定一份队列任务列表，它们会在主任务成功执行之后按顺序运行。如果序列中的某个任务失败，其余任务都不会运行。要执行队列任务链，可以使用 `Bus` Facade 提供的 `chain` 方法。Laravel 的命令总线是一个更底层的组件，队列任务分发正是构建在它之上的：
 
-    use App\Jobs\OptimizePodcast;
-    use App\Jobs\ProcessPodcast;
-    use App\Jobs\ReleasePodcast;
-    use Illuminate\Support\Facades\Bus;
+```php
+use App\Jobs\OptimizePodcast;
+use App\Jobs\ProcessPodcast;
+use App\Jobs\ReleasePodcast;
+use Illuminate\Support\Facades\Bus;
 
-    Bus::chain([
-        new ProcessPodcast,
-        new OptimizePodcast,
-        new ReleasePodcast,
-    ])->dispatch();
+Bus::chain([
+    new ProcessPodcast,
+    new OptimizePodcast,
+    new ReleasePodcast,
+])->dispatch();
+```
 
 除了链式调用任务类实例之外，你也可以链式调用闭包：
 
-    Bus::chain([
-        new ProcessPodcast,
-        new OptimizePodcast,
-        function () {
-            Podcast::update(/* ... */);
-        },
-    ])->dispatch();
+```php
+Bus::chain([
+    new ProcessPodcast,
+    new OptimizePodcast,
+    function () {
+        Podcast::update(/* ... */);
+    },
+])->dispatch();
+```
 
 > [!WARNING]
 > 在任务中使用 `$this->delete()` 方法删除任务，并不能阻止被链式的任务被处理。只有当链中的某个任务失败时，这条链才会停止执行。
@@ -920,11 +1004,13 @@ Laravel 内置了 `Illuminate\Queue\Middleware\ThrottlesExceptions` 中间件，
 
 如果你希望指定被链式任务所使用的连接和队列，可以使用 `onConnection` 和 `onQueue` 方法。这两个方法指定了应当使用的队列连接和队列名称，除非被排队的任务被显式指定了其它连接 / 队列：
 
-    Bus::chain([
-        new ProcessPodcast,
-        new OptimizePodcast,
-        new ReleasePodcast,
-    ])->onConnection('redis')->onQueue('podcasts')->dispatch();
+```php
+Bus::chain([
+    new ProcessPodcast,
+    new OptimizePodcast,
+    new ReleasePodcast,
+])->onConnection('redis')->onQueue('podcasts')->dispatch();
+```
 
 <a name="adding-jobs-to-the-chain"></a>
 #### 添加任务到链中
@@ -952,16 +1038,18 @@ public function handle(): void
 
 在链式处理任务时，你可以使用 `catch` 方法指定一个闭包，用于在链中某个任务失败时被调用。给定的回调会接收到导致任务失败的 `Throwable` 实例：
 
-    use Illuminate\Support\Facades\Bus;
-    use Throwable;
+```php
+use Illuminate\Support\Facades\Bus;
+use Throwable;
 
-    Bus::chain([
-        new ProcessPodcast,
-        new OptimizePodcast,
-        new ReleasePodcast,
-    ])->catch(function (Throwable $e) {
-        // 链中的某个任务已失败……
-    })->dispatch();
+Bus::chain([
+    new ProcessPodcast,
+    new OptimizePodcast,
+    new ReleasePodcast,
+])->catch(function (Throwable $e) {
+    // 链中的某个任务已失败……
+})->dispatch();
+```
 
 > [!WARNING]
 > 由于链式回调会被序列化，并由 Laravel 队列在稍后的时间执行，因此你不应在链式回调中使用 `$this` 变量。
@@ -974,114 +1062,124 @@ public function handle(): void
 
 通过把任务推送到不同的队列，你可以对队列任务进行"分类"，甚至决定为各个队列分配多少个工作进程。请注意，这并不会把任务推送到队列配置文件中定义的不同队列"连接"，而只是推送到单个连接内的特定队列。要指定队列，请在分发任务时使用 `onQueue` 方法：
 
-    <?php
+```php
+<?php
 
-    namespace App\Http\Controllers;
+namespace App\Http\Controllers;
 
-    use App\Http\Controllers\Controller;
-    use App\Jobs\ProcessPodcast;
-    use App\Models\Podcast;
-    use Illuminate\Http\RedirectResponse;
-    use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
+use App\Jobs\ProcessPodcast;
+use App\Models\Podcast;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 
-    class PodcastController extends Controller
+class PodcastController extends Controller
+{
+    /**
+     * 存储一个新的播客。
+     */
+    public function store(Request $request): RedirectResponse
     {
-        /**
-         * 存储一个新的播客。
-         */
-        public function store(Request $request): RedirectResponse
-        {
-            $podcast = Podcast::create(/* ... */);
+        $podcast = Podcast::create(/* ... */);
 
-            // 创建播客……
+        // 创建播客……
 
-            ProcessPodcast::dispatch($podcast)->onQueue('processing');
+        ProcessPodcast::dispatch($podcast)->onQueue('processing');
 
-            return redirect('/podcasts');
-        }
+        return redirect('/podcasts');
     }
+}
+```
 
 或者，你可以在任务的构造函数内调用 `onQueue` 方法来指定任务的队列：
 
-    <?php
+```php
+<?php
 
-    namespace App\Jobs;
+namespace App\Jobs;
 
-     use Illuminate\Contracts\Queue\ShouldQueue;
-     use Illuminate\Foundation\Queue\Queueable;
+ use Illuminate\Contracts\Queue\ShouldQueue;
+ use Illuminate\Foundation\Queue\Queueable;
 
-    class ProcessPodcast implements ShouldQueue
+class ProcessPodcast implements ShouldQueue
+{
+    use Queueable;
+
+    /**
+     * 创建一个新的任务实例。
+     */
+    public function __construct()
     {
-        use Queueable;
-
-        /**
-         * 创建一个新的任务实例。
-         */
-        public function __construct()
-        {
-            $this->onQueue('processing');
-        }
+        $this->onQueue('processing');
     }
+}
+```
 
 <a name="dispatching-to-a-particular-connection"></a>
 #### 分发到特定连接
 
 如果你的应用与多个队列连接交互，可以使用 `onConnection` 方法指定把任务推送到哪个连接：
 
-    <?php
+```php
+<?php
 
-    namespace App\Http\Controllers;
+namespace App\Http\Controllers;
 
-    use App\Http\Controllers\Controller;
-    use App\Jobs\ProcessPodcast;
-    use App\Models\Podcast;
-    use Illuminate\Http\RedirectResponse;
-    use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
+use App\Jobs\ProcessPodcast;
+use App\Models\Podcast;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 
-    class PodcastController extends Controller
+class PodcastController extends Controller
+{
+    /**
+     * 存储一个新的播客。
+     */
+    public function store(Request $request): RedirectResponse
     {
-        /**
-         * 存储一个新的播客。
-         */
-        public function store(Request $request): RedirectResponse
-        {
-            $podcast = Podcast::create(/* ... */);
+        $podcast = Podcast::create(/* ... */);
 
-            // 创建播客……
+        // 创建播客……
 
-            ProcessPodcast::dispatch($podcast)->onConnection('sqs');
+        ProcessPodcast::dispatch($podcast)->onConnection('sqs');
 
-            return redirect('/podcasts');
-        }
+        return redirect('/podcasts');
     }
+}
+```
 
 你可以把 `onConnection` 和 `onQueue` 方法链式组合起来，为一个任务指定连接与队列：
 
-    ProcessPodcast::dispatch($podcast)
-        ->onConnection('sqs')
-        ->onQueue('processing');
+```php
+ProcessPodcast::dispatch($podcast)
+    ->onConnection('sqs')
+    ->onQueue('processing');
+```
 
 或者，你可以在任务的构造函数内调用 `onConnection` 方法来指定任务的连接：
 
-    <?php
+```php
+<?php
 
-    namespace App\Jobs;
+namespace App\Jobs;
 
-     use Illuminate\Contracts\Queue\ShouldQueue;
-     use Illuminate\Foundation\Queue\Queueable;
+ use Illuminate\Contracts\Queue\ShouldQueue;
+ use Illuminate\Foundation\Queue\Queueable;
 
-    class ProcessPodcast implements ShouldQueue
+class ProcessPodcast implements ShouldQueue
+{
+    use Queueable;
+
+    /**
+     * 创建一个新的任务实例。
+     */
+    public function __construct()
     {
-        use Queueable;
-
-        /**
-         * 创建一个新的任务实例。
-         */
-        public function __construct()
-        {
-            $this->onConnection('sqs');
-        }
+        $this->onConnection('sqs');
     }
+}
+```
 
 <a name="max-job-attempts-and-timeout"></a>
 ### 指定最大任务尝试次数 / 超时值
@@ -1101,44 +1199,50 @@ php artisan queue:work --tries=3
 
 你可以采用更精细的方式，直接在任务类上定义任务可被尝试的最大次数。如果最大尝试次数指定在任务上，它的优先级会高于命令行上提供的 `--tries` 值：
 
-    <?php
+```php
+<?php
 
-    namespace App\Jobs;
+namespace App\Jobs;
 
-    class ProcessPodcast implements ShouldQueue
-    {
-        /**
-         * 任务可以被尝试的次数。
-         *
-         * @var int
-         */
-        public $tries = 5;
-    }
+class ProcessPodcast implements ShouldQueue
+{
+    /**
+     * 任务可以被尝试的次数。
+     *
+     * @var int
+     */
+    public $tries = 5;
+}
+```
 
 如果你需要对某个特定任务的最大尝试次数进行动态控制，可以在任务上定义 `tries` 方法：
 
-    /**
-     * 确定任务可以被尝试的次数。
-     */
-    public function tries(): int
-    {
-        return 5;
-    }
+```php
+/**
+ * 确定任务可以被尝试的次数。
+ */
+public function tries(): int
+{
+    return 5;
+}
+```
 
 <a name="time-based-attempts"></a>
 #### 基于时间的尝试
 
 除了定义任务在失败之前可以被尝试多少次之外，你也可以定义任务不再被尝试的时间点。这允许任务在给定时间范围内被尝试任意次数。要定义任务不再被尝试的时间点，向你的任务类添加 `retryUntil` 方法。该方法应当返回一个 `DateTime` 实例：
 
-    use DateTime;
+```php
+use DateTime;
 
-    /**
-     * 确定任务应当超时的时间点。
-     */
-    public function retryUntil(): DateTime
-    {
-        return now()->addMinutes(10);
-    }
+/**
+ * 确定任务应当超时的时间点。
+ */
+public function retryUntil(): DateTime
+{
+    return now()->addMinutes(10);
+}
+```
 
 > [!NOTE]
 > 你也可以在[队列事件监听器](/docs/{{version}}/events#queued-event-listeners)上定义 `tries` 属性或 `retryUntil` 方法。
@@ -1148,41 +1252,43 @@ php artisan queue:work --tries=3
 
 有时你可能希望指定某个任务可以被尝试很多次，但如果重试是由给定数量的未处理异常触发的（而不是由 `release` 方法直接放回），任务就应当失败。为此，你可以在任务类上定义 `maxExceptions` 属性：
 
-    <?php
+```php
+<?php
 
-    namespace App\Jobs;
+namespace App\Jobs;
 
-    use Illuminate\Support\Facades\Redis;
+use Illuminate\Support\Facades\Redis;
 
-    class ProcessPodcast implements ShouldQueue
+class ProcessPodcast implements ShouldQueue
+{
+    /**
+     * 任务可以被尝试的次数。
+     *
+     * @var int
+     */
+    public $tries = 25;
+
+    /**
+     * 在失败之前允许的未处理异常的最大数量。
+     *
+     * @var int
+     */
+    public $maxExceptions = 3;
+
+    /**
+     * 执行该任务。
+     */
+    public function handle(): void
     {
-        /**
-         * 任务可以被尝试的次数。
-         *
-         * @var int
-         */
-        public $tries = 25;
-
-        /**
-         * 在失败之前允许的未处理异常的最大数量。
-         *
-         * @var int
-         */
-        public $maxExceptions = 3;
-
-        /**
-         * 执行该任务。
-         */
-        public function handle(): void
-        {
-            Redis::throttle('key')->allow(10)->every(60)->then(function () {
-                // 已获取锁，处理该播客……
-            }, function () {
-                // 无法获取锁……
-                return $this->release(10);
-            });
-        }
+        Redis::throttle('key')->allow(10)->every(60)->then(function () {
+            // 已获取锁，处理该播客……
+        }, function () {
+            // 无法获取锁……
+            return $this->release(10);
+        });
     }
+}
+```
 
 在这个例子中，如果应用无法获取 Redis 锁，任务会被放回队列 10 秒，并继续重试直到 25 次。不过，如果任务抛出三个未处理异常，任务就会失败。
 
@@ -1201,19 +1307,21 @@ php artisan queue:work --timeout=30
 
 你也可以直接在任务类上定义任务允许运行的最大秒数。如果超时指定在任务上，它的优先级会高于命令行上指定的任何超时值：
 
-    <?php
+```php
+<?php
 
-    namespace App\Jobs;
+namespace App\Jobs;
 
-    class ProcessPodcast implements ShouldQueue
-    {
-        /**
-         * 任务在超时之前可以运行的秒数。
-         *
-         * @var int
-         */
-        public $timeout = 120;
-    }
+class ProcessPodcast implements ShouldQueue
+{
+    /**
+     * 任务在超时之前可以运行的秒数。
+     *
+     * @var int
+     */
+    public $timeout = 120;
+}
+```
 
 有时，诸如套接字或对外 HTTP 连接之类的 IO 阻塞进程可能不会遵守你指定的超时值。因此，使用这些特性时，你始终应当尝试通过它们各自的 API 指定超时值。例如，使用 Guzzle 时，你应当始终指定连接超时值和请求超时值。
 
@@ -1244,42 +1352,50 @@ public $failOnTimeout = true;
 
 有时你可能希望手动把某个任务放回队列，以便它能在稍后被再次尝试。可以调用 `release` 方法实现：
 
-    /**
-     * 执行该任务。
-     */
-    public function handle(): void
-    {
-        // ...
+```php
+/**
+ * 执行该任务。
+ */
+public function handle(): void
+{
+    // ...
 
-        $this->release();
-    }
+    $this->release();
+}
+```
 
 默认情况下，`release` 方法会把任务放回队列以便立即处理。不过，你可以向 `release` 方法传入一个整数或日期实例，指示队列在经过给定秒数之前不要让该任务被处理：
 
-    $this->release(10);
+```php
+$this->release(10);
 
-    $this->release(now()->addSeconds(10));
+$this->release(now()->addSeconds(10));
+```
 
 <a name="manually-failing-a-job"></a>
 #### 手动标记任务失败
 
 偶尔你可能需要手动把某个任务标记为"失败"。为此，可以调用 `fail` 方法：
 
-    /**
-     * 执行该任务。
-     */
-    public function handle(): void
-    {
-        // ...
+```php
+/**
+ * 执行该任务。
+ */
+public function handle(): void
+{
+    // ...
 
-        $this->fail();
-    }
+    $this->fail();
+}
+```
 
 如果你希望因为捕获到的某个异常而把任务标记为失败，可以把该异常传给 `fail` 方法。或者，为方便起见，你可以传入一个字符串错误消息，它会被为你转换为异常：
 
-    $this->fail($exception);
+```php
+$this->fail($exception);
 
-    $this->fail('Something went wrong.');
+$this->fail('Something went wrong.');
+```
 
 > [!NOTE]
 > 关于失败任务的更多信息，请查阅[处理任务失败的文档](#dealing-with-failed-jobs)。
@@ -1300,62 +1416,66 @@ php artisan migrate
 
 要定义一个可批处理的任务，你应当照常[创建一个可入队的任务](#creating-jobs)；不过，你需要把 `Illuminate\Bus\Batchable` Trait 加入任务类。该 Trait 提供了一个 `batch` 方法访问器，可用于获取当前任务所执行的批次：
 
-    <?php
+```php
+<?php
 
-    namespace App\Jobs;
+namespace App\Jobs;
 
-    use Illuminate\Bus\Batchable;
-    use Illuminate\Contracts\Queue\ShouldQueue;
-    use Illuminate\Foundation\Queue\Queueable;
+use Illuminate\Bus\Batchable;
+use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Foundation\Queue\Queueable;
 
-    class ImportCsv implements ShouldQueue
+class ImportCsv implements ShouldQueue
+{
+    use Batchable, Queueable;
+
+    /**
+     * 执行该任务。
+     */
+    public function handle(): void
     {
-        use Batchable, Queueable;
+        if ($this->batch()->cancelled()) {
+            // 判断批次是否已被取消……
 
-        /**
-         * 执行该任务。
-         */
-        public function handle(): void
-        {
-            if ($this->batch()->cancelled()) {
-                // 判断批次是否已被取消……
-
-                return;
-            }
-
-            // 导入 CSV 文件的一部分……
+            return;
         }
+
+        // 导入 CSV 文件的一部分……
     }
+}
+```
 
 <a name="dispatching-batches"></a>
 ### 分发批次
 
 要分发一批任务，应当使用 `Bus` Facade 的 `batch` 方法。当然，批处理主要在与完成回调结合使用时才更有用。因此，你可以使用 `then`、`catch` 和 `finally` 方法为该批次定义完成回调。这些回调在被调用时都会接收到一个 `Illuminate\Bus\Batch` 实例。在这个例子中，我们假设正在把一批任务加入队列，每个任务处理 CSV 文件中的若干行：
 
-    use App\Jobs\ImportCsv;
-    use Illuminate\Bus\Batch;
-    use Illuminate\Support\Facades\Bus;
-    use Throwable;
+```php
+use App\Jobs\ImportCsv;
+use Illuminate\Bus\Batch;
+use Illuminate\Support\Facades\Bus;
+use Throwable;
 
-    $batch = Bus::batch([
-        new ImportCsv(1, 100),
-        new ImportCsv(101, 200),
-        new ImportCsv(201, 300),
-        new ImportCsv(301, 400),
-        new ImportCsv(401, 500),
-    ])->before(function (Batch $batch) {
-        // 批次已创建，但尚未添加任何任务……
-    })->progress(function (Batch $batch) {
-        // 单个任务已成功完成……
-    })->then(function (Batch $batch) {
-        // 所有任务已成功完成……
-    })->catch(function (Batch $batch, Throwable $e) {
-        // 检测到批次中第一个任务失败……
-    })->finally(function (Batch $batch) {
-        // 批次已完成执行……
-    })->dispatch();
+$batch = Bus::batch([
+    new ImportCsv(1, 100),
+    new ImportCsv(101, 200),
+    new ImportCsv(201, 300),
+    new ImportCsv(301, 400),
+    new ImportCsv(401, 500),
+])->before(function (Batch $batch) {
+    // 批次已创建，但尚未添加任何任务……
+})->progress(function (Batch $batch) {
+    // 单个任务已成功完成……
+})->then(function (Batch $batch) {
+    // 所有任务已成功完成……
+})->catch(function (Batch $batch, Throwable $e) {
+    // 检测到批次中第一个任务失败……
+})->finally(function (Batch $batch) {
+    // 批次已完成执行……
+})->dispatch();
 
-    return $batch->id;
+return $batch->id;
+```
 
 批次的 ID 可以通过 `$batch->id` 属性访问，也可以在批次被分发之后用来[查询 Laravel 命令总线](#inspecting-batches)以获取有关该批次的信息。
 
@@ -1367,96 +1487,108 @@ php artisan migrate
 
 如果批次被命名，Laravel Horizon 和 Laravel Telescope 等工具可能会提供对用户更友好的调试信息。要为批次指定一个任意名称，可以在定义批次时调用 `name` 方法：
 
-    $batch = Bus::batch([
-        // ...
-    ])->then(function (Batch $batch) {
-        // 所有任务已成功完成……
-    })->name('Import CSV')->dispatch();
+```php
+$batch = Bus::batch([
+    // ...
+])->then(function (Batch $batch) {
+    // 所有任务已成功完成……
+})->name('Import CSV')->dispatch();
+```
 
 <a name="batch-connection-queue"></a>
 #### 批次的连接与队列
 
 如果你希望指定批处理任务所使用的连接和队列，可以使用 `onConnection` 和 `onQueue` 方法。所有批处理任务都必须在同一个连接和同一个队列中执行：
 
-    $batch = Bus::batch([
-        // ...
-    ])->then(function (Batch $batch) {
-        // 所有任务已成功完成……
-    })->onConnection('redis')->onQueue('imports')->dispatch();
+```php
+$batch = Bus::batch([
+    // ...
+])->then(function (Batch $batch) {
+    // 所有任务已成功完成……
+})->onConnection('redis')->onQueue('imports')->dispatch();
+```
 
 <a name="chains-and-batches"></a>
 ### 链与批次
 
 你可以通过把被链式的任务放入一个数组，来在批次中定义一组[被链式的任务](#job-chaining)。例如，我们可以并行执行两条任务链，并在两条任务链都处理完成之后执行一个回调：
 
-    use App\Jobs\ReleasePodcast;
-    use App\Jobs\SendPodcastReleaseNotification;
-    use Illuminate\Bus\Batch;
-    use Illuminate\Support\Facades\Bus;
+```php
+use App\Jobs\ReleasePodcast;
+use App\Jobs\SendPodcastReleaseNotification;
+use Illuminate\Bus\Batch;
+use Illuminate\Support\Facades\Bus;
 
-    Bus::batch([
-        [
-            new ReleasePodcast(1),
-            new SendPodcastReleaseNotification(1),
-        ],
-        [
-            new ReleasePodcast(2),
-            new SendPodcastReleaseNotification(2),
-        ],
-    ])->then(function (Batch $batch) {
-        // ...
-    })->dispatch();
+Bus::batch([
+    [
+        new ReleasePodcast(1),
+        new SendPodcastReleaseNotification(1),
+    ],
+    [
+        new ReleasePodcast(2),
+        new SendPodcastReleaseNotification(2),
+    ],
+])->then(function (Batch $batch) {
+    // ...
+})->dispatch();
+```
 
 反过来，你也可以通过在[链](#job-chaining)中定义批次，来在链中运行一批任务。例如，你可以先运行一批任务来发布多个播客，然后再运行一批任务来发送发布通知：
 
-    use App\Jobs\FlushPodcastCache;
-    use App\Jobs\ReleasePodcast;
-    use App\Jobs\SendPodcastReleaseNotification;
-    use Illuminate\Support\Facades\Bus;
+```php
+use App\Jobs\FlushPodcastCache;
+use App\Jobs\ReleasePodcast;
+use App\Jobs\SendPodcastReleaseNotification;
+use Illuminate\Support\Facades\Bus;
 
-    Bus::chain([
-        new FlushPodcastCache,
-        Bus::batch([
-            new ReleasePodcast(1),
-            new ReleasePodcast(2),
-        ]),
-        Bus::batch([
-            new SendPodcastReleaseNotification(1),
-            new SendPodcastReleaseNotification(2),
-        ]),
-    ])->dispatch();
+Bus::chain([
+    new FlushPodcastCache,
+    Bus::batch([
+        new ReleasePodcast(1),
+        new ReleasePodcast(2),
+    ]),
+    Bus::batch([
+        new SendPodcastReleaseNotification(1),
+        new SendPodcastReleaseNotification(2),
+    ]),
+])->dispatch();
+```
 
 <a name="adding-jobs-to-batches"></a>
 ### 添加任务到批次
 
 有时，从一个批处理任务内部向批次添加更多任务会很有用。当你需要把数千个任务批处理化，而它们在一个 Web 请求期间分发又太慢时，这种模式会很有用。因此，你可以改为分发一批初始的"加载器"任务，由它们为该批次填充更多任务：
 
-    $batch = Bus::batch([
-        new LoadImportBatch,
-        new LoadImportBatch,
-        new LoadImportBatch,
-    ])->then(function (Batch $batch) {
-        // 所有任务已成功完成……
-    })->name('Import Contacts')->dispatch();
+```php
+$batch = Bus::batch([
+    new LoadImportBatch,
+    new LoadImportBatch,
+    new LoadImportBatch,
+])->then(function (Batch $batch) {
+    // 所有任务已成功完成……
+})->name('Import Contacts')->dispatch();
+```
 
 在这个例子中，我们会用 `LoadImportBatch` 任务为该批次填充更多任务。为此，可以使用批次实例上的 `add` 方法来添加任务，该实例可以通过任务的 `batch` 方法访问：
 
-    use App\Jobs\ImportContacts;
-    use Illuminate\Support\Collection;
+```php
+use App\Jobs\ImportContacts;
+use Illuminate\Support\Collection;
 
-    /**
-     * 执行该任务。
-     */
-    public function handle(): void
-    {
-        if ($this->batch()->cancelled()) {
-            return;
-        }
-
-        $this->batch()->add(Collection::times(1000, function () {
-            return new ImportContacts;
-        }));
+/**
+ * 执行该任务。
+ */
+public function handle(): void
+{
+    if ($this->batch()->cancelled()) {
+        return;
     }
+
+    $this->batch()->add(Collection::times(1000, function () {
+        return new ImportContacts;
+    }));
+}
+```
 
 > [!WARNING]
 > 你只能从属于同一批次的任务内部向该批次添加任务。
@@ -1466,35 +1598,37 @@ php artisan migrate
 
 传给批次完成回调的 `Illuminate\Bus\Batch` 实例提供了多种属性和方法，帮助你与检查给定的任务批次进行交互：
 
-    // 批次的 UUID……
-    $batch->id;
+```php
+// 批次的 UUID……
+$batch->id;
 
-    // 批次名称（如果适用）……
-    $batch->name;
+// 批次名称（如果适用）……
+$batch->name;
 
-    // 指派给该批次的任务数量……
-    $batch->totalJobs;
+// 指派给该批次的任务数量……
+$batch->totalJobs;
 
-    // 尚未被队列处理的任务数量……
-    $batch->pendingJobs;
+// 尚未被队列处理的任务数量……
+$batch->pendingJobs;
 
-    // 已经失败的任务数量……
-    $batch->failedJobs;
+// 已经失败的任务数量……
+$batch->failedJobs;
 
-    // 到目前为止已经处理的任务数量……
-    $batch->processedJobs();
+// 到目前为止已经处理的任务数量……
+$batch->processedJobs();
 
-    // 该批次的完成百分比（0-100）……
-    $batch->progress();
+// 该批次的完成百分比（0-100）……
+$batch->progress();
 
-    // 指示该批次是否已完成执行……
-    $batch->finished();
+// 指示该批次是否已完成执行……
+$batch->finished();
 
-    // 取消该批次的执行……
-    $batch->cancel();
+// 取消该批次的执行……
+$batch->cancel();
 
-    // 指示该批次是否已被取消……
-    $batch->cancelled();
+// 指示该批次是否已被取消……
+$batch->cancelled();
+```
 
 <a name="returning-batches-from-routes"></a>
 #### 从路由返回批次
@@ -1503,43 +1637,49 @@ php artisan migrate
 
 要按 ID 获取某个批次，可以使用 `Bus` Facade 的 `findBatch` 方法：
 
-    use Illuminate\Support\Facades\Bus;
-    use Illuminate\Support\Facades\Route;
+```php
+use Illuminate\Support\Facades\Bus;
+use Illuminate\Support\Facades\Route;
 
-    Route::get('/batch/{batchId}', function (string $batchId) {
-        return Bus::findBatch($batchId);
-    });
+Route::get('/batch/{batchId}', function (string $batchId) {
+    return Bus::findBatch($batchId);
+});
+```
 
 <a name="cancelling-batches"></a>
 ### 取消批次
 
 有时你可能需要取消某个批次的执行。可以在 `Illuminate\Bus\Batch` 实例上调用 `cancel` 方法实现：
 
-    /**
-     * 执行该任务。
-     */
-    public function handle(): void
-    {
-        if ($this->user->exceedsImportLimit()) {
-            return $this->batch()->cancel();
-        }
-
-        if ($this->batch()->cancelled()) {
-            return;
-        }
+```php
+/**
+ * 执行该任务。
+ */
+public function handle(): void
+{
+    if ($this->user->exceedsImportLimit()) {
+        return $this->batch()->cancel();
     }
+
+    if ($this->batch()->cancelled()) {
+        return;
+    }
+}
+```
 
 正如你在前面的例子中可能已经注意到的，批处理任务在继续执行之前，通常应当先判断其对应的批次是否已被取消。不过，为方便起见，你也可以改为把 `SkipIfBatchCancelled` [中间件](#job-middleware)指派给任务。正如其名所示，该中间件会指示 Laravel 在其对应的批次已被取消时不要处理该任务：
 
-    use Illuminate\Queue\Middleware\SkipIfBatchCancelled;
+```php
+use Illuminate\Queue\Middleware\SkipIfBatchCancelled;
 
-    /**
-     * 获取该任务应当经过的中间件。
-     */
-    public function middleware(): array
-    {
-        return [new SkipIfBatchCancelled];
-    }
+/**
+ * 获取该任务应当经过的中间件。
+ */
+public function middleware(): array
+{
+    return [new SkipIfBatchCancelled];
+}
+```
 
 <a name="batch-failures"></a>
 ### 批次失败
@@ -1551,11 +1691,13 @@ php artisan migrate
 
 当批次中的某个任务失败时，Laravel 会自动把该批次标记为"已取消"。如果你愿意，可以禁用这一行为，使任务失败不会自动把批次标记为已取消。这可以在分发批次时调用 `allowFailures` 方法实现：
 
-    $batch = Bus::batch([
-        // ...
-    ])->then(function (Batch $batch) {
-        // 所有任务已成功完成……
-    })->allowFailures()->dispatch();
+```php
+$batch = Bus::batch([
+    // ...
+])->then(function (Batch $batch) {
+    // 所有任务已成功完成……
+})->allowFailures()->dispatch();
+```
 
 <a name="retrying-failed-batch-jobs"></a>
 #### 重试失败的批次任务
@@ -1571,27 +1713,35 @@ php artisan queue:retry-batch 32dbc76c-4f82-4749-b610-a639fe0099b5
 
 如果不进行清理，`job_batches` 表的记录会很快累积。为缓解这个问题，你应当[调度](/docs/{{version}}/scheduling) `queue:prune-batches` Artisan 命令每天运行：
 
-    use Illuminate\Support\Facades\Schedule;
+```php
+use Illuminate\Support\Facades\Schedule;
 
-    Schedule::command('queue:prune-batches')->daily();
+Schedule::command('queue:prune-batches')->daily();
+```
 
 默认情况下，所有完成时间超过 24 小时的已结束批次都会被清理。你可以在调用该命令时使用 `hours` 选项来决定保留批次数据多长时间。例如，下面的命令会删除所有在 48 小时前就已完成的批次：
 
-    use Illuminate\Support\Facades\Schedule;
+```php
+use Illuminate\Support\Facades\Schedule;
 
-    Schedule::command('queue:prune-batches --hours=48')->daily();
+Schedule::command('queue:prune-batches --hours=48')->daily();
+```
 
 有时，你的 `jobs_batches` 表也可能为那些始终未成功完成的批次累积批次记录，例如某个任务失败且该任务从未被成功重试的批次。你可以指示 `queue:prune-batches` 命令使用 `unfinished` 选项来清理这些未完成的批次记录：
 
-    use Illuminate\Support\Facades\Schedule;
+```php
+use Illuminate\Support\Facades\Schedule;
 
-    Schedule::command('queue:prune-batches --hours=48 --unfinished=72')->daily();
+Schedule::command('queue:prune-batches --hours=48 --unfinished=72')->daily();
+```
 
 同样，你的 `jobs_batches` 表也可能为已取消的批次累积批次记录。你可以指示 `queue:prune-batches` 命令使用 `cancelled` 选项来清理这些已取消的批次记录：
 
-    use Illuminate\Support\Facades\Schedule;
+```php
+use Illuminate\Support\Facades\Schedule;
 
-    Schedule::command('queue:prune-batches --hours=48 --cancelled=72')->daily();
+Schedule::command('queue:prune-batches --hours=48 --cancelled=72')->daily();
+```
 
 <a name="storing-batches-in-dynamodb"></a>
 ### 在 DynamoDB 中存储批次
@@ -1652,21 +1802,25 @@ composer require aws/aws-sdk-php
 
 除了把任务类分发到队列之外，你也可以分发一个闭包。这对于需要在当前请求周期之外执行的快速、简单任务非常有用。把闭包分发到队列时，闭包的代码内容会经过加密签名，以保证它在传输过程中无法被篡改：
 
-    $podcast = App\Podcast::find(1);
+```php
+$podcast = App\Podcast::find(1);
 
-    dispatch(function () use ($podcast) {
-        $podcast->publish();
-    });
+dispatch(function () use ($podcast) {
+    $podcast->publish();
+});
+```
 
 使用 `catch` 方法，你可以提供一个闭包，用于在入队的闭包耗尽队列所有[已配置的重试尝试](#max-job-attempts-and-timeout)之后仍未能成功完成时执行：
 
-    use Throwable;
+```php
+use Throwable;
 
-    dispatch(function () use ($podcast) {
-        $podcast->publish();
-    })->catch(function (Throwable $e) {
-        // 该任务已失败……
-    });
+dispatch(function () use ($podcast) {
+    $podcast->publish();
+})->catch(function (Throwable $e) {
+    // 该任务已失败……
+});
+```
 
 > [!WARNING]
 > 由于 `catch` 回调会被序列化，并由 Laravel 队列在稍后的时间执行，因此你不应在 `catch` 回调中使用 `$this` 变量。
@@ -1784,7 +1938,9 @@ php artisan queue:work --force
 
 有时你可能希望为队列的处理顺序设定优先级。例如，在 `config/queue.php` 配置文件中，你可以把 `redis` 连接的默认 `queue` 设为 `low`。不过，偶尔你可能希望把某个任务推送到像 `high` 这样高优先级的队列：
 
-    dispatch((new Job)->onQueue('high'));
+```php
+dispatch((new Job)->onQueue('high'));
+```
 
 要启动一个先确保所有 `high` 队列任务都被处理完毕、然后才继续处理 `low` 队列任务的工作进程，可以把一个以逗号分隔的队列名称列表传给 `work` 命令：
 
@@ -1917,77 +2073,85 @@ php artisan queue:work redis --tries=3 --backoff=3
 
 如果你希望按任务逐个配置 Laravel 在重试遇到异常的任务之前应当等待多少秒，可以在任务类上定义 `backoff` 属性：
 
-    /**
-     * 重试该任务之前需要等待的秒数。
-     *
-     * @var int
-     */
-    public $backoff = 3;
+```php
+/**
+ * 重试该任务之前需要等待的秒数。
+ *
+ * @var int
+ */
+public $backoff = 3;
+```
 
 如果你需要更复杂的逻辑来确定任务的退避时间，可以在任务类上定义 `backoff` 方法：
 
-    /**
-    * 计算重试该任务之前需要等待的秒数。
-    */
-    public function backoff(): int
-    {
-        return 3;
-    }
+```php
+/**
+* 计算重试该任务之前需要等待的秒数。
+*/
+public function backoff(): int
+{
+    return 3;
+}
+```
 
 你可以从 `backoff` 方法返回一个退避值数组，从而轻松配置"指数退避"。在这个例子中，如果还有更多尝试剩余，重试延迟将是：第一次重试 1 秒，第二次重试 5 秒，第三次重试 10 秒，之后每次重试都是 10 秒：
 
-    /**
-    * 计算重试该任务之前需要等待的秒数。
-    *
-    * @return array<int, int>
-    */
-    public function backoff(): array
-    {
-        return [1, 5, 10];
-    }
+```php
+/**
+* 计算重试该任务之前需要等待的秒数。
+*
+* @return array<int, int>
+*/
+public function backoff(): array
+{
+    return [1, 5, 10];
+}
+```
 
 <a name="cleaning-up-after-failed-jobs"></a>
 ### 清理失败任务
 
 当某个任务失败时，你可能希望向用户发送警报，或撤销该任务部分完成的操作。为此，你可以在任务类上定义 `failed` 方法。导致任务失败的 `Throwable` 实例会被传给 `failed` 方法：
 
-    <?php
+```php
+<?php
 
-    namespace App\Jobs;
+namespace App\Jobs;
 
-    use App\Models\Podcast;
-    use App\Services\AudioProcessor;
-    use Illuminate\Contracts\Queue\ShouldQueue;
-    use Illuminate\Foundation\Queue\Queueable;
-    use Throwable;
+use App\Models\Podcast;
+use App\Services\AudioProcessor;
+use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Foundation\Queue\Queueable;
+use Throwable;
 
-    class ProcessPodcast implements ShouldQueue
+class ProcessPodcast implements ShouldQueue
+{
+    use Queueable;
+
+    /**
+     * 创建一个新的任务实例。
+     */
+    public function __construct(
+        public Podcast $podcast,
+    ) {}
+
+    /**
+     * 执行任务。
+     */
+    public function handle(AudioProcessor $processor): void
     {
-        use Queueable;
-
-        /**
-         * 创建一个新的任务实例。
-         */
-        public function __construct(
-            public Podcast $podcast,
-        ) {}
-
-        /**
-         * 执行任务。
-         */
-        public function handle(AudioProcessor $processor): void
-        {
-            // 处理已上传的播客……
-        }
-
-        /**
-         * 处理任务失败。
-         */
-        public function failed(?Throwable $exception): void
-        {
-            // 向用户发送失败通知等……
-        }
+        // 处理已上传的播客……
     }
+
+    /**
+     * 处理任务失败。
+     */
+    public function failed(?Throwable $exception): void
+    {
+        // 向用户发送失败通知等……
+    }
+}
+```
 
 > [!WARNING]
 > 调用 `failed` 方法之前会先实例化一个新的任务对象；因此，`handle` 方法中可能发生的类属性修改将会丢失。
@@ -2047,12 +2211,14 @@ php artisan queue:flush
 
 为方便起见，你可以通过把任务的 `deleteWhenMissingModels` 属性设为 `true`，选择自动删除模型缺失的任务。当该属性为 `true` 时，Laravel 会静默地丢弃该任务，而不会抛出异常：
 
-    /**
-     * 如果任务的模型已不存在，则删除该任务。
-     *
-     * @var bool
-     */
-    public $deleteWhenMissingModels = true;
+```php
+/**
+ * 如果任务的模型已不存在，则删除该任务。
+ *
+ * @var bool
+ */
+public $deleteWhenMissingModels = true;
+```
 
 <a name="pruning-failed-jobs"></a>
 ### 清理失败任务
@@ -2108,36 +2274,38 @@ QUEUE_FAILED_DRIVER=null
 
 如果你希望注册一个在任务失败时被调用的事件监听器，可以使用 `Queue` Facade 的 `failing` 方法。例如，我们可以从 Laravel 附带的 `AppServiceProvider` 的 `boot` 方法中，为该事件附加一个闭包：
 
-    <?php
+```php
+<?php
 
-    namespace App\Providers;
+namespace App\Providers;
 
-    use Illuminate\Support\Facades\Queue;
-    use Illuminate\Support\ServiceProvider;
-    use Illuminate\Queue\Events\JobFailed;
+use Illuminate\Support\Facades\Queue;
+use Illuminate\Support\ServiceProvider;
+use Illuminate\Queue\Events\JobFailed;
 
-    class AppServiceProvider extends ServiceProvider
+class AppServiceProvider extends ServiceProvider
+{
+    /**
+     * 注册任何应用服务。
+     */
+    public function register(): void
     {
-        /**
-         * 注册任何应用服务。
-         */
-        public function register(): void
-        {
-            // ...
-        }
-
-        /**
-         * 引导任何应用服务。
-         */
-        public function boot(): void
-        {
-            Queue::failing(function (JobFailed $event) {
-                // $event->connectionName
-                // $event->job
-                // $event->exception
-            });
-        }
+        // ...
     }
+
+    /**
+     * 引导任何应用服务。
+     */
+    public function boot(): void
+    {
+        Queue::failing(function (JobFailed $event) {
+            // $event->connectionName
+            // $event->job
+            // $event->exception
+        });
+    }
+}
+```
 
 <a name="clearing-jobs-from-queues"></a>
 ## 清空队列中的任务
@@ -2277,9 +2445,11 @@ class ExampleTest extends TestCase
 
 你可以向 `assertPushed` 或 `assertNotPushed` 方法传入一个闭包，以断言某个通过给定"真值测试"的任务被推入了队列。如果至少有一个通过该真值测试的任务被推入，断言就会成功：
 
-    Queue::assertPushed(function (ShipOrder $job) use ($order) {
-        return $job->order->id === $order->id;
-    });
+```php
+Queue::assertPushed(function (ShipOrder $job) use ($order) {
+    return $job->order->id === $order->id;
+});
+```
 
 <a name="faking-a-subset-of-jobs"></a>
 ### 伪造任务的一个子集
@@ -2315,41 +2485,49 @@ public function test_orders_can_be_shipped(): void
 
 你也可以使用 `except` 方法伪造除指定任务之外的全部任务：
 
-    Queue::fake()->except([
-        ShipOrder::class,
-    ]);
+```php
+Queue::fake()->except([
+    ShipOrder::class,
+]);
+```
 
 <a name="testing-job-chains"></a>
 ### 测试任务链
 
 要测试任务链，你需要使用 `Bus` Facade 的伪造能力。`Bus` Facade 的 `assertChained` 方法可用于断言某个[任务链](/docs/{{version}}/queues#job-chaining)已被分发。`assertChained` 方法接受一个链式任务数组作为其第一个参数：
 
-    use App\Jobs\RecordShipment;
-    use App\Jobs\ShipOrder;
-    use App\Jobs\UpdateInventory;
-    use Illuminate\Support\Facades\Bus;
+```php
+use App\Jobs\RecordShipment;
+use App\Jobs\ShipOrder;
+use App\Jobs\UpdateInventory;
+use Illuminate\Support\Facades\Bus;
 
-    Bus::fake();
+Bus::fake();
 
-    // ...
+// ...
 
-    Bus::assertChained([
-        ShipOrder::class,
-        RecordShipment::class,
-        UpdateInventory::class
-    ]);
+Bus::assertChained([
+    ShipOrder::class,
+    RecordShipment::class,
+    UpdateInventory::class
+]);
+```
 
 如上面的例子所示，链式任务数组可以是任务类名的数组。不过，你也可以提供实际任务实例的数组。这样做时，Laravel 会确保这些任务实例与应用分发的链式任务属于相同的类，并且属性值也相同：
 
-    Bus::assertChained([
-        new ShipOrder,
-        new RecordShipment,
-        new UpdateInventory,
-    ]);
+```php
+Bus::assertChained([
+    new ShipOrder,
+    new RecordShipment,
+    new UpdateInventory,
+]);
+```
 
 你可以使用 `assertDispatchedWithoutChain` 方法断言某个任务在没有任务链的情况下被推入：
 
-    Bus::assertDispatchedWithoutChain(ShipOrder::class);
+```php
+Bus::assertDispatchedWithoutChain(ShipOrder::class);
+```
 
 <a name="testing-chain-modifications"></a>
 #### 测试链的修改
@@ -2379,55 +2557,65 @@ $job->assertDoesntHaveChain();
 
 如果你的任务链[包含一个任务批次](#chains-and-batches)，可以在链断言中插入 `Bus::chainedBatch` 定义，以断言该链式批次符合你的预期：
 
-    use App\Jobs\ShipOrder;
-    use App\Jobs\UpdateInventory;
-    use Illuminate\Bus\PendingBatch;
-    use Illuminate\Support\Facades\Bus;
+```php
+use App\Jobs\ShipOrder;
+use App\Jobs\UpdateInventory;
+use Illuminate\Bus\PendingBatch;
+use Illuminate\Support\Facades\Bus;
 
-    Bus::assertChained([
-        new ShipOrder,
-        Bus::chainedBatch(function (PendingBatch $batch) {
-            return $batch->jobs->count() === 3;
-        }),
-        new UpdateInventory,
-    ]);
+Bus::assertChained([
+    new ShipOrder,
+    Bus::chainedBatch(function (PendingBatch $batch) {
+        return $batch->jobs->count() === 3;
+    }),
+    new UpdateInventory,
+]);
+```
 
 <a name="testing-job-batches"></a>
 ### 测试任务批次
 
 `Bus` Facade 的 `assertBatched` 方法可用于断言某个[任务批次](/docs/{{version}}/queues#job-batching)已被分发。传给 `assertBatched` 方法的闭包会收到一个 `Illuminate\Bus\PendingBatch` 实例，可用于检查批次中的任务：
 
-    use Illuminate\Bus\PendingBatch;
-    use Illuminate\Support\Facades\Bus;
+```php
+use Illuminate\Bus\PendingBatch;
+use Illuminate\Support\Facades\Bus;
 
-    Bus::fake();
+Bus::fake();
 
-    // ...
+// ...
 
-    Bus::assertBatched(function (PendingBatch $batch) {
-        return $batch->name == 'import-csv' &&
-               $batch->jobs->count() === 10;
-    });
+Bus::assertBatched(function (PendingBatch $batch) {
+    return $batch->name == 'import-csv' &&
+           $batch->jobs->count() === 10;
+});
+```
 
 你可以使用 `assertBatchCount` 方法断言已分发的批次数量：
 
-    Bus::assertBatchCount(3);
+```php
+Bus::assertBatchCount(3);
+```
 
 你可以使用 `assertNothingBatched` 断言没有批次被分发：
 
-    Bus::assertNothingBatched();
+```php
+Bus::assertNothingBatched();
+```
 
 <a name="testing-job-batch-interaction"></a>
 #### 测试任务与批次的交互
 
 此外，你有时还需要测试单个任务与其所属批次之间的交互。例如，你可能需要测试某个任务是否取消了其批次的进一步处理。为此，你需要通过 `withFakeBatch` 方法为该任务分配一个伪造批次。`withFakeBatch` 方法返回一个包含任务实例和伪造批次的元组：
 
-    [$job, $batch] = (new ShipOrder)->withFakeBatch();
+```php
+[$job, $batch] = (new ShipOrder)->withFakeBatch();
 
-    $job->handle();
+$job->handle();
 
-    $this->assertTrue($batch->cancelled());
-    $this->assertEmpty($batch->added);
+$this->assertTrue($batch->cancelled());
+$this->assertEmpty($batch->added);
+```
 
 <a name="testing-job-queue-interactions"></a>
 ### 测试任务与队列的交互
@@ -2457,51 +2645,55 @@ $job->assertNotFailed();
 
 通过 `Queue` [Facade](/docs/{{version}}/facades)上的 `before` 和 `after` 方法，你可以指定在排队任务被处理之前或之后执行的回调。这些回调非常适合执行额外的日志记录，或为仪表盘累加统计指标。通常，你应当在[服务提供者](/docs/{{version}}/providers)的 `boot` 方法中调用这些方法。例如，我们可以使用 Laravel 附带的 `AppServiceProvider`：
 
-    <?php
+```php
+<?php
 
-    namespace App\Providers;
+namespace App\Providers;
 
-    use Illuminate\Support\Facades\Queue;
-    use Illuminate\Support\ServiceProvider;
-    use Illuminate\Queue\Events\JobProcessed;
-    use Illuminate\Queue\Events\JobProcessing;
+use Illuminate\Support\Facades\Queue;
+use Illuminate\Support\ServiceProvider;
+use Illuminate\Queue\Events\JobProcessed;
+use Illuminate\Queue\Events\JobProcessing;
 
-    class AppServiceProvider extends ServiceProvider
+class AppServiceProvider extends ServiceProvider
+{
+    /**
+     * 注册任何应用服务。
+     */
+    public function register(): void
     {
-        /**
-         * 注册任何应用服务。
-         */
-        public function register(): void
-        {
-            // ...
-        }
-
-        /**
-         * 引导任何应用服务。
-         */
-        public function boot(): void
-        {
-            Queue::before(function (JobProcessing $event) {
-                // $event->connectionName
-                // $event->job
-                // $event->job->payload()
-            });
-
-            Queue::after(function (JobProcessed $event) {
-                // $event->connectionName
-                // $event->job
-                // $event->job->payload()
-            });
-        }
+        // ...
     }
+
+    /**
+     * 引导任何应用服务。
+     */
+    public function boot(): void
+    {
+        Queue::before(function (JobProcessing $event) {
+            // $event->connectionName
+            // $event->job
+            // $event->job->payload()
+        });
+
+        Queue::after(function (JobProcessed $event) {
+            // $event->connectionName
+            // $event->job
+            // $event->job->payload()
+        });
+    }
+}
+```
 
 通过 `Queue` [Facade](/docs/{{version}}/facades)上的 `looping` 方法，你可以指定在工作进程尝试从队列中获取任务之前执行的回调。例如，你可以注册一个闭包，回滚此前失败任务留下的未关闭事务：
 
-    use Illuminate\Support\Facades\DB;
-    use Illuminate\Support\Facades\Queue;
+```php
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Queue;
 
-    Queue::looping(function () {
-        while (DB::transactionLevel() > 0) {
-            DB::rollBack();
-        }
-    });
+Queue::looping(function () {
+    while (DB::transactionLevel() > 0) {
+        DB::rollBack();
+    }
+});
+```

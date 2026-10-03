@@ -122,19 +122,21 @@ php artisan migrate
 
 认证视图的所有渲染逻辑都可以通过 `Laravel\Fortify\Fortify` 类提供的相应方法来自定义。通常，你应当在应用 `App\Providers\FortifyServiceProvider` 类的 `boot` 方法中调用该方法。Fortify 会负责定义返回该视图的 `/login` 路由：
 
-    use Laravel\Fortify\Fortify;
+```php
+use Laravel\Fortify\Fortify;
 
-    /**
-     * 引导任意应用服务。
-     */
-    public function boot(): void
-    {
-        Fortify::loginView(function () {
-            return view('auth.login');
-        });
+/**
+ * 引导任意应用服务。
+ */
+public function boot(): void
+{
+    Fortify::loginView(function () {
+        return view('auth.login');
+    });
 
-        // ...
-    }
+    // ...
+}
+```
 
 你的登录模板应当包含一个向 `/login` 发起 POST 请求的表单。`/login` 端点需要一个字符串类型的 `email` / `username` 和一个 `password`。email / username 字段的名称应当与 `config/fortify.php` 配置文件中的 `username` 值一致。此外，你还可以提供一个布尔类型的 `remember` 字段，用来表示用户希望使用 Laravel 提供的"记住我"功能。
 
@@ -429,7 +431,7 @@ Fortify 会负责定义返回该视图的 `/forgot-password` 端点。你的 `fo
 
 `$status` 会话变量的值会与应用 `passwords` [语言文件](/docs/{{version}}/localization)中定义的某个翻译字符串匹配。如果你想自定义该值但尚未发布 Laravel 的语言文件，可以通过 `lang:publish` Artisan 命令完成：
 
-```html
+```blade
 @if (session('status'))
     <div class="mb-4 font-medium text-sm text-green-600">
         {{ session('status') }}

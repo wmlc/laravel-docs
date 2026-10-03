@@ -423,12 +423,14 @@ sail share
 
 通过 `share` 命令共享站点时，应在 `TrustProxies` 中间件中配置应用程序的受信任代理。否则，`url` 和 `route` 等 URL 生成辅助函数将无法确定 URL 生成期间应使用的正确 HTTP 主机：
 
-    /**
-     * 此应用程序的受信任代理。
-     *
-     * @var array|string|null
-     */
-    protected $proxies = '*';
+```php
+/**
+ * 此应用程序的受信任代理。
+ *
+ * @var array|string|null
+ */
+protected $proxies = '*';
+```
 
 如果想为共享站点选择子域，可以在执行 `share` 命令时提供 `subdomain` 选项：
 

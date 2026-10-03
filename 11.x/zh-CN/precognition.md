@@ -107,7 +107,7 @@ form.setValidationTimeout(3000);
 
 验证请求或表单提交期间返回的任何验证错误，都会自动填充到表单的 `errors` 对象中：
 
-```html
+```blade
 <div v-if="form.invalid('email')">
     {{ form.errors.email }}
 </div>
@@ -559,7 +559,7 @@ form.setValidationTimeout(3000);
 
 在上面讨论的用户创建示例中，我们使用 Precognition 来执行实时验证；不过，提交表单时我们采用的是传统的服务端表单提交方式。因此，表单应当用服务端表单提交返回的任何"旧"输入值和验证错误来填充：
 
-```html
+```blade
 <form x-data="{
     form: $form('post', '/register', {
         name: '{{ old('name') }}',

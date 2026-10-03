@@ -107,44 +107,50 @@ Laravel 遵循 [PSR-2](https://github.com/php-fig/fig-standards/blob/master/acce
 
 下面是一个有效的 Laravel 文档注释块示例。请注意，`@param` 属性后面跟两个空格、参数类型、再跟两个空格，最后是变量名：
 
-    /**
-     * 在容器中注册一个绑定。
-     *
-     * @param  string|array  $abstract
-     * @param  \Closure|string|null  $concrete
-     * @param  bool  $shared
-     * @return void
-     *
-     * @throws \Exception
-     */
-    public function bind($abstract, $concrete = null, $shared = false)
-    {
-        // ...
-    }
+```php
+/**
+ * 在容器中注册一个绑定。
+ *
+ * @param  string|array  $abstract
+ * @param  \Closure|string|null  $concrete
+ * @param  bool  $shared
+ * @return void
+ *
+ * @throws \Exception
+ */
+public function bind($abstract, $concrete = null, $shared = false)
+{
+    // ...
+}
+```
 
 如果使用原生类型后 `@param` 或 `@return` 属性显得冗余，可以把它们删除：
 
-    /**
-     * 执行任务。
-     */
-    public function handle(AudioProcessor $processor): void
-    {
-        //
-    }
+```php
+/**
+ * 执行任务。
+ */
+public function handle(AudioProcessor $processor): void
+{
+    //
+}
+```
 
 不过，如果原生类型是泛型，请通过 `@param` 或 `@return` 属性指定泛型类型：
 
-    /**
-     * 获取邮件的所有附件。
-     *
-     * @return array<int, \Illuminate\Mail\Mailables\Attachment>
-     */
-    public function attachments(): array
-    {
-        return [
-            Attachment::fromStorage('/path/to/file'),
-        ];
-    }
+```php
+/**
+ * 获取邮件的所有附件。
+ *
+ * @return array<int, \Illuminate\Mail\Mailables\Attachment>
+ */
+public function attachments(): array
+{
+    return [
+        Attachment::fromStorage('/path/to/file'),
+    ];
+}
+```
 
 <a name="styleci"></a>
 ### StyleCI

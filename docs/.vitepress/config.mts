@@ -10,7 +10,9 @@ export default defineConfig({
   ignoreDeadLinks: 'localhostLinks',
 
   head: [
-    ['meta', { name: 'theme-color', content: '#ff2d20' }]
+    ['meta', { name: 'theme-color', content: '#ff2d20' }],
+    ['link', { rel: 'icon', type: 'image/svg+xml', href: '/logo.svg' }],
+    ['link', { rel: 'apple-touch-icon', href: '/logo.svg' }]
   ],
 
   themeConfig: {
@@ -21,11 +23,9 @@ export default defineConfig({
       { component: 'VersionSwitcher' }
     ],
 
-    sidebar: {
-      '/13.x/': parseSidebar('13.x'),
-      '/12.x/': parseSidebar('12.x'),
-      '/9.x/': parseSidebar('9.x')
-    },
+    sidebar: Object.fromEntries(
+      versions.map((v) => [`/${v}/`, parseSidebar(v)])
+    ),
 
     socialLinks: [
       { icon: 'github', link: 'https://github.com/laravel/docs' }

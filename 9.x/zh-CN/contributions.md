@@ -93,20 +93,22 @@ Laravel 遵循 [PSR-2](https://github.com/php-fig/fig-standards/blob/master/acce
 
 以下是一个有效的 Laravel 文档块示例。请注意，`@param` 属性后跟两个空格、参数类型、再两个空格，最后是变量名：
 
-    /**
-     * 在容器中注册一个绑定。
-     *
-     * @param  string|array  $abstract
-     * @param  \Closure|string|null  $concrete
-     * @param  bool  $shared
-     * @return void
-     *
-     * @throws \Exception
-     */
-    public function bind($abstract, $concrete = null, $shared = false)
-    {
-        //
-    }
+```php
+/**
+ * 在容器中注册一个绑定。
+ *
+ * @param  string|array  $abstract
+ * @param  \Closure|string|null  $concrete
+ * @param  bool  $shared
+ * @return void
+ *
+ * @throws \Exception
+ */
+public function bind($abstract, $concrete = null, $shared = false)
+{
+    //
+}
+```
 
 <a name="styleci"></a>
 ### StyleCI

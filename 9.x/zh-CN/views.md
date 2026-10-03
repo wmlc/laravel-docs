@@ -31,9 +31,11 @@
 
 由于此视图存储在 `resources/views/greeting.blade.php`，我们可以使用全局 `view` 助手函数返回它：
 
-    Route::get('/', function () {
-        return view('greeting', ['name' => 'James']);
-    });
+```php
+Route::get('/', function () {
+    return view('greeting', ['name' => 'James']);
+});
+```
 
 > **Note**  
 > 想了解更多关于如何编写 Blade 模板的信息？查看完整的 [Blade 文档](/docs/{{version}}/blade)来入门。
@@ -52,15 +54,19 @@
 
 创建视图后，可以使用全局 `view` 助手函数从应用程序的路由或控制器返回它：
 
-    Route::get('/', function () {
-        return view('greeting', ['name' => 'James']);
-    });
+```php
+Route::get('/', function () {
+    return view('greeting', ['name' => 'James']);
+});
+```
 
 也可以使用 `View` Facade 返回视图：
 
-    use Illuminate\Support\Facades\View;
+```php
+use Illuminate\Support\Facades\View;
 
-    return View::make('greeting', ['name' => 'James']);
+return View::make('greeting', ['name' => 'James']);
+```
 
 如你所见，传递给 `view` 助手函数的第一个参数对应 `resources/views` 目录中视图文件的名称。第二个参数是应提供给视图的数据数组。在本例中，我们传递了 `name` 变量，它使用 [Blade 语法](/docs/{{version}}/blade)在视图中显示。
 
@@ -69,7 +75,9 @@
 
 视图也可以嵌套在 `resources/views` 目录的子目录中。可以使用"点"符号引用嵌套视图。例如，如果视图存储在 `resources/views/admin/profile.blade.php`，可以从应用程序的路由/控制器中返回它：
 
-    return view('admin.profile', $data);
+```php
+return view('admin.profile', $data);
+```
 
 > **Warning**  
 > 视图目录名不应包含 `.` 字符。
@@ -79,69 +87,79 @@
 
 使用 `View` Facade 的 `first` 方法，可以创建给定视图数组中第一个存在的视图。这在应用程序或包允许自定义或覆盖视图时非常有用：
 
-    use Illuminate\Support\Facades\View;
+```php
+use Illuminate\Support\Facades\View;
 
-    return View::first(['custom.admin', 'admin'], $data);
+return View::first(['custom.admin', 'admin'], $data);
+```
 
 <a name="determining-if-a-view-exists"></a>
 ### 判断视图是否存在
 
 如果需要判断视图是否存在，可以使用 `View` Facade。如果视图存在，`exists` 方法将返回 `true`：
 
-    use Illuminate\Support\Facades\View;
+```php
+use Illuminate\Support\Facades\View;
 
-    if (View::exists('emails.customer')) {
-        //
-    }
+if (View::exists('emails.customer')) {
+    //
+}
+```
 
 <a name="passing-data-to-views"></a>
 ## 向视图传递数据
 
 如前面的示例所示，可以将数据数组传递给视图，使这些数据在视图中可用：
 
-    return view('greetings', ['name' => 'Victoria']);
+```php
+return view('greetings', ['name' => 'Victoria']);
+```
 
 以这种方式传递信息时，数据应为键/值对数组。将数据提供给视图后，可以在视图中使用数据的键来访问每个值，例如 `<?php echo $name; ?>`。
 
 除了将完整的数据数组传递给 `view` 助手函数外，还可以使用 `with` 方法向视图添加单个数据片段。`with` 方法返回视图对象实例，因此可以在返回视图之前继续链式调用方法：
 
-    return view('greeting')
-                ->with('name', 'Victoria')
-                ->with('occupation', 'Astronaut');
+```php
+return view('greeting')
+            ->with('name', 'Victoria')
+            ->with('occupation', 'Astronaut');
+```
 
 <a name="sharing-data-with-all-views"></a>
 ### 与所有视图共享数据
 
 有时，你可能需要与应用程序渲染的所有视图共享数据。可以使用 `View` Facade 的 `share` 方法来实现。通常，应在服务提供者（Service Provider）的 `boot` 方法中调用 `share` 方法。你可以将其添加到 `App\Providers\AppServiceProvider` 类中，或生成一个单独的服务提供者来存放它们：
 
-    <?php
+```php
+<?php
 
-    namespace App\Providers;
+namespace App\Providers;
 
-    use Illuminate\Support\Facades\View;
+use Illuminate\Support\Facades\View;
 
-    class AppServiceProvider extends ServiceProvider
+class AppServiceProvider extends ServiceProvider
+{
+    /**
+     * 注册任何应用程序服务。
+     *
+     * @return void
+     */
+    public function register()
     {
-        /**
-         * 注册任何应用程序服务。
-         *
-         * @return void
-         */
-        public function register()
-        {
-            //
-        }
-
-        /**
-         * 引导任何应用程序服务。
-         *
-         * @return void
-         */
-        public function boot()
-        {
-            View::share('key', 'value');
-        }
+        //
     }
+
+    /**
+     * 引导任何应用程序服务。
+     *
+     * @return void
+     */
+    public function boot()
+    {
+        View::share('key', 'value');
+    }
+}
+```
 
 <a name="view-composers"></a>
 ## 视图组合器
@@ -152,86 +170,90 @@
 
 我们将使用 `View` Facade 的 `composer` 方法注册视图组合器。Laravel 不包含基于类的视图组合器的默认目录，因此你可以随意组织它们。例如，可以创建一个 `app/View/Composers` 目录来存放应用程序的所有视图组合器：
 
-    <?php
+```php
+<?php
 
-    namespace App\Providers;
+namespace App\Providers;
 
-    use App\View\Composers\ProfileComposer;
-    use Illuminate\Support\Facades\View;
-    use Illuminate\Support\ServiceProvider;
+use App\View\Composers\ProfileComposer;
+use Illuminate\Support\Facades\View;
+use Illuminate\Support\ServiceProvider;
 
-    class ViewServiceProvider extends ServiceProvider
+class ViewServiceProvider extends ServiceProvider
+{
+    /**
+     * 注册任何应用程序服务。
+     *
+     * @return void
+     */
+    public function register()
     {
-        /**
-         * 注册任何应用程序服务。
-         *
-         * @return void
-         */
-        public function register()
-        {
-            //
-        }
-
-        /**
-         * 引导任何应用程序服务。
-         *
-         * @return void
-         */
-        public function boot()
-        {
-            // 使用基于类的组合器...
-            View::composer('profile', ProfileComposer::class);
-
-            // 使用基于闭包的组合器...
-            View::composer('dashboard', function ($view) {
-                //
-            });
-        }
+        //
     }
+
+    /**
+     * 引导任何应用程序服务。
+     *
+     * @return void
+     */
+    public function boot()
+    {
+        // 使用基于类的组合器...
+        View::composer('profile', ProfileComposer::class);
+
+        // 使用基于闭包的组合器...
+        View::composer('dashboard', function ($view) {
+            //
+        });
+    }
+}
+```
 
 > **Warning**  
 > 请记住，如果创建了一个新的服务提供者来包含视图组合器注册，需要将该服务提供者添加到 `config/app.php` 配置文件的 `providers` 数组中。
 
 现在我们已经注册了组合器，每次渲染 `profile` 视图时都会执行 `App\View\Composers\ProfileComposer` 类的 `compose` 方法。让我们看看组合器类的示例：
 
-    <?php
+```php
+<?php
 
-    namespace App\View\Composers;
+namespace App\View\Composers;
 
-    use App\Repositories\UserRepository;
-    use Illuminate\View\View;
+use App\Repositories\UserRepository;
+use Illuminate\View\View;
 
-    class ProfileComposer
+class ProfileComposer
+{
+    /**
+     * 用户仓库实现。
+     *
+     * @var \App\Repositories\UserRepository
+     */
+    protected $users;
+
+    /**
+     * 创建一个新的个人资料组合器。
+     *
+     * @param  \App\Repositories\UserRepository  $users
+     * @return void
+     */
+    public function __construct(UserRepository $users)
     {
-        /**
-         * 用户仓库实现。
-         *
-         * @var \App\Repositories\UserRepository
-         */
-        protected $users;
-
-        /**
-         * 创建一个新的个人资料组合器。
-         *
-         * @param  \App\Repositories\UserRepository  $users
-         * @return void
-         */
-        public function __construct(UserRepository $users)
-        {
-            $this->users = $users;
-        }
-
-        /**
-         * 将数据绑定到视图。
-         *
-         * @param  \Illuminate\View\View  $view
-         * @return void
-         */
-        public function compose(View $view)
-        {
-            $view->with('count', $this->users->count());
-        }
+        $this->users = $users;
     }
+
+    /**
+     * 将数据绑定到视图。
+     *
+     * @param  \Illuminate\View\View  $view
+     * @return void
+     */
+    public function compose(View $view)
+    {
+        $view->with('count', $this->users->count());
+    }
+}
+```
 
 如你所见，所有视图组合器都通过[服务容器](/docs/{{version}}/container)解析，因此你可以在组合器的构造函数中类型提示所需的任何依赖。
 
@@ -240,28 +262,34 @@
 
 可以通过将视图数组作为第一个参数传递给 `composer` 方法，一次性将视图组合器附加到多个视图：
 
-    use App\Views\Composers\MultiComposer;
+```php
+use App\Views\Composers\MultiComposer;
 
-    View::composer(
-        ['profile', 'dashboard'],
-        MultiComposer::class
-    );
+View::composer(
+    ['profile', 'dashboard'],
+    MultiComposer::class
+);
+```
 
 `composer` 方法还接受 `*` 字符作为通配符，允许你将组合器附加到所有视图：
 
-    View::composer('*', function ($view) {
-        //
-    });
+```php
+View::composer('*', function ($view) {
+    //
+});
+```
 
 <a name="view-creators"></a>
 ### 视图创建器
 
 视图"创建器"与视图组合器非常相似；但是，它们在视图实例化后立即执行，而不是等到视图即将渲染时。要注册视图创建器，使用 `creator` 方法：
 
-    use App\View\Creators\ProfileCreator;
-    use Illuminate\Support\Facades\View;
+```php
+use App\View\Creators\ProfileCreator;
+use Illuminate\Support\Facades\View;
 
-    View::creator('profile', ProfileCreator::class);
+View::creator('profile', ProfileCreator::class);
+```
 
 <a name="optimizing-views"></a>
 ## 优化视图

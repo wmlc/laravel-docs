@@ -2,6 +2,8 @@ import { readFileSync } from 'node:fs'
 import { resolve, dirname } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
+export { versions } from './versions.mjs'
+
 const __dirname = dirname(fileURLToPath(import.meta.url))
 
 /**
@@ -44,5 +46,3 @@ export function parseSidebar(version) {
 
   return sidebar
 }
-
-export const versions = ['13.x', '12.x', '9.x']

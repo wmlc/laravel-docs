@@ -113,11 +113,15 @@ In addition, return types were added to methods implementing PHP's `SessionHandl
 
 The `storagePath` method of the `Illuminate\Contracts\Foundation\Application` interface has been updated to accept a `$path` argument. If you are implementing this interface you should update your implementation accordingly:
 
-    public function storagePath($path = '');
-    
+```php
+public function storagePath($path = '');
+```
+
 Similarly, the `langPath` method of the `Illuminate\Foundation\Application` class has been updated to accept a `$path` argument: 
 
-    public function langPath($path = '');
+```php
+public function langPath($path = '');
+```
 
 #### Exception Handler `ignore` Method
 
@@ -460,7 +464,9 @@ The [HTTP client](/docs/{{version}}/http-client) now has a default timeout of 30
 
 If you wish to specify a longer timeout for a given request, you may do so using the `timeout` method:
 
-    $response = Http::timeout(120)->get(/* ... */);
+```php
+$response = Http::timeout(120)->get(/* ... */);
+```
 
 #### HTTP Fake & Middleware
 
@@ -503,44 +509,48 @@ The `send`, `html`, `raw`, and `plain` methods on `Illuminate\Mail\Mailer` no lo
 
 Various SwiftMailer related methods, some of which were undocumented, have been renamed to their Symfony Mailer counterparts. For example, the `withSwiftMessage` method has been renamed to `withSymfonyMessage`:
 
-    // Laravel 8.x...
-    $this->withSwiftMessage(function ($message) {
-        $message->getHeaders()->addTextHeader(
-            'Custom-Header', 'Header Value'
-        );
-    });
+```php
+// Laravel 8.x...
+$this->withSwiftMessage(function ($message) {
+    $message->getHeaders()->addTextHeader(
+        'Custom-Header', 'Header Value'
+    );
+});
 
-    // Laravel 9.x...
-    use Symfony\Component\Mime\Email;
+// Laravel 9.x...
+use Symfony\Component\Mime\Email;
 
-    $this->withSymfonyMessage(function (Email $message) {
-        $message->getHeaders()->addTextHeader(
-            'Custom-Header', 'Header Value'
-        );
-    });
+$this->withSymfonyMessage(function (Email $message) {
+    $message->getHeaders()->addTextHeader(
+        'Custom-Header', 'Header Value'
+    );
+});
+```
 
 > **Warning**  
 > Please thoroughly review the [Symfony Mailer documentation](https://symfony.com/doc/6.0/mailer.html#creating-sending-messages) for all possible interactions with the `Symfony\Component\Mime\Email` object.
 
 The list below contains a more thorough overview of renamed methods. Many of these methods are low-level methods used to interact with SwiftMailer / Symfony Mailer directly, so may not be commonly used within most Laravel applications:
 
-    Message::getSwiftMessage();
-    Message::getSymfonyMessage();
+```php
+Message::getSwiftMessage();
+Message::getSymfonyMessage();
 
-    Mailable::withSwiftMessage($callback);
-    Mailable::withSymfonyMessage($callback);
+Mailable::withSwiftMessage($callback);
+Mailable::withSymfonyMessage($callback);
 
-    MailMessage::withSwiftMessage($callback);
-    MailMessage::withSymfonyMessage($callback);
+MailMessage::withSwiftMessage($callback);
+MailMessage::withSymfonyMessage($callback);
 
-    Mailer::getSwiftMailer();
-    Mailer::getSymfonyTransport();
+Mailer::getSwiftMailer();
+Mailer::getSymfonyTransport();
 
-    Mailer::setSwiftMailer($swift);
-    Mailer::setSymfonyTransport(TransportInterface $transport);
+Mailer::setSwiftMailer($swift);
+Mailer::setSymfonyTransport(TransportInterface $transport);
 
-    MailManager::createTransport($config);
-    MailManager::createSymfonyTransport($config);
+MailManager::createTransport($config);
+MailManager::createSymfonyTransport($config);
+```
 
 #### Proxied `Illuminate\Mail\Message` Methods
 
@@ -548,21 +558,23 @@ The `Illuminate\Mail\Message` typically proxied missing methods to the underlyin
 
 Again, many applications may not be interacting with these methods, as they are not documented within the Laravel documentation:
 
-    // Laravel 8.x...
-    $message
-        ->setFrom('taylor@laravel.com')
-        ->setTo('example@example.org')
-        ->setSubject('Order Shipped')
-        ->setBody('<h1>HTML</h1>', 'text/html')
-        ->addPart('Plain Text', 'text/plain');
+```php
+// Laravel 8.x...
+$message
+    ->setFrom('taylor@laravel.com')
+    ->setTo('example@example.org')
+    ->setSubject('Order Shipped')
+    ->setBody('<h1>HTML</h1>', 'text/html')
+    ->addPart('Plain Text', 'text/plain');
 
-    // Laravel 9.x...
-    $message
-        ->from('taylor@laravel.com')
-        ->to('example@example.org')
-        ->subject('Order Shipped')
-        ->html('<h1>HTML</h1>')
-        ->text('Plain Text');
+// Laravel 9.x...
+$message
+    ->from('taylor@laravel.com')
+    ->to('example@example.org')
+    ->subject('Order Shipped')
+    ->html('<h1>HTML</h1>')
+    ->text('Plain Text');
+```
 
 #### Generated Messages IDs
 
@@ -582,17 +594,19 @@ It is no longer possible to force a transport reconnection (for example when the
 
 Defining stream options for the SMTP transport is no longer supported. Instead, you must define the relevant options directly within the configuration if they are supported. For example, to disable TLS peer verification:
 
-    'smtp' => [
-        // Laravel 8.x...
-        'stream' => [
-            'ssl' => [
-                'verify_peer' => false,
-            ],
+```php
+'smtp' => [
+    // Laravel 8.x...
+    'stream' => [
+        'ssl' => [
+            'verify_peer' => false,
         ],
-
-        // Laravel 9.x...
-        'verify_peer' => false,
     ],
+
+    // Laravel 9.x...
+    'verify_peer' => false,
+],
+```
 
 To learn more about the available configuration options, please review the [Symfony Mailer documentation](https://symfony.com/doc/6.0/mailer.html#transport-setup).
 

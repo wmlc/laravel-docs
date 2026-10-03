@@ -62,24 +62,26 @@ php artisan make:test UserTest --unit --pest
 
 测试生成后，你可以像通常使用 [PHPUnit](https://phpunit.de) 那样定义测试方法。要运行测试，在终端中执行 `vendor/bin/phpunit` 或 `php artisan test` 命令：
 
-    <?php
+```php tab=PHPUnit
+<?php
 
-    namespace Tests\Unit;
+namespace Tests\Unit;
 
-    use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\TestCase;
 
-    class ExampleTest extends TestCase
+class ExampleTest extends TestCase
+{
+    /**
+     * 一个基础测试示例。
+     *
+     * @return void
+     */
+    public function test_basic_test()
     {
-        /**
-         * 一个基础测试示例。
-         *
-         * @return void
-         */
-        public function test_basic_test()
-        {
-            $this->assertTrue(true);
-        }
+        $this->assertTrue(true);
     }
+}
+```
 
 > **Warning**  
 > 如果你在测试类中定义了自己的 `setUp` / `tearDown` 方法，请确保在父类上调用相应的 `parent::setUp()` / `parent::tearDown()` 方法。
@@ -141,52 +143,56 @@ php artisan test --parallel --recreate-databases
 
 使用 `ParallelTesting` Facade，你可以指定在进程或测试用例的 `setUp` 和 `tearDown` 时执行的代码。给定的闭包分别接收包含进程令牌和当前测试用例的 `$token` 和 `$testCase` 变量：
 
-    <?php
+```php
+<?php
 
-    namespace App\Providers;
+namespace App\Providers;
 
-    use Illuminate\Support\Facades\Artisan;
-    use Illuminate\Support\Facades\ParallelTesting;
-    use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\ParallelTesting;
+use Illuminate\Support\ServiceProvider;
 
-    class AppServiceProvider extends ServiceProvider
+class AppServiceProvider extends ServiceProvider
+{
+    /**
+     * 引导启动任何应用程序服务。
+     *
+     * @return void
+     */
+    public function boot()
     {
-        /**
-         * 引导启动任何应用程序服务。
-         *
-         * @return void
-         */
-        public function boot()
-        {
-            ParallelTesting::setUpProcess(function ($token) {
-                // ...
-            });
+        ParallelTesting::setUpProcess(function ($token) {
+            // ...
+        });
 
-            ParallelTesting::setUpTestCase(function ($token, $testCase) {
-                // ...
-            });
+        ParallelTesting::setUpTestCase(function ($token, $testCase) {
+            // ...
+        });
 
-            // 创建测试数据库时执行...
-            ParallelTesting::setUpTestDatabase(function ($database, $token) {
-                Artisan::call('db:seed');
-            });
+        // 创建测试数据库时执行...
+        ParallelTesting::setUpTestDatabase(function ($database, $token) {
+            Artisan::call('db:seed');
+        });
 
-            ParallelTesting::tearDownTestCase(function ($token, $testCase) {
-                // ...
-            });
+        ParallelTesting::tearDownTestCase(function ($token, $testCase) {
+            // ...
+        });
 
-            ParallelTesting::tearDownProcess(function ($token) {
-                // ...
-            });
-        }
+        ParallelTesting::tearDownProcess(function ($token) {
+            // ...
+        });
     }
+}
+```
 
 <a name="accessing-the-parallel-testing-token"></a>
 #### 访问并行测试令牌
 
 如果你希望从应用程序测试代码的任何其他位置访问当前并行进程的"令牌"，可以使用 `token` 方法。此令牌是单个测试进程的唯一字符串标识符，可用于在并行测试进程之间分割资源。例如，Laravel 会自动将此令牌附加到每个并行测试进程创建的测试数据库末尾：
 
-    $token = ParallelTesting::token();
+```php
+$token = ParallelTesting::token();
+```
 
 <a name="reporting-test-coverage"></a>
 ### 报告测试覆盖率

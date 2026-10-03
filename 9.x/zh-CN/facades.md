@@ -17,12 +17,14 @@ Laravel 的 Facade 充当服务容器中底层类的"静态代理"，在保持�
 
 Laravel 所有 Facade 都定义在 `Illuminate\Support\Facades` 命名空间中。因此，我们可以轻松地访问 Facade，如下所示：
 
-    use Illuminate\Support\Facades\Cache;
-    use Illuminate\Support\Facades\Route;
+```php
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Route;
 
-    Route::get('/cache', function () {
-        return Cache::get('key');
-    });
+Route::get('/cache', function () {
+    return Cache::get('key');
+});
+```
 
 在 Laravel 文档中，许多示例将使用 Facade 来演示框架的各种功能。
 
@@ -33,19 +35,21 @@ Laravel 所有 Facade 都定义在 `Illuminate\Support\Facades` 命名空间中�
 
 例如，我们可以不使用 `Illuminate\Support\Facades\Response` Facade 来生成 JSON 响应，而是简单地使用 `response` 函数。由于辅助函数是全局可用的，你无需导入任何类即可使用它们：
 
-    use Illuminate\Support\Facades\Response;
+```php
+use Illuminate\Support\Facades\Response;
 
-    Route::get('/users', function () {
-        return Response::json([
-            // ...
-        ]);
-    });
+Route::get('/users', function () {
+    return Response::json([
+        // ...
+    ]);
+});
 
-    Route::get('/users', function () {
-        return response()->json([
-            // ...
-        ]);
-    });
+Route::get('/users', function () {
+    return response()->json([
+        // ...
+    ]);
+});
+```
 
 <a name="when-to-use-facades"></a>
 ## 何时使用 Facade
@@ -61,66 +65,76 @@ Facade 有很多好处。它们提供了简洁、易记的语法，让你无需�
 
 通常，无法 mock 或 stub 真正的静态类方法。但是，由于 Facade 使用动态方法将方法调用代理到从服务容器解析的对象，我们实际上可以像测试注入的类实例一样测试 Facade。例如，给定以下路由：
 
-    use Illuminate\Support\Facades\Cache;
+```php
+use Illuminate\Support\Facades\Cache;
 
-    Route::get('/cache', function () {
-        return Cache::get('key');
-    });
+Route::get('/cache', function () {
+    return Cache::get('key');
+});
+```
 
 使用 Laravel 的 Facade 测试方法，我们可以编写以下测试来验证 `Cache::get` 方法是用我们期望的参数调用的：
 
-    use Illuminate\Support\Facades\Cache;
+```php tab=PHPUnit
+use Illuminate\Support\Facades\Cache;
 
-    /**
-     * 一个基础功能测试示例。
-     *
-     * @return void
-     */
-    public function testBasicExample()
-    {
-        Cache::shouldReceive('get')
-             ->with('key')
-             ->andReturn('value');
+/**
+ * 一个基础功能测试示例。
+ *
+ * @return void
+ */
+public function testBasicExample()
+{
+    Cache::shouldReceive('get')
+         ->with('key')
+         ->andReturn('value');
 
-        $response = $this->get('/cache');
+    $response = $this->get('/cache');
 
-        $response->assertSee('value');
-    }
+    $response->assertSee('value');
+}
+```
 
 <a name="facades-vs-helper-functions"></a>
 ### Facade 与辅助函数
 
 除了 Facade 之外，Laravel 还包含各种"辅助"函数，可以执行生成视图、触发事件、分发作业或发送 HTTP 响应等常见任务。许多辅助函数执行与相应 Facade 相同的功能。例如，以下 Facade 调用和辅助函数调用是等价的：
 
-    return Illuminate\Support\Facades\View::make('profile');
+```php
+return Illuminate\Support\Facades\View::make('profile');
 
-    return view('profile');
+return view('profile');
+```
 
 Facade 和辅助函数之间没有任何实际区别。使用辅助函数时，你仍然可以像测试相应 Facade 一样测试它们。例如，给定以下路由：
 
-    Route::get('/cache', function () {
-        return cache('key');
-    });
+```php
+Route::get('/cache', function () {
+    return cache('key');
+});
+```
 
 `cache` 辅助函数将调用 `Cache` Facade 底层类上的 `get` 方法。因此，即使我们使用辅助函数，我们也可以编写以下测试来验证该方法是用我们期望的参数调用的：
 
-    use Illuminate\Support\Facades\Cache;
+```php tab=PHPUnit
+use Illuminate\Support\Facades\Cache;
 
-    /**
-     * 一个基础功能测试示例。
-     *
-     * @return void
-     */
-    public function testBasicExample()
-    {
-        Cache::shouldReceive('get')
-             ->with('key')
-             ->andReturn('value');
+/**
+ * 一个基础功能测试示例。
+ *
+ * @return void
+ */
+public function testBasicExample()
+{
+    Cache::shouldReceive('get')
+         ->with('key')
+         ->andReturn('value');
 
-        $response = $this->get('/cache');
+    $response = $this->get('/cache');
 
-        $response->assertSee('value');
-    }
+    $response->assertSee('value');
+}
+```
 
 <a name="how-facades-work"></a>
 ## Facade 的工作原理
@@ -129,42 +143,46 @@ Facade 和辅助函数之间没有任何实际区别。使用辅助函数时，�
 
 `Facade` 基础类利用 `__callStatic()` 魔术方法将来自 Facade 的调用延迟到从容器解析的对象。在下面的示例中，调用了 Laravel 缓存系统。浏览此代码，人们可能认为正在 `Cache` 类上调用静态 `get` 方法：
 
-    <?php
+```php
+<?php
 
-    namespace App\Http\Controllers;
+namespace App\Http\Controllers;
 
-    use App\Http\Controllers\Controller;
-    use Illuminate\Support\Facades\Cache;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Cache;
 
-    class UserController extends Controller
+class UserController extends Controller
+{
+    /**
+     * 显示给定用户的资料。
+     *
+     * @param  int  $id
+     * @return Response
+     */
+    public function showProfile($id)
     {
-        /**
-         * 显示给定用户的资料。
-         *
-         * @param  int  $id
-         * @return Response
-         */
-        public function showProfile($id)
-        {
-            $user = Cache::get('user:'.$id);
+        $user = Cache::get('user:'.$id);
 
-            return view('profile', ['user' => $user]);
-        }
+        return view('profile', ['user' => $user]);
     }
+}
+```
 
 注意，在文件顶部我们"导入"了 `Cache` Facade。此 Facade 充当访问 `Illuminate\Contracts\Cache\Factory` 接口底层实现的代理。我们使用 Facade 进行的任何调用都将传递给 Laravel 缓存服务的底层实例。
 
 如果我们查看 `Illuminate\Support\Facades\Cache` 类，你会发现没有静态方法 `get`：
 
-    class Cache extends Facade
-    {
-        /**
-         * 获取组件的注册名称。
-         *
-         * @return string
-         */
-        protected static function getFacadeAccessor() { return 'cache'; }
-    }
+```php
+class Cache extends Facade
+{
+    /**
+     * 获取组件的注册名称。
+     *
+     * @return string
+     */
+    protected static function getFacadeAccessor() { return 'cache'; }
+}
+```
 
 相反，`Cache` Facade 扩展了基础 `Facade` 类并定义了 `getFacadeAccessor()` 方法。此方法的工作是返回服务容器绑定的名称。当用户在 `Cache` Facade 上引用任何静态方法时，Laravel 会从[服务容器](/docs/{{version}}/container)解析 `cache` 绑定并针对该对象运行请求的方法（在本例中为 `get`）。
 
@@ -173,82 +191,88 @@ Facade 和辅助函数之间没有任何实际区别。使用辅助函数时，�
 
 使用实时 Facade，你可以将应用程序中的任何类当作 Facade 来处理。为了说明如何使用它，让我们先检查一些不使用实时 Facade 的代码。例如，假设我们的 `Podcast` 模型有一个 `publish` 方法。但是，为了发布播客，我们需要注入一个 `Publisher` 实例：
 
-    <?php
+```php
+<?php
 
-    namespace App\Models;
+namespace App\Models;
 
-    use App\Contracts\Publisher;
-    use Illuminate\Database\Eloquent\Model;
+use App\Contracts\Publisher;
+use Illuminate\Database\Eloquent\Model;
 
-    class Podcast extends Model
+class Podcast extends Model
+{
+    /**
+     * 发布播客。
+     *
+     * @param  Publisher  $publisher
+     * @return void
+     */
+    public function publish(Publisher $publisher)
     {
-        /**
-         * 发布播客。
-         *
-         * @param  Publisher  $publisher
-         * @return void
-         */
-        public function publish(Publisher $publisher)
-        {
-            $this->update(['publishing' => now()]);
+        $this->update(['publishing' => now()]);
 
-            $publisher->publish($this);
-        }
+        $publisher->publish($this);
     }
+}
+```
 
 将 publisher 实现注入到方法中使我们能够轻松地隔离测试该方法，因为我们可以 mock 注入的 publisher。但是，这要求我们每次调用 `publish` 方法时都传递一个 publisher 实例。使用实时 Facade，我们可以保持相同的可测试性，而无需显式传递 `Publisher` 实例。要生成实时 Facade，在导入类的命名空间前加上 `Facades` 前缀：
 
-    <?php
+```php
+<?php
 
-    namespace App\Models;
+namespace App\Models;
 
-    use Facades\App\Contracts\Publisher;
-    use Illuminate\Database\Eloquent\Model;
+use Facades\App\Contracts\Publisher;
+use Illuminate\Database\Eloquent\Model;
 
-    class Podcast extends Model
+class Podcast extends Model
+{
+    /**
+     * 发布播客。
+     *
+     * @return void
+     */
+    public function publish()
     {
-        /**
-         * 发布播客。
-         *
-         * @return void
-         */
-        public function publish()
-        {
-            $this->update(['publishing' => now()]);
+        $this->update(['publishing' => now()]);
 
-            Publisher::publish($this);
-        }
+        Publisher::publish($this);
     }
+}
+```
 
 当使用实时 Facade 时，publisher 实现将使用接口或类名中 `Facades` 前缀之后出现的部分从服务容器中解析。测试时，我们可以使用 Laravel 内置的 Facade 测试辅助方法来 mock 此方法调用：
 
-    <?php
+```php tab=PHPUnit
+<?php
 
-    namespace Tests\Feature;
+namespace Tests\Feature;
 
-    use App\Models\Podcast;
-    use Facades\App\Contracts\Publisher;
-    use Illuminate\Foundation\Testing\RefreshDatabase;
-    use Tests\TestCase;
+use App\Models\Podcast;
+use Facades\App\Contracts\Publisher;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\TestCase;
 
-    class PodcastTest extends TestCase
+class PodcastTest extends TestCase
+{
+    use RefreshDatabase;
+
+    /**
+     * 一个测试示例。
+     *
+     * @return void
+     */
+    public function test_podcast_can_be_published()
     {
-        use RefreshDatabase;
+        $podcast = Podcast::factory()->create();
 
-        /**
-         * 一个测试示例。
-         *
-         * @return void
-         */
-        public function test_podcast_can_be_published()
-        {
-            $podcast = Podcast::factory()->create();
+        Publisher::shouldReceive('publish')->once()->with($podcast);
 
-            Publisher::shouldReceive('publish')->once()->with($podcast);
-
-            $podcast->publish();
-        }
+        $podcast->publish();
     }
+}
+```
 
 <a name="facade-class-reference"></a>
 ## Facade 类参考

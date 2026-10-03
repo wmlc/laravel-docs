@@ -39,27 +39,29 @@ php artisan make:provider RiakServiceProvider
 
 让我们来看一个基础的服务提供者。在任何服务提供者方法中，你始终可以访问 `$app` 属性，该属性提供了对服务容器的访问：
 
-    <?php
+```php
+<?php
 
-    namespace App\Providers;
+namespace App\Providers;
 
-    use App\Services\Riak\Connection;
-    use Illuminate\Support\ServiceProvider;
+use App\Services\Riak\Connection;
+use Illuminate\Support\ServiceProvider;
 
-    class RiakServiceProvider extends ServiceProvider
+class RiakServiceProvider extends ServiceProvider
+{
+    /**
+     * 注册任意应用服务。
+     *
+     * @return void
+     */
+    public function register()
     {
-        /**
-         * 注册任意应用服务。
-         *
-         * @return void
-         */
-        public function register()
-        {
-            $this->app->singleton(Connection::class, function ($app) {
-                return new Connection(config('riak'));
-            });
-        }
+        $this->app->singleton(Connection::class, function ($app) {
+            return new Connection(config('riak'));
+        });
     }
+}
+```
 
 该服务提供者仅定义了 `register` 方法，并使用该方法在服务容器中定义 `App\Services\Riak\Connection` 的实现。如果你尚不熟悉 Laravel 的服务容器，请查阅[其文档](/docs/{{version}}/container)。
 
@@ -68,85 +70,91 @@ php artisan make:provider RiakServiceProvider
 
 如果你的服务提供者注册了许多简单绑定，可以使用 `bindings` 和 `singletons` 属性，而无需手动注册每个容器绑定。当框架加载该服务提供者时，会自动检查这些属性并注册其绑定：
 
-    <?php
+```php
+<?php
 
-    namespace App\Providers;
+namespace App\Providers;
 
-    use App\Contracts\DowntimeNotifier;
-    use App\Contracts\ServerProvider;
-    use App\Services\DigitalOceanServerProvider;
-    use App\Services\PingdomDowntimeNotifier;
-    use App\Services\ServerToolsProvider;
-    use Illuminate\Support\ServiceProvider;
+use App\Contracts\DowntimeNotifier;
+use App\Contracts\ServerProvider;
+use App\Services\DigitalOceanServerProvider;
+use App\Services\PingdomDowntimeNotifier;
+use App\Services\ServerToolsProvider;
+use Illuminate\Support\ServiceProvider;
 
-    class AppServiceProvider extends ServiceProvider
-    {
-        /**
-         * 所有应注册的容器绑定。
-         *
-         * @var array
-         */
-        public $bindings = [
-            ServerProvider::class => DigitalOceanServerProvider::class,
-        ];
+class AppServiceProvider extends ServiceProvider
+{
+    /**
+     * 所有应注册的容器绑定。
+     *
+     * @var array
+     */
+    public $bindings = [
+        ServerProvider::class => DigitalOceanServerProvider::class,
+    ];
 
-        /**
-         * 所有应注册的容器单例。
-         *
-         * @var array
-         */
-        public $singletons = [
-            DowntimeNotifier::class => PingdomDowntimeNotifier::class,
-            ServerProvider::class => ServerToolsProvider::class,
-        ];
-    }
+    /**
+     * 所有应注册的容器单例。
+     *
+     * @var array
+     */
+    public $singletons = [
+        DowntimeNotifier::class => PingdomDowntimeNotifier::class,
+        ServerProvider::class => ServerToolsProvider::class,
+    ];
+}
+```
 
 <a name="the-boot-method"></a>
 ### boot 方法
 
 那么，如果我们需要在服务提供者中注册一个[视图合成器](/docs/{{version}}/views#view-composers)该怎么办？这应当在 `boot` 方法中完成。**该方法会在所有其他服务提供者注册完毕后被调用**，这意味着你可以访问由框架注册的所有其他服务：
 
-    <?php
+```php
+<?php
 
-    namespace App\Providers;
+namespace App\Providers;
 
-    use Illuminate\Support\Facades\View;
-    use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Facades\View;
+use Illuminate\Support\ServiceProvider;
 
-    class ComposerServiceProvider extends ServiceProvider
+class ComposerServiceProvider extends ServiceProvider
+{
+    /**
+     * 引导任意应用服务。
+     *
+     * @return void
+     */
+    public function boot()
     {
-        /**
-         * 引导任意应用服务。
-         *
-         * @return void
-         */
-        public function boot()
-        {
-            View::composer('view', function () {
-                //
-            });
-        }
+        View::composer('view', function () {
+            //
+        });
     }
+}
+```
 
 <a name="boot-method-dependency-injection"></a>
 #### boot 方法的依赖注入
 
 你可以为服务提供者的 `boot` 方法类型提示依赖。[服务容器](/docs/{{version}}/container)会自动注入你所需的任何依赖：
 
-    use Illuminate\Contracts\Routing\ResponseFactory;
+```php
+use Illuminate\Contracts\Routing\ResponseFactory;
 
-    /**
-     * 引导任意应用服务。
-     *
-     * @param  \Illuminate\Contracts\Routing\ResponseFactory  $response
-     * @return void
-     */
-    public function boot(ResponseFactory $response)
-    {
-        $response->macro('serialized', function ($value) {
-            //
-        });
-    }
+/**
+ * 引导任意应用服务。
+ *
+ * @param  \Illuminate\Contracts\Routing\ResponseFactory  $response
+ * @return void
+ */
+public function boot(ResponseFactory $response)
+{
+    $response->macro('serialized', function ($value) {
+        //
+    });
+}
+```
 
 <a name="registering-providers"></a>
 ## 注册提供者
@@ -155,11 +163,13 @@ php artisan make:provider RiakServiceProvider
 
 要注册你的提供者，将其添加到该数组中：
 
-    'providers' => [
-        // 其他服务提供者
+```php
+'providers' => [
+    // 其他服务提供者
 
-        App\Providers\ComposerServiceProvider::class,
-    ],
+    App\Providers\ComposerServiceProvider::class,
+],
+```
 
 <a name="deferred-providers"></a>
 ## 延迟提供者
@@ -170,35 +180,37 @@ Laravel 会编译并存储一份由延迟服务提供者提供的所有服务列
 
 要延迟加载提供者，需实现 `\Illuminate\Contracts\Support\DeferrableProvider` 接口并定义 `provides` 方法。`provides` 方法应返回该提供者注册的服务容器绑定：
 
-    <?php
+```php
+<?php
 
-    namespace App\Providers;
+namespace App\Providers;
 
-    use App\Services\Riak\Connection;
-    use Illuminate\Contracts\Support\DeferrableProvider;
-    use Illuminate\Support\ServiceProvider;
+use App\Services\Riak\Connection;
+use Illuminate\Contracts\Support\DeferrableProvider;
+use Illuminate\Support\ServiceProvider;
 
-    class RiakServiceProvider extends ServiceProvider implements DeferrableProvider
+class RiakServiceProvider extends ServiceProvider implements DeferrableProvider
+{
+    /**
+     * 注册任意应用服务。
+     *
+     * @return void
+     */
+    public function register()
     {
-        /**
-         * 注册任意应用服务。
-         *
-         * @return void
-         */
-        public function register()
-        {
-            $this->app->singleton(Connection::class, function ($app) {
-                return new Connection($app['config']['riak']);
-            });
-        }
-
-        /**
-         * 获取该提供者提供的服务。
-         *
-         * @return array
-         */
-        public function provides()
-        {
-            return [Connection::class];
-        }
+        $this->app->singleton(Connection::class, function ($app) {
+            return new Connection($app['config']['riak']);
+        });
     }
+
+    /**
+     * 获取该提供者提供的服务。
+     *
+     * @return array
+     */
+    public function provides()
+    {
+        return [Connection::class];
+    }
+}
+```

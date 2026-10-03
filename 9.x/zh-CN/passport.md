@@ -85,33 +85,37 @@ php artisan passport:install
 
 运行 `passport:install` 命令后，将 `Laravel\Passport\HasApiTokens` Trait 添加到 `App\Models\User` 模型。此 Trait 会为模型提供一些辅助方法，用于检查已认证用户的令牌和权限范围。如果模型已经在使用 `Laravel\Sanctum\HasApiTokens` Trait，可以移除该 Trait：
 
-    <?php
+```php
+<?php
 
-    namespace App\Models;
+namespace App\Models;
 
-    use Illuminate\Database\Eloquent\Factories\HasFactory;
-    use Illuminate\Foundation\Auth\User as Authenticatable;
-    use Illuminate\Notifications\Notifiable;
-    use Laravel\Passport\HasApiTokens;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
+use Laravel\Passport\HasApiTokens;
 
-    class User extends Authenticatable
-    {
-        use HasApiTokens, HasFactory, Notifiable;
-    }
+class User extends Authenticatable
+{
+    use HasApiTokens, HasFactory, Notifiable;
+}
+```
 
 最后，在应用的 `config/auth.php` 配置文件中，定义 `api` 认证守卫并将 `driver` 选项设置为 `passport`。这将指示应用在认证传入 API 请求时使用 Passport 的 `TokenGuard`：
 
-    'guards' => [
-        'web' => [
-            'driver' => 'session',
-            'provider' => 'users',
-        ],
-
-        'api' => [
-            'driver' => 'passport',
-            'provider' => 'users',
-        ],
+```php
+'guards' => [
+    'web' => [
+        'driver' => 'session',
+        'provider' => 'users',
     ],
+
+    'api' => [
+        'driver' => 'passport',
+        'provider' => 'users',
+    ],
+],
+```
 
 <a name="client-uuids"></a>
 #### 客户端 UUID
@@ -133,17 +137,19 @@ php artisan passport:keys
 
 如有需要，你可以定义 Passport 密钥的加载路径。可以使用 `Passport::loadKeysFrom` 方法来实现。通常，此方法应在应用 `App\Providers\AuthServiceProvider` 类的 `boot` 方法中调用：
 
-    /**
-     * 注册任何认证 / 授权服务。
-     *
-     * @return void
-     */
-    public function boot()
-    {
-        $this->registerPolicies();
+```php
+/**
+ * 注册任何认证 / 授权服务。
+ *
+ * @return void
+ */
+public function boot()
+{
+    $this->registerPolicies();
 
-        Passport::loadKeysFrom(__DIR__.'/../secrets/oauth');
-    }
+    Passport::loadKeysFrom(__DIR__.'/../secrets/oauth');
+}
+```
 
 <a name="loading-keys-from-the-environment"></a>
 #### 从环境加载密钥
@@ -188,9 +194,11 @@ php artisan vendor:publish --tag=passport-migrations
 
 如果你希望客户端的密钥在存储到数据库时进行哈希处理，应在 `App\Providers\AuthServiceProvider` 类的 `boot` 方法中调用 `Passport::hashClientSecrets` 方法：
 
-    use Laravel\Passport\Passport;
+```php
+use Laravel\Passport\Passport;
 
-    Passport::hashClientSecrets();
+Passport::hashClientSecrets();
+```
 
 启用后，所有客户端密钥仅在创建后立即向用户显示一次。由于数据库中从不存储明文客户端密钥值，如果密钥丢失则无法恢复其值。
 
@@ -199,19 +207,21 @@ php artisan vendor:publish --tag=passport-migrations
 
 默认情况下，Passport 签发的访问令牌有效期较长，一年后过期。如果你想配置更长或更短的令牌有效期，可以使用 `tokensExpireIn`、`refreshTokensExpireIn` 和 `personalAccessTokensExpireIn` 方法。这些方法应在应用 `App\Providers\AuthServiceProvider` 类的 `boot` 方法中调用：
 
-    /**
-     * 注册任何认证 / 授权服务。
-     *
-     * @return void
-     */
-    public function boot()
-    {
-        $this->registerPolicies();
+```php
+/**
+ * 注册任何认证 / 授权服务。
+ *
+ * @return void
+ */
+public function boot()
+{
+    $this->registerPolicies();
 
-        Passport::tokensExpireIn(now()->addDays(15));
-        Passport::refreshTokensExpireIn(now()->addDays(30));
-        Passport::personalAccessTokensExpireIn(now()->addMonths(6));
-    }
+    Passport::tokensExpireIn(now()->addDays(15));
+    Passport::refreshTokensExpireIn(now()->addDays(30));
+    Passport::personalAccessTokensExpireIn(now()->addMonths(6));
+}
+```
 
 > **Warning**
 > Passport 数据库表上的 `expires_at` 列是只读的，仅用于展示。签发令牌时，Passport 将过期信息存储在签名和加密的令牌中。如果需要使令牌失效，应[撤销它](#revoking-tokens)。
@@ -221,63 +231,71 @@ php artisan vendor:publish --tag=passport-migrations
 
 你可以自由地扩展 Passport 内部使用的模型，方法是定义自己的模型并扩展对应的 Passport 模型：
 
-    use Laravel\Passport\Client as PassportClient;
+```php
+use Laravel\Passport\Client as PassportClient;
 
-    class Client extends PassportClient
-    {
-        // ...
-    }
+class Client extends PassportClient
+{
+    // ...
+}
+```
 
 定义模型后，可以通过 `Laravel\Passport\Passport` 类指示 Passport 使用你的自定义模型。通常，你应在应用 `App\Providers\AuthServiceProvider` 类的 `boot` 方法中告知 Passport 你的自定义模型：
 
-    use App\Models\Passport\AuthCode;
-    use App\Models\Passport\Client;
-    use App\Models\Passport\PersonalAccessClient;
-    use App\Models\Passport\RefreshToken;
-    use App\Models\Passport\Token;
+```php
+use App\Models\Passport\AuthCode;
+use App\Models\Passport\Client;
+use App\Models\Passport\PersonalAccessClient;
+use App\Models\Passport\RefreshToken;
+use App\Models\Passport\Token;
 
-    /**
-     * 注册任何认证 / 授权服务。
-     *
-     * @return void
-     */
-    public function boot()
-    {
-        $this->registerPolicies();
+/**
+ * 注册任何认证 / 授权服务。
+ *
+ * @return void
+ */
+public function boot()
+{
+    $this->registerPolicies();
 
-        Passport::useTokenModel(Token::class);
-        Passport::useRefreshTokenModel(RefreshToken::class);
-        Passport::useAuthCodeModel(AuthCode::class);
-        Passport::useClientModel(Client::class);
-        Passport::usePersonalAccessClientModel(PersonalAccessClient::class);
-    }
+    Passport::useTokenModel(Token::class);
+    Passport::useRefreshTokenModel(RefreshToken::class);
+    Passport::useAuthCodeModel(AuthCode::class);
+    Passport::useClientModel(Client::class);
+    Passport::usePersonalAccessClientModel(PersonalAccessClient::class);
+}
+```
 
 <a name="overriding-routes"></a>
 ### 重写路由
 
 有时你可能希望自定义 Passport 定义的路由。为此，首先需要在应用的 `AppServiceProvider` 的 `register` 方法中添加 `Passport::ignoreRoutes` 来忽略 Passport 注册的路由：
 
-    use Laravel\Passport\Passport;
+```php
+use Laravel\Passport\Passport;
 
-    /**
-     * 注册任何应用服务。
-     *
-     * @return void
-     */
-    public function register()
-    {
-        Passport::ignoreRoutes();
-    }
+/**
+ * 注册任何应用服务。
+ *
+ * @return void
+ */
+public function register()
+{
+    Passport::ignoreRoutes();
+}
+```
 
 然后，你可以将 Passport 在[其路由文件](https://github.com/laravel/passport/blob/11.x/routes/web.php)中定义的路由复制到应用的 `routes/web.php` 文件中，并根据需要进行修改：
 
-    Route::group([
-        'as' => 'passport.',
-        'prefix' => config('passport.path', 'oauth'),
-        'namespace' => 'Laravel\Passport\Http\Controllers',
-    ], function () {
-        // Passport 路由...
-    });
+```php
+Route::group([
+    'as' => 'passport.',
+    'prefix' => config('passport.path', 'oauth'),
+    'namespace' => 'Laravel\Passport\Http\Controllers',
+], function () {
+    // Passport 路由...
+});
+```
 
 <a name="issuing-access-tokens"></a>
 ## 签发访问令牌
@@ -389,23 +407,25 @@ axios.delete('/oauth/clients/' + clientId)
 
 创建客户端后，开发者可以使用其客户端 ID 和密钥从你的应用请求授权码和访问令牌。首先，消费应用应向你的应用的 `/oauth/authorize` 路由发起重定向请求，如下所示：
 
-    use Illuminate\Http\Request;
-    use Illuminate\Support\Str;
+```php
+use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 
-    Route::get('/redirect', function (Request $request) {
-        $request->session()->put('state', $state = Str::random(40));
+Route::get('/redirect', function (Request $request) {
+    $request->session()->put('state', $state = Str::random(40));
 
-        $query = http_build_query([
-            'client_id' => 'client-id',
-            'redirect_uri' => 'http://third-party-app.com/callback',
-            'response_type' => 'code',
-            'scope' => '',
-            'state' => $state,
-            // 'prompt' => '', // "none"、"consent" 或 "login"
-        ]);
+    $query = http_build_query([
+        'client_id' => 'client-id',
+        'redirect_uri' => 'http://third-party-app.com/callback',
+        'response_type' => 'code',
+        'scope' => '',
+        'state' => $state,
+        // 'prompt' => '', // "none"、"consent" 或 "login"
+    ]);
 
-        return redirect('http://passport-app.test/oauth/authorize?'.$query);
-    });
+    return redirect('http://passport-app.test/oauth/authorize?'.$query);
+});
+```
 
 `prompt` 参数可用于指定 Passport 应用的认证行为。
 
@@ -429,51 +449,55 @@ php artisan vendor:publish --tag=passport-views
 
 有时你可能希望跳过授权提示，例如授权第一方客户端时。你可以通过[扩展 `Client` 模型](#overriding-default-models)并定义 `skipsAuthorization` 方法来实现。如果 `skipsAuthorization` 返回 `true`，客户端将被批准，用户将立即重定向回 `redirect_uri`，除非消费应用在重定向获取授权时显式设置了 `prompt` 参数：
 
-    <?php
+```php
+<?php
 
-    namespace App\Models\Passport;
+namespace App\Models\Passport;
 
-    use Laravel\Passport\Client as BaseClient;
+use Laravel\Passport\Client as BaseClient;
 
-    class Client extends BaseClient
+class Client extends BaseClient
+{
+    /**
+     * 确定客户端是否应跳过授权提示。
+     *
+     * @return bool
+     */
+    public function skipsAuthorization()
     {
-        /**
-         * 确定客户端是否应跳过授权提示。
-         *
-         * @return bool
-         */
-        public function skipsAuthorization()
-        {
-            return $this->firstParty();
-        }
+        return $this->firstParty();
     }
+}
+```
 
 <a name="requesting-tokens-converting-authorization-codes-to-access-tokens"></a>
 #### 将授权码转换为访问令牌
 
 如果用户批准授权请求，将被重定向回消费应用。消费者应首先将 `state` 参数与重定向前存储的值进行验证。如果 state 参数匹配，消费者应向你的应用发起 `POST` 请求以请求访问令牌。该请求应包含用户批准授权请求时你的应用签发的授权码：
 
-    use Illuminate\Http\Request;
-    use Illuminate\Support\Facades\Http;
+```php
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Http;
 
-    Route::get('/callback', function (Request $request) {
-        $state = $request->session()->pull('state');
+Route::get('/callback', function (Request $request) {
+    $state = $request->session()->pull('state');
 
-        throw_unless(
-            strlen($state) > 0 && $state === $request->state,
-            InvalidArgumentException::class
-        );
+    throw_unless(
+        strlen($state) > 0 && $state === $request->state,
+        InvalidArgumentException::class
+    );
 
-        $response = Http::asForm()->post('http://passport-app.test/oauth/token', [
-            'grant_type' => 'authorization_code',
-            'client_id' => 'client-id',
-            'client_secret' => 'client-secret',
-            'redirect_uri' => 'http://third-party-app.com/callback',
-            'code' => $request->code,
-        ]);
+    $response = Http::asForm()->post('http://passport-app.test/oauth/token', [
+        'grant_type' => 'authorization_code',
+        'client_id' => 'client-id',
+        'client_secret' => 'client-secret',
+        'redirect_uri' => 'http://third-party-app.com/callback',
+        'code' => $request->code,
+    ]);
 
-        return $response->json();
-    });
+    return $response->json();
+});
+```
 
 此 `/oauth/token` 路由将返回一个包含 `access_token`、`refresh_token` 和 `expires_in` 属性的 JSON 响应。`expires_in` 属性包含访问令牌过期前的秒数。
 
@@ -511,17 +535,19 @@ axios.delete('/oauth/tokens/' + tokenId);
 
 如果你的应用签发短期有效的访问令牌，用户需要通过签发访问令牌时提供的刷新令牌来刷新其访问令牌：
 
-    use Illuminate\Support\Facades\Http;
+```php
+use Illuminate\Support\Facades\Http;
 
-    $response = Http::asForm()->post('http://passport-app.test/oauth/token', [
-        'grant_type' => 'refresh_token',
-        'refresh_token' => 'the-refresh-token',
-        'client_id' => 'client-id',
-        'client_secret' => 'client-secret',
-        'scope' => '',
-    ]);
+$response = Http::asForm()->post('http://passport-app.test/oauth/token', [
+    'grant_type' => 'refresh_token',
+    'refresh_token' => 'the-refresh-token',
+    'client_id' => 'client-id',
+    'client_secret' => 'client-secret',
+    'scope' => '',
+]);
 
-    return $response->json();
+return $response->json();
+```
 
 此 `/oauth/token` 路由将返回一个包含 `access_token`、`refresh_token` 和 `expires_in` 属性的 JSON 响应。`expires_in` 属性包含访问令牌过期前的秒数。
 
@@ -530,17 +556,19 @@ axios.delete('/oauth/tokens/' + tokenId);
 
 你可以使用 `Laravel\Passport\TokenRepository` 上的 `revokeAccessToken` 方法撤销令牌。可以使用 `Laravel\Passport\RefreshTokenRepository` 上的 `revokeRefreshTokensByAccessTokenId` 方法撤销令牌的刷新令牌。这些类可以通过 Laravel 的[服务容器（Service Container）](/docs/{{version}}/container)解析：
 
-    use Laravel\Passport\TokenRepository;
-    use Laravel\Passport\RefreshTokenRepository;
+```php
+use Laravel\Passport\TokenRepository;
+use Laravel\Passport\RefreshTokenRepository;
 
-    $tokenRepository = app(TokenRepository::class);
-    $refreshTokenRepository = app(RefreshTokenRepository::class);
+$tokenRepository = app(TokenRepository::class);
+$refreshTokenRepository = app(RefreshTokenRepository::class);
 
-    // 撤销访问令牌...
-    $tokenRepository->revokeAccessToken($tokenId);
+// 撤销访问令牌...
+$tokenRepository->revokeAccessToken($tokenId);
 
-    // 撤销该令牌的所有刷新令牌...
-    $refreshTokenRepository->revokeRefreshTokensByAccessTokenId($tokenId);
+// 撤销该令牌的所有刷新令牌...
+$refreshTokenRepository->revokeRefreshTokensByAccessTokenId($tokenId);
+```
 
 <a name="purging-tokens"></a>
 ### 清理令牌
@@ -563,16 +591,18 @@ php artisan passport:purge --expired
 
 你还可以在应用的 `App\Console\Kernel` 类中配置[计划任务](/docs/{{version}}/scheduling)，以按计划自动修剪令牌：
 
-    /**
-     * 定义应用的命令调度。
-     *
-     * @param  \Illuminate\Console\Scheduling\Schedule  $schedule
-     * @return void
-     */
-    protected function schedule(Schedule $schedule)
-    {
-        $schedule->command('passport:purge')->hourly();
-    }
+```php
+/**
+ * 定义应用的命令调度。
+ *
+ * @param  \Illuminate\Console\Scheduling\Schedule  $schedule
+ * @return void
+ */
+protected function schedule(Schedule $schedule)
+{
+    $schedule->command('passport:purge')->hourly();
+}
+```
 
 <a name="code-grant-pkce"></a>
 ## 带 PKCE 的授权码许可
@@ -600,42 +630,46 @@ php artisan passport:client --public
 
 代码质询应是一个经过 Base64 编码的字符串，使用 URL 和文件名安全字符。应移除尾部的 `'='` 字符，且不应存在换行符、空格或其他额外字符。
 
-    $encoded = base64_encode(hash('sha256', $code_verifier, true));
+```php
+$encoded = base64_encode(hash('sha256', $code_verifier, true));
 
-    $codeChallenge = strtr(rtrim($encoded, '='), '+/', '-_');
+$codeChallenge = strtr(rtrim($encoded, '='), '+/', '-_');
+```
 
 <a name="code-grant-pkce-redirecting-for-authorization"></a>
 #### 重定向以获取授权
 
 创建客户端后，你可以使用客户端 ID 以及生成的代码验证器和代码质询从你的应用请求授权码和访问令牌。首先，消费应用应向你的应用的 `/oauth/authorize` 路由发起重定向请求：
 
-    use Illuminate\Http\Request;
-    use Illuminate\Support\Str;
+```php
+use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 
-    Route::get('/redirect', function (Request $request) {
-        $request->session()->put('state', $state = Str::random(40));
+Route::get('/redirect', function (Request $request) {
+    $request->session()->put('state', $state = Str::random(40));
 
-        $request->session()->put(
-            'code_verifier', $code_verifier = Str::random(128)
-        );
+    $request->session()->put(
+        'code_verifier', $code_verifier = Str::random(128)
+    );
 
-        $codeChallenge = strtr(rtrim(
-            base64_encode(hash('sha256', $code_verifier, true))
-        , '='), '+/', '-_');
+    $codeChallenge = strtr(rtrim(
+        base64_encode(hash('sha256', $code_verifier, true))
+    , '='), '+/', '-_');
 
-        $query = http_build_query([
-            'client_id' => 'client-id',
-            'redirect_uri' => 'http://third-party-app.com/callback',
-            'response_type' => 'code',
-            'scope' => '',
-            'state' => $state,
-            'code_challenge' => $codeChallenge,
-            'code_challenge_method' => 'S256',
-            // 'prompt' => '', // "none"、"consent" 或 "login"
-        ]);
+    $query = http_build_query([
+        'client_id' => 'client-id',
+        'redirect_uri' => 'http://third-party-app.com/callback',
+        'response_type' => 'code',
+        'scope' => '',
+        'state' => $state,
+        'code_challenge' => $codeChallenge,
+        'code_challenge_method' => 'S256',
+        // 'prompt' => '', // "none"、"consent" 或 "login"
+    ]);
 
-        return redirect('http://passport-app.test/oauth/authorize?'.$query);
-    });
+    return redirect('http://passport-app.test/oauth/authorize?'.$query);
+});
+```
 
 <a name="code-grant-pkce-converting-authorization-codes-to-access-tokens"></a>
 #### 将授权码转换为访问令牌
@@ -644,29 +678,31 @@ php artisan passport:client --public
 
 如果 state 参数匹配，消费者应向你的应用发起 `POST` 请求以请求访问令牌。该请求应包含用户批准授权请求时你的应用签发的授权码，以及最初生成的代码验证器：
 
-    use Illuminate\Http\Request;
-    use Illuminate\Support\Facades\Http;
+```php
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Http;
 
-    Route::get('/callback', function (Request $request) {
-        $state = $request->session()->pull('state');
+Route::get('/callback', function (Request $request) {
+    $state = $request->session()->pull('state');
 
-        $codeVerifier = $request->session()->pull('code_verifier');
+    $codeVerifier = $request->session()->pull('code_verifier');
 
-        throw_unless(
-            strlen($state) > 0 && $state === $request->state,
-            InvalidArgumentException::class
-        );
+    throw_unless(
+        strlen($state) > 0 && $state === $request->state,
+        InvalidArgumentException::class
+    );
 
-        $response = Http::asForm()->post('http://passport-app.test/oauth/token', [
-            'grant_type' => 'authorization_code',
-            'client_id' => 'client-id',
-            'redirect_uri' => 'http://third-party-app.com/callback',
-            'code_verifier' => $codeVerifier,
-            'code' => $request->code,
-        ]);
+    $response = Http::asForm()->post('http://passport-app.test/oauth/token', [
+        'grant_type' => 'authorization_code',
+        'client_id' => 'client-id',
+        'redirect_uri' => 'http://third-party-app.com/callback',
+        'code_verifier' => $codeVerifier,
+        'code' => $request->code,
+    ]);
 
-        return $response->json();
-    });
+    return $response->json();
+});
+```
 
 <a name="password-grant-tokens"></a>
 ## 密码许可令牌
@@ -690,18 +726,20 @@ php artisan passport:client --password
 
 创建密码许可客户端后，你可以通过使用用户的电子邮件地址和密码向 `/oauth/token` 路由发起 `POST` 请求来获取访问令牌。请记住，此路由已由 Passport 注册，因此无需手动定义。如果请求成功，你将从服务器收到 JSON 响应中的 `access_token` 和 `refresh_token`：
 
-    use Illuminate\Support\Facades\Http;
+```php
+use Illuminate\Support\Facades\Http;
 
-    $response = Http::asForm()->post('http://passport-app.test/oauth/token', [
-        'grant_type' => 'password',
-        'client_id' => 'client-id',
-        'client_secret' => 'client-secret',
-        'username' => 'taylor@laravel.com',
-        'password' => 'my-password',
-        'scope' => '',
-    ]);
+$response = Http::asForm()->post('http://passport-app.test/oauth/token', [
+    'grant_type' => 'password',
+    'client_id' => 'client-id',
+    'client_secret' => 'client-secret',
+    'username' => 'taylor@laravel.com',
+    'password' => 'my-password',
+    'scope' => '',
+]);
 
-    return $response->json();
+return $response->json();
+```
 
 > **Note**
 > 请记住，访问令牌默认是长期有效的。但是，如有需要，你可以自由[配置最大访问令牌有效期](#configuration)。
@@ -711,16 +749,18 @@ php artisan passport:client --password
 
 使用密码许可或客户端凭证许可时，你可能希望为令牌授权应用支持的所有权限范围。你可以通过请求 `*` 权限范围来实现。如果请求 `*` 权限范围，令牌实例上的 `can` 方法将始终返回 `true`。此权限范围只能分配给使用 `password` 或 `client_credentials` 许可签发的令牌：
 
-    use Illuminate\Support\Facades\Http;
+```php
+use Illuminate\Support\Facades\Http;
 
-    $response = Http::asForm()->post('http://passport-app.test/oauth/token', [
-        'grant_type' => 'password',
-        'client_id' => 'client-id',
-        'client_secret' => 'client-secret',
-        'username' => 'taylor@laravel.com',
-        'password' => 'my-password',
-        'scope' => '*',
-    ]);
+$response = Http::asForm()->post('http://passport-app.test/oauth/token', [
+    'grant_type' => 'password',
+    'client_id' => 'client-id',
+    'client_secret' => 'client-secret',
+    'username' => 'taylor@laravel.com',
+    'password' => 'my-password',
+    'scope' => '*',
+]);
+```
 
 <a name="customizing-the-user-provider"></a>
 ### 自定义用户提供者
@@ -732,59 +772,63 @@ php artisan passport:client --password
 
 使用密码许可进行认证时，Passport 会使用可认证模型的 `email` 属性作为"用户名"。但是，你可以通过在模型上定义 `findForPassport` 方法来自定义此行为：
 
-    <?php
+```php
+<?php
 
-    namespace App\Models;
+namespace App\Models;
 
-    use Illuminate\Foundation\Auth\User as Authenticatable;
-    use Illuminate\Notifications\Notifiable;
-    use Laravel\Passport\HasApiTokens;
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
+use Laravel\Passport\HasApiTokens;
 
-    class User extends Authenticatable
+class User extends Authenticatable
+{
+    use HasApiTokens, Notifiable;
+
+    /**
+     * 根据给定用户名查找用户实例。
+     *
+     * @param  string  $username
+     * @return \App\Models\User
+     */
+    public function findForPassport($username)
     {
-        use HasApiTokens, Notifiable;
-
-        /**
-         * 根据给定用户名查找用户实例。
-         *
-         * @param  string  $username
-         * @return \App\Models\User
-         */
-        public function findForPassport($username)
-        {
-            return $this->where('username', $username)->first();
-        }
+        return $this->where('username', $username)->first();
     }
+}
+```
 
 <a name="customizing-the-password-validation"></a>
 ### 自定义密码验证
 
 使用密码许可进行认证时，Passport 会使用模型的 `password` 属性来验证给定密码。如果你的模型没有 `password` 属性，或者你希望自定义密码验证逻辑，可以在模型上定义 `validateForPassportPasswordGrant` 方法：
 
-    <?php
+```php
+<?php
 
-    namespace App\Models;
+namespace App\Models;
 
-    use Illuminate\Foundation\Auth\User as Authenticatable;
-    use Illuminate\Notifications\Notifiable;
-    use Illuminate\Support\Facades\Hash;
-    use Laravel\Passport\HasApiTokens;
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Hash;
+use Laravel\Passport\HasApiTokens;
 
-    class User extends Authenticatable
+class User extends Authenticatable
+{
+    use HasApiTokens, Notifiable;
+
+    /**
+     * 验证 Passport 密码许可用户的密码。
+     *
+     * @param  string  $password
+     * @return bool
+     */
+    public function validateForPassportPasswordGrant($password)
     {
-        use HasApiTokens, Notifiable;
-
-        /**
-         * 验证 Passport 密码许可用户的密码。
-         *
-         * @param  string  $password
-         * @return bool
-         */
-        public function validateForPassportPasswordGrant($password)
-        {
-            return Hash::check($password, $this->password);
-        }
+        return Hash::check($password, $this->password);
     }
+}
+```
 
 <a name="implicit-grant-tokens"></a>
 ## 隐式许可令牌
@@ -794,36 +838,40 @@ php artisan passport:client --password
 
 隐式许可类似于授权码许可；但是，令牌直接返回给客户端，无需交换授权码。此许可最常用于无法安全存储客户端凭证的 JavaScript 或移动应用。要启用此许可，在应用 `App\Providers\AuthServiceProvider` 类的 `boot` 方法中调用 `enableImplicitGrant` 方法：
 
-    /**
-     * 注册任何认证 / 授权服务。
-     *
-     * @return void
-     */
-    public function boot()
-    {
-        $this->registerPolicies();
+```php
+/**
+ * 注册任何认证 / 授权服务。
+ *
+ * @return void
+ */
+public function boot()
+{
+    $this->registerPolicies();
 
-        Passport::enableImplicitGrant();
-    }
+    Passport::enableImplicitGrant();
+}
+```
 
 启用此许可后，开发者可以使用其客户端 ID 从你的应用请求访问令牌。消费应用应向你的应用的 `/oauth/authorize` 路由发起重定向请求，如下所示：
 
-    use Illuminate\Http\Request;
+```php
+use Illuminate\Http\Request;
 
-    Route::get('/redirect', function (Request $request) {
-        $request->session()->put('state', $state = Str::random(40));
+Route::get('/redirect', function (Request $request) {
+    $request->session()->put('state', $state = Str::random(40));
 
-        $query = http_build_query([
-            'client_id' => 'client-id',
-            'redirect_uri' => 'http://third-party-app.com/callback',
-            'response_type' => 'token',
-            'scope' => '',
-            'state' => $state,
-            // 'prompt' => '', // "none"、"consent" 或 "login"
-        ]);
+    $query = http_build_query([
+        'client_id' => 'client-id',
+        'redirect_uri' => 'http://third-party-app.com/callback',
+        'response_type' => 'token',
+        'scope' => '',
+        'state' => $state,
+        // 'prompt' => '', // "none"、"consent" 或 "login"
+    ]);
 
-        return redirect('http://passport-app.test/oauth/authorize?'.$query);
-    });
+    return redirect('http://passport-app.test/oauth/authorize?'.$query);
+});
+```
 
 > **Note**
 > 请记住，`/oauth/authorize` 路由已由 Passport 定义。你无需手动定义此路由。
@@ -841,39 +889,47 @@ php artisan passport:client --client
 
 接下来，要使用此许可类型，你需要将 `CheckClientCredentials` 中间件添加到 `app/Http/Kernel.php` 文件的 `$routeMiddleware` 属性中：
 
-    use Laravel\Passport\Http\Middleware\CheckClientCredentials;
+```php
+use Laravel\Passport\Http\Middleware\CheckClientCredentials;
 
-    protected $routeMiddleware = [
-        'client' => CheckClientCredentials::class,
-    ];
+protected $routeMiddleware = [
+    'client' => CheckClientCredentials::class,
+];
+```
 
 然后，将中间件附加到路由上：
 
-    Route::get('/orders', function (Request $request) {
-        ...
-    })->middleware('client');
+```php
+Route::get('/orders', function (Request $request) {
+    ...
+})->middleware('client');
+```
 
 要将路由访问限制为特定权限范围，可以在将 `client` 中间件附加到路由时提供所需权限范围的逗号分隔列表：
 
-    Route::get('/orders', function (Request $request) {
-        ...
-    })->middleware('client:check-status,your-scope');
+```php
+Route::get('/orders', function (Request $request) {
+    ...
+})->middleware('client:check-status,your-scope');
+```
 
 <a name="retrieving-tokens"></a>
 ### 获取令牌
 
 要使用此许可类型获取令牌，向 `oauth/token` 端点发起请求：
 
-    use Illuminate\Support\Facades\Http;
+```php
+use Illuminate\Support\Facades\Http;
 
-    $response = Http::asForm()->post('http://passport-app.test/oauth/token', [
-        'grant_type' => 'client_credentials',
-        'client_id' => 'client-id',
-        'client_secret' => 'client-secret',
-        'scope' => 'your-scope',
-    ]);
+$response = Http::asForm()->post('http://passport-app.test/oauth/token', [
+    'grant_type' => 'client_credentials',
+    'client_id' => 'client-id',
+    'client_secret' => 'client-secret',
+    'scope' => 'your-scope',
+]);
 
-    return $response->json()['access_token'];
+return $response->json()['access_token'];
+```
 
 <a name="personal-access-tokens"></a>
 ## 个人访问令牌
@@ -904,15 +960,17 @@ PASSPORT_PERSONAL_ACCESS_CLIENT_SECRET="unhashed-client-secret-value"
 
 创建个人访问客户端后，你可以使用 `App\Models\User` 模型实例上的 `createToken` 方法为给定用户签发令牌。`createToken` 方法接受令牌名称作为第一个参数，可选的[权限范围](#token-scopes)数组作为第二个参数：
 
-    use App\Models\User;
+```php
+use App\Models\User;
 
-    $user = User::find(1);
+$user = User::find(1);
 
-    // 创建不带权限范围的令牌...
-    $token = $user->createToken('Token Name')->accessToken;
+// 创建不带权限范围的令牌...
+$token = $user->createToken('Token Name')->accessToken;
 
-    // 创建带权限范围的令牌...
-    $token = $user->createToken('My Token', ['place-orders'])->accessToken;
+// 创建带权限范围的令牌...
+$token = $user->createToken('My Token', ['place-orders'])->accessToken;
+```
 
 <a name="personal-access-tokens-json-api"></a>
 #### JSON API
@@ -982,9 +1040,11 @@ axios.delete('/oauth/personal-access-tokens/' + tokenId);
 
 Passport 包含一个[认证守卫](/docs/{{version}}/authentication#adding-custom-guards)，用于验证传入请求上的访问令牌。配置 `api` 守卫使用 `passport` 驱动后，只需在任何需要有效访问令牌的路由上指定 `auth:api` 中间件：
 
-    Route::get('/user', function () {
-        //
-    })->middleware('auth:api');
+```php
+Route::get('/user', function () {
+    //
+})->middleware('auth:api');
+```
 
 > **Warning**
 > 如果你使用[客户端凭证许可](#client-credentials-grant-tokens)，应使用 [`client` 中间件](#client-credentials-grant-tokens)来保护路由，而不是 `auth:api` 中间件。
@@ -994,21 +1054,25 @@ Passport 包含一个[认证守卫](/docs/{{version}}/authentication#adding-cust
 
 如果你的应用认证不同类型的用户，且可能使用完全不同的 Eloquent 模型，你可能需要为应用中的每种用户提供者类型定义一个守卫配置。这允许你保护针对特定用户提供者的请求。例如，给定 `config/auth.php` 配置文件中的以下守卫配置：
 
-    'api' => [
-        'driver' => 'passport',
-        'provider' => 'users',
-    ],
+```php
+'api' => [
+    'driver' => 'passport',
+    'provider' => 'users',
+],
 
-    'api-customers' => [
-        'driver' => 'passport',
-        'provider' => 'customers',
-    ],
+'api-customers' => [
+    'driver' => 'passport',
+    'provider' => 'customers',
+],
+```
 
 以下路由将使用 `api-customers` 守卫（使用 `customers` 用户提供者）来认证传入请求：
 
-    Route::get('/customer', function () {
-        //
-    })->middleware('auth:api-customers');
+```php
+Route::get('/customer', function () {
+    //
+})->middleware('auth:api-customers');
+```
 
 > **Note**
 > 有关使用多个用户提供者与 Passport 的更多信息，请查阅[密码许可文档](#customizing-the-user-provider)。
@@ -1018,14 +1082,16 @@ Passport 包含一个[认证守卫](/docs/{{version}}/authentication#adding-cust
 
 调用受 Passport 保护的路由时，应用的 API 消费者应在其请求的 `Authorization` 头中将访问令牌指定为 `Bearer` 令牌。例如，使用 Guzzle HTTP 库时：
 
-    use Illuminate\Support\Facades\Http;
+```php
+use Illuminate\Support\Facades\Http;
 
-    $response = Http::withHeaders([
-        'Accept' => 'application/json',
-        'Authorization' => 'Bearer '.$accessToken,
-    ])->get('https://passport-app.test/api/user');
+$response = Http::withHeaders([
+    'Accept' => 'application/json',
+    'Authorization' => 'Bearer '.$accessToken,
+])->get('https://passport-app.test/api/user');
 
-    return $response->json();
+return $response->json();
+```
 
 <a name="token-scopes"></a>
 ## 令牌权限范围
@@ -1037,37 +1103,41 @@ Passport 包含一个[认证守卫](/docs/{{version}}/authentication#adding-cust
 
 你可以使用 `Passport::tokensCan` 方法在应用 `App\Providers\AuthServiceProvider` 类的 `boot` 方法中定义 API 的权限范围。`tokensCan` 方法接受一个权限范围名称和权限范围描述的数组。权限范围描述可以是任何你希望的内容，将显示给用户在授权批准界面上：
 
-    /**
-     * 注册任何认证 / 授权服务。
-     *
-     * @return void
-     */
-    public function boot()
-    {
-        $this->registerPolicies();
+```php
+/**
+ * 注册任何认证 / 授权服务。
+ *
+ * @return void
+ */
+public function boot()
+{
+    $this->registerPolicies();
 
-        Passport::tokensCan([
-            'place-orders' => 'Place orders',
-            'check-status' => 'Check order status',
-        ]);
-    }
+    Passport::tokensCan([
+        'place-orders' => 'Place orders',
+        'check-status' => 'Check order status',
+    ]);
+}
+```
 
 <a name="default-scope"></a>
 ### 默认权限范围
 
 如果客户端未请求任何特定权限范围，你可以使用 `setDefaultScope` 方法配置 Passport 服务器将默认权限范围附加到令牌。通常，你应在应用 `App\Providers\AuthServiceProvider` 类的 `boot` 方法中调用此方法：
 
-    use Laravel\Passport\Passport;
+```php
+use Laravel\Passport\Passport;
 
-    Passport::tokensCan([
-        'place-orders' => 'Place orders',
-        'check-status' => 'Check order status',
-    ]);
+Passport::tokensCan([
+    'place-orders' => 'Place orders',
+    'check-status' => 'Check order status',
+]);
 
-    Passport::setDefaultScope([
-        'check-status',
-        'place-orders',
-    ]);
+Passport::setDefaultScope([
+    'check-status',
+    'place-orders',
+]);
+```
 
 > **Note**
 > Passport 的默认权限范围不适用于用户生成的个人访问令牌。
@@ -1080,83 +1150,103 @@ Passport 包含一个[认证守卫](/docs/{{version}}/authentication#adding-cust
 
 使用授权码许可请求访问令牌时，消费者应将其所需的权限范围指定为 `scope` 查询字符串参数。`scope` 参数应是空格分隔的权限范围列表：
 
-    Route::get('/redirect', function () {
-        $query = http_build_query([
-            'client_id' => 'client-id',
-            'redirect_uri' => 'http://example.com/callback',
-            'response_type' => 'code',
-            'scope' => 'place-orders check-status',
-        ]);
+```php
+Route::get('/redirect', function () {
+    $query = http_build_query([
+        'client_id' => 'client-id',
+        'redirect_uri' => 'http://example.com/callback',
+        'response_type' => 'code',
+        'scope' => 'place-orders check-status',
+    ]);
 
-        return redirect('http://passport-app.test/oauth/authorize?'.$query);
-    });
+    return redirect('http://passport-app.test/oauth/authorize?'.$query);
+});
+```
 
 <a name="when-issuing-personal-access-tokens"></a>
 #### 签发个人访问令牌时
 
 如果你使用 `App\Models\User` 模型的 `createToken` 方法签发个人访问令牌，可以将所需权限范围的数组作为方法的第二个参数传递：
 
-    $token = $user->createToken('My Token', ['place-orders'])->accessToken;
+```php
+$token = $user->createToken('My Token', ['place-orders'])->accessToken;
+```
 
 <a name="checking-scopes"></a>
 ### 检查权限范围
 
 Passport 包含两个中间件，可用于验证传入请求是否使用已授予给定权限范围的令牌进行认证。首先，将以下中间件添加到 `app/Http/Kernel.php` 文件的 `$routeMiddleware` 属性中：
 
-    'scopes' => \Laravel\Passport\Http\Middleware\CheckScopes::class,
-    'scope' => \Laravel\Passport\Http\Middleware\CheckForAnyScope::class,
+```php
+'scopes' => \Laravel\Passport\Http\Middleware\CheckScopes::class,
+'scope' => \Laravel\Passport\Http\Middleware\CheckForAnyScope::class,
+```
 
 <a name="check-for-all-scopes"></a>
 #### 检查所有权限范围
 
 `scopes` 中间件可分配给路由，以验证传入请求的访问令牌拥有所有列出的权限范围：
 
-    Route::get('/orders', function () {
-        // 访问令牌同时拥有 "check-status" 和 "place-orders" 权限范围...
-    })->middleware(['auth:api', 'scopes:check-status,place-orders']);
+```php
+Route::get('/orders', function () {
+    // 访问令牌同时拥有 "check-status" 和 "place-orders" 权限范围...
+})->middleware(['auth:api', 'scopes:check-status,place-orders']);
+```
 
 <a name="check-for-any-scopes"></a>
 #### 检查任一权限范围
 
 `scope` 中间件可分配给路由，以验证传入请求的访问令牌拥有列出的权限范围中的*至少一个*：
 
-    Route::get('/orders', function () {
-        // 访问令牌拥有 "check-status" 或 "place-orders" 中的任一权限范围...
-    })->middleware(['auth:api', 'scope:check-status,place-orders']);
+```php
+Route::get('/orders', function () {
+    // 访问令牌拥有 "check-status" 或 "place-orders" 中的任一权限范围...
+})->middleware(['auth:api', 'scope:check-status,place-orders']);
+```
 
 <a name="checking-scopes-on-a-token-instance"></a>
 #### 在令牌实例上检查权限范围
 
 一旦携带访问令牌认证的请求进入你的应用，你仍可以使用已认证 `App\Models\User` 实例上的 `tokenCan` 方法检查令牌是否具有给定权限范围：
 
-    use Illuminate\Http\Request;
+```php
+use Illuminate\Http\Request;
 
-    Route::get('/orders', function (Request $request) {
-        if ($request->user()->tokenCan('place-orders')) {
-            //
-        }
-    });
+Route::get('/orders', function (Request $request) {
+    if ($request->user()->tokenCan('place-orders')) {
+        //
+    }
+});
+```
 
 <a name="additional-scope-methods"></a>
 #### 其他权限范围方法
 
 `scopeIds` 方法将返回所有已定义 ID / 名称的数组：
 
-    use Laravel\Passport\Passport;
+```php
+use Laravel\Passport\Passport;
 
-    Passport::scopeIds();
+Passport::scopeIds();
+```
 
 `scopes` 方法将返回所有已定义权限范围的数组，以 `Laravel\Passport\Scope` 实例的形式：
 
-    Passport::scopes();
+```php
+Passport::scopes();
+```
 
 `scopesFor` 方法将返回与给定 ID / 名称匹配的 `Laravel\Passport\Scope` 实例数组：
 
-    Passport::scopesFor(['place-orders', 'check-status']);
+```php
+Passport::scopesFor(['place-orders', 'check-status']);
+```
 
 你可以使用 `hasScope` 方法确定给定权限范围是否已定义：
 
-    Passport::hasScope('place-orders');
+```php
+Passport::hasScope('place-orders');
+```
 
 <a name="consuming-your-api-with-javascript"></a>
 ## 使用 JavaScript 消费你的 API
@@ -1165,37 +1255,43 @@ Passport 包含两个中间件，可用于验证传入请求是否使用已授�
 
 通常，如果你想从 JavaScript 应用消费 API，需要手动向应用发送访问令牌，并在每次请求时传递。但是，Passport 包含一个可以为你处理此事的中间件。你需要做的仅是将 `CreateFreshApiToken` 中间件添加到 `app/Http/Kernel.php` 文件中的 `web` 中间件组：
 
-    'web' => [
-        // 其他中间件...
-        \Laravel\Passport\Http\Middleware\CreateFreshApiToken::class,
-    ],
+```php
+'web' => [
+    // 其他中间件...
+    \Laravel\Passport\Http\Middleware\CreateFreshApiToken::class,
+],
+```
 
 > **Warning**
 > 你应确保 `CreateFreshApiToken` 中间件是中间件栈中列出的最后一个中间件。
 
 此中间件将在你的传出响应上附加一个 `laravel_token` cookie。此 cookie 包含一个加密的 JWT，Passport 将使用它来认证来自你的 JavaScript 应用的 API 请求。JWT 的有效期等于你的 `session.lifetime` 配置值。现在，由于浏览器会自动在所有后续请求中发送 cookie，你可以向应用的 API 发起请求而无需显式传递访问令牌：
 
-    axios.get('/api/user')
-        .then(response => {
-            console.log(response.data);
-        });
+```js
+axios.get('/api/user')
+    .then(response => {
+        console.log(response.data);
+    });
+```
 
 <a name="customizing-the-cookie-name"></a>
 #### 自定义 Cookie 名称
 
 如有需要，你可以使用 `Passport::cookie` 方法自定义 `laravel_token` cookie 的名称。通常，此方法应在应用 `App\Providers\AuthServiceProvider` 类的 `boot` 方法中调用：
 
-    /**
-     * 注册任何认证 / 授权服务。
-     *
-     * @return void
-     */
-    public function boot()
-    {
-        $this->registerPolicies();
+```php
+/**
+ * 注册任何认证 / 授权服务。
+ *
+ * @return void
+ */
+public function boot()
+{
+    $this->registerPolicies();
 
-        Passport::cookie('custom_name');
-    }
+    Passport::cookie('custom_name');
+}
+```
 
 <a name="csrf-protection"></a>
 #### CSRF 保护
@@ -1210,54 +1306,60 @@ Passport 包含两个中间件，可用于验证传入请求是否使用已授�
 
 Passport 在签发访问令牌和刷新令牌时会引发事件。你可以使用这些事件来修剪或撤销数据库中的其他访问令牌。如果你愿意，可以在应用 `App\Providers\EventServiceProvider` 类中为这些事件附加监听器：
 
-    /**
-     * 应用的事件监听器映射。
-     *
-     * @var array
-     */
-    protected $listen = [
-        'Laravel\Passport\Events\AccessTokenCreated' => [
-            'App\Listeners\RevokeOldTokens',
-        ],
+```php
+/**
+ * 应用的事件监听器映射。
+ *
+ * @var array
+ */
+protected $listen = [
+    'Laravel\Passport\Events\AccessTokenCreated' => [
+        'App\Listeners\RevokeOldTokens',
+    ],
 
-        'Laravel\Passport\Events\RefreshTokenCreated' => [
-            'App\Listeners\PruneOldTokens',
-        ],
-    ];
+    'Laravel\Passport\Events\RefreshTokenCreated' => [
+        'App\Listeners\PruneOldTokens',
+    ],
+];
+```
 
 <a name="testing"></a>
 ## 测试
 
 Passport 的 `actingAs` 方法可用于指定当前认证用户及其权限范围。`actingAs` 方法的第一个参数是用户实例，第二个参数是应授予用户令牌的权限范围数组：
 
-    use App\Models\User;
-    use Laravel\Passport\Passport;
+```php tab=PHPUnit
+use App\Models\User;
+use Laravel\Passport\Passport;
 
-    public function test_servers_can_be_created()
-    {
-        Passport::actingAs(
-            User::factory()->create(),
-            ['create-servers']
-        );
+public function test_servers_can_be_created()
+{
+    Passport::actingAs(
+        User::factory()->create(),
+        ['create-servers']
+    );
 
-        $response = $this->post('/api/create-server');
+    $response = $this->post('/api/create-server');
 
-        $response->assertStatus(201);
-    }
+    $response->assertStatus(201);
+}
+```
 
 Passport 的 `actingAsClient` 方法可用于指定当前认证客户端及其权限范围。`actingAsClient` 方法的第一个参数是客户端实例，第二个参数是应授予客户端令牌的权限范围数组：
 
-    use Laravel\Passport\Client;
-    use Laravel\Passport\Passport;
+```php tab=PHPUnit
+use Laravel\Passport\Client;
+use Laravel\Passport\Passport;
 
-    public function test_orders_can_be_retrieved()
-    {
-        Passport::actingAsClient(
-            Client::factory()->create(),
-            ['check-status']
-        );
+public function test_orders_can_be_retrieved()
+{
+    Passport::actingAsClient(
+        Client::factory()->create(),
+        ['check-status']
+    );
 
-        $response = $this->get('/api/orders');
+    $response = $this->get('/api/orders');
 
-        $response->assertStatus(200);
-    }
+    $response->assertStatus(200);
+}
+```

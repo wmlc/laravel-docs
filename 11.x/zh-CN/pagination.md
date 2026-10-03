@@ -46,26 +46,28 @@ content: [
 
 在这个例子中，传给 `paginate` 方法的唯一参数是你希望"每页"显示的条目数量。这里我们指定每页显示 `15` 条：
 
-    <?php
+```php
+<?php
 
-    namespace App\Http\Controllers;
+namespace App\Http\Controllers;
 
-    use App\Http\Controllers\Controller;
-    use Illuminate\Support\Facades\DB;
-    use Illuminate\View\View;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\DB;
+use Illuminate\View\View;
 
-    class UserController extends Controller
+class UserController extends Controller
+{
+    /**
+     * 显示所有应用用户。
+     */
+    public function index(): View
     {
-        /**
-         * 显示所有应用用户。
-         */
-        public function index(): View
-        {
-            return view('user.index', [
-                'users' => DB::table('users')->paginate(15)
-            ]);
-        }
+        return view('user.index', [
+            'users' => DB::table('users')->paginate(15)
+        ]);
     }
+}
+```
 
 <a name="simple-pagination"></a>
 #### 简单分页
@@ -74,39 +76,51 @@ content: [
 
 因此，如果你只需要在应用 UI 中显示简单的"下一页"和"上一页"链接，可以使用 `simplePaginate` 方法执行一次高效查询：
 
-    $users = DB::table('users')->simplePaginate(15);
+```php
+$users = DB::table('users')->simplePaginate(15);
+```
 
 <a name="paginating-eloquent-results"></a>
 ### 为 Eloquent 结果分页
 
 你也可以为 [Eloquent](/docs/{{version}}/eloquent) 查询分页。在这个例子中，我们为 `App\Models\User` 模型分页，并指定每页显示 15 条记录。可以看到，其语法与为查询构造器结果分页几乎完全相同：
 
-    use App\Models\User;
+```php
+use App\Models\User;
 
-    $users = User::paginate(15);
+$users = User::paginate(15);
+```
 
 当然，也可以在对查询设置其他约束（例如 `where` 子句）之后调用 `paginate` 方法：
 
-    $users = User::where('votes', '>', 100)->paginate(15);
+```php
+$users = User::where('votes', '>', 100)->paginate(15);
+```
 
 为 Eloquent 模型分页时，也可以使用 `simplePaginate` 方法：
 
-    $users = User::where('votes', '>', 100)->simplePaginate(15);
+```php
+$users = User::where('votes', '>', 100)->simplePaginate(15);
+```
 
 同样，可以使用 `cursorPaginate` 方法为 Eloquent 模型做游标分页：
 
-    $users = User::where('votes', '>', 100)->cursorPaginate(15);
+```php
+$users = User::where('votes', '>', 100)->cursorPaginate(15);
+```
 
 <a name="multiple-paginator-instances-per-page"></a>
 #### 每页多个分页器实例
 
 有时你可能需要在应用渲染的同一个页面上渲染两个独立的分页器。不过，如果两个分页器实例都用 `page` 查询字符串参数来存储当前页，它们就会冲突。要解决这个冲突，可以通过传给 `paginate`、`simplePaginate` 和 `cursorPaginate` 方法的第三个参数，指定用于存储分页器当前页的查询字符串参数名：
 
-    use App\Models\User;
+```php
+use App\Models\User;
 
-    $users = User::where('votes', '>', 100)->paginate(
-        $perPage = 15, $columns = ['*'], $pageName = 'users'
-    );
+$users = User::where('votes', '>', 100)->paginate(
+    $perPage = 15, $columns = ['*'], $pageName = 'users'
+);
+```
 
 <a name="cursor-pagination"></a>
 ### 游标分页
@@ -121,7 +135,9 @@ http://localhost/users?cursor=eyJpZCI6MTUsIl9wb2ludHNUb05leHRJdGVtcyI6dHJ1ZX0
 
 你可以通过查询构造器提供的 `cursorPaginate` 方法创建基于游标的分页器实例。该方法返回一个 `Illuminate\Pagination\CursorPaginator` 实例：
 
-    $users = DB::table('users')->orderBy('id')->cursorPaginate(15);
+```php
+$users = DB::table('users')->orderBy('id')->cursorPaginate(15);
+```
 
 获取游标分页器实例后，你可以像使用 `paginate` 和 `simplePaginate` 方法时通常那样[显示分页结果](#displaying-pagination-results)。有关游标分页器提供的实例方法，请参阅[游标分页器实例方法文档](#cursor-paginator-instance-methods)。
 
@@ -170,41 +186,49 @@ select * from users where id > 15 order by id asc limit 15;
 
 默认情况下，分页器生成的链接会与当前请求的 URI 保持一致。不过，分页器的 `withPath` 方法允许你自定义分页器生成链接时使用的 URI。例如，如果你希望分页器生成类似 `http://example.com/admin/users?page=N` 的链接，应把 `/admin/users` 传给 `withPath` 方法：
 
-    use App\Models\User;
+```php
+use App\Models\User;
 
-    Route::get('/users', function () {
-        $users = User::paginate(15);
+Route::get('/users', function () {
+    $users = User::paginate(15);
 
-        $users->withPath('/admin/users');
+    $users->withPath('/admin/users');
 
-        // ...
-    });
+    // ...
+});
+```
 
 <a name="appending-query-string-values"></a>
 #### 追加查询字符串值
 
 你可以使用 `appends` 方法向分页链接追加查询字符串。例如，要给每个分页链接追加 `sort=votes`，应调用如下 `appends`：
 
-    use App\Models\User;
+```php
+use App\Models\User;
 
-    Route::get('/users', function () {
-        $users = User::paginate(15);
+Route::get('/users', function () {
+    $users = User::paginate(15);
 
-        $users->appends(['sort' => 'votes']);
+    $users->appends(['sort' => 'votes']);
 
-        // ...
-    });
+    // ...
+});
+```
 
 如果你希望把当前请求的所有查询字符串值追加到分页链接上，可以使用 `withQueryString` 方法：
 
-    $users = User::paginate(15)->withQueryString();
+```php
+$users = User::paginate(15)->withQueryString();
+```
 
 <a name="appending-hash-fragments"></a>
 #### 追加哈希片段
 
 如果你需要向分页器生成的 URL 追加"哈希片段"，可以使用 `fragment` 方法。例如，要给每个分页链接末尾追加 `#users`，应这样调用 `fragment` 方法：
 
-    $users = User::paginate(15)->fragment('users');
+```php
+$users = User::paginate(15)->fragment('users');
+```
 
 <a name="displaying-pagination-results"></a>
 ## 显示分页结果
@@ -239,35 +263,39 @@ select * from users where id > 15 order by id asc limit 15;
 
 Laravel 的分页器类实现了 `Illuminate\Contracts\Support\Jsonable` 接口契约并提供了 `toJson` 方法，因此把分页结果转换为 JSON 非常容易。你也可以从路由或控制器动作中直接返回分页器实例，把它转换为 JSON：
 
-    use App\Models\User;
+```php
+use App\Models\User;
 
-    Route::get('/users', function () {
-        return User::paginate();
-    });
+Route::get('/users', function () {
+    return User::paginate();
+});
+```
 
 分页器生成的 JSON 包含 `total`、`current_page`、`last_page` 等元信息。结果记录可以通过 JSON 数组中的 `data` 键获取。下面是从路由中返回分页器实例所生成的 JSON 示例：
 
-    {
-       "total": 50,
-       "per_page": 15,
-       "current_page": 1,
-       "last_page": 4,
-       "first_page_url": "http://laravel.app?page=1",
-       "last_page_url": "http://laravel.app?page=4",
-       "next_page_url": "http://laravel.app?page=2",
-       "prev_page_url": null,
-       "path": "http://laravel.app",
-       "from": 1,
-       "to": 15,
-       "data":[
-            {
-                // 记录……
-            },
-            {
-                // 记录……
-            }
-       ]
-    }
+```json
+{
+   "total": 50,
+   "per_page": 15,
+   "current_page": 1,
+   "last_page": 4,
+   "first_page_url": "http://laravel.app?page=1",
+   "last_page_url": "http://laravel.app?page=4",
+   "next_page_url": "http://laravel.app?page=2",
+   "prev_page_url": null,
+   "path": "http://laravel.app",
+   "from": 1,
+   "to": 15,
+   "data":[
+        {
+            // 记录……
+        },
+        {
+            // 记录……
+        }
+   ]
+}
+```
 
 <a name="customizing-the-pagination-view"></a>
 ## 自定义分页视图
@@ -291,41 +319,45 @@ php artisan vendor:publish --tag=laravel-pagination
 
 如果你想把另一个文件指定为默认分页视图，可以在 `App\Providers\AppServiceProvider` 类的 `boot` 方法中调用分页器的 `defaultView` 和 `defaultSimpleView` 方法：
 
-    <?php
+```php
+<?php
 
-    namespace App\Providers;
+namespace App\Providers;
 
-    use Illuminate\Pagination\Paginator;
-    use Illuminate\Support\ServiceProvider;
+use Illuminate\Pagination\Paginator;
+use Illuminate\Support\ServiceProvider;
 
-    class AppServiceProvider extends ServiceProvider
+class AppServiceProvider extends ServiceProvider
+{
+    /**
+     * 引导任何应用服务。
+     */
+    public function boot(): void
     {
-        /**
-         * 引导任何应用服务。
-         */
-        public function boot(): void
-        {
-            Paginator::defaultView('view-name');
+        Paginator::defaultView('view-name');
 
-            Paginator::defaultSimpleView('view-name');
-        }
+        Paginator::defaultSimpleView('view-name');
     }
+}
+```
 
 <a name="using-bootstrap"></a>
 ### 使用 Bootstrap
 
 Laravel 内置了使用 [Bootstrap CSS](https://getbootstrap.com/)构建的分页视图。要使用这些视图代替默认的 Tailwind 视图，可以在 `App\Providers\AppServiceProvider` 类的 `boot` 方法中调用分页器的 `useBootstrapFour` 或 `useBootstrapFive` 方法：
 
-    use Illuminate\Pagination\Paginator;
+```php
+use Illuminate\Pagination\Paginator;
 
-    /**
-     * 引导任何应用服务。
-     */
-    public function boot(): void
-    {
-        Paginator::useBootstrapFive();
-        Paginator::useBootstrapFour();
-    }
+/**
+ * 引导任何应用服务。
+ */
+public function boot(): void
+{
+    Paginator::useBootstrapFive();
+    Paginator::useBootstrapFour();
+}
+```
 
 <a name="paginator-instance-methods"></a>
 ## Paginator / LengthAwarePaginator 实例方法

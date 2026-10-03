@@ -65,13 +65,15 @@ Laravel 的队列配置选项存储在应用程序的 `config/queue.php` 配置�
 
 注意，`queue` 配置文件中的每个连接配置示例都包含一个 `queue` 属性。这是作业发送到给定连接时分发到的默认队列。换句话说，如果你分发作业而未明确定义应分发到哪个队列，作业将被放置在连接配置的 `queue` 属性定义的队列上：
 
-    use App\Jobs\ProcessPodcast;
+```php
+use App\Jobs\ProcessPodcast;
 
-    // 此作业发送到默认连接的默认队列...
-    ProcessPodcast::dispatch();
+// 此作业发送到默认连接的默认队列...
+ProcessPodcast::dispatch();
 
-    // 此作业发送到默认连接的 "emails" 队列...
-    ProcessPodcast::dispatch()->onQueue('emails');
+// 此作业发送到默认连接的 "emails" 队列...
+ProcessPodcast::dispatch()->onQueue('emails');
+```
 
 某些应用程序可能永远不需要将作业推送到多个队列，而是偏好使用一个简单队列。但是，将作业推送到多个队列对于希望优先处理或分段处理作业的应用程序特别有用，因为 Laravel 队列工作进程允许你指定应按优先级处理哪些队列。例如，如果你将作业推送到 `high` 队列，你可以运行一个给予它们更高处理优先级的工作进程：
 
@@ -95,7 +97,9 @@ php artisan migrate
 
 最后，不要忘记通过更新应用程序 `.env` 文件中的 `QUEUE_CONNECTION` 变量来指示应用程序使用 `database` 驱动：
 
-    QUEUE_CONNECTION=database
+```env
+QUEUE_CONNECTION=database
+```
 
 <a name="redis"></a>
 #### Redis
@@ -106,12 +110,14 @@ php artisan migrate
 
 如果你的 Redis 队列连接使用 Redis 集群，你的队列名称必须包含 [键哈希标签](https://redis.io/docs/reference/cluster-spec/#hash-tags)。这是为了确保给定队列的所有 Redis 键放置在同一个哈希槽中：
 
-    'redis' => [
-        'driver' => 'redis',
-        'connection' => 'default',
-        'queue' => '{default}',
-        'retry_after' => 90,
-    ],
+```php
+'redis' => [
+    'driver' => 'redis',
+    'connection' => 'default',
+    'queue' => '{default}',
+    'retry_after' => 90,
+],
+```
 
 **阻塞**
 
@@ -119,13 +125,15 @@ php artisan migrate
 
 根据队列负载调整此值可能比持续轮询 Redis 数据库以获取新作业更高效。例如，你可以将值设置为 `5`，表示驱动在等待作业变为可用时应阻塞五秒：
 
-    'redis' => [
-        'driver' => 'redis',
-        'connection' => 'default',
-        'queue' => 'default',
-        'retry_after' => 90,
-        'block_for' => 5,
-    ],
+```php
+'redis' => [
+    'driver' => 'redis',
+    'connection' => 'default',
+    'queue' => 'default',
+    'retry_after' => 90,
+    'block_for' => 5,
+],
+```
 
 > **Warning**  
 > 将 `block_for` 设置为 `0` 将导致队列工作进程无限阻塞直到作业可用。这还将阻止 `SIGTERM` 等信号在处理下一个作业之前被处理。
@@ -161,51 +169,53 @@ php artisan make:job ProcessPodcast
 
 作业类非常简单，通常只包含一个在队列处理作业时调用的 `handle` 方法。首先，让我们看一个示例作业类。在此示例中，我们假设管理一个播客发布服务，需要在发布之前处理上传的播客文件：
 
-    <?php
+```php
+<?php
 
-    namespace App\Jobs;
+namespace App\Jobs;
 
-    use App\Models\Podcast;
-    use App\Services\AudioProcessor;
-    use Illuminate\Bus\Queueable;
-    use Illuminate\Contracts\Queue\ShouldQueue;
-    use Illuminate\Foundation\Bus\Dispatchable;
-    use Illuminate\Queue\InteractsWithQueue;
-    use Illuminate\Queue\SerializesModels;
+use App\Models\Podcast;
+use App\Services\AudioProcessor;
+use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Foundation\Bus\Dispatchable;
+use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Queue\SerializesModels;
 
-    class ProcessPodcast implements ShouldQueue
+class ProcessPodcast implements ShouldQueue
+{
+    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+
+    /**
+     * 播客实例。
+     *
+     * @var \App\Models\Podcast
+     */
+    public $podcast;
+
+    /**
+     * 创建新的作业实例。
+     *
+     * @param  App\Models\Podcast  $podcast
+     * @return void
+     */
+    public function __construct(Podcast $podcast)
     {
-        use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
-
-        /**
-         * 播客实例。
-         *
-         * @var \App\Models\Podcast
-         */
-        public $podcast;
-
-        /**
-         * 创建新的作业实例。
-         *
-         * @param  App\Models\Podcast  $podcast
-         * @return void
-         */
-        public function __construct(Podcast $podcast)
-        {
-            $this->podcast = $podcast;
-        }
-
-        /**
-         * 执行作业。
-         *
-         * @param  App\Services\AudioProcessor  $processor
-         * @return void
-         */
-        public function handle(AudioProcessor $processor)
-        {
-            // 处理上传的播客...
-        }
+        $this->podcast = $podcast;
     }
+
+    /**
+     * 执行作业。
+     *
+     * @param  App\Services\AudioProcessor  $processor
+     * @return void
+     */
+    public function handle(AudioProcessor $processor)
+    {
+        // 处理上传的播客...
+    }
+}
+```
 
 在此示例中，注意我们能够将 [Eloquent 模型](/docs/{{version}}/eloquent) 直接传递到排队作业的构造函数中。由于作业使用的 `SerializesModels` Trait，Eloquent 模型及其加载的关联将在作业处理时被优雅地序列化和反序列化。
 
@@ -218,12 +228,14 @@ php artisan make:job ProcessPodcast
 
 如果你想完全控制容器如何将依赖注入 `handle` 方法，可以使用容器的 `bindMethod` 方法。`bindMethod` 方法接受一个接收作业和容器的回调。在回调中，你可以按需调用 `handle` 方法。通常，你应从 `App\Providers\AppServiceProvider` [服务提供者](/docs/{{version}}/providers) 的 `boot` 方法调用此方法：
 
-    use App\Jobs\ProcessPodcast;
-    use App\Services\AudioProcessor;
+```php
+use App\Jobs\ProcessPodcast;
+use App\Services\AudioProcessor;
 
-    $this->app->bindMethod([ProcessPodcast::class, 'handle'], function ($job, $app) {
-        return $job->handle($app->make(AudioProcessor::class));
-    });
+$this->app->bindMethod([ProcessPodcast::class, 'handle'], function ($job, $app) {
+    return $job->handle($app->make(AudioProcessor::class));
+});
+```
 
 > **Warning**  
 > 二进制数据（如原始图像内容）应在传递给排队作业之前通过 `base64_encode` 函数处理。否则，作业在放置到队列时可能无法正确序列化为 JSON。
@@ -233,16 +245,18 @@ php artisan make:job ProcessPodcast
 
 由于加载的关联也会被序列化，序列化的作业字符串有时会变得很大。为防止关联被序列化，你可以在设置属性值时对模型调用 `withoutRelations` 方法。此方法将返回不带加载关联的模型实例：
 
-    /**
-     * 创建新的作业实例。
-     *
-     * @param  \App\Models\Podcast  $podcast
-     * @return void
-     */
-    public function __construct(Podcast $podcast)
-    {
-        $this->podcast = $podcast->withoutRelations();
-    }
+```php
+/**
+ * 创建新的作业实例。
+ *
+ * @param  \App\Models\Podcast  $podcast
+ * @return void
+ */
+public function __construct(Podcast $podcast)
+{
+    $this->podcast = $podcast->withoutRelations();
+}
+```
 
 此外，当作业被反序列化且模型关联从数据库重新检索时，它们将被完整检索。在作业排队过程中模型序列化之前应用的任何之前的关联约束在作业反序列化时不会被应用。因此，如果你希望使用给定关联的子集，应在排队作业中重新约束该关联。
 
@@ -254,52 +268,56 @@ php artisan make:job ProcessPodcast
 
 有时，你可能希望确保任何时刻只有一个特定作业实例在队列上。你可以通过在作业类上实现 `ShouldBeUnique` 接口来实现。此接口不要求你在类上定义任何额外方法：
 
-    <?php
+```php
+<?php
 
-    use Illuminate\Contracts\Queue\ShouldQueue;
-    use Illuminate\Contracts\Queue\ShouldBeUnique;
+use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Contracts\Queue\ShouldBeUnique;
 
-    class UpdateSearchIndex implements ShouldQueue, ShouldBeUnique
-    {
-        ...
-    }
+class UpdateSearchIndex implements ShouldQueue, ShouldBeUnique
+{
+    ...
+}
+```
 
 在上面的示例中，`UpdateSearchIndex` 作业是唯一的。因此，如果作业的另一个实例已在队列上且尚未完成处理，则不会分发该作业。
 
 在某些情况下，你可能希望定义使作业唯一的特定"键"，或指定超时时间，超过此时间后作业不再保持唯一。为此，你可以在作业类上定义 `uniqueId` 和 `uniqueFor` 属性或方法：
 
-    <?php
+```php
+<?php
 
-    use App\Models\Product;
-    use Illuminate\Contracts\Queue\ShouldQueue;
-    use Illuminate\Contracts\Queue\ShouldBeUnique;
+use App\Models\Product;
+use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Contracts\Queue\ShouldBeUnique;
 
-    class UpdateSearchIndex implements ShouldQueue, ShouldBeUnique
+class UpdateSearchIndex implements ShouldQueue, ShouldBeUnique
+{
+    /**
+     * 产品实例。
+     *
+     * @var \App\Product
+     */
+    public $product;
+
+    /**
+     * 作业唯一锁释放后的秒数。
+     *
+     * @var int
+     */
+    public $uniqueFor = 3600;
+
+    /**
+     * 作业的唯一 ID。
+     *
+     * @return string
+     */
+    public function uniqueId()
     {
-        /**
-         * 产品实例。
-         *
-         * @var \App\Product
-         */
-        public $product;
-
-        /**
-         * 作业唯一锁释放后的秒数。
-         *
-         * @var int
-         */
-        public $uniqueFor = 3600;
-
-        /**
-         * 作业的唯一 ID。
-         *
-         * @return string
-         */
-        public function uniqueId()
-        {
-            return $this->product->id;
-        }
+        return $this->product->id;
     }
+}
+```
 
 在上面的示例中，`UpdateSearchIndex` 作业按产品 ID 唯一。因此，在现有作业完成处理之前，具有相同产品 ID 的任何新作业分发都将被忽略。此外，如果现有作业在一小时内未处理，唯一锁将被释放，另一个具有相同唯一键的作业可以被分发到队列。
 
@@ -311,38 +329,42 @@ php artisan make:job ProcessPodcast
 
 默认情况下，唯一作业在作业完成处理或失败所有重试尝试后"解锁"。但是，在某些情况下，你可能希望作业在处理之前立即解锁。为此，你的作业应实现 `ShouldBeUniqueUntilProcessing` 契约而不是 `ShouldBeUnique` 契约：
 
-    <?php
+```php
+<?php
 
-    use App\Models\Product;
-    use Illuminate\Contracts\Queue\ShouldQueue;
-    use Illuminate\Contracts\Queue\ShouldBeUniqueUntilProcessing;
+use App\Models\Product;
+use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Contracts\Queue\ShouldBeUniqueUntilProcessing;
 
-    class UpdateSearchIndex implements ShouldQueue, ShouldBeUniqueUntilProcessing
-    {
-        // ...
-    }
+class UpdateSearchIndex implements ShouldQueue, ShouldBeUniqueUntilProcessing
+{
+    // ...
+}
+```
 
 <a name="unique-job-locks"></a>
 #### 唯一作业锁
 
 在幕后，当分发 `ShouldBeUnique` 作业时，Laravel 尝试使用 `uniqueId` 键获取[锁](/docs/{{version}}/cache#atomic-locks)。如果未获取锁，则不分发作业。当作业完成处理或失败所有重试尝试时释放此锁。默认情况下，Laravel 将使用默认缓存驱动获取此锁。但是，如果你希望使用另一个驱动获取锁，可以定义一个返回应使用的缓存驱动的 `uniqueVia` 方法：
 
-    use Illuminate\Support\Facades\Cache;
+```php
+use Illuminate\Support\Facades\Cache;
 
-    class UpdateSearchIndex implements ShouldQueue, ShouldBeUnique
+class UpdateSearchIndex implements ShouldQueue, ShouldBeUnique
+{
+    ...
+
+    /**
+     * 获取唯一作业锁的缓存驱动。
+     *
+     * @return \Illuminate\Contracts\Cache\Repository
+     */
+    public function uniqueVia()
     {
-        ...
-
-        /**
-         * 获取唯一作业锁的缓存驱动。
-         *
-         * @return \Illuminate\Contracts\Cache\Repository
-         */
-        public function uniqueVia()
-        {
-            return Cache::driver('redis');
-        }
+        return Cache::driver('redis');
     }
+}
+```
 
 > **Note**  
 > 如果你只需要限制作业的并发处理，请改用 [`WithoutOverlapping`](/docs/{{version}}/queues#preventing-job-overlaps) 作业中间件。
@@ -352,76 +374,82 @@ php artisan make:job ProcessPodcast
 
 作业中间件允许你在排队作业执行周围包装自定义逻辑，减少作业本身的样板代码。例如，考虑以下利用 Laravel Redis 速率限制功能允许每五秒只处理一个作业的 `handle` 方法：
 
-    use Illuminate\Support\Facades\Redis;
+```php
+use Illuminate\Support\Facades\Redis;
 
-    /**
-     * 执行作业。
-     *
-     * @return void
-     */
-    public function handle()
-    {
-        Redis::throttle('key')->block(0)->allow(1)->every(5)->then(function () {
-            info('Lock obtained...');
+/**
+ * 执行作业。
+ *
+ * @return void
+ */
+public function handle()
+{
+    Redis::throttle('key')->block(0)->allow(1)->every(5)->then(function () {
+        info('Lock obtained...');
 
-            // 处理作业...
-        }, function () {
-            // 无法获取锁...
+        // 处理作业...
+    }, function () {
+        // 无法获取锁...
 
-            return $this->release(5);
-        });
-    }
+        return $this->release(5);
+    });
+}
+```
 
 虽然此代码有效，但 `handle` 方法的实现变得嘈杂，因为它充斥着 Redis 速率限制逻辑。此外，此速率限制逻辑必须为我们要进行速率限制的任何其他作业重复。
 
 与其在 handle 方法中进行速率限制，我们可以定义一个处理速率限制的作业中间件。Laravel 没有作业中间件的默认位置，因此你可以将作业中间件放在应用程序中的任何位置。在此示例中，我们将中间件放在 `app/Jobs/Middleware` 目录中：
 
-    <?php
+```php
+<?php
 
-    namespace App\Jobs\Middleware;
+namespace App\Jobs\Middleware;
 
-    use Illuminate\Support\Facades\Redis;
+use Illuminate\Support\Facades\Redis;
 
-    class RateLimited
+class RateLimited
+{
+    /**
+     * 处理排队作业。
+     *
+     * @param  mixed  $job
+     * @param  callable  $next
+     * @return mixed
+     */
+    public function handle($job, $next)
     {
-        /**
-         * 处理排队作业。
-         *
-         * @param  mixed  $job
-         * @param  callable  $next
-         * @return mixed
-         */
-        public function handle($job, $next)
-        {
-            Redis::throttle('key')
-                    ->block(0)->allow(1)->every(5)
-                    ->then(function () use ($job, $next) {
-                        // 获取锁...
+        Redis::throttle('key')
+                ->block(0)->allow(1)->every(5)
+                ->then(function () use ($job, $next) {
+                    // 获取锁...
 
-                        $next($job);
-                    }, function () use ($job) {
-                        // 无法获取锁...
+                    $next($job);
+                }, function () use ($job) {
+                    // 无法获取锁...
 
-                        $job->release(5);
-                    });
-        }
+                    $job->release(5);
+                });
     }
+}
+```
 
 如你所见，与[路由中间件](/docs/{{version}}/middleware)一样，作业中间件接收正在处理的作业和应调用以继续处理作业的回调。
 
 创建作业中间件后，可以通过从作业的 `middleware` 方法返回它们来将其附加到作业。此方法不存在于 `make:job` Artisan 命令搭建的作业上，因此你需要手动将其添加到作业类：
 
-    use App\Jobs\Middleware\RateLimited;
+```php
+use App\Jobs\Middleware\RateLimited;
 
-    /**
-     * 获取作业应通过的中间件。
-     *
-     * @return array
-     */
-    public function middleware()
-    {
-        return [new RateLimited];
-    }
+/**
+ * 获取作业应通过的中间件。
+ *
+ * @return array
+ */
+public function middleware()
+{
+    return [new RateLimited];
+}
+```
 
 > **Note**  
 > 作业中间件也可分配给可排队的事件监听器、mailable 和通知。
@@ -433,54 +461,62 @@ php artisan make:job ProcessPodcast
 
 例如，你可能希望允许用户每小时备份数据一次，而对高级客户不施加此限制。为此，你可以在 `AppServiceProvider` 的 `boot` 方法中定义 `RateLimiter`：
 
-    use Illuminate\Cache\RateLimiting\Limit;
-    use Illuminate\Support\Facades\RateLimiter;
+```php
+use Illuminate\Cache\RateLimiting\Limit;
+use Illuminate\Support\Facades\RateLimiter;
 
-    /**
-     * 引导启动任何应用程序服务。
-     *
-     * @return void
-     */
-    public function boot()
-    {
-        RateLimiter::for('backups', function ($job) {
-            return $job->user->vipCustomer()
-                        ? Limit::none()
-                        : Limit::perHour(1)->by($job->user->id);
-        });
-    }
+/**
+ * 引导启动任何应用程序服务。
+ *
+ * @return void
+ */
+public function boot()
+{
+    RateLimiter::for('backups', function ($job) {
+        return $job->user->vipCustomer()
+                    ? Limit::none()
+                    : Limit::perHour(1)->by($job->user->id);
+    });
+}
+```
 
 在上面的示例中，我们定义了每小时速率限制；但是，你可以使用 `perMinute` 方法轻松定义基于分钟的速率限制。此外，你可以向速率限制的 `by` 方法传递任何你希望的值；但是，此值最常用于按客户分段速率限制：
 
-    return Limit::perMinute(50)->by($job->user->id);
+```php
+return Limit::perMinute(50)->by($job->user->id);
+```
 
 定义速率限制后，你可以使用 `Illuminate\Queue\Middleware\RateLimited` 中间件将速率限制器附加到备份作业。每次作业超过速率限制时，此中间件将根据速率限制持续时间以适当的延迟将作业释放回队列。
 
-    use Illuminate\Queue\Middleware\RateLimited;
+```php
+use Illuminate\Queue\Middleware\RateLimited;
 
-    /**
-     * 获取作业应通过的中间件。
-     *
-     * @return array
-     */
-    public function middleware()
-    {
-        return [new RateLimited('backups')];
-    }
+/**
+ * 获取作业应通过的中间件。
+ *
+ * @return array
+ */
+public function middleware()
+{
+    return [new RateLimited('backups')];
+}
+```
 
 将速率限制作业释放回队列仍将增加作业的 `attempts` 总数。你可能需要相应地调整作业类上的 `tries` 和 `maxExceptions` 属性。或者，你可能希望使用 [`retryUntil` 方法](#time-based-attempts)定义作业不再尝试的时间。
 
 如果你不希望作业在速率限制时重试，可以使用 `dontRelease` 方法：
 
-    /**
-     * 获取作业应通过的中间件。
-     *
-     * @return array
-     */
-    public function middleware()
-    {
-        return [(new RateLimited('backups'))->dontRelease()];
-    }
+```php
+/**
+ * 获取作业应通过的中间件。
+ *
+ * @return array
+ */
+public function middleware()
+{
+    return [(new RateLimited('backups'))->dontRelease()];
+}
+```
 
 > **Note**  
 > 如果你使用 Redis，可以使用 `Illuminate\Queue\Middleware\RateLimitedWithRedis` 中间件，它针对 Redis 进行了微调，比基本速率限制中间件更高效。
@@ -492,53 +528,61 @@ Laravel 包含一个 `Illuminate\Queue\Middleware\WithoutOverlapping` 中间件�
 
 例如，假设你有一个更新用户信用评分的排队作业，你希望防止同一用户 ID 的信用评分更新作业重叠。为此，你可以从作业的 `middleware` 方法返回 `WithoutOverlapping` 中间件：
 
-    use Illuminate\Queue\Middleware\WithoutOverlapping;
+```php
+use Illuminate\Queue\Middleware\WithoutOverlapping;
 
-    /**
-     * 获取作业应通过的中间件。
-     *
-     * @return array
-     */
-    public function middleware()
-    {
-        return [new WithoutOverlapping($this->user->id)];
-    }
+/**
+ * 获取作业应通过的中间件。
+ *
+ * @return array
+ */
+public function middleware()
+{
+    return [new WithoutOverlapping($this->user->id)];
+}
+```
 
 任何同类型的重叠作业将被释放回队列。你还可以指定释放的作业再次尝试之前必须经过的秒数：
 
-    /**
-     * 获取作业应通过的中间件。
-     *
-     * @return array
-     */
-    public function middleware()
-    {
-        return [(new WithoutOverlapping($this->order->id))->releaseAfter(60)];
-    }
+```php
+/**
+ * 获取作业应通过的中间件。
+ *
+ * @return array
+ */
+public function middleware()
+{
+    return [(new WithoutOverlapping($this->order->id))->releaseAfter(60)];
+}
+```
 
 如果你希望立即删除任何重叠作业以便它们不会重试，可以使用 `dontRelease` 方法：
 
-    /**
-     * 获取作业应通过的中间件。
-     *
-     * @return array
-     */
-    public function middleware()
-    {
-        return [(new WithoutOverlapping($this->order->id))->dontRelease()];
-    }
+```php
+/**
+ * 获取作业应通过的中间件。
+ *
+ * @return array
+ */
+public function middleware()
+{
+    return [(new WithoutOverlapping($this->order->id))->dontRelease()];
+}
+```
 
 `WithoutOverlapping` 中间件由 Laravel 的原子锁功能驱动。有时，你的作业可能以锁未释放的方式意外失败或超时。因此，你可以使用 `expireAfter` 方法显式定义锁过期时间。例如，以下示例将指示 Laravel 在作业开始处理三分钟后释放 `WithoutOverlapping` 锁：
 
-    /**
-     * 获取作业应通过的中间件。
-     *
-     * @return array
-     */
-    public function middleware()
-    {
-        return [(new WithoutOverlapping($this->order->id))->expireAfter(180)];
-    }
+```php
+/**
+ * 获取作业应通过的中间件。
+ *
+ * @return array
+ */
+public function middleware()
+{
+    return [(new WithoutOverlapping($this->order->id))->expireAfter(180)];
+}
+```
 
 > **Warning**
 > `WithoutOverlapping` 中间件需要支持[锁](/docs/{{version}}/cache#atomic-locks)的缓存驱动。目前，`memcached`、`redis`、`dynamodb`、`database`、`file` 和 `array` 缓存驱动支持原子锁。
@@ -583,57 +627,63 @@ Laravel 包含一个 `Illuminate\Queue\Middleware\ThrottlesExceptions` 中间件
 
 例如，假设一个与第三方 API 交互的排队作业开始抛出异常。要节流异常，你可以从作业的 `middleware` 方法返回 `ThrottlesExceptions` 中间件。通常，此中间件应与实现[基于时间的尝试](#time-based-attempts)的作业配对：
 
-    use Illuminate\Queue\Middleware\ThrottlesExceptions;
+```php
+use Illuminate\Queue\Middleware\ThrottlesExceptions;
 
-    /**
-     * 获取作业应通过的中间件。
-     *
-     * @return array
-     */
-    public function middleware()
-    {
-        return [new ThrottlesExceptions(10, 5)];
-    }
+/**
+ * 获取作业应通过的中间件。
+ *
+ * @return array
+ */
+public function middleware()
+{
+    return [new ThrottlesExceptions(10, 5)];
+}
 
-    /**
-     * 确定作业应超时的时间。
-     *
-     * @return \DateTime
-     */
-    public function retryUntil()
-    {
-        return now()->addMinutes(5);
-    }
+/**
+ * 确定作业应超时的时间。
+ *
+ * @return \DateTime
+ */
+public function retryUntil()
+{
+    return now()->addMinutes(5);
+}
+```
 
 中间件接受的第一个构造函数参数是作业在被节流之前可以抛出的异常数量，第二个构造函数参数是作业被节流后再次尝试之前应经过的分钟数。在上面的代码示例中，如果作业在 5 分钟内抛出 10 个异常，我们将在再次尝试作业之前等待 5 分钟。
 
 当作业抛出异常但尚未达到异常阈值时，作业通常会立即重试。但是，你可以通过在将中间件附加到作业时调用 `backoff` 方法来指定此类作业应延迟的分钟数：
 
-    use Illuminate\Queue\Middleware\ThrottlesExceptions;
+```php
+use Illuminate\Queue\Middleware\ThrottlesExceptions;
 
-    /**
-     * 获取作业应通过的中间件。
-     *
-     * @return array
-     */
-    public function middleware()
-    {
-        return [(new ThrottlesExceptions(10, 5))->backoff(5)];
-    }
+/**
+ * 获取作业应通过的中间件。
+ *
+ * @return array
+ */
+public function middleware()
+{
+    return [(new ThrottlesExceptions(10, 5))->backoff(5)];
+}
+```
 
 在内部，此中间件使用 Laravel 的缓存系统实现速率限制，作业的类名用作缓存"键"。你可以通过在将中间件附加到作业时调用 `by` 方法来覆盖此键。如果你有多个与同一第三方服务交互的作业并且希望它们共享一个公共节流"桶"，这可能很有用：
 
-    use Illuminate\Queue\Middleware\ThrottlesExceptions;
+```php
+use Illuminate\Queue\Middleware\ThrottlesExceptions;
 
-    /**
-     * 获取作业应通过的中间件。
-     *
-     * @return array
-     */
-    public function middleware()
-    {
-        return [(new ThrottlesExceptions(10, 10))->by('key')];
-    }
+/**
+ * 获取作业应通过的中间件。
+ *
+ * @return array
+ */
+public function middleware()
+{
+    return [(new ThrottlesExceptions(10, 10))->by('key')];
+}
+```
 
 > **Note**  
 > 如果你使用 Redis，可以使用 `Illuminate\Queue\Middleware\ThrottlesExceptionsWithRedis` 中间件，它针对 Redis 进行了微调，比基本异常节流中间件更高效。
@@ -643,38 +693,42 @@ Laravel 包含一个 `Illuminate\Queue\Middleware\ThrottlesExceptions` 中间件
 
 编写作业类后，你可以使用作业本身的 `dispatch` 方法分发它。传递给 `dispatch` 方法的参数将传递给作业的构造函数：
 
-    <?php
+```php
+<?php
 
-    namespace App\Http\Controllers;
+namespace App\Http\Controllers;
 
-    use App\Http\Controllers\Controller;
-    use App\Jobs\ProcessPodcast;
-    use App\Models\Podcast;
-    use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
+use App\Jobs\ProcessPodcast;
+use App\Models\Podcast;
+use Illuminate\Http\Request;
 
-    class PodcastController extends Controller
+class PodcastController extends Controller
+{
+    /**
+     * 存储新播客。
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function store(Request $request)
     {
-        /**
-         * 存储新播客。
-         *
-         * @param  \Illuminate\Http\Request  $request
-         * @return \Illuminate\Http\Response
-         */
-        public function store(Request $request)
-        {
-            $podcast = Podcast::create(/* ... */);
+        $podcast = Podcast::create(/* ... */);
 
-            // ...
+        // ...
 
-            ProcessPodcast::dispatch($podcast);
-        }
+        ProcessPodcast::dispatch($podcast);
     }
+}
+```
 
 如果你希望有条件地分发作业，可以使用 `dispatchIf` 和 `dispatchUnless` 方法：
 
-    ProcessPodcast::dispatchIf($accountActive, $podcast);
+```php
+ProcessPodcast::dispatchIf($accountActive, $podcast);
 
-    ProcessPodcast::dispatchUnless($accountSuspended, $podcast);
+ProcessPodcast::dispatchUnless($accountSuspended, $podcast);
+```
 
 在新的 Laravel 应用程序中，`sync` 驱动是默认队列驱动。此驱动在当前请求的前台同步执行作业，这在本地开发期间通常很方便。如果你希望实际开始排队作业进行后台处理，可以在应用程序的 `config/queue.php` 配置文件中指定不同的队列驱动。
 
@@ -683,33 +737,35 @@ Laravel 包含一个 `Illuminate\Queue\Middleware\ThrottlesExceptions` 中间件
 
 如果你想指定作业不应立即可供队列工作进程处理，可以在分发作业时使用 `delay` 方法。例如，让我们指定作业在分发 10 分钟后才可供处理：
 
-    <?php
+```php
+<?php
 
-    namespace App\Http\Controllers;
+namespace App\Http\Controllers;
 
-    use App\Http\Controllers\Controller;
-    use App\Jobs\ProcessPodcast;
-    use App\Models\Podcast;
-    use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
+use App\Jobs\ProcessPodcast;
+use App\Models\Podcast;
+use Illuminate\Http\Request;
 
-    class PodcastController extends Controller
+class PodcastController extends Controller
+{
+    /**
+     * 存储新播客。
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function store(Request $request)
     {
-        /**
-         * 存储新播客。
-         *
-         * @param  \Illuminate\Http\Request  $request
-         * @return \Illuminate\Http\Response
-         */
-        public function store(Request $request)
-        {
-            $podcast = Podcast::create(/* ... */);
+        $podcast = Podcast::create(/* ... */);
 
-            // ...
+        // ...
 
-            ProcessPodcast::dispatch($podcast)
-                        ->delay(now()->addMinutes(10));
-        }
+        ProcessPodcast::dispatch($podcast)
+                    ->delay(now()->addMinutes(10));
     }
+}
+```
 
 > **Warning**  
 > Amazon SQS 队列服务的最大延迟时间为 15 分钟。
@@ -719,50 +775,56 @@ Laravel 包含一个 `Illuminate\Queue\Middleware\ThrottlesExceptions` 中间件
 
 或者，如果你的 Web 服务器使用 FastCGI，`dispatchAfterResponse` 方法会延迟分发作业直到 HTTP 响应发送到用户浏览器之后。这仍将允许用户开始使用应用程序，即使排队作业仍在执行。这通常只应用于耗时约一秒的作业，例如发送电子邮件。由于它们在当前 HTTP 请求内处理，以此方式分发的作业不需要运行队列工作进程即可处理：
 
-    use App\Jobs\SendNotification;
+```php
+use App\Jobs\SendNotification;
 
-    SendNotification::dispatchAfterResponse();
+SendNotification::dispatchAfterResponse();
+```
 
 你也可以 `dispatch` 一个闭包并将 `afterResponse` 方法链式连接到 `dispatch` 辅助函数，以在 HTTP 响应发送到浏览器后执行闭包：
 
-    use App\Mail\WelcomeMessage;
-    use Illuminate\Support\Facades\Mail;
+```php
+use App\Mail\WelcomeMessage;
+use Illuminate\Support\Facades\Mail;
 
-    dispatch(function () {
-        Mail::to('taylor@example.com')->send(new WelcomeMessage);
-    })->afterResponse();
+dispatch(function () {
+    Mail::to('taylor@example.com')->send(new WelcomeMessage);
+})->afterResponse();
+```
 
 <a name="synchronous-dispatching"></a>
 ### 同步分发
 
 如果你想立即（同步）分发作业，可以使用 `dispatchSync` 方法。使用此方法时，作业不会被排队，将在当前进程内立即执行：
 
-    <?php
+```php
+<?php
 
-    namespace App\Http\Controllers;
+namespace App\Http\Controllers;
 
-    use App\Http\Controllers\Controller;
-    use App\Jobs\ProcessPodcast;
-    use App\Models\Podcast;
-    use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
+use App\Jobs\ProcessPodcast;
+use App\Models\Podcast;
+use Illuminate\Http\Request;
 
-    class PodcastController extends Controller
+class PodcastController extends Controller
+{
+    /**
+     * 存储新播客。
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function store(Request $request)
     {
-        /**
-         * 存储新播客。
-         *
-         * @param  \Illuminate\Http\Request  $request
-         * @return \Illuminate\Http\Response
-         */
-        public function store(Request $request)
-        {
-            $podcast = Podcast::create(/* ... */);
+        $podcast = Podcast::create(/* ... */);
 
-            // 创建播客...
+        // 创建播客...
 
-            ProcessPodcast::dispatchSync($podcast);
-        }
+        ProcessPodcast::dispatchSync($podcast);
     }
+}
+```
 
 <a name="jobs-and-database-transactions"></a>
 ### 作业与数据库事务
@@ -771,11 +833,13 @@ Laravel 包含一个 `Illuminate\Queue\Middleware\ThrottlesExceptions` 中间件
 
 幸好，Laravel 提供了几种解决此问题的方法。首先，你可以在队列连接的配置数组中设置 `after_commit` 连接选项：
 
-    'redis' => [
-        'driver' => 'redis',
-        // ...
-        'after_commit' => true,
-    ],
+```php
+'redis' => [
+    'driver' => 'redis',
+    // ...
+    'after_commit' => true,
+],
+```
 
 当 `after_commit` 选项为 `true` 时，你可以在数据库事务内分发作业；但是，Laravel 将等待直到打开的父数据库事务提交后才实际分发作业。当然，如果当前没有打开的数据库事务，作业将立即分发。
 
@@ -789,39 +853,47 @@ Laravel 包含一个 `Illuminate\Queue\Middleware\ThrottlesExceptions` 中间件
 
 如果你未将 `after_commit` 队列连接配置选项设置为 `true`，你仍可以指示特定作业应在所有打开的数据库事务提交后分发。为此，你可以将 `afterCommit` 方法链式连接到分发操作：
 
-    use App\Jobs\ProcessPodcast;
+```php
+use App\Jobs\ProcessPodcast;
 
-    ProcessPodcast::dispatch($podcast)->afterCommit();
+ProcessPodcast::dispatch($podcast)->afterCommit();
+```
 
 同样，如果 `after_commit` 配置选项设置为 `true`，你可以指示特定作业应立即分发而不等待任何打开的数据库事务提交：
 
-    ProcessPodcast::dispatch($podcast)->beforeCommit();
+```php
+ProcessPodcast::dispatch($podcast)->beforeCommit();
+```
 
 <a name="job-chaining"></a>
 ### 作业链
 
 作业链允许你指定一列排队作业，在主作业成功执行后按顺序运行。如果序列中的一个作业失败，其余作业将不会运行。要执行排队作业链，可以使用 `Bus` Facade 提供的 `chain` 方法。Laravel 的命令总线是排队作业分发所基于的较低层组件：
 
-    use App\Jobs\OptimizePodcast;
-    use App\Jobs\ProcessPodcast;
-    use App\Jobs\ReleasePodcast;
-    use Illuminate\Support\Facades\Bus;
+```php
+use App\Jobs\OptimizePodcast;
+use App\Jobs\ProcessPodcast;
+use App\Jobs\ReleasePodcast;
+use Illuminate\Support\Facades\Bus;
 
-    Bus::chain([
-        new ProcessPodcast,
-        new OptimizePodcast,
-        new ReleasePodcast,
-    ])->dispatch();
+Bus::chain([
+    new ProcessPodcast,
+    new OptimizePodcast,
+    new ReleasePodcast,
+])->dispatch();
+```
 
 除了链式作业类实例外，你还可以链式闭包：
 
-    Bus::chain([
-        new ProcessPodcast,
-        new OptimizePodcast,
-        function () {
-            Podcast::update(/* ... */);
-        },
-    ])->dispatch();
+```php
+Bus::chain([
+    new ProcessPodcast,
+    new OptimizePodcast,
+    function () {
+        Podcast::update(/* ... */);
+    },
+])->dispatch();
+```
 
 > **Warning**  
 > 在作业内使用 `$this->delete()` 方法删除作业不会阻止链式作业被处理。链只有在链中的作业失败时才会停止执行。
@@ -831,27 +903,31 @@ Laravel 包含一个 `Illuminate\Queue\Middleware\ThrottlesExceptions` 中间件
 
 如果你想指定链式作业应使用的连接和队列，可以使用 `onConnection` 和 `onQueue` 方法。这些方法指定应使用的队列连接和队列名称，除非排队作业被显式分配了不同的连接/队列：
 
-    Bus::chain([
-        new ProcessPodcast,
-        new OptimizePodcast,
-        new ReleasePodcast,
-    ])->onConnection('redis')->onQueue('podcasts')->dispatch();
+```php
+Bus::chain([
+    new ProcessPodcast,
+    new OptimizePodcast,
+    new ReleasePodcast,
+])->onConnection('redis')->onQueue('podcasts')->dispatch();
+```
 
 <a name="chain-failures"></a>
 #### 链失败
 
 链式作业时，你可以使用 `catch` 方法指定在链中的作业失败时应调用的闭包。给定的回调将接收导致作业失败的 `Throwable` 实例：
 
-    use Illuminate\Support\Facades\Bus;
-    use Throwable;
+```php
+use Illuminate\Support\Facades\Bus;
+use Throwable;
 
-    Bus::chain([
-        new ProcessPodcast,
-        new OptimizePodcast,
-        new ReleasePodcast,
-    ])->catch(function (Throwable $e) {
-        // 链中的作业已失败...
-    })->dispatch();
+Bus::chain([
+    new ProcessPodcast,
+    new OptimizePodcast,
+    new ReleasePodcast,
+])->catch(function (Throwable $e) {
+    // 链中的作业已失败...
+})->dispatch();
+```
 
 > **Warning**  
 > 由于链回调被序列化并在稍后由 Laravel 队列执行，你不应在链回调内使用 `$this` 变量。
@@ -864,124 +940,134 @@ Laravel 包含一个 `Illuminate\Queue\Middleware\ThrottlesExceptions` 中间件
 
 通过将作业推送到不同队列，你可以"分类"排队作业，甚至优先处理分配给各种队列的工作进程数量。请记住，这不会将作业推送到队列配置文件定义的不同队列"连接"，而是推送到单个连接内的特定队列。要指定队列，在分发作业时使用 `onQueue` 方法：
 
-    <?php
+```php
+<?php
 
-    namespace App\Http\Controllers;
+namespace App\Http\Controllers;
 
-    use App\Http\Controllers\Controller;
-    use App\Jobs\ProcessPodcast;
-    use App\Models\Podcast;
-    use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
+use App\Jobs\ProcessPodcast;
+use App\Models\Podcast;
+use Illuminate\Http\Request;
 
-    class PodcastController extends Controller
+class PodcastController extends Controller
+{
+    /**
+     * 存储新播客。
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function store(Request $request)
     {
-        /**
-         * 存储新播客。
-         *
-         * @param  \Illuminate\Http\Request  $request
-         * @return \Illuminate\Http\Response
-         */
-        public function store(Request $request)
-        {
-            $podcast = Podcast::create(/* ... */);
+        $podcast = Podcast::create(/* ... */);
 
-            // 创建播客...
+        // 创建播客...
 
-            ProcessPodcast::dispatch($podcast)->onQueue('processing');
-        }
+        ProcessPodcast::dispatch($podcast)->onQueue('processing');
     }
+}
+```
 
 或者，你可以通过在作业的构造函数内调用 `onQueue` 方法来指定作业的队列：
 
-    <?php
+```php
+<?php
 
-    namespace App\Jobs;
+namespace App\Jobs;
 
-     use Illuminate\Bus\Queueable;
-     use Illuminate\Contracts\Queue\ShouldQueue;
-     use Illuminate\Foundation\Bus\Dispatchable;
-     use Illuminate\Queue\InteractsWithQueue;
-     use Illuminate\Queue\SerializesModels;
+ use Illuminate\Bus\Queueable;
+ use Illuminate\Contracts\Queue\ShouldQueue;
+ use Illuminate\Foundation\Bus\Dispatchable;
+ use Illuminate\Queue\InteractsWithQueue;
+ use Illuminate\Queue\SerializesModels;
 
-    class ProcessPodcast implements ShouldQueue
+class ProcessPodcast implements ShouldQueue
+{
+    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+
+    /**
+     * 创建新的作业实例。
+     *
+     * @return void
+     */
+    public function __construct()
     {
-        use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
-
-        /**
-         * 创建新的作业实例。
-         *
-         * @return void
-         */
-        public function __construct()
-        {
-            $this->onQueue('processing');
-        }
+        $this->onQueue('processing');
     }
+}
+```
 
 <a name="dispatching-to-a-particular-connection"></a>
 #### 分发到特定连接
 
 如果你的应用程序与多个队列连接交互，可以使用 `onConnection` 方法指定将作业推送到哪个连接：
 
-    <?php
+```php
+<?php
 
-    namespace App\Http\Controllers;
+namespace App\Http\Controllers;
 
-    use App\Http\Controllers\Controller;
-    use App\Jobs\ProcessPodcast;
-    use App\Models\Podcast;
-    use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
+use App\Jobs\ProcessPodcast;
+use App\Models\Podcast;
+use Illuminate\Http\Request;
 
-    class PodcastController extends Controller
+class PodcastController extends Controller
+{
+    /**
+     * 存储新播客。
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function store(Request $request)
     {
-        /**
-         * 存储新播客。
-         *
-         * @param  \Illuminate\Http\Request  $request
-         * @return \Illuminate\Http\Response
-         */
-        public function store(Request $request)
-        {
-            $podcast = Podcast::create(/* ... */);
+        $podcast = Podcast::create(/* ... */);
 
-            // 创建播客...
+        // 创建播客...
 
-            ProcessPodcast::dispatch($podcast)->onConnection('sqs');
-        }
+        ProcessPodcast::dispatch($podcast)->onConnection('sqs');
     }
+}
+```
 
 你可以将 `onConnection` 和 `onQueue` 方法链式连接以指定作业的连接和队列：
 
-    ProcessPodcast::dispatch($podcast)
-                  ->onConnection('sqs')
-                  ->onQueue('processing');
+```php
+ProcessPodcast::dispatch($podcast)
+              ->onConnection('sqs')
+              ->onQueue('processing');
+```
 
 或者，你可以通过在作业的构造函数内调用 `onConnection` 方法来指定作业的连接：
 
-    <?php
+```php
+<?php
 
-    namespace App\Jobs;
+namespace App\Jobs;
 
-     use Illuminate\Bus\Queueable;
-     use Illuminate\Contracts\Queue\ShouldQueue;
-     use Illuminate\Foundation\Bus\Dispatchable;
-     use Illuminate\Queue\InteractsWithQueue;
-     use Illuminate\Queue\SerializesModels;
+ use Illuminate\Bus\Queueable;
+ use Illuminate\Contracts\Queue\ShouldQueue;
+ use Illuminate\Foundation\Bus\Dispatchable;
+ use Illuminate\Queue\InteractsWithQueue;
+ use Illuminate\Queue\SerializesModels;
 
-    class ProcessPodcast implements ShouldQueue
+class ProcessPodcast implements ShouldQueue
+{
+    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+
+    /**
+     * 创建新的作业实例。
+     *
+     * @return void
+     */
+    public function __construct()
     {
-        use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
-
-        /**
-         * 创建新的作业实例。
-         *
-         * @return void
-         */
-        public function __construct()
-        {
-            $this->onConnection('sqs');
-        }
+        $this->onConnection('sqs');
     }
+}
+```
 
 <a name="max-job-attempts-and-timeout"></a>
 ### 指定最大作业尝试次数 / 超时值
@@ -1001,34 +1087,38 @@ php artisan queue:work --tries=3
 
 你可以通过在作业类本身上定义可尝试的最大次数来采取更细粒度的方法。如果作业上指定了最大尝试次数，它将优先于命令行上提供的 `--tries` 值：
 
-    <?php
+```php
+<?php
 
-    namespace App\Jobs;
+namespace App\Jobs;
 
-    class ProcessPodcast implements ShouldQueue
-    {
-        /**
-         * 作业可尝试的次数。
-         *
-         * @var int
-         */
-        public $tries = 5;
-    }
+class ProcessPodcast implements ShouldQueue
+{
+    /**
+     * 作业可尝试的次数。
+     *
+     * @var int
+     */
+    public $tries = 5;
+}
+```
 
 <a name="time-based-attempts"></a>
 #### 基于时间的尝试
 
 作为定义作业失败前可尝试次数的替代方案，你可以定义作业不再尝试的时间。这允许作业在给定时间范围内尝试任意次数。要定义作业不再尝试的时间，向作业类添加 `retryUntil` 方法。此方法应返回 `DateTime` 实例：
 
-    /**
-     * 确定作业应超时的时间。
-     *
-     * @return \DateTime
-     */
-    public function retryUntil()
-    {
-        return now()->addMinutes(10);
-    }
+```php
+/**
+ * 确定作业应超时的时间。
+ *
+ * @return \DateTime
+ */
+public function retryUntil()
+{
+    return now()->addMinutes(10);
+}
+```
 
 > **Note**  
 > 你还可以在[排队的事件监听器](/docs/{{version}}/events#queued-event-listeners)上定义 `tries` 属性或 `retryUntil` 方法。
@@ -1038,43 +1128,45 @@ php artisan queue:work --tries=3
 
 有时你可能希望指定作业可以尝试多次，;但如果重试由给定数量的未处理异常触发（而不是由 `release` 方法直接释放），则应失败。为此，你可以在作业类上定义 `maxExceptions` 属性：
 
-    <?php
+```php
+<?php
 
-    namespace App\Jobs;
+namespace App\Jobs;
 
-    use Illuminate\Support\Facades\Redis;
+use Illuminate\Support\Facades\Redis;
 
-    class ProcessPodcast implements ShouldQueue
+class ProcessPodcast implements ShouldQueue
+{
+    /**
+     * 作业可尝试的次数。
+     *
+     * @var int
+     */
+    public $tries = 25;
+
+    /**
+     * 失败前允许的最大未处理异常数。
+     *
+     * @var int
+     */
+    public $maxExceptions = 3;
+
+    /**
+     * 执行作业。
+     *
+     * @return void
+     */
+    public function handle()
     {
-        /**
-         * 作业可尝试的次数。
-         *
-         * @var int
-         */
-        public $tries = 25;
-
-        /**
-         * 失败前允许的最大未处理异常数。
-         *
-         * @var int
-         */
-        public $maxExceptions = 3;
-
-        /**
-         * 执行作业。
-         *
-         * @return void
-         */
-        public function handle()
-        {
-            Redis::throttle('key')->allow(10)->every(60)->then(function () {
-                // 获取锁，处理播客...
-            }, function () {
-                // 无法获取锁...
-                return $this->release(10);
-            });
-        }
+        Redis::throttle('key')->allow(10)->every(60)->then(function () {
+            // 获取锁，处理播客...
+        }, function () {
+            // 无法获取锁...
+            return $this->release(10);
+        });
     }
+}
+```
 
 在此示例中，如果应用程序无法获取 Redis 锁，作业将被释放十秒并继续重试最多 25 次。但是，如果作业抛出三个未处理异常，作业将失败。
 
@@ -1096,19 +1188,21 @@ php artisan queue:work --timeout=30
 
 你还可以在作业类本身上定义作业允许运行的最大秒数。如果作业上指定了超时，它将优先于命令行上指定的任何超时：
 
-    <?php
+```php
+<?php
 
-    namespace App\Jobs;
+namespace App\Jobs;
 
-    class ProcessPodcast implements ShouldQueue
-    {
-        /**
-         * 作业超时前可运行的秒数。
-         *
-         * @var int
-         */
-        public $timeout = 120;
-    }
+class ProcessPodcast implements ShouldQueue
+{
+    /**
+     * 作业超时前可运行的秒数。
+     *
+     * @var int
+     */
+    public $timeout = 120;
+}
+```
 
 有时，IO 阻塞进程（如套接字或传出 HTTP 连接）可能不遵守你指定的超时。因此，使用这些功能时，你应始终尝试使用其 API 指定超时。例如，使用 Guzzle 时，你应始终指定连接和请求超时值。
 
@@ -1136,44 +1230,52 @@ public $failOnTimeout = true;
 
 有时你可能希望手动将作业释放回队列，以便可以在稍后再次尝试。你可以通过调用 `release` 方法来实现：
 
-    /**
-     * 执行作业。
-     *
-     * @return void
-     */
-    public function handle()
-    {
-        // ...
+```php
+/**
+ * 执行作业。
+ *
+ * @return void
+ */
+public function handle()
+{
+    // ...
 
-        $this->release();
-    }
+    $this->release();
+}
+```
 
 默认情况下，`release` 方法将作业释放回队列以立即处理。但是，通过向 `release` 方法传递整数，你可以指示队列在给定秒数过去之前不使作业可供处理：
 
-    $this->release(10);
+```php
+$this->release(10);
+```
 
 <a name="manually-failing-a-job"></a>
 #### 手动使作业失败
 
 有时你可能需要手动将作业标记为"失败"。为此，你可以调用 `fail` 方法：
 
-    /**
-     * 执行作业。
-     *
-     * @return void
-     */
-    public function handle()
-    {
-        // ...
+```php
+/**
+ * 执行作业。
+ *
+ * @return void
+ */
+public function handle()
+{
+    // ...
 
-        $this->fail();
-    }
+    $this->fail();
+}
+```
 
 如果你想因为你捕获的异常而将作业标记为失败，可以将异常传递给 `fail` 方法。或者，为方便起见，你可以传递字符串错误消息，它将为你转换为异常：
 
-    $this->fail($exception);
+```php
+$this->fail($exception);
 
-    $this->fail('Something went wrong.');
+$this->fail('Something went wrong.');
+```
 
 > **Note**  
 > 有关失败作业的更多信息，请查阅[有关处理作业失败的文档](#dealing-with-failed-jobs)。
@@ -1194,63 +1296,67 @@ php artisan migrate
 
 要定义可批处理作业，你应像通常一样[创建可排队作业](#creating-jobs)；但是，你应将 `Illuminate\Bus\Batchable` Trait 添加到作业类。此 Trait 提供对 `batch` 方法的访问，可用于检索作业执行所在的当前批次：
 
-    <?php
+```php
+<?php
 
-    namespace App\Jobs;
+namespace App\Jobs;
 
-    use Illuminate\Bus\Batchable;
-    use Illuminate\Bus\Queueable;
-    use Illuminate\Contracts\Queue\ShouldQueue;
-    use Illuminate\Foundation\Bus\Dispatchable;
-    use Illuminate\Queue\InteractsWithQueue;
-    use Illuminate\Queue\SerializesModels;
+use Illuminate\Bus\Batchable;
+use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Foundation\Bus\Dispatchable;
+use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Queue\SerializesModels;
 
-    class ImportCsv implements ShouldQueue
+class ImportCsv implements ShouldQueue
+{
+    use Batchable, Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+
+    /**
+     * 执行作业。
+     *
+     * @return void
+     */
+    public function handle()
     {
-        use Batchable, Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+        if ($this->batch()->cancelled()) {
+            // 确定批次是否已取消...
 
-        /**
-         * 执行作业。
-         *
-         * @return void
-         */
-        public function handle()
-        {
-            if ($this->batch()->cancelled()) {
-                // 确定批次是否已取消...
-
-                return;
-            }
-
-            // 导入 CSV 文件的一部分...
+            return;
         }
+
+        // 导入 CSV 文件的一部分...
     }
+}
+```
 
 <a name="dispatching-batches"></a>
 ### 分发批次
 
 要分发一批作业，你应使用 `Bus` Facade 的 `batch` 方法。当然，批处理在与完成回调结合时最有用。因此，你可以使用 `then`、`catch` 和 `finally` 方法为批次定义完成回调。这些回调在被调用时都将接收 `Illuminate\Bus\Batch` 实例。在此示例中，我们将想象排队一批作业，每个作业处理 CSV 文件中给定数量的行：
 
-    use App\Jobs\ImportCsv;
-    use Illuminate\Bus\Batch;
-    use Illuminate\Support\Facades\Bus;
-    use Throwable;
+```php
+use App\Jobs\ImportCsv;
+use Illuminate\Bus\Batch;
+use Illuminate\Support\Facades\Bus;
+use Throwable;
 
-    $batch = Bus::batch([
-        new ImportCsv(1, 100),
-        new ImportCsv(101, 200),
-        new ImportCsv(201, 300),
-        new ImportCsv(301, 400),
-        new ImportCsv(401, 500),
-    ])->then(function (Batch $batch) {
-        // 所有作业成功完成...
-    })->catch(function (Batch $batch, Throwable $e) {
-        // 检测到第一个批次作业失败...
-    })->finally(function (Batch $batch) {
-        // 批次已完成执行...
-    })->dispatch();
+$batch = Bus::batch([
+    new ImportCsv(1, 100),
+    new ImportCsv(101, 200),
+    new ImportCsv(201, 300),
+    new ImportCsv(301, 400),
+    new ImportCsv(401, 500),
+])->then(function (Batch $batch) {
+    // 所有作业成功完成...
+})->catch(function (Batch $batch, Throwable $e) {
+    // 检测到第一个批次作业失败...
+})->finally(function (Batch $batch) {
+    // 批次已完成执行...
+})->dispatch();
 
-    return $batch->id;
+return $batch->id;
+```
 
 批次的 ID（可通过 `$batch->id` 属性访问）可用于在批次分发后[查询 Laravel 命令总线](#inspecting-batches)以获取有关批次的信息。
 
@@ -1262,79 +1368,89 @@ php artisan migrate
 
 某些工具（如 Laravel Horizon 和 Laravel Telescope）如果批次已命名，可为批次提供更用户友好的调试信息。要为批次分配任意名称，你可以在定义批次时调用 `name` 方法：
 
-    $batch = Bus::batch([
-        // ...
-    ])->then(function (Batch $batch) {
-        // 所有作业成功完成...
-    })->name('Import CSV')->dispatch();
+```php
+$batch = Bus::batch([
+    // ...
+])->then(function (Batch $batch) {
+    // 所有作业成功完成...
+})->name('Import CSV')->dispatch();
+```
 
 <a name="batch-connection-queue"></a>
 #### 批次连接与队列
 
 如果你想指定批处理作业应使用的连接和队列，可以使用 `onConnection` 和 `onQueue` 方法。所有批处理作业必须在同一连接和队列内执行：
 
-    $batch = Bus::batch([
-        // ...
-    ])->then(function (Batch $batch) {
-        // 所有作业成功完成...
-    })->onConnection('redis')->onQueue('imports')->dispatch();
+```php
+$batch = Bus::batch([
+    // ...
+])->then(function (Batch $batch) {
+    // 所有作业成功完成...
+})->onConnection('redis')->onQueue('imports')->dispatch();
+```
 
 <a name="chains-within-batches"></a>
 #### 批次内的链
 
 你可以通过将链式作业放在数组内来在批次内定义一组[链式作业](#job-chaining)。例如，我们可以并行执行两个作业链，并在两个作业链都完成处理时执行回调：
 
-    use App\Jobs\ReleasePodcast;
-    use App\Jobs\SendPodcastReleaseNotification;
-    use Illuminate\Bus\Batch;
-    use Illuminate\Support\Facades\Bus;
+```php
+use App\Jobs\ReleasePodcast;
+use App\Jobs\SendPodcastReleaseNotification;
+use Illuminate\Bus\Batch;
+use Illuminate\Support\Facades\Bus;
 
-    Bus::batch([
-        [
-            new ReleasePodcast(1),
-            new SendPodcastReleaseNotification(1),
-        ],
-        [
-            new ReleasePodcast(2),
-            new SendPodcastReleaseNotification(2),
-        ],
-    ])->then(function (Batch $batch) {
-        // ...
-    })->dispatch();
+Bus::batch([
+    [
+        new ReleasePodcast(1),
+        new SendPodcastReleaseNotification(1),
+    ],
+    [
+        new ReleasePodcast(2),
+        new SendPodcastReleaseNotification(2),
+    ],
+])->then(function (Batch $batch) {
+    // ...
+})->dispatch();
+```
 
 <a name="adding-jobs-to-batches"></a>
 ### 向批次添加作业
 
 有时从批处理作业内向批次添加额外作业可能很有用。当你需要批处理数千个可能在 Web 请求期间分发时间过长的作业时，此模式很有用。因此，相反，你可能希望分发一批初始"加载器"作业，用更多作业水合批次：
 
-    $batch = Bus::batch([
-        new LoadImportBatch,
-        new LoadImportBatch,
-        new LoadImportBatch,
-    ])->then(function (Batch $batch) {
-        // 所有作业成功完成...
-    })->name('Import Contacts')->dispatch();
+```php
+$batch = Bus::batch([
+    new LoadImportBatch,
+    new LoadImportBatch,
+    new LoadImportBatch,
+])->then(function (Batch $batch) {
+    // 所有作业成功完成...
+})->name('Import Contacts')->dispatch();
+```
 
 在此示例中，我们将使用 `LoadImportBatch` 作业用额外作业水合批次。为此，我们可以使用可通过作业的 `batch` 方法访问的批次实例上的 `add` 方法：
 
-    use App\Jobs\ImportContacts;
-    use Illuminate\Support\Collection;
+```php
+use App\Jobs\ImportContacts;
+use Illuminate\Support\Collection;
 
-    /**
-     * 执行作业。
-     *
-     * @return void
-     */
-    public function handle()
-    {
-        if ($this->batch()->cancelled()) {
-            return;
-        }
-
-        $this->batch()->add(Collection::times(1000, function () {
-            return new ImportContacts;
-        }));
+/**
+ * 执行作业。
+ *
+ * @return void
+ */
+public function handle()
+{
+    if ($this->batch()->cancelled()) {
+        return;
     }
+
+    $this->batch()->add(Collection::times(1000, function () {
+        return new ImportContacts;
+    }));
+}
+```
 
 > **Warning**  
 > 你只能从属于同一批次的作业内向批次添加作业。
@@ -1344,35 +1460,37 @@ php artisan migrate
 
 提供给批次完成回调的 `Illuminate\Bus\Batch` 实例具有各种属性和方法来帮助你交互和检查给定的作业批次：
 
-    // 批次的 UUID...
-    $batch->id;
+```php
+// 批次的 UUID...
+$batch->id;
 
-    // 批次的名称（如果适用）...
-    $batch->name;
+// 批次的名称（如果适用）...
+$batch->name;
 
-    // 分配给批次的作业数...
-    $batch->totalJobs;
+// 分配给批次的作业数...
+$batch->totalJobs;
 
-    // 队列尚未处理的作业数...
-    $batch->pendingJobs;
+// 队列尚未处理的作业数...
+$batch->pendingJobs;
 
-    // 已失败的作业数...
-    $batch->failedJobs;
+// 已失败的作业数...
+$batch->failedJobs;
 
-    // 迄今已处理的作业数...
-    $batch->processedJobs();
+// 迄今已处理的作业数...
+$batch->processedJobs();
 
-    // 批次的完成百分比 (0-100)...
-    $batch->progress();
+// 批次的完成百分比 (0-100)...
+$batch->progress();
 
-    // 指示批次是否已完成执行...
-    $batch->finished();
+// 指示批次是否已完成执行...
+$batch->finished();
 
-    // 取消批次的执行...
-    $batch->cancel();
+// 取消批次的执行...
+$batch->cancel();
 
-    // 指示批次是否已取消...
-    $batch->cancelled();
+// 指示批次是否已取消...
+$batch->cancelled();
+```
 
 <a name="returning-batches-from-routes"></a>
 #### 从路由返回批次
@@ -1381,47 +1499,53 @@ php artisan migrate
 
 要通过 ID 检索批次，你可以使用 `Bus` Facade 的 `findBatch` 方法：
 
-    use Illuminate\Support\Facades\Bus;
-    use Illuminate\Support\Facades\Route;
+```php
+use Illuminate\Support\Facades\Bus;
+use Illuminate\Support\Facades\Route;
 
-    Route::get('/batch/{batchId}', function (string $batchId) {
-        return Bus::findBatch($batchId);
-    });
+Route::get('/batch/{batchId}', function (string $batchId) {
+    return Bus::findBatch($batchId);
+});
+```
 
 <a name="cancelling-batches"></a>
 ### 取消批次
 
 有时你可能需要取消给定批次的执行。这可以通过调用 `Illuminate\Bus\Batch` 实例上的 `cancel` 方法来实现：
 
-    /**
-     * 执行作业。
-     *
-     * @return void
-     */
-    public function handle()
-    {
-        if ($this->user->exceedsImportLimit()) {
-            return $this->batch()->cancel();
-        }
-
-        if ($this->batch()->cancelled()) {
-            return;
-        }
+```php
+/**
+ * 执行作业。
+ *
+ * @return void
+ */
+public function handle()
+{
+    if ($this->user->exceedsImportLimit()) {
+        return $this->batch()->cancel();
     }
+
+    if ($this->batch()->cancelled()) {
+        return;
+    }
+}
+```
 
 正如你在之前的示例中可能注意到的，批处理作业通常应在继续执行之前确定其相应批次是否已取消。但是，为方便起见，你可以将 `SkipIfBatchCancelled` [中间件](#job-middleware) 分配给作业。如其名所示，此中间件将指示 Laravel 如果其相应批次已取消则不处理作业：
 
-    use Illuminate\Queue\Middleware\SkipIfBatchCancelled;
+```php
+use Illuminate\Queue\Middleware\SkipIfBatchCancelled;
 
-    /**
-     * 获取作业应通过的中间件。
-     *
-     * @return array
-     */
-    public function middleware()
-    {
-        return [new SkipIfBatchCancelled];
-    }
+/**
+ * 获取作业应通过的中间件。
+ *
+ * @return array
+ */
+public function middleware()
+{
+    return [new SkipIfBatchCancelled];
+}
+```
 
 <a name="batch-failures"></a>
 ### 批次失败
@@ -1433,11 +1557,13 @@ php artisan migrate
 
 当批次内的作业失败时，Laravel 将自动将批次标记为"已取消"。如果你希望，可以禁用此行为，以便作业失败不会自动将批次标记为已取消。这可以通过在分发批次时调用 `allowFailures` 方法来实现：
 
-    $batch = Bus::batch([
-        // ...
-    ])->then(function (Batch $batch) {
-        // 所有作业成功完成...
-    })->allowFailures()->dispatch();
+```php
+$batch = Bus::batch([
+    // ...
+])->then(function (Batch $batch) {
+    // 所有作业成功完成...
+})->allowFailures()->dispatch();
+```
 
 <a name="retrying-failed-batch-jobs"></a>
 #### 重试失败的批次作业
@@ -1453,40 +1579,52 @@ php artisan queue:retry-batch 32dbc76c-4f82-4749-b610-a639fe0099b5
 
 如果不进行清理，`job_batches` 表会非常快速地累积记录。为缓解此问题，你应该[调度](/docs/{{version}}/scheduling) `queue:prune-batches` Artisan 命令每日运行：
 
-    $schedule->command('queue:prune-batches')->daily();
+```php
+$schedule->command('queue:prune-batches')->daily();
+```
 
 默认情况下，所有超过 24 小时的已完成批次将被清理。你可以在调用命令时使用 `hours` 选项来确定保留批次数据的时间。例如，以下命令将删除所有超过 48 小时前完成的批次：
 
-    $schedule->command('queue:prune-batches --hours=48')->daily();
+```php
+$schedule->command('queue:prune-batches --hours=48')->daily();
+```
 
 有时，你的 `jobs_batches` 表可能为从未成功完成的批次累积批次记录，例如作业失败且该作业从未成功重试的批次。你可以使用 `unfinished` 选项指示 `queue:prune-batches` 命令清理这些未完成的批次记录：
 
-    $schedule->command('queue:prune-batches --hours=48 --unfinished=72')->daily();
+```php
+$schedule->command('queue:prune-batches --hours=48 --unfinished=72')->daily();
+```
 
 同样，你的 `jobs_batches` 表也可能为已取消的批次累积批次记录。你可以使用 `cancelled` 选项指示 `queue:prune-batches` 命令清理这些已取消的批次记录：
 
-    $schedule->command('queue:prune-batches --hours=48 --cancelled=72')->daily();
+```php
+$schedule->command('queue:prune-batches --hours=48 --cancelled=72')->daily();
+```
 
 <a name="queueing-closures"></a>
 ## 队列闭包
 
 除了将作业类分发到队列外，你还可以分发闭包。这对于需要在当前请求周期之外执行的快速、简单任务很有用。将闭包分发到队列时，闭包的代码内容经过加密签名，因此无法在传输过程中修改：
 
-    $podcast = App\Podcast::find(1);
+```php
+$podcast = App\Podcast::find(1);
 
-    dispatch(function () use ($podcast) {
-        $podcast->publish();
-    });
+dispatch(function () use ($podcast) {
+    $podcast->publish();
+});
+```
 
 使用 `catch` 方法，你可以提供一个在排队闭包在耗尽队列所有[配置的重试尝试](#max-job-attempts-and-timeout)后未能成功完成时应执行的闭包：
 
-    use Throwable;
+```php
+use Throwable;
 
-    dispatch(function () use ($podcast) {
-        $podcast->publish();
-    })->catch(function (Throwable $e) {
-        // 此作业已失败...
-    });
+dispatch(function () use ($podcast) {
+    $podcast->publish();
+})->catch(function (Throwable $e) {
+    // 此作业已失败...
+});
+```
 
 > **Warning**  
 > 由于 `catch` 回调被序列化并在稍后由 Laravel 队列执行，你不应在 `catch` 回调内使用 `$this` 变量。
@@ -1593,7 +1731,9 @@ php artisan queue:work --sleep=3
 
 有时你可能希望优先处理队列。例如，在 `config/queue.php` 配置文件中，你可以将 `redis` 连接的默认 `queue` 设置为 `low`。但是，偶尔你可能希望将作业推送到 `high` 优先级队列：
 
-    dispatch((new Job)->onQueue('high'));
+```php
+dispatch((new Job)->onQueue('high'));
+```
 
 要启动一个验证在继续 `low` 队列上的任何作业之前处理所有 `high` 队列作业的工作进程，向 `work` 命令传递逗号分隔的队列名称列表：
 
@@ -1726,98 +1866,106 @@ php artisan queue:work redis --tries=3 --backoff=3
 
 如果你想按作业配置 Laravel 在重试遇到异常的作业之前应等待的秒数，可以通过在作业类上定义 `backoff` 属性来实现：
 
-    /**
-     * 重试作业前等待的秒数。
-     *
-     * @var int
-     */
-    public $backoff = 3;
+```php
+/**
+ * 重试作业前等待的秒数。
+ *
+ * @var int
+ */
+public $backoff = 3;
+```
 
 如果你需要更复杂的逻辑来确定作业的退避时间，可以在作业类上定义 `backoff` 方法：
 
-    /**
-    * 计算重试作业前等待的秒数。
-    *
-    * @return int
-    */
-    public function backoff()
-    {
-        return 3;
-    }
+```php
+/**
+* 计算重试作业前等待的秒数。
+*
+* @return int
+*/
+public function backoff()
+{
+    return 3;
+}
+```
 
 你可以通过从 `backoff` 方法返回退避值数组来轻松配置"指数"退避。在此示例中，第一次重试的重试延迟为 1 秒，第二次重试为 5 秒，第三次重试为 10 秒：
 
-    /**
-    * 计算重试作业前等待的秒数。
-    *
-    * @return array
-    */
-    public function backoff()
-    {
-        return [1, 5, 10];
-    }
+```php
+/**
+* 计算重试作业前等待的秒数。
+*
+* @return array
+*/
+public function backoff()
+{
+    return [1, 5, 10];
+}
+```
 
 <a name="cleaning-up-after-failed-jobs"></a>
 ### 失败作业后清理
 
 当特定作业失败时，你可能希望向用户发送警报或恢复作业部分完成的任何操作。为此，你可以在作业类上定义 `failed` 方法。导致作业失败的 `Throwable` 实例将传递给 `failed` 方法：
 
-    <?php
+```php
+<?php
 
-    namespace App\Jobs;
+namespace App\Jobs;
 
-    use App\Models\Podcast;
-    use App\Services\AudioProcessor;
-    use Illuminate\Bus\Queueable;
-    use Illuminate\Contracts\Queue\ShouldQueue;
-    use Illuminate\Queue\InteractsWithQueue;
-    use Illuminate\Queue\SerializesModels;
-    use Throwable;
+use App\Models\Podcast;
+use App\Services\AudioProcessor;
+use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Queue\SerializesModels;
+use Throwable;
 
-    class ProcessPodcast implements ShouldQueue
+class ProcessPodcast implements ShouldQueue
+{
+    use InteractsWithQueue, Queueable, SerializesModels;
+
+    /**
+     * 播客实例。
+     *
+     * @var \App\Podcast
+     */
+    public $podcast;
+
+    /**
+     * 创建新的作业实例。
+     *
+     * @param  \App\Models\Podcast  $podcast
+     * @return void
+     */
+    public function __construct(Podcast $podcast)
     {
-        use InteractsWithQueue, Queueable, SerializesModels;
-
-        /**
-         * 播客实例。
-         *
-         * @var \App\Podcast
-         */
-        public $podcast;
-
-        /**
-         * 创建新的作业实例。
-         *
-         * @param  \App\Models\Podcast  $podcast
-         * @return void
-         */
-        public function __construct(Podcast $podcast)
-        {
-            $this->podcast = $podcast;
-        }
-
-        /**
-         * 执行作业。
-         *
-         * @param  \App\Services\AudioProcessor  $processor
-         * @return void
-         */
-        public function handle(AudioProcessor $processor)
-        {
-            // 处理上传的播客...
-        }
-
-        /**
-         * 处理作业失败。
-         *
-         * @param  \Throwable  $exception
-         * @return void
-         */
-        public function failed(Throwable $exception)
-        {
-            // 向用户发送失败通知等...
-        }
+        $this->podcast = $podcast;
     }
+
+    /**
+     * 执行作业。
+     *
+     * @param  \App\Services\AudioProcessor  $processor
+     * @return void
+     */
+    public function handle(AudioProcessor $processor)
+    {
+        // 处理上传的播客...
+    }
+
+    /**
+     * 处理作业失败。
+     *
+     * @param  \Throwable  $exception
+     * @return void
+     */
+    public function failed(Throwable $exception)
+    {
+        // 向用户发送失败通知等...
+    }
+}
+```
 
 > **Warning**  
 > 在调用 `failed` 方法之前实例化作业的新实例；因此，`handle` 方法内可能发生的任何类属性修改都将丢失。
@@ -1877,12 +2025,14 @@ php artisan queue:flush
 
 为方便起见，你可以通过将作业的 `deleteWhenMissingModels` 属性设置为 `true` 来选择自动删除具有缺失模型的作业。当此属性设置为 `true` 时，Laravel 将悄悄丢弃作业而不引发异常：
 
-    /**
-     * 如果作业的模型不再存在则删除作业。
-     *
-     * @var bool
-     */
-    public $deleteWhenMissingModels = true;
+```php
+/**
+ * 如果作业的模型不再存在则删除作业。
+ *
+ * @var bool
+ */
+public $deleteWhenMissingModels = true;
+```
 
 <a name="pruning-failed-jobs"></a>
 ### 清理失败作业
@@ -1938,40 +2088,42 @@ QUEUE_FAILED_DRIVER=null
 
 如果你想注册在作业失败时调用的事件监听器，可以使用 `Queue` Facade 的 `failing` 方法。例如，我们可以从 Laravel 包含的 `AppServiceProvider` 的 `boot` 方法向此事件附加闭包：
 
-    <?php
+```php
+<?php
 
-    namespace App\Providers;
+namespace App\Providers;
 
-    use Illuminate\Support\Facades\Queue;
-    use Illuminate\Support\ServiceProvider;
-    use Illuminate\Queue\Events\JobFailed;
+use Illuminate\Support\Facades\Queue;
+use Illuminate\Support\ServiceProvider;
+use Illuminate\Queue\Events\JobFailed;
 
-    class AppServiceProvider extends ServiceProvider
+class AppServiceProvider extends ServiceProvider
+{
+    /**
+     * 注册任何应用程序服务。
+     *
+     * @return void
+     */
+    public function register()
     {
-        /**
-         * 注册任何应用程序服务。
-         *
-         * @return void
-         */
-        public function register()
-        {
-            //
-        }
-
-        /**
-         * 引导启动任何应用程序服务。
-         *
-         * @return void
-         */
-        public function boot()
-        {
-            Queue::failing(function (JobFailed $event) {
-                // $event->connectionName
-                // $event->job
-                // $event->exception
-            });
-        }
+        //
     }
+
+    /**
+     * 引导启动任何应用程序服务。
+     *
+     * @return void
+     */
+    public function boot()
+    {
+        Queue::failing(function (JobFailed $event) {
+            // $event->connectionName
+            // $event->job
+            // $event->exception
+        });
+    }
+}
+```
 
 <a name="clearing-jobs-from-queues"></a>
 ## 从队列清除作业
@@ -2036,55 +2188,59 @@ public function boot()
 
 使用 `Queue` [Facade](/docs/{{version}}/facades) 上的 `before` 和 `after` 方法，你可以指定在排队作业处理之前或之后执行的回调。这些回调是执行额外日志记录或为仪表盘递增统计数据的绝佳机会。通常，你应从[服务提供者](/docs/{{version}}/providers) 的 `boot` 方法调用这些方法。例如，我们可以使用 Laravel 包含的 `AppServiceProvider`：
 
-    <?php
+```php
+<?php
 
-    namespace App\Providers;
+namespace App\Providers;
 
-    use Illuminate\Support\Facades\Queue;
-    use Illuminate\Support\ServiceProvider;
-    use Illuminate\Queue\Events\JobProcessed;
-    use Illuminate\Queue\Events\JobProcessing;
+use Illuminate\Support\Facades\Queue;
+use Illuminate\Support\ServiceProvider;
+use Illuminate\Queue\Events\JobProcessed;
+use Illuminate\Queue\Events\JobProcessing;
 
-    class AppServiceProvider extends ServiceProvider
+class AppServiceProvider extends ServiceProvider
+{
+    /**
+     * 注册任何应用程序服务。
+     *
+     * @return void
+     */
+    public function register()
     {
-        /**
-         * 注册任何应用程序服务。
-         *
-         * @return void
-         */
-        public function register()
-        {
-            //
-        }
-
-        /**
-         * 引导启动任何应用程序服务。
-         *
-         * @return void
-         */
-        public function boot()
-        {
-            Queue::before(function (JobProcessing $event) {
-                // $event->connectionName
-                // $event->job
-                // $event->job->payload()
-            });
-
-            Queue::after(function (JobProcessed $event) {
-                // $event->connectionName
-                // $event->job
-                // $event->job->payload()
-            });
-        }
+        //
     }
+
+    /**
+     * 引导启动任何应用程序服务。
+     *
+     * @return void
+     */
+    public function boot()
+    {
+        Queue::before(function (JobProcessing $event) {
+            // $event->connectionName
+            // $event->job
+            // $event->job->payload()
+        });
+
+        Queue::after(function (JobProcessed $event) {
+            // $event->connectionName
+            // $event->job
+            // $event->job->payload()
+        });
+    }
+}
+```
 
 使用 `Queue` [Facade](/docs/{{version}}/facades) 上的 `looping` 方法，你可以指定在工作进程尝试从队列获取作业之前执行的回调。例如，你可以注册一个闭包来回滚先前失败作业留下的任何打开的事务：
 
-    use Illuminate\Support\Facades\DB;
-    use Illuminate\Support\Facades\Queue;
+```php
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Queue;
 
-    Queue::looping(function () {
-        while (DB::transactionLevel() > 0) {
-            DB::rollBack();
-        }
-    });
+Queue::looping(function () {
+    while (DB::transactionLevel() > 0) {
+        DB::rollBack();
+    }
+});
+```

@@ -63,11 +63,13 @@ Laravel 的日志基于"通道"。每个通道代表一种特定的日志写入�
 
 默认情况下，Monolog 实例化时会带上一个与当前环境相匹配的"通道名称"，例如 `production` 或 `local`。要修改该值，你可以在通道配置中添加 `name` 选项：
 
-    'stack' => [
-        'driver' => 'stack',
-        'name' => 'channel-name',
-        'channels' => ['single', 'slack'],
-    ],
+```php
+'stack' => [
+    'driver' => 'stack',
+    'name' => 'channel-name',
+    'channels' => ['single', 'slack'],
+],
+```
 
 <a name="channel-prerequisites"></a>
 ### 通道前置条件
@@ -114,23 +116,27 @@ Laravel 的日志基于"通道"。每个通道代表一种特定的日志写入�
 
 PHP、Laravel 以及其他库经常通知使用者，某个功能已被弃用，并会在未来版本中移除。如果你希望记录这些弃用警告，可以通过 `LOG_DEPRECATIONS_CHANNEL` 环境变量，或在应用 `config/logging.php` 配置文件中指定你偏好的 `deprecations` 日志通道：
 
-    'deprecations' => [
-        'channel' => env('LOG_DEPRECATIONS_CHANNEL', 'null'),
-        'trace' => env('LOG_DEPRECATIONS_TRACE', false),
-    ],
+```php
+'deprecations' => [
+    'channel' => env('LOG_DEPRECATIONS_CHANNEL', 'null'),
+    'trace' => env('LOG_DEPRECATIONS_TRACE', false),
+],
 
-    'channels' => [
-        // ...
-    ]
+'channels' => [
+    // ...
+]
+```
 
 或者，你可以定义一个名为 `deprecations` 的日志通道。如果存在同名日志通道，它将始终被用于记录弃用信息：
 
-    'channels' => [
-        'deprecations' => [
-            'driver' => 'single',
-            'path' => storage_path('logs/php-deprecation-warnings.log'),
-        ],
+```php
+'channels' => [
+    'deprecations' => [
+        'driver' => 'single',
+        'path' => storage_path('logs/php-deprecation-warnings.log'),
     ],
+],
+```
 
 <a name="building-log-stacks"></a>
 ## 构建日志栈
@@ -172,128 +178,142 @@ PHP、Laravel 以及其他库经常通知使用者，某个功能已被弃用，
 
 假设我们使用 `debug` 方法记录一条消息：
 
-    Log::debug('An informational message.');
+```php
+Log::debug('An informational message.');
+```
 
 按照我们的配置，`syslog` 通道会把该消息写入系统日志；不过，由于该错误消息并非 `critical` 或更高级别，它不会被发送到 Slack。但如果我们记录一条 `emergency` 消息，它就会被同时发送到系统日志和 Slack，因为 `emergency` 级别高于我们两个通道的最低级别阈值：
 
-    Log::emergency('The system is down!');
+```php
+Log::emergency('The system is down!');
+```
 
 <a name="writing-log-messages"></a>
 ## 编写日志消息
 
 你可以使用 `Log` [Facade](/docs/{{version}}/facades)向日志写入信息。如前所述，记录器提供了 [RFC 5424 规范](https://tools.ietf.org/html/rfc5424)中定义的八个日志级别：**emergency**、**alert**、**critical**、**error**、**warning**、**notice**、**info** 和 **debug**：
 
-    use Illuminate\Support\Facades\Log;
+```php
+use Illuminate\Support\Facades\Log;
 
-    Log::emergency($message);
-    Log::alert($message);
-    Log::critical($message);
-    Log::error($message);
-    Log::warning($message);
-    Log::notice($message);
-    Log::info($message);
-    Log::debug($message);
+Log::emergency($message);
+Log::alert($message);
+Log::critical($message);
+Log::error($message);
+Log::warning($message);
+Log::notice($message);
+Log::info($message);
+Log::debug($message);
+```
 
 你可以调用其中任意方法来记录对应级别的消息。默认情况下，消息会写入 `logging` 配置文件中配置的默认日志通道：
 
-    <?php
+```php
+<?php
 
-    namespace App\Http\Controllers;
+namespace App\Http\Controllers;
 
-    use App\Http\Controllers\Controller;
-    use App\Models\User;
-    use Illuminate\Support\Facades\Log;
-    use Illuminate\View\View;
+use App\Http\Controllers\Controller;
+use App\Models\User;
+use Illuminate\Support\Facades\Log;
+use Illuminate\View\View;
 
-    class UserController extends Controller
+class UserController extends Controller
+{
+    /**
+     * 显示给定用户的资料。
+     */
+    public function show(string $id): View
     {
-        /**
-         * 显示给定用户的资料。
-         */
-        public function show(string $id): View
-        {
-            Log::info('Showing the user profile for user: {id}', ['id' => $id]);
+        Log::info('Showing the user profile for user: {id}', ['id' => $id]);
 
-            return view('user.profile', [
-                'user' => User::findOrFail($id)
-            ]);
-        }
+        return view('user.profile', [
+            'user' => User::findOrFail($id)
+        ]);
     }
+}
+```
 
 <a name="contextual-information"></a>
 ### 上下文信息
 
 可以向日志方法传入一个上下文数据数组。这部分上下文数据会被格式化，并与日志消息一同展示：
 
-    use Illuminate\Support\Facades\Log;
+```php
+use Illuminate\Support\Facades\Log;
 
-    Log::info('User {id} failed to login.', ['id' => $user->id]);
+Log::info('User {id} failed to login.', ['id' => $user->id]);
+```
 
 有时你可能希望指定某些上下文信息，让它们包含在某个通道之后的所有日志条目中。例如，你可能希望记录一个与每个传入应用请求相关联的请求 ID。为此，你可以调用 `Log` Facade 的 `withContext` 方法：
 
-    <?php
+```php
+<?php
 
-    namespace App\Http\Middleware;
+namespace App\Http\Middleware;
 
-    use Closure;
-    use Illuminate\Http\Request;
-    use Illuminate\Support\Facades\Log;
-    use Illuminate\Support\Str;
-    use Symfony\Component\HttpFoundation\Response;
+use Closure;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
+use Symfony\Component\HttpFoundation\Response;
 
-    class AssignRequestId
+class AssignRequestId
+{
+    /**
+     * 处理传入的请求。
+     *
+     * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
+     */
+    public function handle(Request $request, Closure $next): Response
     {
-        /**
-         * 处理传入的请求。
-         *
-         * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
-         */
-        public function handle(Request $request, Closure $next): Response
-        {
-            $requestId = (string) Str::uuid();
+        $requestId = (string) Str::uuid();
 
-            Log::withContext([
-                'request-id' => $requestId
-            ]);
+        Log::withContext([
+            'request-id' => $requestId
+        ]);
 
-            $response = $next($request);
+        $response = $next($request);
 
-            $response->headers->set('Request-Id', $requestId);
+        $response->headers->set('Request-Id', $requestId);
 
-            return $response;
-        }
+        return $response;
     }
+}
+```
 
 如果你希望在_所有_日志通道之间共享上下文信息，可以调用 `Log::shareContext()` 方法。该方法会把上下文信息提供给所有已创建的通道，以及之后创建的任何通道：
 
-    <?php
+```php
+<?php
 
-    namespace App\Http\Middleware;
+namespace App\Http\Middleware;
 
-    use Closure;
-    use Illuminate\Http\Request;
-    use Illuminate\Support\Facades\Log;
-    use Illuminate\Support\Str;
-    use Symfony\Component\HttpFoundation\Response;
+use Closure;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
+use Symfony\Component\HttpFoundation\Response;
 
-    class AssignRequestId
+class AssignRequestId
+{
+    /**
+     * 处理传入的请求。
+     *
+     * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
+     */
+    public function handle(Request $request, Closure $next): Response
     {
-        /**
-         * 处理传入的请求。
-         *
-         * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
-         */
-        public function handle(Request $request, Closure $next): Response
-        {
-            $requestId = (string) Str::uuid();
+        $requestId = (string) Str::uuid();
 
-            Log::shareContext([
-                'request-id' => $requestId
-            ]);
+        Log::shareContext([
+            'request-id' => $requestId
+        ]);
 
-            // ...
-        }
+        // ...
     }
+}
+```
 
 > [!NOTE]
 > 如果你需要在处理队列任务时共享日志上下文，可以使用[任务中间件](/docs/{{version}}/queues#job-middleware)。
@@ -303,36 +323,44 @@ PHP、Laravel 以及其他库经常通知使用者，某个功能已被弃用，
 
 有时你可能希望把消息记录到应用默认通道以外的通道上。你可以使用 `Log` Facade 上的 `channel` 方法，获取并写入配置文件中定义的任意通道：
 
-    use Illuminate\Support\Facades\Log;
+```php
+use Illuminate\Support\Facades\Log;
 
-    Log::channel('slack')->info('Something happened!');
+Log::channel('slack')->info('Something happened!');
+```
 
 如果你想创建一个由多个通道组成的即时日志栈，可以使用 `stack` 方法：
 
-    Log::stack(['single', 'slack'])->info('Something happened!');
+```php
+Log::stack(['single', 'slack'])->info('Something happened!');
+```
 
 <a name="on-demand-channels"></a>
 #### 即时通道
 
 你也可以在运行时提供配置来创建即时通道，而无需把这些配置写进应用的 `logging` 配置文件。为此，你可以向 `Log` Facade 的 `build` 方法传入一个配置数组：
 
-    use Illuminate\Support\Facades\Log;
+```php
+use Illuminate\Support\Facades\Log;
 
-    Log::build([
-      'driver' => 'single',
-      'path' => storage_path('logs/custom.log'),
-    ])->info('Something happened!');
+Log::build([
+  'driver' => 'single',
+  'path' => storage_path('logs/custom.log'),
+])->info('Something happened!');
+```
 
 你可能还希望把即时通道纳入某个即时日志栈。只需把即时通道实例包含在传给 `stack` 方法的数组中即可实现：
 
-    use Illuminate\Support\Facades\Log;
+```php
+use Illuminate\Support\Facades\Log;
 
-    $channel = Log::build([
-      'driver' => 'single',
-      'path' => storage_path('logs/custom.log'),
-    ]);
+$channel = Log::build([
+  'driver' => 'single',
+  'path' => storage_path('logs/custom.log'),
+]);
 
-    Log::stack(['slack', $channel])->info('Something happened!');
+Log::stack(['slack', $channel])->info('Something happened!');
+```
 
 <a name="monolog-channel-customization"></a>
 ## Monolog 通道自定义
@@ -344,37 +372,41 @@ PHP、Laravel 以及其他库经常通知使用者，某个功能已被弃用，
 
 要开始使用，请在通道配置上定义一个 `tap` 数组。`tap` 数组应当包含一个类名列表，这些类在 Monolog 实例创建之后有机会对其进行自定义（或"挂钩"）。这些类没有约定的存放位置，因此你可以自由地在应用中创建一个目录来容纳它们：
 
-    'single' => [
-        'driver' => 'single',
-        'tap' => [App\Logging\CustomizeFormatter::class],
-        'path' => storage_path('logs/laravel.log'),
-        'level' => env('LOG_LEVEL', 'debug'),
-        'replace_placeholders' => true,
-    ],
+```php
+'single' => [
+    'driver' => 'single',
+    'tap' => [App\Logging\CustomizeFormatter::class],
+    'path' => storage_path('logs/laravel.log'),
+    'level' => env('LOG_LEVEL', 'debug'),
+    'replace_placeholders' => true,
+],
+```
 
 在通道上配置好 `tap` 选项后，就可以定义用于自定义 Monolog 实例的类了。这个类只需要一个方法：`__invoke`，它接收一个 `Illuminate\Log\Logger` 实例。`Illuminate\Log\Logger` 实例会把所有方法调用代理到底层的 Monolog 实例：
 
-    <?php
+```php
+<?php
 
-    namespace App\Logging;
+namespace App\Logging;
 
-    use Illuminate\Log\Logger;
-    use Monolog\Formatter\LineFormatter;
+use Illuminate\Log\Logger;
+use Monolog\Formatter\LineFormatter;
 
-    class CustomizeFormatter
+class CustomizeFormatter
+{
+    /**
+     * 自定义给定的记录器实例。
+     */
+    public function __invoke(Logger $logger): void
     {
-        /**
-         * 自定义给定的记录器实例。
-         */
-        public function __invoke(Logger $logger): void
-        {
-            foreach ($logger->getHandlers() as $handler) {
-                $handler->setFormatter(new LineFormatter(
-                    '[%datetime%] %channel%.%level_name%: %message% %context% %extra%'
-                ));
-            }
+        foreach ($logger->getHandlers() as $handler) {
+            $handler->setFormatter(new LineFormatter(
+                '[%datetime%] %channel%.%level_name%: %message% %context% %extra%'
+            ));
         }
     }
+}
+```
 
 > [!NOTE]
 > 你的所有"tap"类都通过[服务容器（Service Container）](/docs/{{version}}/container)解析，因此它们所需的任何构造函数依赖都会被自动注入。
@@ -386,36 +418,42 @@ Monolog 提供了多种[可用处理器](https://github.com/Seldaek/monolog/tree
 
 使用 `monolog` 驱动时，`handler` 配置项用于指定要实例化哪个处理器。此外，处理器所需的任何构造函数参数都可以选用 `with` 配置项来指定：
 
-    'logentries' => [
-        'driver'  => 'monolog',
-        'handler' => Monolog\Handler\SyslogUdpHandler::class,
-        'with' => [
-            'host' => 'my.logentries.internal.datahubhost.company.com',
-            'port' => '10000',
-        ],
+```php
+'logentries' => [
+    'driver'  => 'monolog',
+    'handler' => Monolog\Handler\SyslogUdpHandler::class,
+    'with' => [
+        'host' => 'my.logentries.internal.datahubhost.company.com',
+        'port' => '10000',
     ],
+],
+```
 
 <a name="monolog-formatters"></a>
 #### Monolog 格式化器
 
 使用 `monolog` 驱动时，Monolog 的 `LineFormatter` 会作为默认格式化器。不过，你可以使用 `formatter` 和 `formatter_with` 配置项自定义传给处理器的格式化器类型：
 
-    'browser' => [
-        'driver' => 'monolog',
-        'handler' => Monolog\Handler\BrowserConsoleHandler::class,
-        'formatter' => Monolog\Formatter\HtmlFormatter::class,
-        'formatter_with' => [
-            'dateFormat' => 'Y-m-d',
-        ],
+```php
+'browser' => [
+    'driver' => 'monolog',
+    'handler' => Monolog\Handler\BrowserConsoleHandler::class,
+    'formatter' => Monolog\Formatter\HtmlFormatter::class,
+    'formatter_with' => [
+        'dateFormat' => 'Y-m-d',
     ],
+],
+```
 
 如果你使用的 Monolog 处理器能够提供自己的格式化器，可以把 `formatter` 配置项的值设为 `default`：
 
-    'newrelic' => [
-        'driver' => 'monolog',
-        'handler' => Monolog\Handler\NewRelicHandler::class,
-        'formatter' => 'default',
-    ],
+```php
+'newrelic' => [
+    'driver' => 'monolog',
+    'handler' => Monolog\Handler\NewRelicHandler::class,
+    'formatter' => 'default',
+],
+```
 
 <a name="monolog-processors"></a>
 #### Monolog 预处理器
@@ -424,54 +462,60 @@ Monolog 还可以在记录消息之前对其进行处理。你可以创建自己
 
 如果你想为 `monolog` 驱动自定义预处理器，请在该通道的配置中添加 `processors` 配置值：
 
-     'memory' => [
-         'driver' => 'monolog',
-         'handler' => Monolog\Handler\StreamHandler::class,
-         'with' => [
-             'stream' => 'php://stderr',
-         ],
-         'processors' => [
-             // 简单语法...
-             Monolog\Processor\MemoryUsageProcessor::class,
+```php
+'memory' => [
+    'driver' => 'monolog',
+    'handler' => Monolog\Handler\StreamHandler::class,
+    'with' => [
+        'stream' => 'php://stderr',
+    ],
+    'processors' => [
+        // 简单语法...
+        Monolog\Processor\MemoryUsageProcessor::class,
 
-             // 带选项...
-             [
-                'processor' => Monolog\Processor\PsrLogMessageProcessor::class,
-                'with' => ['removeUsedContextFields' => true],
-            ],
-         ],
-     ],
+        // 带选项...
+        [
+           'processor' => Monolog\Processor\PsrLogMessageProcessor::class,
+           'with' => ['removeUsedContextFields' => true],
+       ],
+    ],
+],
+```
 
 <a name="creating-custom-channels-via-factories"></a>
 ### 通过工厂创建自定义通道
 
 如果你想定义一个完全自定义的通道，并对 Monolog 的实例化与配置拥有完全控制权，可以在 `config/logging.php` 配置文件中指定 `custom` 驱动类型。你的配置应当包含一个 `via` 选项，其中填写将被调用来创建 Monolog 实例的工厂类名：
 
-    'channels' => [
-        'example-custom-channel' => [
-            'driver' => 'custom',
-            'via' => App\Logging\CreateCustomLogger::class,
-        ],
+```php
+'channels' => [
+    'example-custom-channel' => [
+        'driver' => 'custom',
+        'via' => App\Logging\CreateCustomLogger::class,
     ],
+],
+```
 
 配置好 `custom` 驱动通道后，就可以定义用于创建 Monolog 实例的类了。这个类只需要一个 `__invoke` 方法，它应当返回 Monolog 记录器实例。该方法会以通道配置数组作为唯一参数：
 
-    <?php
+```php
+<?php
 
-    namespace App\Logging;
+namespace App\Logging;
 
-    use Monolog\Logger;
+use Monolog\Logger;
 
-    class CreateCustomLogger
+class CreateCustomLogger
+{
+    /**
+     * 创建一个自定义的 Monolog 实例。
+     */
+    public function __invoke(array $config): Logger
     {
-        /**
-         * 创建一个自定义的 Monolog 实例。
-         */
-        public function __invoke(array $config): Logger
-        {
-            return new Logger(/* ... */);
-        }
+        return new Logger(/* ... */);
     }
+}
+```
 
 <a name="tailing-log-messages-using-pail"></a>
 ## 使用 Pail 实时跟踪日志消息

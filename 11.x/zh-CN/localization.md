@@ -22,17 +22,21 @@ Laravel 的本地化功能提供了一种便捷方式来获取各种语言的字
 
 Laravel 提供两种管理翻译字符串的方式。第一种，翻译字符串可以存放在应用 `lang` 目录下的文件中。该目录中可以为应用支持的每种语言建立一个子目录。Laravel 就是用这种方式管理内置功能（如验证错误消息）的翻译字符串：
 
-    /lang
-        /en
-            messages.php
-        /es
-            messages.php
+```text
+/lang
+    /en
+        messages.php
+    /es
+        messages.php
+```
 
 或者，翻译字符串也可以定义在放在 `lang` 目录中的 JSON 文件里。采用这种方式时，应用支持的每种语言都对应该目录中的一个 JSON 文件。这种方式推荐用于翻译字符串数量较多的应用：
 
-    /lang
-        en.json
-        es.json
+```text
+/lang
+    en.json
+    es.json
+```
 
 本文将分别讨论管理翻译字符串的每种方式。
 
@@ -54,47 +58,53 @@ php artisan lang:publish
 
 在运行时，你可以使用 `App` Facade 提供的 `setLocale` 方法为单次 HTTP 请求修改默认语言：
 
-    use Illuminate\Support\Facades\App;
+```php
+use Illuminate\Support\Facades\App;
 
-    Route::get('/greeting/{locale}', function (string $locale) {
-        if (! in_array($locale, ['en', 'es', 'fr'])) {
-            abort(400);
-        }
+Route::get('/greeting/{locale}', function (string $locale) {
+    if (! in_array($locale, ['en', 'es', 'fr'])) {
+        abort(400);
+    }
 
-        App::setLocale($locale);
+    App::setLocale($locale);
 
-        // ...
-    });
+    // ...
+});
+```
 
 <a name="determining-the-current-locale"></a>
 #### 确定当前的区域设置
 
 你可以使用 `App` Facade 上的 `currentLocale` 和 `isLocale` 方法获取当前区域设置，或检查区域设置是否为某个给定值：
 
-    use Illuminate\Support\Facades\App;
+```php
+use Illuminate\Support\Facades\App;
 
-    $locale = App::currentLocale();
+$locale = App::currentLocale();
 
-    if (App::isLocale('en')) {
-        // ...
-    }
+if (App::isLocale('en')) {
+    // ...
+}
+```
 
 <a name="pluralization-language"></a>
 ### 复数形式语言
 
 Laravel 的"复数化器"被 Eloquent 和框架其他部分用于把单数形式的字符串转换为复数形式，你可以指示它使用英语以外的语言。只需在应用中某个服务提供者的 `boot` 方法内调用 `useLanguage` 方法即可实现。复数化器当前支持的语言有：`french`、`norwegian-bokmal`、`portuguese`、`spanish` 和 `turkish`：
 
-    use Illuminate\Support\Pluralizer;
+```php
+use Illuminate\Support\Pluralizer;
 
-    /**
-     * 引导任何应用服务。
-     */
-    public function boot(): void
-    {
-        Pluralizer::useLanguage('spanish');
+/**
+ * 引导任何应用服务。
+ */
+public function boot(): void
+{
+    Pluralizer::useLanguage('spanish');
 
-        // ...
-    }
+    // ...
+}
+```
 
 > [!WARNING]
 > 如果你自定义了复数化器的语言，就应当显式定义 Eloquent 模型的[表名](/docs/{{version}}/eloquent#table-names)。
@@ -107,21 +117,25 @@ Laravel 的"复数化器"被 Eloquent 和框架其他部分用于把单数形式
 
 通常，翻译字符串存放在 `lang` 目录下的文件中。该目录中应当为应用支持的每种语言建立一个子目录。Laravel 就是用这种方式管理内置功能（如验证错误消息）的翻译字符串：
 
-    /lang
-        /en
-            messages.php
-        /es
-            messages.php
+```text
+/lang
+    /en
+        messages.php
+    /es
+        messages.php
+```
 
 所有语言文件都返回一个以字符串为键的数组。例如：
 
-    <?php
+```php
+<?php
 
-    // lang/en/messages.php
+// lang/en/messages.php
 
-    return [
-        'welcome' => 'Welcome to our application!',
-    ];
+return [
+    'welcome' => 'Welcome to our application!',
+];
+```
 
 > [!WARNING]
 > 对于按地区区分的语言，你应当按照 ISO 15897 命名语言目录。例如，英国英语应使用 "en_GB" 而不是 "en-gb"。
@@ -148,35 +162,47 @@ Laravel 的"复数化器"被 Eloquent 和框架其他部分用于把单数形式
 
 你可以使用 `__` 辅助函数从语言文件中获取翻译字符串。如果你使用"短键"定义翻译字符串，应使用"点"语法把包含该键的文件和键本身传给 `__` 函数。例如，从 `lang/en/messages.php` 语言文件中获取 `welcome` 翻译字符串：
 
-    echo __('messages.welcome');
+```php
+echo __('messages.welcome');
+```
 
 如果指定的翻译字符串不存在，`__` 函数会返回该翻译字符串的键。因此，使用上面的例子，如果翻译字符串不存在，`__` 函数会返回 `messages.welcome`。
 
 如果你[使用默认翻译字符串作为翻译键](#using-translation-strings-as-keys)，就应当把字符串的默认翻译传给 `__` 函数：
 
-    echo __('I love programming.');
+```php
+echo __('I love programming.');
+```
 
 同样，如果翻译字符串不存在，`__` 函数会返回传给它的翻译字符串键。
 
 如果你使用 [Blade 模板引擎](/docs/{{version}}/blade)，可以使用 `{{ }}` 输出语法显示翻译字符串：
 
-    {{ __('messages.welcome') }}
+```blade
+{{ __('messages.welcome') }}
+```
 
 <a name="replacing-parameters-in-translation-strings"></a>
 ### 替换翻译字符串中的参数
 
 如果需要，你可以在翻译字符串中定义占位符。所有占位符都以 `:` 开头。例如，你可以定义一条带占位符名称的欢迎消息：
 
-    'welcome' => 'Welcome, :name',
+```php
+'welcome' => 'Welcome, :name',
+```
 
 若要在获取翻译字符串时替换占位符，可以把替换项数组作为 `__` 函数的第二个参数传入：
 
-    echo __('messages.welcome', ['name' => 'dayle']);
+```php
+echo __('messages.welcome', ['name' => 'dayle']);
+```
 
 如果你的占位符全为大写字母，或只有首字母大写，那么翻译后的值也会相应地大写：
 
-    'welcome' => 'Welcome, :NAME', // Welcome, DAYLE
-    'goodbye' => 'Goodbye, :Name', // Goodbye, Dayle
+```php
+'welcome' => 'Welcome, :NAME', // Welcome, DAYLE
+'goodbye' => 'Goodbye, :Name', // Goodbye, Dayle
+```
 
 <a name="object-replacement-formatting"></a>
 #### 对象替换格式化
@@ -185,25 +211,29 @@ Laravel 的"复数化器"被 Eloquent 和框架其他部分用于把单数形式
 
 在这些情况下，Laravel 允许你为该特定类型的对象注册自定义的格式化处理函数。为此，你应调用翻译器的 `stringable` 方法。`stringable` 方法接受一个闭包，该闭包应当类型提示它负责格式化的对象类型。通常，你应该在应用的 `AppServiceProvider` 类的 `boot` 方法中调用 `stringable` 方法：
 
-    use Illuminate\Support\Facades\Lang;
-    use Money\Money;
+```php
+use Illuminate\Support\Facades\Lang;
+use Money\Money;
 
-    /**
-     * 引导任何应用服务。
-     */
-    public function boot(): void
-    {
-        Lang::stringable(function (Money $money) {
-            return $money->formatTo('en_GB');
-        });
-    }
+/**
+ * 引导任何应用服务。
+ */
+public function boot(): void
+{
+    Lang::stringable(function (Money $money) {
+        return $money->formatTo('en_GB');
+    });
+}
+```
 
 <a name="pluralization"></a>
 ### 复数形式
 
 复数形式是一个复杂的问题，因为不同语言有各种复杂的复数化规则；不过，Laravel 可以帮助你根据自己定义的复数规则翻译出不同的字符串。使用 `|` 字符，你可以区分字符串的单数形式和复数形式：
 
-    'apples' => 'There is one apple|There are many apples',
+```php
+'apples' => 'There is one apple|There are many apples',
+```
 
 当然，使用[翻译字符串作为键](#using-translation-strings-as-keys)时也支持复数形式：
 
@@ -215,21 +245,29 @@ Laravel 的"复数化器"被 Eloquent 和框架其他部分用于把单数形式
 
 你甚至可以创建更复杂的复数规则，为多个数值范围指定翻译字符串：
 
-    'apples' => '{0} There are none|[1,19] There are some|[20,*] There are many',
+```php
+'apples' => '{0} There are none|[1,19] There are some|[20,*] There are many',
+```
 
 定义好带复数选项的翻译字符串后，你可以使用 `trans_choice` 函数获取给定"数量"对应的文本。在这个例子中，由于数量大于 1，因此会返回翻译字符串的复数形式：
 
-    echo trans_choice('messages.apples', 10);
+```php
+echo trans_choice('messages.apples', 10);
+```
 
 你也可以在复数形式字符串中定义占位符属性。通过把数组作为 `trans_choice` 函数的第三个参数传入，可以替换这些占位符：
 
-    'minutes_ago' => '{1} :value minute ago|[2,*] :value minutes ago',
+```php
+'minutes_ago' => '{1} :value minute ago|[2,*] :value minutes ago',
 
-    echo trans_choice('time.minutes_ago', 5, ['value' => 5]);
+echo trans_choice('time.minutes_ago', 5, ['value' => 5]);
+```
 
 如果你想显示传给 `trans_choice` 函数的整数值，可以使用内置的 `:count` 占位符：
 
-    'apples' => '{0} There are none|{1} There is one|[2,*] There are :count',
+```php
+'apples' => '{0} There are none|{1} There is one|[2,*] There are :count',
+```
 
 <a name="overriding-package-language-files"></a>
 ## 覆盖包的语言文件

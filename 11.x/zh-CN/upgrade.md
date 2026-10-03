@@ -132,11 +132,15 @@ Laravel 11 引入了一种全新的默认应用结构，默认文件更少。具
 
 通常情况下，这不会干扰你的应用；不过，如果你的 `User` 模型的"password"字段名称不是 `password`，就应当通过模型的 `authPasswordName` 属性指定该字段名称：
 
-    protected $authPasswordName = 'custom_password_field';
+```php
+protected $authPasswordName = 'custom_password_field';
+```
 
 或者，你可以通过在应用 `config/hashing.php` 配置文件中添加 `rehash_on_login` 选项来禁用密码重新哈希：
 
-    'rehash_on_login' => false,
+```php
+'rehash_on_login' => false,
+```
 
 <a name="the-user-provider-contract"></a>
 #### `UserProvider` 契约
@@ -327,11 +331,13 @@ Laravel 11 新增了一个专用于 MariaDB 的数据库驱动，连接 MariaDB 
 
 如果你的应用连接到 MariaDB 数据库，可以把连接配置更新为新的 `mariadb` 驱动，以便将来受益于 MariaDB 特有的功能：
 
-    'driver' => 'mariadb',
-    'url' => env('DB_URL'),
-    'host' => env('DB_HOST', '127.0.0.1'),
-    'port' => env('DB_PORT', '3306'),
-    // ...
+```php
+'driver' => 'mariadb',
+'url' => env('DB_URL'),
+'host' => env('DB_HOST', '127.0.0.1'),
+'port' => env('DB_PORT', '3306'),
+// ...
+```
 
 目前，新的 MariaDB 驱动与当前的 MySQL 驱动行为一致，只有一点例外：`uuid` schema 构建器方法会创建原生 UUID 列，而不是 `char(36)` 列。
 
@@ -577,10 +583,12 @@ php artisan vendor:publish --tag=passport-migrations
 
 此外，密码授权类型默认被禁用。你可以在应用 `AppServiceProvider` 的 `boot` 方法中调用 `enablePasswordGrant` 方法来启用它：
 
-    public function boot(): void
-    {
-        Passport::enablePasswordGrant();
-    }
+```php
+public function boot(): void
+{
+    Passport::enablePasswordGrant();
+}
+```
 
 <a name="sanctum"></a>
 ### Sanctum
@@ -600,11 +608,13 @@ php artisan vendor:publish --tag=sanctum-migrations
 
 然后，在应用 `config/sanctum.php` 配置文件中，你应当把对 `authenticate_session`、`encrypt_cookies` 和 `validate_csrf_token` 中间件的引用更新为如下内容：
 
-    'middleware' => [
-        'authenticate_session' => Laravel\Sanctum\Http\Middleware\AuthenticateSession::class,
-        'encrypt_cookies' => Illuminate\Cookie\Middleware\EncryptCookies::class,
-        'validate_csrf_token' => Illuminate\Foundation\Http\Middleware\ValidateCsrfToken::class,
-    ],
+```php
+'middleware' => [
+    'authenticate_session' => Laravel\Sanctum\Http\Middleware\AuthenticateSession::class,
+    'encrypt_cookies' => Illuminate\Cookie\Middleware\EncryptCookies::class,
+    'validate_csrf_token' => Illuminate\Foundation\Http\Middleware\ValidateCsrfToken::class,
+],
+```
 
 <a name="telescope"></a>
 ### Telescope

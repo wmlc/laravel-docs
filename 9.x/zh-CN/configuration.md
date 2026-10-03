@@ -86,7 +86,9 @@ APP_NAME="My Application"
 
 当应用接收到请求时，`.env` 文件中列出的所有变量都会被加载到 `$_ENV` PHP 超级全局数组中。不过，你可以在配置文件中使用 `env` 函数从这些变量中获取值。事实上，如果你查看 Laravel 的配置文件，会发现许多选项已经在使用这个函数：
 
-    'debug' => env('APP_DEBUG', false),
+```php
+'debug' => env('APP_DEBUG', false),
+```
 
 传递给 `env` 函数的第二个值是"默认值"。如果给定的键不存在对应的环境变量，就会返回该值。
 
@@ -95,19 +97,23 @@ APP_NAME="My Application"
 
 当前应用环境通过 `.env` 文件中的 `APP_ENV` 变量确定。你可以通过 `App` [Facade](/docs/{{version}}/facades) 的 `environment` 方法访问该值：
 
-    use Illuminate\Support\Facades\App;
+```php
+use Illuminate\Support\Facades\App;
 
-    $environment = App::environment();
+$environment = App::environment();
+```
 
 你也可以向 `environment` 方法传递参数，判断环境是否与给定值匹配。如果环境匹配任何一个给定值，该方法会返回 `true`：
 
-    if (App::environment('local')) {
-        // 当前环境是 local
-    }
+```php
+if (App::environment('local')) {
+    // 当前环境是 local
+}
 
-    if (App::environment(['local', 'staging'])) {
-        // 当前环境是 local 或 staging...
-    }
+if (App::environment(['local', 'staging'])) {
+    // 当前环境是 local 或 staging...
+}
+```
 
 > **注意**
 > 可以通过定义服务器级的 `APP_ENV` 环境变量来覆盖当前应用环境的检测。
@@ -181,14 +187,18 @@ php artisan env:decrypt --force
 
 你可以在应用的任何地方使用全局 `config` 函数轻松访问配置值。配置值可以通过"点"语法访问，其中包含你要访问的文件名和选项名。还可以指定一个默认值，当配置选项不存在时将返回该默认值：
 
-    $value = config('app.timezone');
+```php
+$value = config('app.timezone');
 
-    // 如果配置值不存在，则获取默认值...
-    $value = config('app.timezone', 'Asia/Seoul');
+// 如果配置值不存在，则获取默认值...
+$value = config('app.timezone', 'Asia/Seoul');
+```
 
 要在运行时设置配置值，可以向 `config` 函数传递一个数组：
 
-    config(['app.timezone' => 'America/Chicago']);
+```php
+config(['app.timezone' => 'America/Chicago']);
+```
 
 <a name="configuration-caching"></a>
 ## 配置缓存

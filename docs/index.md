@@ -12,10 +12,16 @@ hero:
     - theme: alt
       text: Laravel 12.x
       link: /12.x/installation
+    - theme: alt
+      text: Laravel 11.x
+      link: /11.x/installation
+    - theme: alt
+      text: Laravel 9.x
+      link: /9.x/installation
 
 features:
   - title: 多版本切换
-    details: 顶部版本切换器可在 13.x 与 12.x 之间无缝切换，并保持当前文档页面。
+    details: 顶部版本切换器可在 13.x、12.x、11.x、9.x 之间无缝切换，并保持当前文档页面。
     icon: 🔄
   - title: 三栏布局
     details: 左侧文档目录、中间正文、右侧本页标题大纲，阅读体验清晰。

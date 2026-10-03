@@ -336,77 +336,87 @@ Laravel 的事件广播让你可以借助基于驱动的 WebSocket 方案，把�
 
 在我们的应用中，假设有一个页面允许用户查看自己订单的物流状态。同时假设应用处理物流状态更新时会触发 `OrderShipmentStatusUpdated` 事件：
 
-    use App\Events\OrderShipmentStatusUpdated;
+```php
+use App\Events\OrderShipmentStatusUpdated;
 
-    OrderShipmentStatusUpdated::dispatch($order);
+OrderShipmentStatusUpdated::dispatch($order);
+```
 
 <a name="the-shouldbroadcast-interface"></a>
 #### `ShouldBroadcast` 接口
 
 当用户正在查看自己的某个订单时，我们不希望他们必须刷新页面才能看到状态更新。相反，我们希望在更新产生时就广播给应用。因此，需要用 `ShouldBroadcast` 接口标记 `OrderShipmentStatusUpdated` 事件。这会指示 Laravel 在事件触发时广播它：
 
-    <?php
+```php
+<?php
 
-    namespace App\Events;
+namespace App\Events;
 
-    use App\Models\Order;
-    use Illuminate\Broadcasting\Channel;
-    use Illuminate\Broadcasting\InteractsWithSockets;
-    use Illuminate\Broadcasting\PresenceChannel;
-    use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
-    use Illuminate\Queue\SerializesModels;
+use App\Models\Order;
+use Illuminate\Broadcasting\Channel;
+use Illuminate\Broadcasting\InteractsWithSockets;
+use Illuminate\Broadcasting\PresenceChannel;
+use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
+use Illuminate\Queue\SerializesModels;
 
-    class OrderShipmentStatusUpdated implements ShouldBroadcast
-    {
-        /**
-         * 订单实例。
-         *
-         * @var \App\Models\Order
-         */
-        public $order;
-    }
+class OrderShipmentStatusUpdated implements ShouldBroadcast
+{
+    /**
+     * 订单实例。
+     *
+     * @var \App\Models\Order
+     */
+    public $order;
+}
+```
 
 `ShouldBroadcast` 接口要求事件定义 `broadcastOn` 方法。该方法负责返回事件应当在哪些频道上广播。生成的事件类中已经定义了该方法的空桩实现，因此我们只需填写具体细节。我们只希望订单的创建者能够查看状态更新，所以会把事件广播到一个与该订单绑定的私有频道：
 
-    use Illuminate\Broadcasting\Channel;
-    use Illuminate\Broadcasting\PrivateChannel;
+```php
+use Illuminate\Broadcasting\Channel;
+use Illuminate\Broadcasting\PrivateChannel;
 
-    /**
-     * 获取该事件应当在哪个频道上广播。
-     */
-    public function broadcastOn(): Channel
-    {
-        return new PrivateChannel('orders.'.$this->order->id);
-    }
+/**
+ * 获取该事件应当在哪个频道上广播。
+ */
+public function broadcastOn(): Channel
+{
+    return new PrivateChannel('orders.'.$this->order->id);
+}
+```
 
 如果你希望事件在多个频道上广播，可以改为返回一个 `array`：
 
-    use Illuminate\Broadcasting\PrivateChannel;
+```php
+use Illuminate\Broadcasting\PrivateChannel;
 
-    /**
-     * 获取该事件应当在哪些频道上广播。
-     *
-     * @return array<int, \Illuminate\Broadcasting\Channel>
-     */
-    public function broadcastOn(): array
-    {
-        return [
-            new PrivateChannel('orders.'.$this->order->id),
-            // ...
-        ];
-    }
+/**
+ * 获取该事件应当在哪些频道上广播。
+ *
+ * @return array<int, \Illuminate\Broadcasting\Channel>
+ */
+public function broadcastOn(): array
+{
+    return [
+        new PrivateChannel('orders.'.$this->order->id),
+        // ...
+    ];
+}
+```
 
 <a name="example-application-authorizing-channels"></a>
 #### 授权频道
 
 请记住，用户必须获得授权才能收听私有频道。我们可以在应用的 `routes/channels.php` 文件中定义频道授权规则。在本例中，我们需要验证任何尝试收听私有 `orders.1` 频道的用户确实是该订单的创建者：
 
-    use App\Models\Order;
-    use App\Models\User;
+```php
+use App\Models\Order;
+use App\Models\User;
 
-    Broadcast::channel('orders.{orderId}', function (User $user, int $orderId) {
-        return $user->id === Order::findOrNew($orderId)->user_id;
-    });
+Broadcast::channel('orders.{orderId}', function (User $user, int $orderId) {
+    return $user->id === Order::findOrNew($orderId)->user_id;
+});
+```
 
 `channel` 方法接受两个参数：频道名称，以及一个返回 `true` 或 `false` 的回调，用来指示用户是否被授权收听该频道。
 
@@ -431,41 +441,43 @@ Echo.private(`orders.${orderId}`)
 
 `ShouldBroadcast` 接口要求你实现一个方法：`broadcastOn`。`broadcastOn` 方法应返回一个频道或一组频道，事件将在这些频道上广播。这些频道应为 `Channel`、`PrivateChannel` 或 `PresenceChannel` 的实例。`Channel` 实例表示任何用户都可以订阅的公开频道，而 `PrivateChannels` 与 `PresenceChannels` 表示需要[频道授权](#authorizing-channels)的私有频道：
 
-    <?php
+```php
+<?php
 
-    namespace App\Events;
+namespace App\Events;
 
-    use App\Models\User;
-    use Illuminate\Broadcasting\Channel;
-    use Illuminate\Broadcasting\InteractsWithSockets;
-    use Illuminate\Broadcasting\PresenceChannel;
-    use Illuminate\Broadcasting\PrivateChannel;
-    use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
-    use Illuminate\Queue\SerializesModels;
+use App\Models\User;
+use Illuminate\Broadcasting\Channel;
+use Illuminate\Broadcasting\InteractsWithSockets;
+use Illuminate\Broadcasting\PresenceChannel;
+use Illuminate\Broadcasting\PrivateChannel;
+use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
+use Illuminate\Queue\SerializesModels;
 
-    class ServerCreated implements ShouldBroadcast
+class ServerCreated implements ShouldBroadcast
+{
+    use SerializesModels;
+
+    /**
+     * 创建一个新的事件实例。
+     */
+    public function __construct(
+        public User $user,
+    ) {}
+
+    /**
+     * 获取该事件应当在哪些频道上广播。
+     *
+     * @return array<int, \Illuminate\Broadcasting\Channel>
+     */
+    public function broadcastOn(): array
     {
-        use SerializesModels;
-
-        /**
-         * 创建一个新的事件实例。
-         */
-        public function __construct(
-            public User $user,
-        ) {}
-
-        /**
-         * 获取该事件应当在哪些频道上广播。
-         *
-         * @return array<int, \Illuminate\Broadcasting\Channel>
-         */
-        public function broadcastOn(): array
-        {
-            return [
-                new PrivateChannel('user.'.$this->user->id),
-            ];
-        }
+        return [
+            new PrivateChannel('user.'.$this->user->id),
+        ];
     }
+}
+```
 
 实现 `ShouldBroadcast` 接口后，你只需像平常一样[触发该事件](/docs/{{version}}/events)。事件一旦触发，[队列任务](/docs/{{version}}/queues)就会自动使用你指定的广播驱动来广播它。
 
@@ -474,19 +486,23 @@ Echo.private(`orders.${orderId}`)
 
 默认情况下，Laravel 会使用事件的类名来广播该事件。不过，你可以在事件上定义 `broadcastAs` 方法来自定义广播名称：
 
-    /**
-     * 事件的广播名称。
-     */
-    public function broadcastAs(): string
-    {
-        return 'server.created';
-    }
+```php
+/**
+ * 事件的广播名称。
+ */
+public function broadcastAs(): string
+{
+    return 'server.created';
+}
+```
 
 如果使用 `broadcastAs` 方法自定义了广播名称，注册监听器时必须加上前导的 `.` 字符。这会指示 Echo 不要为事件添加应用命名空间前缀：
 
-    .listen('.server.created', function (e) {
-        ....
-    });
+```js
+.listen('.server.created', function (e) {
+    ....
+});
+```
 
 <a name="broadcast-data"></a>
 ### 广播数据
@@ -505,68 +521,78 @@ Echo.private(`orders.${orderId}`)
 
 不过，如果你希望对广播载荷有更精细的控制，可以在事件上添加 `broadcastWith` 方法。该方法应返回你希望作为事件载荷广播的数据数组：
 
-    /**
-     * 获取要广播的数据。
-     *
-     * @return array<string, mixed>
-     */
-    public function broadcastWith(): array
-    {
-        return ['id' => $this->user->id];
-    }
+```php
+/**
+ * 获取要广播的数据。
+ *
+ * @return array<string, mixed>
+ */
+public function broadcastWith(): array
+{
+    return ['id' => $this->user->id];
+}
+```
 
 <a name="broadcast-queue"></a>
 ### 广播队列
 
 默认情况下，每个广播事件都会被放入 `queue.php` 配置文件中指定为默认队列连接的默认队列。你可以在事件类上定义 `connection` 与 `queue` 属性，来自定义广播器所使用的队列连接与名称：
 
-    /**
-     * 广播该事件时使用的队列连接名称。
-     *
-     * @var string
-     */
-    public $connection = 'redis';
+```php
+/**
+ * 广播该事件时使用的队列连接名称。
+ *
+ * @var string
+ */
+public $connection = 'redis';
 
-    /**
-     * 放置广播任务的队列名称。
-     *
-     * @var string
-     */
-    public $queue = 'default';
+/**
+ * 放置广播任务的队列名称。
+ *
+ * @var string
+ */
+public $queue = 'default';
+```
 
 或者，你可以在事件上定义 `broadcastQueue` 方法来自定义队列名称：
 
-    /**
-     * 放置广播任务的队列名称。
-     */
-    public function broadcastQueue(): string
-    {
-        return 'default';
-    }
+```php
+/**
+ * 放置广播任务的队列名称。
+ */
+public function broadcastQueue(): string
+{
+    return 'default';
+}
+```
 
 如果你希望使用 `sync` 队列而不是默认队列驱动来广播事件，可以改为实现 `ShouldBroadcastNow` 接口，而不是 `ShouldBroadcast`：
 
-    <?php
+```php
+<?php
 
-    use Illuminate\Contracts\Broadcasting\ShouldBroadcastNow;
+use Illuminate\Contracts\Broadcasting\ShouldBroadcastNow;
 
-    class OrderShipmentStatusUpdated implements ShouldBroadcastNow
-    {
-        // ...
-    }
+class OrderShipmentStatusUpdated implements ShouldBroadcastNow
+{
+    // ...
+}
+```
 
 <a name="broadcast-conditions"></a>
 ### 广播条件
 
 有时你希望只在某个条件成立时才广播事件。可以在事件类上添加 `broadcastWhen` 方法来定义这些条件：
 
-    /**
-     * 确定是否应当广播该事件。
-     */
-    public function broadcastWhen(): bool
-    {
-        return $this->order->value > 100;
-    }
+```php
+/**
+ * 确定是否应当广播该事件。
+ */
+public function broadcastWhen(): bool
+{
+    return $this->order->value > 100;
+}
+```
 
 <a name="broadcasting-and-database-transactions"></a>
 #### 广播与数据库事务
@@ -575,18 +601,20 @@ Echo.private(`orders.${orderId}`)
 
 如果队列连接的 `after_commit` 配置选项被设为 `false`，你仍然可以在事件类上实现 `ShouldDispatchAfterCommit` 接口，以指明某个特定的广播事件应当在所有打开的数据库事务提交之后再分发：
 
-    <?php
+```php
+<?php
 
-    namespace App\Events;
+namespace App\Events;
 
-    use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
-    use Illuminate\Contracts\Events\ShouldDispatchAfterCommit;
-    use Illuminate\Queue\SerializesModels;
+use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
+use Illuminate\Contracts\Events\ShouldDispatchAfterCommit;
+use Illuminate\Queue\SerializesModels;
 
-    class ServerCreated implements ShouldBroadcast, ShouldDispatchAfterCommit
-    {
-        use SerializesModels;
-    }
+class ServerCreated implements ShouldBroadcast, ShouldDispatchAfterCommit
+{
+    use SerializesModels;
+}
+```
 
 > [!NOTE]
 > 若想了解更多如何规避这些问题，请查阅关于[队列任务与数据库事务](/docs/{{version}}/queues#jobs-and-database-transactions)的文档。
@@ -603,11 +631,13 @@ Echo.private(`orders.${orderId}`)
 
 接下来，我们需要定义真正用来判断当前已认证用户能否收听某个频道的逻辑。这部分逻辑写在 `install:broadcasting` Artisan 命令创建的 `routes/channels.php` 文件中。在这个文件里，你可以使用 `Broadcast::channel` 方法注册频道授权回调：
 
-    use App\Models\User;
+```php
+use App\Models\User;
 
-    Broadcast::channel('orders.{orderId}', function (User $user, int $orderId) {
-        return $user->id === Order::findOrNew($orderId)->user_id;
-    });
+Broadcast::channel('orders.{orderId}', function (User $user, int $orderId) {
+    return $user->id === Order::findOrNew($orderId)->user_id;
+});
+```
 
 `channel` 方法接受两个参数：频道名称，以及一个返回 `true` 或 `false` 的回调，用来指示用户是否被授权收听该频道。
 
@@ -624,12 +654,14 @@ php artisan channel:list
 
 与 HTTP 路由一样，频道路由也可以利用隐式和显式的[路由模型绑定](/docs/{{version}}/routing#route-model-binding)。例如，你可以不接收字符串或数字形式的订单 ID，而是直接请求一个 `Order` 模型实例：
 
-    use App\Models\Order;
-    use App\Models\User;
+```php
+use App\Models\Order;
+use App\Models\User;
 
-    Broadcast::channel('orders.{order}', function (User $user, Order $order) {
-        return $user->id === $order->user_id;
-    });
+Broadcast::channel('orders.{order}', function (User $user, Order $order) {
+    return $user->id === $order->user_id;
+});
+```
 
 > [!WARNING]
 > 与 HTTP 路由模型绑定不同，频道模型绑定不支持自动的[隐式模型绑定作用域限定](/docs/{{version}}/routing#implicit-model-binding-scoping)。不过这很少成为问题，因为大多数频道都可以基于单个模型的唯一主键来限定范围。
@@ -639,9 +671,11 @@ php artisan channel:list
 
 私有广播频道与 presence 广播频道通过应用的默认认证守卫来认证当前用户。如果用户未通过认证，频道授权会被自动拒绝，授权回调也不会执行。不过，如有需要，你可以指定多个自定义守卫来认证传入请求：
 
-    Broadcast::channel('channel', function () {
-        // ...
-    }, ['guards' => ['web', 'admin']]);
+```php
+Broadcast::channel('channel', function () {
+    // ...
+}, ['guards' => ['web', 'admin']]);
+```
 
 <a name="defining-channel-classes"></a>
 ### 定义频道类
@@ -654,34 +688,38 @@ php artisan make:channel OrderChannel
 
 接下来，在 `routes/channels.php` 文件中注册你的频道：
 
-    use App\Broadcasting\OrderChannel;
+```php
+use App\Broadcasting\OrderChannel;
 
-    Broadcast::channel('orders.{order}', OrderChannel::class);
+Broadcast::channel('orders.{order}', OrderChannel::class);
+```
 
 最后，你可以把频道的授权逻辑放在频道类的 `join` 方法中。这个 `join` 方法承载的逻辑，与你通常会放在频道授权闭包中的逻辑相同。你还可以利用频道模型绑定：
 
-    <?php
+```php
+<?php
 
-    namespace App\Broadcasting;
+namespace App\Broadcasting;
 
-    use App\Models\Order;
-    use App\Models\User;
+use App\Models\Order;
+use App\Models\User;
 
-    class OrderChannel
+class OrderChannel
+{
+    /**
+     * 创建一个新的频道实例。
+     */
+    public function __construct() {}
+
+    /**
+     * 认证用户对该频道的访问权限。
+     */
+    public function join(User $user, Order $order): array|bool
     {
-        /**
-         * 创建一个新的频道实例。
-         */
-        public function __construct() {}
-
-        /**
-         * 认证用户对该频道的访问权限。
-         */
-        public function join(User $user, Order $order): array|bool
-        {
-            return $user->id === $order->user_id;
-        }
+        return $user->id === $order->user_id;
     }
+}
+```
 
 > [!NOTE]
 > 与 Laravel 中许多其他类一样，频道类会被[服务容器](/docs/{{version}}/container)自动解析。因此，你可以在频道类的构造函数中类型提示所需的任何依赖项。
@@ -691,18 +729,22 @@ php artisan make:channel OrderChannel
 
 定义事件并用 `ShouldBroadcast` 接口标记它之后，你只需使用事件的 dispatch 方法触发该事件。事件分发器会发现该事件已标记 `ShouldBroadcast` 接口，从而把事件加入队列等待广播：
 
-    use App\Events\OrderShipmentStatusUpdated;
+```php
+use App\Events\OrderShipmentStatusUpdated;
 
-    OrderShipmentStatusUpdated::dispatch($order);
+OrderShipmentStatusUpdated::dispatch($order);
+```
 
 <a name="only-to-others"></a>
 ### 只广播给其他人
 
 在构建使用事件广播的应用时，你偶尔需要把某个事件广播给给定频道的所有订阅者，但排除当前用户。可以使用 `broadcast` 辅助函数配合 `toOthers` 方法来实现：
 
-    use App\Events\OrderShipmentStatusUpdated;
+```php
+use App\Events\OrderShipmentStatusUpdated;
 
-    broadcast(new OrderShipmentStatusUpdated($update))->toOthers();
+broadcast(new OrderShipmentStatusUpdated($update))->toOthers();
+```
 
 为了更好地理解何时该使用 `toOthers` 方法，我们来设想一个任务列表应用：用户可以通过输入任务名称来创建新任务。为了创建任务，你的应用可能向 `/task` URL 发起请求，该请求会广播任务的创建，并返回新任务的 JSON 表示。当 JavaScript 应用收到该端点的响应时，它可能会直接把新任务插入任务列表，如下所示：
 
@@ -734,36 +776,40 @@ var socketId = Echo.socketId();
 
 如果你的应用与多个广播连接交互，并且希望使用默认广播器之外的广播器来广播事件，可以使用 `via` 方法指定把事件推送到哪个连接：
 
-    use App\Events\OrderShipmentStatusUpdated;
+```php
+use App\Events\OrderShipmentStatusUpdated;
 
-    broadcast(new OrderShipmentStatusUpdated($update))->via('pusher');
+broadcast(new OrderShipmentStatusUpdated($update))->via('pusher');
+```
 
 或者，你可以在事件的构造函数中调用 `broadcastVia` 方法来指定事件的广播连接。不过在此之前，应确保事件类使用了 `InteractsWithBroadcasting` Trait：
 
-    <?php
+```php
+<?php
 
-    namespace App\Events;
+namespace App\Events;
 
-    use Illuminate\Broadcasting\Channel;
-    use Illuminate\Broadcasting\InteractsWithBroadcasting;
-    use Illuminate\Broadcasting\InteractsWithSockets;
-    use Illuminate\Broadcasting\PresenceChannel;
-    use Illuminate\Broadcasting\PrivateChannel;
-    use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
-    use Illuminate\Queue\SerializesModels;
+use Illuminate\Broadcasting\Channel;
+use Illuminate\Broadcasting\InteractsWithBroadcasting;
+use Illuminate\Broadcasting\InteractsWithSockets;
+use Illuminate\Broadcasting\PresenceChannel;
+use Illuminate\Broadcasting\PrivateChannel;
+use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
+use Illuminate\Queue\SerializesModels;
 
-    class OrderShipmentStatusUpdated implements ShouldBroadcast
+class OrderShipmentStatusUpdated implements ShouldBroadcast
+{
+    use InteractsWithBroadcasting;
+
+    /**
+     * 创建一个新的事件实例。
+     */
+    public function __construct()
     {
-        use InteractsWithBroadcasting;
-
-        /**
-         * 创建一个新的事件实例。
-         */
-        public function __construct()
-        {
-            $this->broadcastVia('pusher');
-        }
+        $this->broadcastVia('pusher');
     }
+}
+```
 
 <a name="anonymous-events"></a>
 ### 匿名事件
@@ -906,13 +952,15 @@ Presence 频道建立在私有频道的安全机制之上，同时额外提供"�
 
 授权回调返回的数据会在你的 JavaScript 应用中提供给 presence 频道的事件监听器。如果用户未被授权加入该 presence 频道，你应当返回 `false` 或 `null`：
 
-    use App\Models\User;
+```php
+use App\Models\User;
 
-    Broadcast::channel('chat.{roomId}', function (User $user, int $roomId) {
-        if ($user->canJoinRoom($roomId)) {
-            return ['id' => $user->id, 'name' => $user->name];
-        }
-    });
+Broadcast::channel('chat.{roomId}', function (User $user, int $roomId) {
+    if ($user->canJoinRoom($roomId)) {
+        return ['id' => $user->id, 'name' => $user->name];
+    }
+});
+```
 
 <a name="joining-presence-channels"></a>
 ### 加入 Presence 频道
@@ -942,23 +990,27 @@ Echo.join(`chat.${roomId}`)
 
 Presence 频道与公开频道或私有频道一样可以接收事件。以聊天室为例，我们可能希望把 `NewMessage` 事件广播到该房间的 presence 频道。为此，我们要从事件的 `broadcastOn` 方法返回一个 `PresenceChannel` 实例：
 
-    /**
-     * 获取该事件应当在哪些频道上广播。
-     *
-     * @return array<int, \Illuminate\Broadcasting\Channel>
-     */
-    public function broadcastOn(): array
-    {
-        return [
-            new PresenceChannel('chat.'.$this->message->room_id),
-        ];
-    }
+```php
+/**
+ * 获取该事件应当在哪些频道上广播。
+ *
+ * @return array<int, \Illuminate\Broadcasting\Channel>
+ */
+public function broadcastOn(): array
+{
+    return [
+        new PresenceChannel('chat.'.$this->message->room_id),
+    ];
+}
+```
 
 与其他事件一样，你可以使用 `broadcast` 辅助函数配合 `toOthers` 方法，把当前用户排除在广播接收者之外：
 
-    broadcast(new NewMessage($message));
+```php
+broadcast(new NewMessage($message));
 
-    broadcast(new NewMessage($message))->toOthers();
+broadcast(new NewMessage($message))->toOthers();
+```
 
 与其他类型的事件一样，你可以使用 Echo 的 `listen` 方法监听发送到 presence 频道的事件：
 

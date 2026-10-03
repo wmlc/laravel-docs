@@ -38,45 +38,47 @@ Many types of classes in Laravel are resolved through the [service container](/d
 
 For example, take a look at this event listener:
 
-    <?php
+```php
+<?php
 
-    namespace App\Listeners;
+namespace App\Listeners;
 
-    use App\Events\OrderWasPlaced;
-    use App\Models\User;
-    use Illuminate\Contracts\Redis\Factory;
+use App\Events\OrderWasPlaced;
+use App\Models\User;
+use Illuminate\Contracts\Redis\Factory;
 
-    class CacheOrderInformation
+class CacheOrderInformation
+{
+    /**
+     * The Redis factory implementation.
+     *
+     * @var \Illuminate\Contracts\Redis\Factory
+     */
+    protected $redis;
+
+    /**
+     * Create a new event handler instance.
+     *
+     * @param  \Illuminate\Contracts\Redis\Factory  $redis
+     * @return void
+     */
+    public function __construct(Factory $redis)
     {
-        /**
-         * The Redis factory implementation.
-         *
-         * @var \Illuminate\Contracts\Redis\Factory
-         */
-        protected $redis;
-
-        /**
-         * Create a new event handler instance.
-         *
-         * @param  \Illuminate\Contracts\Redis\Factory  $redis
-         * @return void
-         */
-        public function __construct(Factory $redis)
-        {
-            $this->redis = $redis;
-        }
-
-        /**
-         * Handle the event.
-         *
-         * @param  \App\Events\OrderWasPlaced  $event
-         * @return void
-         */
-        public function handle(OrderWasPlaced $event)
-        {
-            //
-        }
+        $this->redis = $redis;
     }
+
+    /**
+     * Handle the event.
+     *
+     * @param  \App\Events\OrderWasPlaced  $event
+     * @return void
+     */
+    public function handle(OrderWasPlaced $event)
+    {
+        //
+    }
+}
+```
 
 When the event listener is resolved, the service container will read the type-hints on the constructor of the class, and inject the appropriate value. To learn more about registering things in the service container, check out [its documentation](/docs/{{version}}/container).
 

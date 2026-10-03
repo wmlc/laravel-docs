@@ -53,9 +53,11 @@ Blade 是 Laravel 自带的模板引擎，简单却功能强大。与某些 PHP 
 
 你可以通过全局的 `view` 辅助函数从路由或控制器返回 Blade 视图。当然，正如[视图](/docs/{{version}}/views)文档中提到的，你还可以使用 `view` 辅助函数的第二个参数向 Blade 视图传递数据：
 
-    Route::get('/', function () {
-        return view('greeting', ['name' => 'Finn']);
-    });
+```php
+Route::get('/', function () {
+    return view('greeting', ['name' => 'Finn']);
+});
+```
 
 <a name="supercharging-blade-with-livewire"></a>
 ### 用 Livewire 为 Blade 加速
@@ -67,9 +69,11 @@ Blade 是 Laravel 自带的模板引擎，简单却功能强大。与某些 PHP 
 
 你只需把变量用花括号括起来，就能显示传给 Blade 视图的数据。例如，给定以下路由：
 
-    Route::get('/', function () {
-        return view('welcome', ['name' => 'Samantha']);
-    });
+```php
+Route::get('/', function () {
+    return view('welcome', ['name' => 'Samantha']);
+});
+```
 
 你可以像这样显示 `name` 变量的内容：
 
@@ -91,23 +95,25 @@ The current UNIX timestamp is {{ time() }}.
 
 默认情况下，Blade（以及 Laravel 的 `e` 函数）会对 HTML 实体进行双重编码。如果你想禁用双重编码，可以在 `AppServiceProvider` 的 `boot` 方法中调用 `Blade::withoutDoubleEncoding` 方法：
 
-    <?php
+```php
+<?php
 
-    namespace App\Providers;
+namespace App\Providers;
 
-    use Illuminate\Support\Facades\Blade;
-    use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Facades\Blade;
+use Illuminate\Support\ServiceProvider;
 
-    class AppServiceProvider extends ServiceProvider
+class AppServiceProvider extends ServiceProvider
+{
+    /**
+     * 引导应用的所有服务。
+     */
+    public function boot(): void
     {
-        /**
-         * 引导应用的所有服务。
-         */
-        public function boot(): void
-        {
-            Blade::withoutDoubleEncoding();
-        }
+        Blade::withoutDoubleEncoding();
     }
+}
+```
 
 <a name="displaying-unescaped-data"></a>
 #### 显示未转义的数据
@@ -691,15 +697,17 @@ php artisan make:component forms.input --view
 
 不过，如果你正在构建一个使用 Blade 组件的包，就需要手动注册组件类及其 HTML 标签别名。你通常应当在包的服务提供者（Service Provider）的 `boot` 方法中注册组件：
 
-    use Illuminate\Support\Facades\Blade;
+```php
+use Illuminate\Support\Facades\Blade;
 
-    /**
-     * 引导包的所有服务。
-     */
-    public function boot(): void
-    {
-        Blade::component('package-alert', Alert::class);
-    }
+/**
+ * 引导包的所有服务。
+ */
+public function boot(): void
+{
+    Blade::component('package-alert', Alert::class);
+}
+```
 
 组件注册之后，就可以使用其标签别名进行渲染：
 
@@ -709,15 +717,17 @@ php artisan make:component forms.input --view
 
 或者，你也可以使用 `componentNamespace` 方法按约定自动加载组件类。例如，一个 `Nightshade` 包可能有位于 `Package\Views\Components` 命名空间下的 `Calendar` 和 `ColorPicker` 组件：
 
-    use Illuminate\Support\Facades\Blade;
+```php
+use Illuminate\Support\Facades\Blade;
 
-    /**
-     * 引导包的所有服务。
-     */
-    public function boot(): void
-    {
-        Blade::componentNamespace('Nightshade\\Views\\Components', 'nightshade');
-    }
+/**
+ * 引导包的所有服务。
+ */
+public function boot(): void
+{
+    Blade::componentNamespace('Nightshade\\Views\\Components', 'nightshade');
+}
+```
 
 这样就可以使用 `package-name::` 语法按包的命名空间使用组件：
 
@@ -747,15 +757,17 @@ Blade 会自动把组件名转为帕斯卡命名（pascal-casing），从而检�
 
 如果你需要有条件地渲染组件，可以在组件类上定义 `shouldRender` 方法。如果 `shouldRender` 方法返回 `false`，该组件将不会被渲染：
 
-    use Illuminate\Support\Str;
+```php
+use Illuminate\Support\Str;
 
-    /**
-     * 是否应当渲染该组件
-     */
-    public function shouldRender(): bool
-    {
-        return Str::length($this->message) > 0;
-    }
+/**
+ * 是否应当渲染该组件
+ */
+public function shouldRender(): bool
+{
+    return Str::length($this->message) > 0;
+}
+```
 
 <a name="index-components"></a>
 ### 索引组件
@@ -788,31 +800,33 @@ App\Views\Components\Card\Body
 
 你应当在组件的类构造函数中定义该组件的所有数据属性。组件上的所有公共属性都会自动对该组件的视图可用。你不必在组件的 `render` 方法中把数据传给视图：
 
-    <?php
+```php
+<?php
 
-    namespace App\View\Components;
+namespace App\View\Components;
 
-    use Illuminate\View\Component;
-    use Illuminate\View\View;
+use Illuminate\View\Component;
+use Illuminate\View\View;
 
-    class Alert extends Component
+class Alert extends Component
+{
+    /**
+     * 创建组件实例。
+     */
+    public function __construct(
+        public string $type,
+        public string $message,
+    ) {}
+
+    /**
+     * 获取代表该组件的视图 / 内容。
+     */
+    public function render(): View
     {
-        /**
-         * 创建组件实例。
-         */
-        public function __construct(
-            public string $type,
-            public string $message,
-        ) {}
-
-        /**
-         * 获取代表该组件的视图 / 内容。
-         */
-        public function render(): View
-        {
-            return view('components.alert');
-        }
+        return view('components.alert');
     }
+}
+```
 
 组件被渲染时，你可以通过按名称输出变量来显示组件的公共变量内容：
 
@@ -827,12 +841,14 @@ App\Views\Components\Card\Body
 
 组件构造函数参数应当使用 `camelCase` 指定，而在 HTML 属性中引用参数名时应当使用 `kebab-case`。例如，给定以下组件构造函数：
 
-    /**
-     * 创建组件实例。
-     */
-    public function __construct(
-        public string $alertType,
-    ) {}
+```php
+/**
+ * 创建组件实例。
+ */
+public function __construct(
+    public string $alertType,
+) {}
+```
 
 可以这样把 `$alertType` 参数传给组件：
 
@@ -877,13 +893,15 @@ Blade 将渲染出以下 HTML：
 
 除了公共变量对组件模板可用之外，组件上的任何公共方法都可以被调用。例如，假设某个组件带有一个 `isSelected` 方法：
 
-    /**
-     * 判断给定选项是否为当前选中的选项。
-     */
-    public function isSelected(string $option): bool
-    {
-        return $option === $this->selected;
-    }
+```php
+/**
+ * 判断给定选项是否为当前选中的选项。
+ */
+public function isSelected(string $option): bool
+{
+    return $option === $this->selected;
+}
+```
 
 你可以在组件模板中调用与该方法同名的变量来执行它：
 
@@ -898,27 +916,31 @@ Blade 将渲染出以下 HTML：
 
 Blade 组件还允许你在类的 `render` 方法中访问组件名称、属性和插槽。不过，为了访问这些数据，你应当从组件的 `render` 方法返回一个闭包：
 
-    use Closure;
+```php
+use Closure;
 
-    /**
-     * 获取代表该组件的视图 / 内容。
-     */
-    public function render(): Closure
-    {
-        return function () {
-            return '<div {{ $attributes }}>Components content</div>';
-        };
-    }
+/**
+ * 获取代表该组件的视图 / 内容。
+ */
+public function render(): Closure
+{
+    return function () {
+        return '<div {{ $attributes }}>Components content</div>';
+    };
+}
+```
 
 组件的 `render` 方法所返回的闭包还可以接收一个 `$data` 数组作为唯一参数。该数组将包含若干元素，提供关于组件的信息：
 
-    return function (array $data) {
-        // $data['componentName'];
-        // $data['attributes'];
-        // $data['slot'];
+```php
+return function (array $data) {
+    // $data['componentName'];
+    // $data['attributes'];
+    // $data['slot'];
 
-        return '<div {{ $attributes }}>Components content</div>';
-    }
+    return '<div {{ $attributes }}>Components content</div>';
+}
+```
 
 > [!WARNING]
 > `$data` 数组中的元素绝不应直接嵌入 `render` 方法所返回的 Blade 字符串中，否则可能导致攻击者通过恶意的属性内容远程执行代码。
@@ -950,28 +972,30 @@ public function __construct(
 
 如果你想阻止某些公共方法或属性作为变量暴露给组件模板，可以把它们添加到组件的 `$except` 数组属性中：
 
-    <?php
+```php
+<?php
 
-    namespace App\View\Components;
+namespace App\View\Components;
 
-    use Illuminate\View\Component;
+use Illuminate\View\Component;
 
-    class Alert extends Component
-    {
-        /**
-         * 不应暴露给组件模板的属性 / 方法。
-         *
-         * @var array
-         */
-        protected $except = ['type'];
+class Alert extends Component
+{
+    /**
+     * 不应暴露给组件模板的属性 / 方法。
+     *
+     * @var array
+     */
+    protected $except = ['type'];
 
-        /**
-         * 创建组件实例。
-         */
-        public function __construct(
-            public string $type,
-        ) {}
-    }
+    /**
+     * 创建组件实例。
+     */
+    public function __construct(
+        public string $type,
+    ) {}
+}
+```
 
 <a name="component-attributes"></a>
 ### 组件属性
@@ -1184,7 +1208,7 @@ public function __construct(
 
 你可以使用 `x-slot` 标签定义具名插槽的内容。任何不在显式 `x-slot` 标签内的内容，都会通过 `$slot` 变量传给组件：
 
-```xml
+```blade
 <x-alert>
     <x-slot:title>
         Server Error
@@ -1236,7 +1260,7 @@ public function __construct(
 
 与 Blade 组件一样，你可以为插槽指定额外的[属性](#component-attributes)，例如 CSS 类名：
 
-```xml
+```blade
 <x-card class="shadow-sm">
     <x-slot:heading class="font-bold">
         Heading
@@ -1276,17 +1300,19 @@ public function __construct(
 
 对于非常小的组件来说，同时管理组件类和组件的视图模板可能显得繁琐。为此，你可以直接从 `render` 方法返回组件的标记：
 
-    /**
-     * 获取代表该组件的视图 / 内容。
-     */
-    public function render(): string
-    {
-        return <<<'blade'
-            <div class="alert alert-danger">
-                {{ $slot }}
-            </div>
-        blade;
-    }
+```php
+/**
+ * 获取代表该组件的视图 / 内容。
+ */
+public function render(): string
+{
+    return <<<'blade'
+        <div class="alert alert-danger">
+            {{ $slot }}
+        </div>
+    blade;
+}
+```
 
 <a name="generating-inline-view-components"></a>
 #### 生成内联视图组件
@@ -1318,16 +1344,18 @@ php artisan make:component Alert --inline
 
 不过，如果你正在构建一个使用 Blade 组件的包，或者把组件放在非常规目录中，就需要手动注册组件类及其 HTML 标签别名，以便 Laravel 知道去哪里查找该组件。你通常应当在包的服务提供者（Service Provider）的 `boot` 方法中注册组件：
 
-    use Illuminate\Support\Facades\Blade;
-    use VendorPackage\View\Components\AlertComponent;
+```php
+use Illuminate\Support\Facades\Blade;
+use VendorPackage\View\Components\AlertComponent;
 
-    /**
-     * 引导包的所有服务。
-     */
-    public function boot(): void
-    {
-        Blade::component('package-alert', AlertComponent::class);
-    }
+/**
+ * 引导包的所有服务。
+ */
+public function boot(): void
+{
+    Blade::component('package-alert', AlertComponent::class);
+}
+```
 
 组件注册之后，就可以使用其标签别名进行渲染：
 
@@ -1339,15 +1367,17 @@ php artisan make:component Alert --inline
 
 或者，你也可以使用 `componentNamespace` 方法按约定自动加载组件类。例如，一个 `Nightshade` 包可能有位于 `Package\Views\Components` 命名空间下的 `Calendar` 和 `ColorPicker` 组件：
 
-    use Illuminate\Support\Facades\Blade;
+```php
+use Illuminate\Support\Facades\Blade;
 
-    /**
-     * 引导包的所有服务。
-     */
-    public function boot(): void
-    {
-        Blade::componentNamespace('Nightshade\\Views\\Components', 'nightshade');
-    }
+/**
+ * 引导包的所有服务。
+ */
+public function boot(): void
+{
+    Blade::componentNamespace('Nightshade\\Views\\Components', 'nightshade');
+}
+```
 
 这样就可以使用 `package-name::` 语法按包的命名空间使用组件：
 
@@ -1471,13 +1501,15 @@ Blade 会自动把组件名转为帕斯卡命名（pascal-casing），从而检�
 
 `anonymousComponentPath` 方法的第一个参数接受匿名组件所在位置的「路径」，第二个参数接受一个可选的「命名空间」，组件应当放在该命名空间下。通常，应当从你应用中某个[服务提供者（Service Provider）](/docs/{{version}}/providers)的 `boot` 方法中调用该方法：
 
-    /**
-     * 引导应用的所有服务。
-     */
-    public function boot(): void
-    {
-        Blade::anonymousComponentPath(__DIR__.'/../components');
-    }
+```php
+/**
+ * 引导应用的所有服务。
+ */
+public function boot(): void
+{
+    Blade::anonymousComponentPath(__DIR__.'/../components');
+}
+```
 
 像上例那样，在注册组件路径时没有指定前缀，那么在 Blade 组件中也可以不带相应前缀地渲染它们。例如，如果上面注册的路径中存在一个 `panel.blade.php` 组件，就可以这样渲染：
 
@@ -1487,7 +1519,9 @@ Blade 会自动把组件名转为帕斯卡命名（pascal-casing），从而检�
 
 也可以把前缀「命名空间」作为 `anonymousComponentPath` 方法的第二个参数：
 
-    Blade::anonymousComponentPath(__DIR__.'/../components', 'dashboard');
+```php
+Blade::anonymousComponentPath(__DIR__.'/../components', 'dashboard');
+```
 
 提供前缀后，该「命名空间」内的组件在渲染时就可以在组件名之前加上该前缀：
 
@@ -1556,11 +1590,13 @@ Blade 会自动把组件名转为帕斯卡命名（pascal-casing），从而检�
 
 现在我们已经定义了布局和任务列表视图，只需要从路由中返回 `task` 视图即可：
 
-    use App\Models\Task;
+```php
+use App\Models\Task;
 
-    Route::get('/tasks', function () {
-        return view('tasks', ['tasks' => Task::all()]);
-    });
+Route::get('/tasks', function () {
+    return view('tasks', ['tasks' => Task::all()]);
+});
+```
 
 <a name="layouts-using-template-inheritance"></a>
 ### 使用模板继承的布局
@@ -1836,37 +1872,41 @@ Blade 允许你使用 `directive` 方法定义自己的自定义指令。当 Bla
 
 下面的例子创建了一个 `@datetime($var)` 指令，用于格式化给定的 `$var`，该变量应当是 `DateTime` 的实例：
 
-    <?php
+```php
+<?php
 
-    namespace App\Providers;
+namespace App\Providers;
 
-    use Illuminate\Support\Facades\Blade;
-    use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Facades\Blade;
+use Illuminate\Support\ServiceProvider;
 
-    class AppServiceProvider extends ServiceProvider
+class AppServiceProvider extends ServiceProvider
+{
+    /**
+     * 注册应用的服务。
+     */
+    public function register(): void
     {
-        /**
-         * 注册应用的服务。
-         */
-        public function register(): void
-        {
-            // ...
-        }
-
-        /**
-         * 引导应用的所有服务。
-         */
-        public function boot(): void
-        {
-            Blade::directive('datetime', function (string $expression) {
-                return "<?php echo ($expression)->format('m/d/Y H:i'); ?>";
-            });
-        }
+        // ...
     }
+
+    /**
+     * 引导应用的所有服务。
+     */
+    public function boot(): void
+    {
+        Blade::directive('datetime', function (string $expression) {
+            return "<?php echo ($expression)->format('m/d/Y H:i'); ?>";
+        });
+    }
+}
+```
 
 可以看到，我们把 `format` 方法链式地应用在传入该指令的表达式上。因此，在这个例子中，该指令最终生成的 PHP 代码如下：
 
-    <?php echo ($var)->format('m/d/Y H:i'); ?>
+```php
+<?php echo ($var)->format('m/d/Y H:i'); ?>
+```
 
 > [!WARNING]
 > 更新 Blade 指令的逻辑后，你需要删除所有已缓存的 Blade 视图。可以使用 `view:clear` Artisan 命令移除已缓存的 Blade 视图。
@@ -1878,18 +1918,20 @@ Blade 允许你使用 `directive` 方法定义自己的自定义指令。当 Bla
 
 在这种情况下，Blade 允许你为该特定类型的对象注册一个自定义 echo 处理器。为此，你应当调用 Blade 的 `stringable` 方法。`stringable` 方法接受一个闭包。该闭包应当对它负责渲染的对象类型进行类型提示。通常，应当在你应用的 `AppServiceProvider` 类的 `boot` 方法中调用 `stringable` 方法：
 
-    use Illuminate\Support\Facades\Blade;
-    use Money\Money;
+```php
+use Illuminate\Support\Facades\Blade;
+use Money\Money;
 
-    /**
-     * 引导应用的所有服务。
-     */
-    public function boot(): void
-    {
-        Blade::stringable(function (Money $money) {
-            return $money->formatTo('en_GB');
-        });
-    }
+/**
+ * 引导应用的所有服务。
+ */
+public function boot(): void
+{
+    Blade::stringable(function (Money $money) {
+        return $money->formatTo('en_GB');
+    });
+}
+```
 
 自定义 echo 处理器定义之后，你只需在 Blade 模板中输出该对象即可：
 
@@ -1902,17 +1944,19 @@ Cost: {{ $money }}
 
 在定义简单的自定义条件语句时，编写自定义指令有时显得过于复杂。为此，Blade 提供了 `Blade::if` 方法，允许你使用闭包快速定义自定义条件指令。例如，让我们定义一个自定义条件，用于检查应用配置的默认「disk」。我们可以在 `AppServiceProvider` 的 `boot` 方法中完成：
 
-    use Illuminate\Support\Facades\Blade;
+```php
+use Illuminate\Support\Facades\Blade;
 
-    /**
-     * 引导应用的所有服务。
-     */
-    public function boot(): void
-    {
-        Blade::if('disk', function (string $value) {
-            return config('filesystems.default') === $value;
-        });
-    }
+/**
+ * 引导应用的所有服务。
+ */
+public function boot(): void
+{
+    Blade::if('disk', function (string $value) {
+        return config('filesystems.default') === $value;
+    });
+}
+```
 
 自定义条件定义之后，你就可以在模板中使用它：
 

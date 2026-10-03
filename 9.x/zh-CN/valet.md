@@ -215,7 +215,9 @@ valet unsecure laravel
 
 有时，你可能希望配置 Valet 在访问未知的 `test` 域时服务"默认"站点而不是 `404`。为此，你可以在 `~/.config/valet/config.json` 配置文件中添加一个 `default` 选项，包含应作为默认站点的站点路径：
 
-    "default": "/Users/Sally/Sites/example-site",
+```yaml
+"default": "/Users/Sally/Sites/example-site",
+```
 
 <a name="per-site-php-versions"></a>
 ### 每站点 PHP 版本
@@ -304,19 +306,21 @@ Valet 默认将传入流量限制为内部 `127.0.0.1` 接口，以免你的开�
 
 使用其他框架的一些应用程序可能依赖服务器环境变量，但不提供在项目中配置这些变量的方法。Valet 允许你通过在项目根目录中添加 `.valet-env.php` 文件来配置站点特定的环境变量。此文件应返回一个站点/环境变量对数组，这些变量对将添加到数组中指定的每个站点的全局 `$_SERVER` 数组中：
 
-    <?php
+```php
+<?php
 
-    return [
-        // 为 laravel.test 站点将 $_SERVER['key'] 设置为 "value"...
-        'laravel' => [
-            'key' => 'value',
-        ],
+return [
+    // 为 laravel.test 站点将 $_SERVER['key'] 设置为 "value"...
+    'laravel' => [
+        'key' => 'value',
+    ],
 
-        // 为所有站点将 $_SERVER['key'] 设置为 "value"...
-        '*' => [
-            'key' => 'value',
-        ],
-    ];
+    // 为所有站点将 $_SERVER['key'] 设置为 "value"...
+    '*' => [
+        'key' => 'value',
+    ],
+];
+```
 
 <a name="proxying-services"></a>
 ## 代理服务
@@ -363,6 +367,78 @@ valet proxies
 
 例如，假设我们正在编写一个 `WordPressValetDriver`。我们的 `serves` 方法可能如下所示：
 
+```php
+/**
+ * 确定驱动是否服务请求。
+ *
+ * @param  string  $sitePath
+ * @param  string  $siteName
+ * @param  string  $uri
+ * @return bool
+ */
+public function serves($sitePath, $siteName, $uri)
+{
+    return is_dir($sitePath.'/wp-admin');
+}
+```
+
+<a name="the-isstaticfile-method"></a>
+#### `isStaticFile` 方法
+
+`isStaticFile` 应确定传入请求是否针对"静态"文件，例如图像或样式表。如果文件是静态的，该方法应返回磁盘上静态文件的完全限定路径。如果传入请求不是针对静态文件，该方法应返回 `false`：
+
+```php
+/**
+ * 确定传入请求是否针对静态文件。
+ *
+ * @param  string  $sitePath
+ * @param  string  $siteName
+ * @param  string  $uri
+ * @return string|false
+ */
+public function isStaticFile($sitePath, $siteName, $uri)
+{
+    if (file_exists($staticFilePath = $sitePath.'/public/'.$uri)) {
+        return $staticFilePath;
+    }
+
+    return false;
+}
+```
+
+> **Warning**  
+> `isStaticFile` 方法仅在 `serves` 方法对传入请求返回 `true` 且请求 URI 不是 `/` 时才会被调用。
+
+<a name="the-frontcontrollerpath-method"></a>
+#### `frontControllerPath` 方法
+
+`frontControllerPath` 方法应返回应用程序"前端控制器"的完全限定路径，通常是"index.php"文件或等效文件：
+
+```php
+/**
+ * 获取应用程序前端控制器的完全解析路径。
+ *
+ * @param  string  $sitePath
+ * @param  string  $siteName
+ * @param  string  $uri
+ * @return string
+ */
+public function frontControllerPath($sitePath, $siteName, $uri)
+{
+    return $sitePath.'/public/index.php';
+}
+```
+
+<a name="local-drivers"></a>
+### 本地驱动
+
+如果你想为单个应用程序定义自定义 Valet 驱动，在应用程序根目录中创建一个 `LocalValetDriver.php` 文件。你的自定义驱动可以扩展基础 `ValetDriver` 类或扩展现有的应用程序特定驱动，如 `LaravelValetDriver`：
+
+```php
+use Valet\Drivers\LaravelValetDriver;
+
+class LocalValetDriver extends LaravelValetDriver
+{
     /**
      * 确定驱动是否服务请求。
      *
@@ -373,38 +449,8 @@ valet proxies
      */
     public function serves($sitePath, $siteName, $uri)
     {
-        return is_dir($sitePath.'/wp-admin');
+        return true;
     }
-
-<a name="the-isstaticfile-method"></a>
-#### `isStaticFile` 方法
-
-`isStaticFile` 应确定传入请求是否针对"静态"文件，例如图像或样式表。如果文件是静态的，该方法应返回磁盘上静态文件的完全限定路径。如果传入请求不是针对静态文件，该方法应返回 `false`：
-
-    /**
-     * 确定传入请求是否针对静态文件。
-     *
-     * @param  string  $sitePath
-     * @param  string  $siteName
-     * @param  string  $uri
-     * @return string|false
-     */
-    public function isStaticFile($sitePath, $siteName, $uri)
-    {
-        if (file_exists($staticFilePath = $sitePath.'/public/'.$uri)) {
-            return $staticFilePath;
-        }
-
-        return false;
-    }
-
-> **Warning**  
-> `isStaticFile` 方法仅在 `serves` 方法对传入请求返回 `true` 且请求 URI 不是 `/` 时才会被调用。
-
-<a name="the-frontcontrollerpath-method"></a>
-#### `frontControllerPath` 方法
-
-`frontControllerPath` 方法应返回应用程序"前端控制器"的完全限定路径，通常是"index.php"文件或等效文件：
 
     /**
      * 获取应用程序前端控制器的完全解析路径。
@@ -416,44 +462,10 @@ valet proxies
      */
     public function frontControllerPath($sitePath, $siteName, $uri)
     {
-        return $sitePath.'/public/index.php';
+        return $sitePath.'/public_html/index.php';
     }
-
-<a name="local-drivers"></a>
-### 本地驱动
-
-如果你想为单个应用程序定义自定义 Valet 驱动，在应用程序根目录中创建一个 `LocalValetDriver.php` 文件。你的自定义驱动可以扩展基础 `ValetDriver` 类或扩展现有的应用程序特定驱动，如 `LaravelValetDriver`：
-
-    use Valet\Drivers\LaravelValetDriver;
-
-    class LocalValetDriver extends LaravelValetDriver
-    {
-        /**
-         * 确定驱动是否服务请求。
-         *
-         * @param  string  $sitePath
-         * @param  string  $siteName
-         * @param  string  $uri
-         * @return bool
-         */
-        public function serves($sitePath, $siteName, $uri)
-        {
-            return true;
-        }
-
-        /**
-         * 获取应用程序前端控制器的完全解析路径。
-         *
-         * @param  string  $sitePath
-         * @param  string  $siteName
-         * @param  string  $uri
-         * @return string
-         */
-        public function frontControllerPath($sitePath, $siteName, $uri)
-        {
-            return $sitePath.'/public_html/index.php';
-        }
-    }
+}
+```
 
 <a name="other-valet-commands"></a>
 ## 其他 Valet 命令

@@ -35,31 +35,35 @@ php artisan make:controller UserController
 
 我们来看一个基础控制器的示例。控制器可以有任意数量的公共方法，用来响应传入的 HTTP 请求：
 
-    <?php
+```php
+<?php
 
-    namespace App\Http\Controllers;
+namespace App\Http\Controllers;
 
-    use App\Models\User;
-    use Illuminate\View\View;
+use App\Models\User;
+use Illuminate\View\View;
 
-    class UserController extends Controller
+class UserController extends Controller
+{
+    /**
+     * 显示给定用户的资料。
+     */
+    public function show(string $id): View
     {
-        /**
-         * 显示给定用户的资料。
-         */
-        public function show(string $id): View
-        {
-            return view('user.profile', [
-                'user' => User::findOrFail($id)
-            ]);
-        }
+        return view('user.profile', [
+            'user' => User::findOrFail($id)
+        ]);
     }
+}
+```
 
 编写好控制器类和方法之后，你就可以这样定义一条指向该控制器方法的路由：
 
-    use App\Http\Controllers\UserController;
+```php
+use App\Http\Controllers\UserController;
 
-    Route::get('/user/{id}', [UserController::class, 'show']);
+Route::get('/user/{id}', [UserController::class, 'show']);
+```
 
 当传入请求匹配到指定的路由 URI 时，`App\Http\Controllers\UserController` 类上的 `show` 方法会被调用，路由参数也会被传入该方法。
 
@@ -71,26 +75,30 @@ php artisan make:controller UserController
 
 如果某个控制器动作特别复杂，你可能会发现为这一个动作专门准备一个完整的控制器类更为方便。为此，你可以在控制器中定义一个 `__invoke` 方法：
 
-    <?php
+```php
+<?php
 
-    namespace App\Http\Controllers;
+namespace App\Http\Controllers;
 
-    class ProvisionServer extends Controller
+class ProvisionServer extends Controller
+{
+    /**
+     * 置备一台新的 Web 服务器。
+     */
+    public function __invoke()
     {
-        /**
-         * 置备一台新的 Web 服务器。
-         */
-        public function __invoke()
-        {
-            // ...
-        }
+        // ...
     }
+}
+```
 
 为单动作控制器注册路由时，你不需要指定控制器方法，只需把控制器名称传给路由即可：
 
-    use App\Http\Controllers\ProvisionServer;
+```php
+use App\Http\Controllers\ProvisionServer;
 
-    Route::post('/server', ProvisionServer::class);
+Route::post('/server', ProvisionServer::class);
+```
 
 你也可以使用 `make:controller` Artisan 命令的 `--invokable` 选项来生成可调用控制器：
 
@@ -106,50 +114,56 @@ php artisan make:controller ProvisionServer --invokable
 
 [中间件](/docs/{{version}}/middleware)可以在路由文件中被分配给控制器的路由：
 
-    Route::get('/profile', [UserController::class, 'show'])->middleware('auth');
+```php
+Route::get('/profile', [UserController::class, 'show'])->middleware('auth');
+```
 
 或者，你可能发现直接在控制器类中指定中间件更为方便。为此，你的控制器应当实现 `HasMiddleware` 接口，该接口规定控制器必须拥有一个静态的 `middleware` 方法。在这个方法中，你可以返回一个中间件数组，其中包含应当应用到控制器各个动作上的中间件：
 
-    <?php
+```php
+<?php
 
-    namespace App\Http\Controllers;
+namespace App\Http\Controllers;
 
-    use Illuminate\Routing\Controllers\HasMiddleware;
-    use Illuminate\Routing\Controllers\Middleware;
+use Illuminate\Routing\Controllers\HasMiddleware;
+use Illuminate\Routing\Controllers\Middleware;
 
-    class UserController implements HasMiddleware
-    {
-        /**
-         * 获取应当分配给该控制器的中间件。
-         */
-        public static function middleware(): array
-        {
-            return [
-                'auth',
-                new Middleware('log', only: ['index']),
-                new Middleware('subscribed', except: ['store']),
-            ];
-        }
-
-        // ...
-    }
-
-你也可以把控制器中间件定义为闭包，这样无需编写完整的中间件类就能定义一个内联中间件，非常方便：
-
-    use Closure;
-    use Illuminate\Http\Request;
-
+class UserController implements HasMiddleware
+{
     /**
      * 获取应当分配给该控制器的中间件。
      */
     public static function middleware(): array
     {
         return [
-            function (Request $request, Closure $next) {
-                return $next($request);
-            },
+            'auth',
+            new Middleware('log', only: ['index']),
+            new Middleware('subscribed', except: ['store']),
         ];
     }
+
+    // ...
+}
+```
+
+你也可以把控制器中间件定义为闭包，这样无需编写完整的中间件类就能定义一个内联中间件，非常方便：
+
+```php
+use Closure;
+use Illuminate\Http\Request;
+
+/**
+ * 获取应当分配给该控制器的中间件。
+ */
+public static function middleware(): array
+{
+    return [
+        function (Request $request, Closure $next) {
+            return $next($request);
+        },
+    ];
+}
+```
 
 > [!WARNING]
 > 实现了 `Illuminate\Routing\Controllers\HasMiddleware` 的控制器不应当继承 `Illuminate\Routing\Controller`。
@@ -167,18 +181,22 @@ php artisan make:controller PhotoController --resource
 
 该命令会在 `app/Http/Controllers/PhotoController.php` 生成一个控制器。控制器中会包含每个可用资源操作对应的方法。接下来，你可以注册一条指向该控制器的资源路由：
 
-    use App\Http\Controllers\PhotoController;
+```php
+use App\Http\Controllers\PhotoController;
 
-    Route::resource('photos', PhotoController::class);
+Route::resource('photos', PhotoController::class);
+```
 
 这一条路由声明会创建多条路由，用于处理该资源上的各种操作。生成的控制器中已经为每个操作提供了方法存根。请记住，你随时可以运行 `route:list` Artisan 命令，快速总览应用的路由。
 
 你甚至可以把一个数组传给 `resources` 方法，一次注册多个资源控制器：
 
-    Route::resources([
-        'photos' => PhotoController::class,
-        'posts' => PostController::class,
-    ]);
+```php
+Route::resources([
+    'photos' => PhotoController::class,
+    'posts' => PostController::class,
+]);
+```
 
 <a name="actions-handled-by-resource-controllers"></a>
 #### 资源控制器处理的动作
@@ -202,27 +220,33 @@ php artisan make:controller PhotoController --resource
 
 通常情况下，如果隐式绑定的资源模型未找到，会返回一个 404 HTTP 响应。不过，你可以在定义资源路由时调用 `missing` 方法来自定义该行为。`missing` 方法接受一个闭包，当资源的任意路由无法找到隐式绑定的模型时，该闭包就会被调用：
 
-    use App\Http\Controllers\PhotoController;
-    use Illuminate\Http\Request;
-    use Illuminate\Support\Facades\Redirect;
+```php
+use App\Http\Controllers\PhotoController;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Redirect;
 
-    Route::resource('photos', PhotoController::class)
-        ->missing(function (Request $request) {
-            return Redirect::route('photos.index');
-        });
+Route::resource('photos', PhotoController::class)
+    ->missing(function (Request $request) {
+        return Redirect::route('photos.index');
+    });
+```
 
 <a name="soft-deleted-models"></a>
 #### 已软删除的模型
 
 通常情况下，隐式模型绑定不会检索已被[软删除](/docs/{{version}}/eloquent#soft-deleting)的模型，而是返回一个 404 HTTP 响应。不过，你可以在定义资源路由时调用 `withTrashed` 方法，指示框架允许使用已软删除的模型：
 
-    use App\Http\Controllers\PhotoController;
+```php
+use App\Http\Controllers\PhotoController;
 
-    Route::resource('photos', PhotoController::class)->withTrashed();
+Route::resource('photos', PhotoController::class)->withTrashed();
+```
 
 不带参数调用 `withTrashed` 会让 `show`、`edit` 和 `update` 资源路由都允许使用已软删除的模型。你也可以向 `withTrashed` 方法传入一个数组，指定这些路由中的一个子集：
 
-    Route::resource('photos', PhotoController::class)->withTrashed(['show']);
+```php
+Route::resource('photos', PhotoController::class)->withTrashed(['show']);
+```
 
 <a name="specifying-the-resource-model"></a>
 #### 指定资源模型
@@ -247,34 +271,40 @@ php artisan make:controller PhotoController --model=Photo --resource --requests
 
 声明资源路由时，你可以指定控制器应当处理的动作子集，而不是完整的默认动作集：
 
-    use App\Http\Controllers\PhotoController;
+```php
+use App\Http\Controllers\PhotoController;
 
-    Route::resource('photos', PhotoController::class)->only([
-        'index', 'show'
-    ]);
+Route::resource('photos', PhotoController::class)->only([
+    'index', 'show'
+]);
 
-    Route::resource('photos', PhotoController::class)->except([
-        'create', 'store', 'update', 'destroy'
-    ]);
+Route::resource('photos', PhotoController::class)->except([
+    'create', 'store', 'update', 'destroy'
+]);
+```
 
 <a name="api-resource-routes"></a>
 #### API 资源路由
 
 声明供 API 使用的资源路由时，你通常会希望排除呈现 HTML 模板的路由，例如 `create` 和 `edit`。为方便起见，你可以使用 `apiResource` 方法自动排除这两条路由：
 
-    use App\Http\Controllers\PhotoController;
+```php
+use App\Http\Controllers\PhotoController;
 
-    Route::apiResource('photos', PhotoController::class);
+Route::apiResource('photos', PhotoController::class);
+```
 
 你可以通过向 `apiResources` 方法传入一个数组，一次注册多个 API 资源控制器：
 
-    use App\Http\Controllers\PhotoController;
-    use App\Http\Controllers\PostController;
+```php
+use App\Http\Controllers\PhotoController;
+use App\Http\Controllers\PostController;
 
-    Route::apiResources([
-        'photos' => PhotoController::class,
-        'posts' => PostController::class,
-    ]);
+Route::apiResources([
+    'photos' => PhotoController::class,
+    'posts' => PostController::class,
+]);
+```
 
 要快速生成一个不包含 `create` 或 `edit` 方法的 API 资源控制器，请在执行 `make:controller` 命令时使用 `--api` 开关：
 
@@ -287,13 +317,17 @@ php artisan make:controller PhotoController --api
 
 有时你需要定义指向嵌套资源的路由。例如，一张照片资源可以有多个与之关联的评论。要嵌套资源控制器，可以在路由声明中使用"点"记法：
 
-    use App\Http\Controllers\PhotoCommentController;
+```php
+use App\Http\Controllers\PhotoCommentController;
 
-    Route::resource('photos.comments', PhotoCommentController::class);
+Route::resource('photos.comments', PhotoCommentController::class);
+```
 
 该路由会注册一个嵌套资源，可以通过类似下面的 URI 访问：
 
-    /photos/{photo}/comments/{comment}
+```text
+/photos/{photo}/comments/{comment}
+```
 
 <a name="scoping-nested-resources"></a>
 #### 限定嵌套资源范围
@@ -305,9 +339,11 @@ Laravel 的[隐式模型绑定](/docs/{{version}}/routing#implicit-model-binding
 
 通常来说，由于子 ID 本身已是唯一标识符，URI 中同时包含父 ID 和子 ID 并不是完全必要的。当使用自动递增主键这类唯一标识符在 URI 片段中标识模型时，你可以选择使用"浅层嵌套"：
 
-    use App\Http\Controllers\CommentController;
+```php
+use App\Http\Controllers\CommentController;
 
-    Route::resource('photos.comments', CommentController::class)->shallow();
+Route::resource('photos.comments', CommentController::class)->shallow();
+```
 
 该路由定义会定义以下路由：
 
@@ -330,41 +366,51 @@ Laravel 的[隐式模型绑定](/docs/{{version}}/routing#implicit-model-binding
 
 默认情况下，所有资源控制器动作都有路由名称；不过，你可以通过传入一个 `names` 数组来自定义这些名称，数组中给出你期望的路由名称：
 
-    use App\Http\Controllers\PhotoController;
+```php
+use App\Http\Controllers\PhotoController;
 
-    Route::resource('photos', PhotoController::class)->names([
-        'create' => 'photos.build'
-    ]);
+Route::resource('photos', PhotoController::class)->names([
+    'create' => 'photos.build'
+]);
+```
 
 <a name="restful-naming-resource-route-parameters"></a>
 ### 命名资源路由参数
 
 默认情况下，`Route::resource` 会根据资源名称的"单数化"版本为你的资源路由创建路由参数。你可以使用 `parameters` 方法轻松地按资源逐一覆盖这一行为。传给 `parameters` 方法的数组应当是一个由资源名称和参数名称组成的关联数组：
 
-    use App\Http\Controllers\AdminUserController;
+```php
+use App\Http\Controllers\AdminUserController;
 
-    Route::resource('users', AdminUserController::class)->parameters([
-        'users' => 'admin_user'
-    ]);
+Route::resource('users', AdminUserController::class)->parameters([
+    'users' => 'admin_user'
+]);
+```
 
 上面的示例会为该资源的 `show` 路由生成以下 URI：
 
-    /users/{admin_user}
+```text
+/users/{admin_user}
+```
 
 <a name="restful-scoping-resource-routes"></a>
 ### 限定资源路由范围
 
 Laravel 的[限定范围的隐式模型绑定](/docs/{{version}}/routing#implicit-model-binding-scoping)功能可以自动限定嵌套绑定的范围，从而确认解析出的子模型确实属于父模型。在定义嵌套资源时使用 `scoped` 方法，你就能启用自动范围限定，同时指示 Laravel 应当按哪个字段检索子资源：
 
-    use App\Http\Controllers\PhotoCommentController;
+```php
+use App\Http\Controllers\PhotoCommentController;
 
-    Route::resource('photos.comments', PhotoCommentController::class)->scoped([
-        'comment' => 'slug',
-    ]);
+Route::resource('photos.comments', PhotoCommentController::class)->scoped([
+    'comment' => 'slug',
+]);
+```
 
 该路由会注册一个带范围限定的嵌套资源，可以通过类似下面的 URI 访问：
 
-    /photos/{photo}/comments/{comment:slug}
+```text
+/photos/{photo}/comments/{comment:slug}
+```
 
 把自定义键值的隐式绑定用作嵌套路由参数时，Laravel 会自动按父模型限定查询范围，并按照约定推测父模型上的关联名称。在这种情况下，可以假定 `Photo` 模型拥有一个名为 `comments` 的关联（即路由参数名的复数形式），可用于检索 `Comment` 模型。
 
@@ -373,32 +419,38 @@ Laravel 的[限定范围的隐式模型绑定](/docs/{{version}}/routing#implici
 
 默认情况下，`Route::resource` 会使用英文动词和复数规则创建资源 URI。如果你需要本地化 `create` 和 `edit` 这两个动作动词，可以使用 `Route::resourceVerbs` 方法。这可以在应用 `App\Providers\AppServiceProvider` 的 `boot` 方法开头完成：
 
-    /**
-     * 引导任意应用服务。
-     */
-    public function boot(): void
-    {
-        Route::resourceVerbs([
-            'create' => 'crear',
-            'edit' => 'editar',
-        ]);
-    }
+```php
+/**
+ * 引导任意应用服务。
+ */
+public function boot(): void
+{
+    Route::resourceVerbs([
+        'create' => 'crear',
+        'edit' => 'editar',
+    ]);
+}
+```
 
 Laravel 的复数化器支持[多种不同语言，你可以根据需要配置](/docs/{{version}}/localization#pluralization-language)。一旦自定义好动词和复数化语言，像 `Route::resource('publicacion', PublicacionController::class)` 这样的资源路由注册就会生成以下 URI：
 
-    /publicacion/crear
+```text
+/publicacion/crear
 
-    /publicacion/{publicaciones}/editar
+/publicacion/{publicaciones}/editar
+```
 
 <a name="restful-supplementing-resource-controllers"></a>
 ### 补充资源控制器
 
 如果你需要在默认资源路由之外为资源控制器添加额外的路由，就应当在调用 `Route::resource` 方法之前定义这些路由；否则，`resource` 方法所定义的路由可能会无意中优先于你的补充路由：
 
-    use App\Http\Controller\PhotoController;
+```php
+use App\Http\Controller\PhotoController;
 
-    Route::get('/photos/popular', [PhotoController::class, 'popular']);
-    Route::resource('photos', PhotoController::class);
+Route::get('/photos/popular', [PhotoController::class, 'popular']);
+Route::resource('photos', PhotoController::class);
+```
 
 > [!NOTE]
 > 请记住让控制器保持聚焦。如果你发现自己经常需要使用典型资源动作之外的方法，可以考虑把控制器拆分成两个更小的控制器。
@@ -498,73 +550,81 @@ Route::apiSingleton('photos.thumbnail', ProfileController::class)->creatable();
 
 Laravel 的[服务容器（Service Container）](/docs/{{version}}/container)用于解析所有 Laravel 控制器。因此，你可以在控制器构造函数中对所需的任何依赖进行类型提示。声明的依赖会被自动解析并注入到控制器实例中：
 
-    <?php
+```php
+<?php
 
-    namespace App\Http\Controllers;
+namespace App\Http\Controllers;
 
-    use App\Repositories\UserRepository;
+use App\Repositories\UserRepository;
 
-    class UserController extends Controller
-    {
-        /**
-         * 创建一个新的控制器实例。
-         */
-        public function __construct(
-            protected UserRepository $users,
-        ) {}
-    }
+class UserController extends Controller
+{
+    /**
+     * 创建一个新的控制器实例。
+     */
+    public function __construct(
+        protected UserRepository $users,
+    ) {}
+}
+```
 
 <a name="method-injection"></a>
 #### 方法注入
 
 除了构造器注入之外，你还可以在控制器方法中对依赖进行类型提示。方法注入的一个常见用例是把 `Illuminate\Http\Request` 实例注入控制器方法：
 
-    <?php
+```php
+<?php
 
-    namespace App\Http\Controllers;
+namespace App\Http\Controllers;
 
-    use Illuminate\Http\RedirectResponse;
-    use Illuminate\Http\Request;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 
-    class UserController extends Controller
+class UserController extends Controller
+{
+    /**
+     * 存储一个新用户。
+     */
+    public function store(Request $request): RedirectResponse
     {
-        /**
-         * 存储一个新用户。
-         */
-        public function store(Request $request): RedirectResponse
-        {
-            $name = $request->name;
+        $name = $request->name;
 
-            // 存储用户...
+        // 存储用户...
 
-            return redirect('/users');
-        }
+        return redirect('/users');
     }
+}
+```
 
 如果你的控制器方法还期望接收来自路由参数的输入，请把路由参数列在其他依赖之后。例如，如果你的路由这样定义：
 
-    use App\Http\Controllers\UserController;
+```php
+use App\Http\Controllers\UserController;
 
-    Route::put('/user/{id}', [UserController::class, 'update']);
+Route::put('/user/{id}', [UserController::class, 'update']);
+```
 
 你依然可以对 `Illuminate\Http\Request` 进行类型提示，并通过以下方式定义控制器方法来访问 `id` 参数：
 
-    <?php
+```php
+<?php
 
-    namespace App\Http\Controllers;
+namespace App\Http\Controllers;
 
-    use Illuminate\Http\RedirectResponse;
-    use Illuminate\Http\Request;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 
-    class UserController extends Controller
+class UserController extends Controller
+{
+    /**
+     * 更新给定的用户。
+     */
+    public function update(Request $request, string $id): RedirectResponse
     {
-        /**
-         * 更新给定的用户。
-         */
-        public function update(Request $request, string $id): RedirectResponse
-        {
-            // 更新用户...
+        // 更新用户...
 
-            return redirect('/users');
-        }
+        return redirect('/users');
     }
+}
+```

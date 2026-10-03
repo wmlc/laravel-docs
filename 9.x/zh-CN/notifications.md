@@ -75,23 +75,27 @@ php artisan make:notification InvoicePaid
 
 通知可以通过两种方式发送：使用 `Notifiable` trait 的 `notify` 方法或使用 `Notification` [Facade](/docs/{{version}}/facades)。`Notifiable` trait 默认包含在应用的 `App\Models\User` 模型中：
 
-    <?php
+```php
+<?php
 
-    namespace App\Models;
+namespace App\Models;
 
-    use Illuminate\Foundation\Auth\User as Authenticatable;
-    use Illuminate\Notifications\Notifiable;
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
 
-    class User extends Authenticatable
-    {
-        use Notifiable;
-    }
+class User extends Authenticatable
+{
+    use Notifiable;
+}
+```
 
 此 trait 提供的 `notify` 方法期望接收一个通知实例：
 
-    use App\Notifications\InvoicePaid;
+```php
+use App\Notifications\InvoicePaid;
 
-    $user->notify(new InvoicePaid($invoice));
+$user->notify(new InvoicePaid($invoice));
+```
 
 > **Note**
 > 请记住，你可以在任何模型上使用 `Notifiable` trait。不限于仅在 `User` 模型上包含它。
@@ -101,13 +105,17 @@ php artisan make:notification InvoicePaid
 
 或者，你可以通过 `Notification` [Facade](/docs/{{version}}/facades) 发送通知。当你需要向多个可通知实体（如用户集合）发送通知时，此方法很有用。要使用 Facade 发送通知，将所有可通知实体和通知实例传递给 `send` 方法：
 
-    use Illuminate\Support\Facades\Notification;
+```php
+use Illuminate\Support\Facades\Notification;
 
-    Notification::send($users, new InvoicePaid($invoice));
+Notification::send($users, new InvoicePaid($invoice));
+```
 
 你还可以使用 `sendNow` 方法立即发送通知。即使通知实现了 `ShouldQueue` 接口，此方法也会立即发送通知：
 
-    Notification::sendNow($developers, new DeploymentCompleted($deployment));
+```php
+Notification::sendNow($developers, new DeploymentCompleted($deployment));
+```
 
 <a name="specifying-delivery-channels"></a>
 ### 指定投递渠道
@@ -119,16 +127,18 @@ php artisan make:notification InvoicePaid
 
 `via` 方法接收一个 `$notifiable` 实例，该实例是通知发送到的类的实例。你可以使用 `$notifiable` 来确定通知应在哪些渠道上投递：
 
-    /**
-     * 获取通知的投递渠道。
-     *
-     * @param  mixed  $notifiable
-     * @return array
-     */
-    public function via($notifiable)
-    {
-        return $notifiable->prefers_sms ? ['vonage'] : ['mail', 'database'];
-    }
+```php
+/**
+ * 获取通知的投递渠道。
+ *
+ * @param  mixed  $notifiable
+ * @return array
+ */
+public function via($notifiable)
+{
+    return $notifiable->prefers_sms ? ['vonage'] : ['mail', 'database'];
+}
+```
 
 <a name="queueing-notifications"></a>
 ### 队列通知
@@ -138,24 +148,28 @@ php artisan make:notification InvoicePaid
 
 发送通知可能需要一些时间，特别是当渠道需要发起外部 API 调用来投递通知时。为了加快应用的响应时间，你可以通过在类中添加 `ShouldQueue` 接口和 `Queueable` trait 来将通知排队。对于使用 `make:notification` 命令生成的所有通知，接口和 trait 已经导入，因此你可以立即将它们添加到通知类中：
 
-    <?php
+```php
+<?php
 
-    namespace App\Notifications;
+namespace App\Notifications;
 
-    use Illuminate\Bus\Queueable;
-    use Illuminate\Contracts\Queue\ShouldQueue;
-    use Illuminate\Notifications\Notification;
+use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Notifications\Notification;
 
-    class InvoicePaid extends Notification implements ShouldQueue
-    {
-        use Queueable;
+class InvoicePaid extends Notification implements ShouldQueue
+{
+    use Queueable;
 
-        // ...
-    }
+    // ...
+}
+```
 
 将 `ShouldQueue` 接口添加到通知后，你可以像平常一样发送通知。Laravel 会检测类上的 `ShouldQueue` 接口并自动将通知的投递排队：
 
-    $user->notify(new InvoicePaid($invoice));
+```php
+$user->notify(new InvoicePaid($invoice));
+```
 
 队列通知时，将为每个收件人和渠道组合创建一个排队作业。例如，如果你的通知有 3 个收件人和 2 个渠道，将向队列分发 6 个作业。
 
@@ -164,80 +178,92 @@ php artisan make:notification InvoicePaid
 
 如果你想延迟通知的投递，可以在通知实例化时链式调用 `delay` 方法：
 
-    $delay = now()->addMinutes(10);
+```php
+$delay = now()->addMinutes(10);
 
-    $user->notify((new InvoicePaid($invoice))->delay($delay));
+$user->notify((new InvoicePaid($invoice))->delay($delay));
+```
 
 <a name="delaying-notifications-per-channel"></a>
 #### 按渠道延迟通知
 
 你可以向 `delay` 方法传递数组来指定特定渠道的延迟时间：
 
-    $user->notify((new InvoicePaid($invoice))->delay([
-        'mail' => now()->addMinutes(5),
-        'sms' => now()->addMinutes(10),
-    ]));
+```php
+$user->notify((new InvoicePaid($invoice))->delay([
+    'mail' => now()->addMinutes(5),
+    'sms' => now()->addMinutes(10),
+]));
+```
 
 或者，你可以在通知类本身上定义一个 `withDelay` 方法。`withDelay` 方法应返回渠道名和延迟值的数组：
 
-    /**
-     * 确定通知的投递延迟。
-     *
-     * @param  mixed  $notifiable
-     * @return array
-     */
-    public function withDelay($notifiable)
-    {
-        return [
-            'mail' => now()->addMinutes(5),
-            'sms' => now()->addMinutes(10),
-        ];
-    }
+```php
+/**
+ * 确定通知的投递延迟。
+ *
+ * @param  mixed  $notifiable
+ * @return array
+ */
+public function withDelay($notifiable)
+{
+    return [
+        'mail' => now()->addMinutes(5),
+        'sms' => now()->addMinutes(10),
+    ];
+}
+```
 
 <a name="customizing-the-notification-queue-connection"></a>
 #### 自定义通知队列连接
 
 默认情况下，队列通知将使用应用的默认队列连接排队。如果你想为特定通知指定应使用的不同连接，可以在通知类上定义一个 `$connection` 属性：
 
-    /**
-     * 队列通知时使用的队列连接名称。
-     *
-     * @var string
-     */
-    public $connection = 'redis';
+```php
+/**
+ * 队列通知时使用的队列连接名称。
+ *
+ * @var string
+ */
+public $connection = 'redis';
+```
 
 或者，如果你想为通知支持的每个通知渠道指定应使用的特定队列连接，可以在通知上定义一个 `viaConnections` 方法。此方法应返回渠道名 / 队列连接名对的数组：
 
-    /**
-     * 确定每个通知渠道应使用的连接。
-     *
-     * @return array
-     */
-    public function viaConnections()
-    {
-        return [
-            'mail' => 'redis',
-            'database' => 'sync',
-        ];
-    }
+```php
+/**
+ * 确定每个通知渠道应使用的连接。
+ *
+ * @return array
+ */
+public function viaConnections()
+{
+    return [
+        'mail' => 'redis',
+        'database' => 'sync',
+    ];
+}
+```
 
 <a name="customizing-notification-channel-queues"></a>
 #### 自定义通知渠道队列
 
 如果你想为通知支持的每个通知渠道指定应使用的特定队列，可以在通知上定义一个 `viaQueues` 方法。此方法应返回渠道名 / 队列名对的数组：
 
-    /**
-     * 确定每个通知渠道应使用的队列。
-     *
-     * @return array
-     */
-    public function viaQueues()
-    {
-        return [
-            'mail' => 'mail-queue',
-            'slack' => 'slack-queue',
-        ];
-    }
+```php
+/**
+ * 确定每个通知渠道应使用的队列。
+ *
+ * @return array
+ */
+public function viaQueues()
+{
+    return [
+        'mail' => 'mail-queue',
+        'slack' => 'slack-queue',
+    ];
+}
+```
 
 <a name="queued-notifications-and-database-transactions"></a>
 #### 队列通知与数据库事务
@@ -246,34 +272,38 @@ php artisan make:notification InvoicePaid
 
 如果队列连接的 `after_commit` 配置选项设置为 `false`，你仍可以通过在发送通知时调用 `afterCommit` 方法来指示特定的排队通知应在所有打开的数据库事务提交后分发：
 
-    use App\Notifications\InvoicePaid;
+```php
+use App\Notifications\InvoicePaid;
 
-    $user->notify((new InvoicePaid($invoice))->afterCommit());
+$user->notify((new InvoicePaid($invoice))->afterCommit());
+```
 
 或者，你可以从通知的构造函数调用 `afterCommit` 方法：
 
-    <?php
+```php
+<?php
 
-    namespace App\Notifications;
+namespace App\Notifications;
 
-    use Illuminate\Bus\Queueable;
-    use Illuminate\Contracts\Queue\ShouldQueue;
-    use Illuminate\Notifications\Notification;
+use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Notifications\Notification;
 
-    class InvoicePaid extends Notification implements ShouldQueue
+class InvoicePaid extends Notification implements ShouldQueue
+{
+    use Queueable;
+
+    /**
+     * 创建新的通知实例。
+     *
+     * @return void
+     */
+    public function __construct()
     {
-        use Queueable;
-
-        /**
-         * 创建新的通知实例。
-         *
-         * @return void
-         */
-        public function __construct()
-        {
-            $this->afterCommit();
-        }
+        $this->afterCommit();
     }
+}
+```
 
 > **Note**
 > 要了解更多关于解决这些问题的信息，请查阅有关[排队作业和数据库事务](/docs/{{version}}/queues#jobs-and-database-transactions)的文档。
@@ -285,37 +315,43 @@ php artisan make:notification InvoicePaid
 
 但是，如果你希望在排队通知被队列 worker 处理后对是否应发送做出最终决定，可以在通知类上定义一个 `shouldSend` 方法。如果此方法返回 `false`，通知将不会被发送：
 
-    /**
-     * 确定是否应发送通知。
-     *
-     * @param  mixed  $notifiable
-     * @param  string  $channel
-     * @return bool
-     */
-    public function shouldSend($notifiable, $channel)
-    {
-        return $this->invoice->isPaid();
-    }
+```php
+/**
+ * 确定是否应发送通知。
+ *
+ * @param  mixed  $notifiable
+ * @param  string  $channel
+ * @return bool
+ */
+public function shouldSend($notifiable, $channel)
+{
+    return $this->invoice->isPaid();
+}
+```
 
 <a name="on-demand-notifications"></a>
 ### 按需通知
 
 有时你可能需要向未存储为应用"用户"的人发送通知。使用 `Notification` Facade 的 `route` 方法，你可以在发送通知之前指定临时通知路由信息：
 
-    use Illuminate\Broadcasting\Channel;
-    use Illuminate\Support\Facades\Notification;
+```php
+use Illuminate\Broadcasting\Channel;
+use Illuminate\Support\Facades\Notification;
 
-    Notification::route('mail', 'taylor@example.com')
-                ->route('vonage', '5555555555')
-                ->route('slack', 'https://hooks.slack.com/services/...')
-                ->route('broadcast', [new Channel('channel-name')])
-                ->notify(new InvoicePaid($invoice));
+Notification::route('mail', 'taylor@example.com')
+            ->route('vonage', '5555555555')
+            ->route('slack', 'https://hooks.slack.com/services/...')
+            ->route('broadcast', [new Channel('channel-name')])
+            ->notify(new InvoicePaid($invoice));
+```
 
 如果你希望在向 `mail` 路由发送按需通知时提供收件人姓名，可以提供一个以电子邮件地址为键、以姓名为数组第一个元素值的数组：
 
-    Notification::route('mail', [
-        'barrett@example.com' => 'Barrett Blair',
-    ])->notify(new InvoicePaid($invoice));
+```php
+Notification::route('mail', [
+    'barrett@example.com' => 'Barrett Blair',
+])->notify(new InvoicePaid($invoice));
+```
 
 <a name="mail-notifications"></a>
 ## 邮件通知
@@ -327,23 +363,25 @@ php artisan make:notification InvoicePaid
 
 `MailMessage` 类包含一些简单的方法来帮助你构建事务性电子邮件消息。邮件消息可以包含文本行以及一个"行动号召"。让我们看一个 `toMail` 方法示例：
 
-    /**
-     * 获取通知的邮件表示。
-     *
-     * @param  mixed  $notifiable
-     * @return \Illuminate\Notifications\Messages\MailMessage
-     */
-    public function toMail($notifiable)
-    {
-        $url = url('/invoice/'.$this->invoice->id);
+```php
+/**
+ * 获取通知的邮件表示。
+ *
+ * @param  mixed  $notifiable
+ * @return \Illuminate\Notifications\Messages\MailMessage
+ */
+public function toMail($notifiable)
+{
+    $url = url('/invoice/'.$this->invoice->id);
 
-        return (new MailMessage)
-                    ->greeting('Hello!')
-                    ->line('One of your invoices has been paid!')
-                    ->lineIf($this->amount > 0, "Amount paid: {$this->amount}")
-                    ->action('View Invoice', $url)
-                    ->line('Thank you for using our application!');
-    }
+    return (new MailMessage)
+                ->greeting('Hello!')
+                ->line('One of your invoices has been paid!')
+                ->lineIf($this->amount > 0, "Amount paid: {$this->amount}")
+                ->action('View Invoice', $url)
+                ->line('Thank you for using our application!');
+}
+```
 
 > **Note**
 > 注意我们在 `toMail` 方法中使用了 `$this->invoice->id`。你可以将通知生成消息所需的任何数据传递到通知的构造函数中。
@@ -360,139 +398,153 @@ php artisan make:notification InvoicePaid
 
 某些通知向用户告知错误，例如发票支付失败。你可以通过在构建消息时调用 `error` 方法来指示邮件消息与错误相关。在邮件消息上使用 `error` 方法时，行动号召按钮将是红色而非黑色：
 
-    /**
-     * 获取通知的邮件表示。
-     *
-     * @param  mixed  $notifiable
-     * @return \Illuminate\Notifications\Messages\MailMessage
-     */
-    public function toMail($notifiable)
-    {
-        return (new MailMessage)
-                    ->error()
-                    ->subject('Invoice Payment Failed')
-                    ->line('...');
-    }
+```php
+/**
+ * 获取通知的邮件表示。
+ *
+ * @param  mixed  $notifiable
+ * @return \Illuminate\Notifications\Messages\MailMessage
+ */
+public function toMail($notifiable)
+{
+    return (new MailMessage)
+                ->error()
+                ->subject('Invoice Payment Failed')
+                ->line('...');
+}
+```
 
 <a name="other-mail-notification-formatting-options"></a>
 #### 其他邮件通知格式化选项
 
 除了在通知类中定义文本"行"外，你可以使用 `view` 方法指定应用于渲染通知电子邮件的自定义模板：
 
-    /**
-     * 获取通知的邮件表示。
-     *
-     * @param  mixed  $notifiable
-     * @return \Illuminate\Notifications\Messages\MailMessage
-     */
-    public function toMail($notifiable)
-    {
-        return (new MailMessage)->view(
-            'emails.name', ['invoice' => $this->invoice]
-        );
-    }
+```php
+/**
+ * 获取通知的邮件表示。
+ *
+ * @param  mixed  $notifiable
+ * @return \Illuminate\Notifications\Messages\MailMessage
+ */
+public function toMail($notifiable)
+{
+    return (new MailMessage)->view(
+        'emails.name', ['invoice' => $this->invoice]
+    );
+}
+```
 
 你可以通过将视图名作为数组第二个元素传递给 `view` 方法来为邮件消息指定纯文本视图：
 
-    /**
-     * 获取通知的邮件表示。
-     *
-     * @param  mixed  $notifiable
-     * @return \Illuminate\Notifications\Messages\MailMessage
-     */
-    public function toMail($notifiable)
-    {
-        return (new MailMessage)->view(
-            ['emails.name.html', 'emails.name.plain'],
-            ['invoice' => $this->invoice]
-        );
-    }
+```php
+/**
+ * 获取通知的邮件表示。
+ *
+ * @param  mixed  $notifiable
+ * @return \Illuminate\Notifications\Messages\MailMessage
+ */
+public function toMail($notifiable)
+{
+    return (new MailMessage)->view(
+        ['emails.name.html', 'emails.name.plain'],
+        ['invoice' => $this->invoice]
+    );
+}
+```
 
 <a name="customizing-the-sender"></a>
 ### 自定义发件人
 
 默认情况下，电子邮件的发件人 / from 地址在 `config/mail.php` 配置文件中定义。但你可以使用 `from` 方法为特定通知指定 from 地址：
 
-    /**
-     * 获取通知的邮件表示。
-     *
-     * @param  mixed  $notifiable
-     * @return \Illuminate\Notifications\Messages\MailMessage
-     */
-    public function toMail($notifiable)
-    {
-        return (new MailMessage)
-                    ->from('barrett@example.com', 'Barrett Blair')
-                    ->line('...');
-    }
+```php
+/**
+ * 获取通知的邮件表示。
+ *
+ * @param  mixed  $notifiable
+ * @return \Illuminate\Notifications\Messages\MailMessage
+ */
+public function toMail($notifiable)
+{
+    return (new MailMessage)
+                ->from('barrett@example.com', 'Barrett Blair')
+                ->line('...');
+}
+```
 
 <a name="customizing-the-recipient"></a>
 ### 自定义收件人
 
 通过 `mail` 渠道发送通知时，通知系统会自动在你的可通知实体上查找 `email` 属性。你可以通过在可通知实体上定义一个 `routeNotificationForMail` 方法来自定义用于投递通知的电子邮件地址：
 
-    <?php
+```php
+<?php
 
-    namespace App\Models;
+namespace App\Models;
 
-    use Illuminate\Foundation\Auth\User as Authenticatable;
-    use Illuminate\Notifications\Notifiable;
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
 
-    class User extends Authenticatable
+class User extends Authenticatable
+{
+    use Notifiable;
+
+    /**
+     * 为 mail 渠道路由通知。
+     *
+     * @param  \Illuminate\Notifications\Notification  $notification
+     * @return array|string
+     */
+    public function routeNotificationForMail($notification)
     {
-        use Notifiable;
+        // 仅返回电子邮件地址...
+        return $this->email_address;
 
-        /**
-         * 为 mail 渠道路由通知。
-         *
-         * @param  \Illuminate\Notifications\Notification  $notification
-         * @return array|string
-         */
-        public function routeNotificationForMail($notification)
-        {
-            // 仅返回电子邮件地址...
-            return $this->email_address;
-
-            // 返回电子邮件地址和姓名...
-            return [$this->email_address => $this->name];
-        }
+        // 返回电子邮件地址和姓名...
+        return [$this->email_address => $this->name];
     }
+}
+```
 
 <a name="customizing-the-subject"></a>
 ### 自定义主题
 
 默认情况下，电子邮件的主题是通知类名格式化为"标题大小写"后的结果。因此，如果你的通知类名为 `InvoicePaid`，电子邮件主题将是 `Invoice Paid`。如果你想为消息指定不同的主题，可以在构建消息时调用 `subject` 方法：
 
-    /**
-     * 获取通知的邮件表示。
-     *
-     * @param  mixed  $notifiable
-     * @return \Illuminate\Notifications\Messages\MailMessage
-     */
-    public function toMail($notifiable)
-    {
-        return (new MailMessage)
-                    ->subject('Notification Subject')
-                    ->line('...');
-    }
+```php
+/**
+ * 获取通知的邮件表示。
+ *
+ * @param  mixed  $notifiable
+ * @return \Illuminate\Notifications\Messages\MailMessage
+ */
+public function toMail($notifiable)
+{
+    return (new MailMessage)
+                ->subject('Notification Subject')
+                ->line('...');
+}
+```
 
 <a name="customizing-the-mailer"></a>
 ### 自定义邮件驱动
 
 默认情况下，电子邮件通知将使用 `config/mail.php` 配置文件中定义的默认邮件驱动发送。但你可以通过在构建消息时调用 `mailer` 方法在运行时指定不同的邮件驱动：
 
-    /**
-     * 获取通知的邮件表示。
-     *
-     * @param  mixed  $notifiable
-     * @return \Illuminate\Notifications\Messages\MailMessage
-     */
-    public function toMail($notifiable)
-    {
-        return (new MailMessage)
-                    ->mailer('postmark')
-                    ->line('...');
-    }
+```php
+/**
+ * 获取通知的邮件表示。
+ *
+ * @param  mixed  $notifiable
+ * @return \Illuminate\Notifications\Messages\MailMessage
+ */
+public function toMail($notifiable)
+{
+    return (new MailMessage)
+                ->mailer('postmark')
+                ->line('...');
+}
+```
 
 <a name="customizing-the-templates"></a>
 ### 自定义模板
@@ -508,116 +560,128 @@ php artisan vendor:publish --tag=laravel-notifications
 
 要为电子邮件通知添加附件，在构建消息时使用 `attach` 方法。`attach` 方法接受文件的绝对路径作为第一个参数：
 
-    /**
-     * 获取通知的邮件表示。
-     *
-     * @param  mixed  $notifiable
-     * @return \Illuminate\Notifications\Messages\MailMessage
-     */
-    public function toMail($notifiable)
-    {
-        return (new MailMessage)
-                    ->greeting('Hello!')
-                    ->attach('/path/to/file');
-    }
+```php
+/**
+ * 获取通知的邮件表示。
+ *
+ * @param  mixed  $notifiable
+ * @return \Illuminate\Notifications\Messages\MailMessage
+ */
+public function toMail($notifiable)
+{
+    return (new MailMessage)
+                ->greeting('Hello!')
+                ->attach('/path/to/file');
+}
+```
 
 > **Note**
 > 通知邮件消息提供的 `attach` 方法也接受[可附加对象](/docs/{{version}}/mail#attachable-objects)。请查阅全面的[可附加对象文档](/docs/{{version}}/mail#attachable-objects)以了解更多。
 
 为消息附加文件时，你还可以通过将 `array` 作为第二个参数传递给 `attach` 方法来指定显示名称和 / 或 MIME 类型：
 
-    /**
-     * 获取通知的邮件表示。
-     *
-     * @param  mixed  $notifiable
-     * @return \Illuminate\Notifications\Messages\MailMessage
-     */
-    public function toMail($notifiable)
-    {
-        return (new MailMessage)
-                    ->greeting('Hello!')
-                    ->attach('/path/to/file', [
-                        'as' => 'name.pdf',
-                        'mime' => 'application/pdf',
-                    ]);
-    }
+```php
+/**
+ * 获取通知的邮件表示。
+ *
+ * @param  mixed  $notifiable
+ * @return \Illuminate\Notifications\Messages\MailMessage
+ */
+public function toMail($notifiable)
+{
+    return (new MailMessage)
+                ->greeting('Hello!')
+                ->attach('/path/to/file', [
+                    'as' => 'name.pdf',
+                    'mime' => 'application/pdf',
+                ]);
+}
+```
 
 与在 mailable 对象中附加文件不同，你不能使用 `attachFromStorage` 直接从存储磁盘附加文件。你应该使用 `attach` 方法配合存储磁盘上文件的绝对路径。或者，你可以从 `toMail` 方法返回一个 [mailable](/docs/{{version}}/mail#generating-mailables)：
 
-    use App\Mail\InvoicePaid as InvoicePaidMailable;
+```php
+use App\Mail\InvoicePaid as InvoicePaidMailable;
 
-    /**
-     * 获取通知的邮件表示。
-     *
-     * @param  mixed  $notifiable
-     * @return Mailable
-     */
-    public function toMail($notifiable)
-    {
-        return (new InvoicePaidMailable($this->invoice))
-                    ->to($notifiable->email)
-                    ->attachFromStorage('/path/to/file');
-    }
+/**
+ * 获取通知的邮件表示。
+ *
+ * @param  mixed  $notifiable
+ * @return Mailable
+ */
+public function toMail($notifiable)
+{
+    return (new InvoicePaidMailable($this->invoice))
+                ->to($notifiable->email)
+                ->attachFromStorage('/path/to/file');
+}
+```
 
 必要时，可以使用 `attachMany` 方法为消息附加多个文件：
 
-    /**
-     * 获取通知的邮件表示。
-     *
-     * @param  mixed  $notifiable
-     * @return \Illuminate\Notifications\Messages\MailMessage
-     */
-    public function toMail($notifiable)
-    {
-        return (new MailMessage)
-                    ->greeting('Hello!')
-                    ->attachMany([
-                        '/path/to/forge.svg',
-                        '/path/to/vapor.svg' => [
-                            'as' => 'Logo.svg',
-                            'mime' => 'image/svg+xml',
-                        ],
-                    ]);
-    }
+```php
+/**
+ * 获取通知的邮件表示。
+ *
+ * @param  mixed  $notifiable
+ * @return \Illuminate\Notifications\Messages\MailMessage
+ */
+public function toMail($notifiable)
+{
+    return (new MailMessage)
+                ->greeting('Hello!')
+                ->attachMany([
+                    '/path/to/forge.svg',
+                    '/path/to/vapor.svg' => [
+                        'as' => 'Logo.svg',
+                        'mime' => 'image/svg+xml',
+                    ],
+                ]);
+}
+```
 
 <a name="raw-data-attachments"></a>
 #### 原始数据附件
 
 `attachData` 方法可用于将原始字节字符串作为附件附加。调用 `attachData` 方法时，你应该提供应分配给附件的文件名：
 
-    /**
-     * 获取通知的邮件表示。
-     *
-     * @param  mixed  $notifiable
-     * @return \Illuminate\Notifications\Messages\MailMessage
-     */
-    public function toMail($notifiable)
-    {
-        return (new MailMessage)
-                    ->greeting('Hello!')
-                    ->attachData($this->pdf, 'name.pdf', [
-                        'mime' => 'application/pdf',
-                    ]);
-    }
+```php
+/**
+ * 获取通知的邮件表示。
+ *
+ * @param  mixed  $notifiable
+ * @return \Illuminate\Notifications\Messages\MailMessage
+ */
+public function toMail($notifiable)
+{
+    return (new MailMessage)
+                ->greeting('Hello!')
+                ->attachData($this->pdf, 'name.pdf', [
+                    'mime' => 'application/pdf',
+                ]);
+}
+```
 
 <a name="adding-tags-metadata"></a>
 ### 添加标签和元数据
 
 某些第三方电子邮件提供商（如 Mailgun 和 Postmark）支持消息"标签"和"元数据"，可用于分组和跟踪应用发送的电子邮件。你可以通过 `tag` 和 `metadata` 方法为电子邮件消息添加标签和元数据：
 
-    /**
-     * 获取通知的邮件表示。
-     *
-     * @param  mixed  $notifiable
-     * @return \Illuminate\Notifications\Messages\MailMessage
-     */
-    public function toMail($notifiable)
-    {
-        return (new MailMessage)
-                    ->greeting('Comment Upvoted!')
-                    ->tag('upvote')
-                    ->metadata('comment_id', $this->comment->id);
-    }
+```php
+/**
+ * 获取通知的邮件表示。
+ *
+ * @param  mixed  $notifiable
+ * @return \Illuminate\Notifications\Messages\MailMessage
+ */
+public function toMail($notifiable)
+{
+    return (new MailMessage)
+                ->greeting('Comment Upvoted!')
+                ->tag('upvote')
+                ->metadata('comment_id', $this->comment->id);
+}
+```
 
 如果你的应用使用 Mailgun 驱动，可以查阅 Mailgun 文档以了解有关[标签](https://documentation.mailgun.com/en/latest/user_manual.html#tagging-1)和[元数据](https://documentation.mailgun.com/en/latest/user_manual.html#attaching-data-to-messages)的更多信息。同样，也可以查阅 Postmark 文档以了解其对[标签](https://postmarkapp.com/blog/tags-support-for-smtp)和[元数据](https://postmarkapp.com/support/article/1125-custom-metadata-faq)支持的更多信息。
 
@@ -628,81 +692,89 @@ php artisan vendor:publish --tag=laravel-notifications
 
 `MailMessage` 类的 `withSymfonyMessage` 方法允许你注册一个闭包，该闭包将在发送消息之前与 Symfony Message 实例一起调用。这让你有机会在消息投递之前对其进行深度自定义：
 
-    use Symfony\Component\Mime\Email;
+```php
+use Symfony\Component\Mime\Email;
 
-    /**
-     * 获取通知的邮件表示。
-     *
-     * @param  mixed  $notifiable
-     * @return \Illuminate\Notifications\Messages\MailMessage
-     */
-    public function toMail($notifiable)
-    {
-        return (new MailMessage)
-                    ->withSymfonyMessage(function (Email $message) {
-                        $message->getHeaders()->addTextHeader(
-                            'Custom-Header', 'Header Value'
-                        );
-                    });
-    }
+/**
+ * 获取通知的邮件表示。
+ *
+ * @param  mixed  $notifiable
+ * @return \Illuminate\Notifications\Messages\MailMessage
+ */
+public function toMail($notifiable)
+{
+    return (new MailMessage)
+                ->withSymfonyMessage(function (Email $message) {
+                    $message->getHeaders()->addTextHeader(
+                        'Custom-Header', 'Header Value'
+                    );
+                });
+}
+```
 
 <a name="using-mailables"></a>
 ### 使用 Mailable
 
 如果需要，你可以从通知的 `toMail` 方法返回完整的 [mailable 对象](/docs/{{version}}/mail)。当返回 `Mailable` 而非 `MailMessage` 时，你需要使用 mailable 对象的 `to` 方法指定消息收件人：
 
-    use App\Mail\InvoicePaid as InvoicePaidMailable;
+```php
+use App\Mail\InvoicePaid as InvoicePaidMailable;
 
-    /**
-     * 获取通知的邮件表示。
-     *
-     * @param  mixed  $notifiable
-     * @return Mailable
-     */
-    public function toMail($notifiable)
-    {
-        return (new InvoicePaidMailable($this->invoice))
-                    ->to($notifiable->email);
-    }
+/**
+ * 获取通知的邮件表示。
+ *
+ * @param  mixed  $notifiable
+ * @return Mailable
+ */
+public function toMail($notifiable)
+{
+    return (new InvoicePaidMailable($this->invoice))
+                ->to($notifiable->email);
+}
+```
 
 <a name="mailables-and-on-demand-notifications"></a>
 #### Mailable 与按需通知
 
 如果你正在发送[按需通知](#on-demand-notifications)，传递给 `toMail` 方法的 `$notifiable` 实例将是 `Illuminate\Notifications\AnonymousNotifiable` 的实例，它提供了一个 `routeNotificationFor` 方法，可用于检索按需通知应发送到的电子邮件地址：
 
-    use App\Mail\InvoicePaid as InvoicePaidMailable;
-    use Illuminate\Notifications\AnonymousNotifiable;
+```php
+use App\Mail\InvoicePaid as InvoicePaidMailable;
+use Illuminate\Notifications\AnonymousNotifiable;
 
-    /**
-     * 获取通知的邮件表示。
-     *
-     * @param  mixed  $notifiable
-     * @return Mailable
-     */
-    public function toMail($notifiable)
-    {
-        $address = $notifiable instanceof AnonymousNotifiable
-                ? $notifiable->routeNotificationFor('mail')
-                : $notifiable->email;
+/**
+ * 获取通知的邮件表示。
+ *
+ * @param  mixed  $notifiable
+ * @return Mailable
+ */
+public function toMail($notifiable)
+{
+    $address = $notifiable instanceof AnonymousNotifiable
+            ? $notifiable->routeNotificationFor('mail')
+            : $notifiable->email;
 
-        return (new InvoicePaidMailable($this->invoice))
-                    ->to($address);
-    }
+    return (new InvoicePaidMailable($this->invoice))
+                ->to($address);
+}
+```
 
 <a name="previewing-mail-notifications"></a>
 ### 预览邮件通知
 
 设计邮件通知模板时，像典型的 Blade 模板一样在浏览器中快速预览渲染的邮件消息会很方便。因此，Laravel 允许你直接从路由闭包或控制器返回邮件通知生成的任何邮件消息。当返回 `MailMessage` 时，它将被渲染并显示在浏览器中，让你无需发送到实际电子邮件地址即可快速预览其设计：
 
-    use App\Models\Invoice;
-    use App\Notifications\InvoicePaid;
+```php
+use App\Models\Invoice;
+use App\Notifications\InvoicePaid;
 
-    Route::get('/notification', function () {
-        $invoice = Invoice::find(1);
+Route::get('/notification', function () {
+    $invoice = Invoice::find(1);
 
-        return (new InvoicePaid($invoice))
-                    ->toMail($invoice->user);
-    });
+    return (new InvoicePaid($invoice))
+                ->toMail($invoice->user);
+});
+```
 
 <a name="markdown-mail-notifications"></a>
 ## Markdown 邮件通知
@@ -720,20 +792,22 @@ php artisan make:notification InvoicePaid --markdown=mail.invoice.paid
 
 与所有其他邮件通知一样，使用 Markdown 模板的通知应在通知类上定义一个 `toMail` 方法。但不要使用 `line` 和 `action` 方法构建通知，而是使用 `markdown` 方法指定应使用的 Markdown 模板名称。你希望对模板可用的数据数组可以作为方法的第二个参数传递：
 
-    /**
-     * 获取通知的邮件表示。
-     *
-     * @param  mixed  $notifiable
-     * @return \Illuminate\Notifications\Messages\MailMessage
-     */
-    public function toMail($notifiable)
-    {
-        $url = url('/invoice/'.$this->invoice->id);
+```php
+/**
+ * 获取通知的邮件表示。
+ *
+ * @param  mixed  $notifiable
+ * @return \Illuminate\Notifications\Messages\MailMessage
+ */
+public function toMail($notifiable)
+{
+    $url = url('/invoice/'.$this->invoice->id);
 
-        return (new MailMessage)
-                    ->subject('Invoice Paid')
-                    ->markdown('mail.invoice.paid', ['url' => $url]);
-    }
+    return (new MailMessage)
+                ->subject('Invoice Paid')
+                ->markdown('mail.invoice.paid', ['url' => $url]);
+}
+```
 
 <a name="writing-the-message"></a>
 ### 编写消息
@@ -811,19 +885,21 @@ php artisan vendor:publish --tag=laravel-mail
 
 要为单个通知自定义主题，你可以在构建通知的邮件消息时调用 `theme` 方法。`theme` 方法接受发送通知时应使用的主题名称：
 
-    /**
-     * 获取通知的邮件表示。
-     *
-     * @param  mixed  $notifiable
-     * @return \Illuminate\Notifications\Messages\MailMessage
-     */
-    public function toMail($notifiable)
-    {
-        return (new MailMessage)
-                    ->theme('invoice')
-                    ->subject('Invoice Paid')
-                    ->markdown('mail.invoice.paid', ['url' => $url]);
-    }
+```php
+/**
+ * 获取通知的邮件表示。
+ *
+ * @param  mixed  $notifiable
+ * @return \Illuminate\Notifications\Messages\MailMessage
+ */
+public function toMail($notifiable)
+{
+    return (new MailMessage)
+                ->theme('invoice')
+                ->subject('Invoice Paid')
+                ->markdown('mail.invoice.paid', ['url' => $url]);
+}
+```
 
 <a name="database-notifications"></a>
 ## 数据库通知
@@ -846,19 +922,21 @@ php artisan migrate
 
 如果通知支持存储在数据库表中，你应该在通知类上定义一个 `toDatabase` 或 `toArray` 方法。此方法将接收一个 `$notifiable` 实体，并应返回一个普通 PHP 数组。返回的数组将被编码为 JSON 并存储在 `notifications` 表的 `data` 列中。让我们看一个 `toArray` 方法示例：
 
-    /**
-     * 获取通知的数组表示。
-     *
-     * @param  mixed  $notifiable
-     * @return array
-     */
-    public function toArray($notifiable)
-    {
-        return [
-            'invoice_id' => $this->invoice->id,
-            'amount' => $this->invoice->amount,
-        ];
-    }
+```php
+/**
+ * 获取通知的数组表示。
+ *
+ * @param  mixed  $notifiable
+ * @return array
+ */
+public function toArray($notifiable)
+{
+    return [
+        'invoice_id' => $this->invoice->id,
+        'amount' => $this->invoice->amount,
+    ];
+}
+```
 
 <a name="todatabase-vs-toarray"></a>
 #### `toDatabase` 与 `toArray`
@@ -870,19 +948,23 @@ php artisan migrate
 
 通知存储在数据库中后，你需要一种便捷的方式从可通知实体中访问它们。包含在 Laravel 默认 `App\Models\User` 模型中的 `Illuminate\Notifications\Notifiable` trait 包含一个 `notifications` [Eloquent 关联](/docs/{{version}}/eloquent-relationships)，返回该实体的通知。要获取通知，你可以像访问任何其他 Eloquent 关联一样访问此方法。默认情况下，通知将按 `created_at` 时间戳排序，最新通知位于集合开头：
 
-    $user = App\Models\User::find(1);
+```php
+$user = App\Models\User::find(1);
 
-    foreach ($user->notifications as $notification) {
-        echo $notification->type;
-    }
+foreach ($user->notifications as $notification) {
+    echo $notification->type;
+}
+```
 
 如果你想仅检索"未读"通知，可以使用 `unreadNotifications` 关联。同样，这些通知将按 `created_at` 时间戳排序，最新通知位于集合开头：
 
-    $user = App\Models\User::find(1);
+```php
+$user = App\Models\User::find(1);
 
-    foreach ($user->unreadNotifications as $notification) {
-        echo $notification->type;
-    }
+foreach ($user->unreadNotifications as $notification) {
+    echo $notification->type;
+}
+```
 
 > **Note**
 > 要从 JavaScript 客户端访问通知，你应该为应用定义一个通知控制器，返回可通知实体（如当前用户）的通知。然后你可以从 JavaScript 客户端向该控制器的 URL 发起 HTTP 请求。
@@ -892,25 +974,33 @@ php artisan migrate
 
 通常，当用户查看通知时，你会希望将其标记为"已读"。`Illuminate\Notifications\Notifiable` trait 提供了一个 `markAsRead` 方法，该方法更新通知数据库记录上的 `read_at` 列：
 
-    $user = App\Models\User::find(1);
+```php
+$user = App\Models\User::find(1);
 
-    foreach ($user->unreadNotifications as $notification) {
-        $notification->markAsRead();
-    }
+foreach ($user->unreadNotifications as $notification) {
+    $notification->markAsRead();
+}
+```
 
 但你可以直接在通知集合上使用 `markAsRead` 方法，而无需遍历每个通知：
 
-    $user->unreadNotifications->markAsRead();
+```php
+$user->unreadNotifications->markAsRead();
+```
 
 你也可以使用批量更新查询将所有通知标记为已读，而无需从数据库中检索它们：
 
-    $user = App\Models\User::find(1);
+```php
+$user = App\Models\User::find(1);
 
-    $user->unreadNotifications()->update(['read_at' => now()]);
+$user->unreadNotifications()->update(['read_at' => now()]);
+```
 
 你可以 `delete` 通知以将其从表中完全移除：
 
-    $user->notifications()->delete();
+```php
+$user->notifications()->delete();
+```
 
 <a name="broadcast-notifications"></a>
 ## 广播通知
@@ -925,85 +1015,95 @@ php artisan migrate
 
 `broadcast` 渠道使用 Laravel 的[事件广播](/docs/{{version}}/broadcasting)服务广播通知，允许你的 JavaScript 驱动前端实时捕获通知。如果通知支持广播，你可以在通知类上定义一个 `toBroadcast` 方法。此方法将接收一个 `$notifiable` 实体，并应返回一个 `BroadcastMessage` 实例。如果 `toBroadcast` 方法不存在，将使用 `toArray` 方法收集应广播的数据。返回的数据将被编码为 JSON 并广播到你的 JavaScript 驱动前端。让我们看一个 `toBroadcast` 方法示例：
 
-    use Illuminate\Notifications\Messages\BroadcastMessage;
+```php
+use Illuminate\Notifications\Messages\BroadcastMessage;
 
-    /**
-     * 获取通知的可广播表示。
-     *
-     * @param  mixed  $notifiable
-     * @return BroadcastMessage
-     */
-    public function toBroadcast($notifiable)
-    {
-        return new BroadcastMessage([
-            'invoice_id' => $this->invoice->id,
-            'amount' => $this->invoice->amount,
-        ]);
-    }
+/**
+ * 获取通知的可广播表示。
+ *
+ * @param  mixed  $notifiable
+ * @return BroadcastMessage
+ */
+public function toBroadcast($notifiable)
+{
+    return new BroadcastMessage([
+        'invoice_id' => $this->invoice->id,
+        'amount' => $this->invoice->amount,
+    ]);
+}
+```
 
 <a name="broadcast-queue-configuration"></a>
 #### 广播队列配置
 
 所有广播通知都排队进行广播。如果你想配置用于排队广播操作的队列连接或队列名，可以使用 `BroadcastMessage` 的 `onConnection` 和 `onQueue` 方法：
 
-    return (new BroadcastMessage($data))
-                    ->onConnection('sqs')
-                    ->onQueue('broadcasts');
+```php
+return (new BroadcastMessage($data))
+                ->onConnection('sqs')
+                ->onQueue('broadcasts');
+```
 
 <a name="customizing-the-notification-type"></a>
 #### 自定义通知类型
 
 除了你指定的数据外，所有广播通知还有一个包含通知完整类名的 `type` 字段。如果你想自定义通知 `type`，可以在通知类上定义一个 `broadcastType` 方法：
 
-    use Illuminate\Notifications\Messages\BroadcastMessage;
+```php
+use Illuminate\Notifications\Messages\BroadcastMessage;
 
-    /**
-     * 获取正在广播的通知类型。
-     *
-     * @return string
-     */
-    public function broadcastType()
-    {
-        return 'broadcast.message';
-    }
+/**
+ * 获取正在广播的通知类型。
+ *
+ * @return string
+ */
+public function broadcastType()
+{
+    return 'broadcast.message';
+}
+```
 
 <a name="listening-for-notifications"></a>
 ### 监听通知
 
 通知将在使用 `{notifiable}.{id}` 约定格式的私有频道上广播。因此，如果你向 ID 为 `1` 的 `App\Models\User` 实例发送通知，通知将在 `App.Models.User.1` 私有频道上广播。使用 [Laravel Echo](/docs/{{version}}/broadcasting#client-side-installation) 时，你可以使用 `notification` 方法轻松监听频道上的通知：
 
-    Echo.private('App.Models.User.' + userId)
-        .notification((notification) => {
-            console.log(notification.type);
-        });
+```js
+Echo.private('App.Models.User.' + userId)
+    .notification((notification) => {
+        console.log(notification.type);
+    });
+```
 
 <a name="customizing-the-notification-channel"></a>
 #### 自定义通知频道
 
 如果你想自定义实体广播通知在哪个频道上广播，可以在可通知实体上定义一个 `receivesBroadcastNotificationsOn` 方法：
 
-    <?php
+```php
+<?php
 
-    namespace App\Models;
+namespace App\Models;
 
-    use Illuminate\Broadcasting\PrivateChannel;
-    use Illuminate\Foundation\Auth\User as Authenticatable;
-    use Illuminate\Notifications\Notifiable;
+use Illuminate\Broadcasting\PrivateChannel;
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
 
-    class User extends Authenticatable
+class User extends Authenticatable
+{
+    use Notifiable;
+
+    /**
+     * 用户接收通知广播的频道。
+     *
+     * @return string
+     */
+    public function receivesBroadcastNotificationsOn()
     {
-        use Notifiable;
-
-        /**
-         * 用户接收通知广播的频道。
-         *
-         * @return string
-         */
-        public function receivesBroadcastNotificationsOn()
-        {
-            return 'users.'.$this->id;
-        }
+        return 'users.'.$this->id;
     }
+}
+```
 
 <a name="sms-notifications"></a>
 ## SMS 通知
@@ -1013,112 +1113,126 @@ php artisan migrate
 
 Laravel 中发送 SMS 通知由 [Vonage](https://www.vonage.com/)（前身为 Nexmo）驱动。通过 Vonage 发送通知之前，你需要安装 `laravel/vonage-notification-channel` 和 `guzzlehttp/guzzle` 包：
 
-    composer require laravel/vonage-notification-channel guzzlehttp/guzzle
+```shell
+composer require laravel/vonage-notification-channel guzzlehttp/guzzle
+```
 
 该包包含一个[配置文件](https://github.com/laravel/vonage-notification-channel/blob/3.x/config/vonage.php)。但你不需要将此配置文件导出到自己的应用。你可以直接使用 `VONAGE_KEY` 和 `VONAGE_SECRET` 环境变量来定义 Vonage 公钥和密钥。
 
 定义密钥后，你应该设置一个 `VONAGE_SMS_FROM` 环境变量，定义 SMS 消息默认发送的电话号码。你可以在 Vonage 控制面板中生成此电话号码：
 
-    VONAGE_SMS_FROM=15556666666
+```ini
+VONAGE_SMS_FROM=15556666666
+```
 
 <a name="formatting-sms-notifications"></a>
 ### 格式化 SMS 通知
 
 如果通知支持作为 SMS 发送，你应该在通知类上定义一个 `toVonage` 方法。此方法将接收一个 `$notifiable` 实体，并应返回一个 `Illuminate\Notifications\Messages\VonageMessage` 实例：
 
-    /**
-     * 获取通知的 Vonage / SMS 表示。
-     *
-     * @param  mixed  $notifiable
-     * @return \Illuminate\Notifications\Messages\VonageMessage
-     */
-    public function toVonage($notifiable)
-    {
-        return (new VonageMessage)
-                    ->content('Your SMS message content');
-    }
+```php
+/**
+ * 获取通知的 Vonage / SMS 表示。
+ *
+ * @param  mixed  $notifiable
+ * @return \Illuminate\Notifications\Messages\VonageMessage
+ */
+public function toVonage($notifiable)
+{
+    return (new VonageMessage)
+                ->content('Your SMS message content');
+}
+```
 
 <a name="unicode-content"></a>
 #### Unicode 内容
 
 如果你的 SMS 消息将包含 unicode 字符，你应该在构造 `VonageMessage` 实例时调用 `unicode` 方法：
 
-    /**
-     * 获取通知的 Vonage / SMS 表示。
-     *
-     * @param  mixed  $notifiable
-     * @return \Illuminate\Notifications\Messages\VonageMessage
-     */
-    public function toVonage($notifiable)
-    {
-        return (new VonageMessage)
-                    ->content('Your unicode message')
-                    ->unicode();
-    }
+```php
+/**
+ * 获取通知的 Vonage / SMS 表示。
+ *
+ * @param  mixed  $notifiable
+ * @return \Illuminate\Notifications\Messages\VonageMessage
+ */
+public function toVonage($notifiable)
+{
+    return (new VonageMessage)
+                ->content('Your unicode message')
+                ->unicode();
+}
+```
 
 <a name="customizing-the-from-number"></a>
 ### 自定义"发件人"号码
 
 如果你想从与 `VONAGE_SMS_FROM` 环境变量指定的电话号码不同的电话号码发送某些通知，可以在 `VonageMessage` 实例上调用 `from` 方法：
 
-    /**
-     * 获取通知的 Vonage / SMS 表示。
-     *
-     * @param  mixed  $notifiable
-     * @return \Illuminate\Notifications\Messages\VonageMessage
-     */
-    public function toVonage($notifiable)
-    {
-        return (new VonageMessage)
-                    ->content('Your SMS message content')
-                    ->from('15554443333');
-    }
+```php
+/**
+ * 获取通知的 Vonage / SMS 表示。
+ *
+ * @param  mixed  $notifiable
+ * @return \Illuminate\Notifications\Messages\VonageMessage
+ */
+public function toVonage($notifiable)
+{
+    return (new VonageMessage)
+                ->content('Your SMS message content')
+                ->from('15554443333');
+}
+```
 
 <a name="adding-a-client-reference"></a>
 ### 添加客户引用
 
 如果你想按用户、团队或客户端跟踪成本，可以为通知添加"客户引用"。Vonage 允许你使用此客户引用生成报告，以便更好地了解特定客户的 SMS 使用情况。客户引用可以是最多 40 个字符的任意字符串：
 
-    /**
-     * 获取通知的 Vonage / SMS 表示。
-     *
-     * @param  mixed  $notifiable
-     * @return \Illuminate\Notifications\Messages\VonageMessage
-     */
-    public function toVonage($notifiable)
-    {
-        return (new VonageMessage)
-                    ->clientReference((string) $notifiable->id)
-                    ->content('Your SMS message content');
-    }
+```php
+/**
+ * 获取通知的 Vonage / SMS 表示。
+ *
+ * @param  mixed  $notifiable
+ * @return \Illuminate\Notifications\Messages\VonageMessage
+ */
+public function toVonage($notifiable)
+{
+    return (new VonageMessage)
+                ->clientReference((string) $notifiable->id)
+                ->content('Your SMS message content');
+}
+```
 
 <a name="routing-sms-notifications"></a>
 ### 路由 SMS 通知
 
 要将 Vonage 通知路由到正确的电话号码，在可通知实体上定义一个 `routeNotificationForVonage` 方法：
 
-    <?php
+```php
+<?php
 
-    namespace App\Models;
+namespace App\Models;
 
-    use Illuminate\Foundation\Auth\User as Authenticatable;
-    use Illuminate\Notifications\Notifiable;
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
 
-    class User extends Authenticatable
+class User extends Authenticatable
+{
+    use Notifiable;
+
+    /**
+     * 为 Vonage 渠道路由通知。
+     *
+     * @param  \Illuminate\Notifications\Notification  $notification
+     * @return string
+     */
+    public function routeNotificationForVonage($notification)
     {
-        use Notifiable;
-
-        /**
-         * 为 Vonage 渠道路由通知。
-         *
-         * @param  \Illuminate\Notifications\Notification  $notification
-         * @return string
-         */
-        public function routeNotificationForVonage($notification)
-        {
-            return $this->phone_number;
-        }
+        return $this->phone_number;
     }
+}
+```
 
 <a name="slack-notifications"></a>
 ## Slack 通知
@@ -1139,120 +1253,130 @@ composer require laravel/slack-notification-channel
 
 如果通知支持作为 Slack 消息发送，你应该在通知类上定义一个 `toSlack` 方法。此方法将接收一个 `$notifiable` 实体，并应返回一个 `Illuminate\Notifications\Messages\SlackMessage` 实例。Slack 消息可以包含文本内容以及格式化额外文本或字段数组的"附件"。让我们看一个基本的 `toSlack` 示例：
 
-    /**
-     * 获取通知的 Slack 表示。
-     *
-     * @param  mixed  $notifiable
-     * @return \Illuminate\Notifications\Messages\SlackMessage
-     */
-    public function toSlack($notifiable)
-    {
-        return (new SlackMessage)
-                    ->content('One of your invoices has been paid!');
-    }
+```php
+/**
+ * 获取通知的 Slack 表示。
+ *
+ * @param  mixed  $notifiable
+ * @return \Illuminate\Notifications\Messages\SlackMessage
+ */
+public function toSlack($notifiable)
+{
+    return (new SlackMessage)
+                ->content('One of your invoices has been paid!');
+}
+```
 
 <a name="slack-attachments"></a>
 ### Slack 附件
 
 你还可以为 Slack 消息添加"附件"。附件提供比简单文本消息更丰富的格式化选项。在此示例中，我们将发送一个关于应用中发生的异常的错误通知，包含查看有关异常更多详情的链接：
 
-    /**
-     * 获取通知的 Slack 表示。
-     *
-     * @param  mixed  $notifiable
-     * @return \Illuminate\Notifications\Messages\SlackMessage
-     */
-    public function toSlack($notifiable)
-    {
-        $url = url('/exceptions/'.$this->exception->id);
+```php
+/**
+ * 获取通知的 Slack 表示。
+ *
+ * @param  mixed  $notifiable
+ * @return \Illuminate\Notifications\Messages\SlackMessage
+ */
+public function toSlack($notifiable)
+{
+    $url = url('/exceptions/'.$this->exception->id);
 
-        return (new SlackMessage)
-                    ->error()
-                    ->content('Whoops! Something went wrong.')
-                    ->attachment(function ($attachment) use ($url) {
-                        $attachment->title('Exception: File Not Found', $url)
-                                   ->content('File [background.jpg] was not found.');
-                    });
-    }
+    return (new SlackMessage)
+                ->error()
+                ->content('Whoops! Something went wrong.')
+                ->attachment(function ($attachment) use ($url) {
+                    $attachment->title('Exception: File Not Found', $url)
+                               ->content('File [background.jpg] was not found.');
+                });
+}
+```
 
 附件还允许你指定应呈现给用户的数据数组。给定数据将以表格样式格式呈现，便于阅读：
 
-    /**
-     * 获取通知的 Slack 表示。
-     *
-     * @param  mixed  $notifiable
-     * @return SlackMessage
-     */
-    public function toSlack($notifiable)
-    {
-        $url = url('/invoices/'.$this->invoice->id);
+```php
+/**
+ * 获取通知的 Slack 表示。
+ *
+ * @param  mixed  $notifiable
+ * @return SlackMessage
+ */
+public function toSlack($notifiable)
+{
+    $url = url('/invoices/'.$this->invoice->id);
 
-        return (new SlackMessage)
-                    ->success()
-                    ->content('One of your invoices has been paid!')
-                    ->attachment(function ($attachment) use ($url) {
-                        $attachment->title('Invoice 1322', $url)
-                                   ->fields([
-                                        'Title' => 'Server Expenses',
-                                        'Amount' => '$1,234',
-                                        'Via' => 'American Express',
-                                        'Was Overdue' => ':-1:',
-                                    ]);
-                    });
-    }
+    return (new SlackMessage)
+                ->success()
+                ->content('One of your invoices has been paid!')
+                ->attachment(function ($attachment) use ($url) {
+                    $attachment->title('Invoice 1322', $url)
+                               ->fields([
+                                    'Title' => 'Server Expenses',
+                                    'Amount' => '$1,234',
+                                    'Via' => 'American Express',
+                                    'Was Overdue' => ':-1:',
+                                ]);
+                });
+}
+```
 
 <a name="markdown-attachment-content"></a>
 #### Markdown 附件内容
 
 如果你的某些附件字段包含 Markdown，可以使用 `markdown` 方法指示 Slack 将给定附件字段解析并显示为 Markdown 格式文本。此方法接受的值有：`pretext`、`text` 和 / 或 `fields`。有关 Slack 附件格式化的更多信息，请查看 [Slack API 文档](https://api.slack.com/docs/message-formatting#message_formatting)：
 
-    /**
-     * 获取通知的 Slack 表示。
-     *
-     * @param  mixed  $notifiable
-     * @return SlackMessage
-     */
-    public function toSlack($notifiable)
-    {
-        $url = url('/exceptions/'.$this->exception->id);
+```php
+/**
+ * 获取通知的 Slack 表示。
+ *
+ * @param  mixed  $notifiable
+ * @return SlackMessage
+ */
+public function toSlack($notifiable)
+{
+    $url = url('/exceptions/'.$this->exception->id);
 
-        return (new SlackMessage)
-                    ->error()
-                    ->content('Whoops! Something went wrong.')
-                    ->attachment(function ($attachment) use ($url) {
-                        $attachment->title('Exception: File Not Found', $url)
-                                   ->content('File [background.jpg] was *not found*.')
-                                   ->markdown(['text']);
-                    });
-    }
+    return (new SlackMessage)
+                ->error()
+                ->content('Whoops! Something went wrong.')
+                ->attachment(function ($attachment) use ($url) {
+                    $attachment->title('Exception: File Not Found', $url)
+                               ->content('File [background.jpg] was *not found*.')
+                               ->markdown(['text']);
+                });
+}
+```
 
 <a name="routing-slack-notifications"></a>
 ### 路由 Slack 通知
 
 要将 Slack 通知路由到正确的 Slack 团队和频道，在可通知实体上定义一个 `routeNotificationForSlack` 方法。此方法应返回通知应投递到的 webhook URL。Webhook URL 可以通过向 Slack 团队添加"Incoming Webhook"服务来生成：
 
-    <?php
+```php
+<?php
 
-    namespace App\Models;
+namespace App\Models;
 
-    use Illuminate\Foundation\Auth\User as Authenticatable;
-    use Illuminate\Notifications\Notifiable;
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
 
-    class User extends Authenticatable
+class User extends Authenticatable
+{
+    use Notifiable;
+
+    /**
+     * 为 Slack 渠道路由通知。
+     *
+     * @param  \Illuminate\Notifications\Notification  $notification
+     * @return string
+     */
+    public function routeNotificationForSlack($notification)
     {
-        use Notifiable;
-
-        /**
-         * 为 Slack 渠道路由通知。
-         *
-         * @param  \Illuminate\Notifications\Notification  $notification
-         * @return string
-         */
-        public function routeNotificationForSlack($notification)
-        {
-            return 'https://hooks.slack.com/services/...';
-        }
+        return 'https://hooks.slack.com/services/...';
     }
+}
+```
 
 <a name="localizing-notifications"></a>
 ## 通知本地化
@@ -1261,37 +1385,45 @@ Laravel 允许你以 HTTP 请求当前语言环境以外的语言环境发送通
 
 为此，`Illuminate\Notifications\Notification` 类提供了一个 `locale` 方法来设置所需语言。应用将在评估通知时切换到此语言环境，然后在评估完成后恢复到之前的语言环境：
 
-    $user->notify((new InvoicePaid($invoice))->locale('es'));
+```php
+$user->notify((new InvoicePaid($invoice))->locale('es'));
+```
 
 多个可通知条目的本地化也可以通过 `Notification` Facade 实现：
 
-    Notification::locale('es')->send(
-        $users, new InvoicePaid($invoice)
-    );
+```php
+Notification::locale('es')->send(
+    $users, new InvoicePaid($invoice)
+);
+```
 
 <a name="user-preferred-locales"></a>
 ### 用户首选语言环境
 
 有时，应用会存储每个用户的首选语言环境。通过在可通知模型上实现 `HasLocalePreference` 契约，你可以指示 Laravel 在发送通知时使用此存储的语言环境：
 
-    use Illuminate\Contracts\Translation\HasLocalePreference;
+```php
+use Illuminate\Contracts\Translation\HasLocalePreference;
 
-    class User extends Model implements HasLocalePreference
+class User extends Model implements HasLocalePreference
+{
+    /**
+     * 获取用户的首选语言环境。
+     *
+     * @return string
+     */
+    public function preferredLocale()
     {
-        /**
-         * 获取用户的首选语言环境。
-         *
-         * @return string
-         */
-        public function preferredLocale()
-        {
-            return $this->locale;
-        }
+        return $this->locale;
     }
+}
+```
 
 实现接口后，Laravel 将在向模型发送通知和 mailable 时自动使用首选语言环境。因此，使用此接口时无需调用 `locale` 方法：
 
-    $user->notify(new InvoicePaid($invoice));
+```php
+$user->notify(new InvoicePaid($invoice));
+```
 
 <a name="notification-events"></a>
 ## 通知事件
@@ -1301,87 +1433,97 @@ Laravel 允许你以 HTTP 请求当前语言环境以外的语言环境发送通
 
 当通知正在发送时，通知系统会分发 `Illuminate\Notifications\Events\NotificationSending` [事件](/docs/{{version}}/events)。这包含"可通知"实体和通知实例本身。你可以在应用的 `EventServiceProvider` 中为此事件注册监听器：
 
-    use App\Listeners\CheckNotificationStatus;
-    use Illuminate\Notifications\Events\NotificationSending;
+```php
+use App\Listeners\CheckNotificationStatus;
+use Illuminate\Notifications\Events\NotificationSending;
 
-    /**
-     * 应用的事件监听器映射。
-     *
-     * @var array
-     */
-    protected $listen = [
-        NotificationSending::class => [
-            CheckNotificationStatus::class,
-        ],
-    ];
+/**
+ * 应用的事件监听器映射。
+ *
+ * @var array
+ */
+protected $listen = [
+    NotificationSending::class => [
+        CheckNotificationStatus::class,
+    ],
+];
+```
 
 如果 `NotificationSending` 事件的事件监听器从其 `handle` 方法返回 `false`，通知将不会被发送：
 
-    use Illuminate\Notifications\Events\NotificationSending;
+```php
+use Illuminate\Notifications\Events\NotificationSending;
 
-    /**
-     * 处理事件。
-     *
-     * @param  \Illuminate\Notifications\Events\NotificationSending  $event
-     * @return void
-     */
-    public function handle(NotificationSending $event)
-    {
-        return false;
-    }
+/**
+ * 处理事件。
+ *
+ * @param  \Illuminate\Notifications\Events\NotificationSending  $event
+ * @return void
+ */
+public function handle(NotificationSending $event)
+{
+    return false;
+}
+```
 
 在事件监听器中，你可以访问事件上的 `notifiable`、`notification` 和 `channel` 属性，以了解有关通知收件人或通知本身的信息：
 
-    /**
-     * 处理事件。
-     *
-     * @param  \Illuminate\Notifications\Events\NotificationSending  $event
-     * @return void
-     */
-    public function handle(NotificationSending $event)
-    {
-        // $event->channel
-        // $event->notifiable
-        // $event->notification
-    }
+```php
+/**
+ * 处理事件。
+ *
+ * @param  \Illuminate\Notifications\Events\NotificationSending  $event
+ * @return void
+ */
+public function handle(NotificationSending $event)
+{
+    // $event->channel
+    // $event->notifiable
+    // $event->notification
+}
+```
 
 <a name="notification-sent-event"></a>
 #### 通知已发送事件
 
 当通知已发送时，通知系统会分发 `Illuminate\Notifications\Events\NotificationSent` [事件](/docs/{{version}}/events)。这包含"可通知"实体和通知实例本身。你可以在 `EventServiceProvider` 中为此事件注册监听器：
 
-    use App\Listeners\LogNotification;
-    use Illuminate\Notifications\Events\NotificationSent;
+```php
+use App\Listeners\LogNotification;
+use Illuminate\Notifications\Events\NotificationSent;
 
-    /**
-     * 应用的事件监听器映射。
-     *
-     * @var array
-     */
-    protected $listen = [
-        NotificationSent::class => [
-            LogNotification::class,
-        ],
-    ];
+/**
+ * 应用的事件监听器映射。
+ *
+ * @var array
+ */
+protected $listen = [
+    NotificationSent::class => [
+        LogNotification::class,
+    ],
+];
+```
 
 > **Note**
 > 在 `EventServiceProvider` 中注册监听器后，使用 `event:generate` Artisan 命令快速生成监听器类。
 
 在事件监听器中，你可以访问事件上的 `notifiable`、`notification`、`channel` 和 `response` 属性，以了解有关通知收件人或通知本身的信息：
 
-    /**
-     * 处理事件。
-     *
-     * @param  \Illuminate\Notifications\Events\NotificationSent  $event
-     * @return void
-     */
-    public function handle(NotificationSent $event)
-    {
-        // $event->channel
-        // $event->notifiable
-        // $event->notification
-        // $event->response
-    }
+```php
+/**
+ * 处理事件。
+ *
+ * @param  \Illuminate\Notifications\Events\NotificationSent  $event
+ * @return void
+ */
+public function handle(NotificationSent $event)
+{
+    // $event->channel
+    // $event->notifiable
+    // $event->notification
+    // $event->response
+}
+```
 
 <a name="custom-channels"></a>
 ## 自定义渠道
@@ -1390,64 +1532,68 @@ Laravel 附带了一些通知渠道，但你可能想编写自己的驱动来通
 
 在 `send` 方法中，你可以调用通知上的方法来检索你的渠道理解的消息对象，然后按你希望的方式将通知发送给 `$notifiable` 实例：
 
-    <?php
+```php
+<?php
 
-    namespace App\Notifications;
+namespace App\Notifications;
 
-    use Illuminate\Notifications\Notification;
+use Illuminate\Notifications\Notification;
 
-    class VoiceChannel
+class VoiceChannel
+{
+    /**
+     * 发送给定通知。
+     *
+     * @param  mixed  $notifiable
+     * @param  \Illuminate\Notifications\Notification  $notification
+     * @return void
+     */
+    public function send($notifiable, Notification $notification)
     {
-        /**
-         * 发送给定通知。
-         *
-         * @param  mixed  $notifiable
-         * @param  \Illuminate\Notifications\Notification  $notification
-         * @return void
-         */
-        public function send($notifiable, Notification $notification)
-        {
-            $message = $notification->toVoice($notifiable);
+        $message = $notification->toVoice($notifiable);
 
-            // 向 $notifiable 实例发送通知...
-        }
+        // 向 $notifiable 实例发送通知...
     }
+}
+```
 
 定义通知渠道类后，你可以从任何通知的 `via` 方法返回类名。在此示例中，通知的 `toVoice` 方法可以返回你选择用于表示语音消息的任何对象。例如，你可以定义自己的 `VoiceMessage` 类来表示这些消息：
 
-    <?php
+```php
+<?php
 
-    namespace App\Notifications;
+namespace App\Notifications;
 
-    use App\Notifications\Messages\VoiceMessage;
-    use App\Notifications\VoiceChannel;
-    use Illuminate\Bus\Queueable;
-    use Illuminate\Contracts\Queue\ShouldQueue;
-    use Illuminate\Notifications\Notification;
+use App\Notifications\Messages\VoiceMessage;
+use App\Notifications\VoiceChannel;
+use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Notifications\Notification;
 
-    class InvoicePaid extends Notification
+class InvoicePaid extends Notification
+{
+    use Queueable;
+
+    /**
+     * 获取通知渠道。
+     *
+     * @param  mixed  $notifiable
+     * @return array|string
+     */
+    public function via($notifiable)
     {
-        use Queueable;
-
-        /**
-         * 获取通知渠道。
-         *
-         * @param  mixed  $notifiable
-         * @return array|string
-         */
-        public function via($notifiable)
-        {
-            return [VoiceChannel::class];
-        }
-
-        /**
-         * 获取通知的语音表示。
-         *
-         * @param  mixed  $notifiable
-         * @return VoiceMessage
-         */
-        public function toVoice($notifiable)
-        {
-            // ...
-        }
+        return [VoiceChannel::class];
     }
+
+    /**
+     * 获取通知的语音表示。
+     *
+     * @param  mixed  $notifiable
+     * @return VoiceMessage
+     */
+    public function toVoice($notifiable)
+    {
+        // ...
+    }
+}
+```

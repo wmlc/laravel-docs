@@ -28,31 +28,33 @@ php artisan make:seeder UserSeeder
 
 例如，让我们修改默认的 `DatabaseSeeder` 类，在 `run` 方法中添加一条数据库插入语句：
 
-    <?php
+```php
+<?php
 
-    namespace Database\Seeders;
+namespace Database\Seeders;
 
-    use Illuminate\Database\Seeder;
-    use Illuminate\Support\Facades\DB;
-    use Illuminate\Support\Facades\Hash;
-    use Illuminate\Support\Str;
+use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 
-    class DatabaseSeeder extends Seeder
+class DatabaseSeeder extends Seeder
+{
+    /**
+     * 运行数据库填充器。
+     *
+     * @return void
+     */
+    public function run()
     {
-        /**
-         * 运行数据库填充器。
-         *
-         * @return void
-         */
-        public function run()
-        {
-            DB::table('users')->insert([
-                'name' => Str::random(10),
-                'email' => Str::random(10).'@gmail.com',
-                'password' => Hash::make('password'),
-            ]);
-        }
+        DB::table('users')->insert([
+            'name' => Str::random(10),
+            'email' => Str::random(10).'@gmail.com',
+            'password' => Hash::make('password'),
+        ]);
     }
+}
+```
 
 > **注意**
 > 你可以在 `run` 方法的签名中对所需的任何依赖进行类型提示。Laravel [服务容器（Service Container）](/docs/{{version}}/container) 会自动解析它们。
@@ -64,25 +66,60 @@ php artisan make:seeder UserSeeder
 
 例如，让我们创建 50 个用户，每个用户拥有一篇相关文章：
 
-    use App\Models\User;
+```php
+use App\Models\User;
 
-    /**
-     * 运行数据库填充器。
-     *
-     * @return void
-     */
-    public function run()
-    {
-        User::factory()
-                ->count(50)
-                ->hasPosts(1)
-                ->create();
-    }
+/**
+ * 运行数据库填充器。
+ *
+ * @return void
+ */
+public function run()
+{
+    User::factory()
+            ->count(50)
+            ->hasPosts(1)
+            ->create();
+}
+```
 
 <a name="calling-additional-seeders"></a>
 ### 调用其他填充器
 
 在 `DatabaseSeeder` 类中，你可以使用 `call` 方法执行其他填充类。使用 `call` 方法可以将数据库填充拆分到多个文件中，避免单个填充器类过大。`call` 方法接受一个需要执行的填充器类数组：
+
+```php
+/**
+ * 运行数据库填充器。
+ *
+ * @return void
+ */
+public function run()
+{
+    $this->call([
+        UserSeeder::class,
+        PostSeeder::class,
+        CommentSeeder::class,
+    ]);
+}
+```
+
+<a name="muting-model-events"></a>
+### 静默模型事件
+
+在运行填充时，你可能希望阻止模型触发事件。可以使用 `WithoutModelEvents` Trait 来实现。使用时，`WithoutModelEvents` Trait 会确保不触发任何模型事件，即使通过 `call` 方法执行了其他填充类：
+
+```php
+<?php
+
+namespace Database\Seeders;
+
+use Illuminate\Database\Seeder;
+use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+
+class DatabaseSeeder extends Seeder
+{
+    use WithoutModelEvents;
 
     /**
      * 运行数据库填充器。
@@ -93,39 +130,10 @@ php artisan make:seeder UserSeeder
     {
         $this->call([
             UserSeeder::class,
-            PostSeeder::class,
-            CommentSeeder::class,
         ]);
     }
-
-<a name="muting-model-events"></a>
-### 静默模型事件
-
-在运行填充时，你可能希望阻止模型触发事件。可以使用 `WithoutModelEvents` Trait 来实现。使用时，`WithoutModelEvents` Trait 会确保不触发任何模型事件，即使通过 `call` 方法执行了其他填充类：
-
-    <?php
-
-    namespace Database\Seeders;
-
-    use Illuminate\Database\Seeder;
-    use Illuminate\Database\Console\Seeds\WithoutModelEvents;
-
-    class DatabaseSeeder extends Seeder
-    {
-        use WithoutModelEvents;
-
-        /**
-         * 运行数据库填充器。
-         *
-         * @return void
-         */
-        public function run()
-        {
-            $this->call([
-                UserSeeder::class,
-            ]);
-        }
-    }
+}
+```
 
 <a name="running-seeders"></a>
 ## 运行数据填充器

@@ -107,7 +107,7 @@ When a validation request is in-flight, the form's `validating` property will be
 
 Any validation errors returned during a validation request or a form submission will automatically populate the form's `errors` object:
 
-```html
+```blade
 <div v-if="form.invalid('email')">
     {{ form.errors.email }}
 </div>
@@ -559,7 +559,7 @@ You may determine if a form submission request is in-flight by inspecting the fo
 
 In the user creation example discussed above, we are using Precognition to perform live validation; however, we are performing a traditional server-side form submission to submit the form. So, the form should be populated with any "old" input and validation errors returned from the server-side form submission:
 
-```html
+```blade
 <form x-data="{
     form: $form('post', '/register', {
         name: '{{ old('name') }}',

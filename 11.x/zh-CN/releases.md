@@ -151,14 +151,16 @@ Schedule::command('emails:send')->daily();
 
 全新 Laravel 应用中包含的基础控制器已被简化。它不再继承 Laravel 内部的 `Controller` 类，`AuthorizesRequests` 和 `ValidatesRequests` Trait 也已被移除；如果需要，你可以把它们包含到应用各自的控制器中：
 
-    <?php
+```php
+<?php
 
-    namespace App\Http\Controllers;
+namespace App\Http\Controllers;
 
-    abstract class Controller
-    {
-        //
-    }
+abstract class Controller
+{
+    //
+}
+```
 
 <a name="application-defaults"></a>
 #### 应用默认值
@@ -306,20 +308,22 @@ _模型类型转换改进由 [Nuno Maduro](https://github.com/nunomaduro) 贡献
 
 Laravel 11 支持使用方法而不是属性来定义模型的类型转换。这让类型转换定义更精简、更流畅，在使用带参数的类型转换时尤其如此：
 
-    /**
-     * 获取应当进行类型转换的属性。
-     *
-     * @return array<string, string>
-     */
-    protected function casts(): array
-    {
-        return [
-            'options' => AsCollection::using(OptionCollection::class),
-                      // AsEncryptedCollection::using(OptionCollection::class),
-                      // AsEnumArrayObject::using(OptionEnum::class),
-                      // AsEnumCollection::using(OptionEnum::class),
-        ];
-    }
+```php
+/**
+ * 获取应当进行类型转换的属性。
+ *
+ * @return array<string, string>
+ */
+protected function casts(): array
+{
+    return [
+        'options' => AsCollection::using(OptionCollection::class),
+                  // AsEncryptedCollection::using(OptionCollection::class),
+                  // AsEnumArrayObject::using(OptionEnum::class),
+                  // AsEnumCollection::using(OptionEnum::class),
+    ];
+}
+```
 
 想了解更多关于属性类型转换的信息，请查阅 [Eloquent 文档](/docs/{{version}}/eloquent-mutators#attribute-casting)。
 
@@ -330,16 +334,18 @@ _`once` 辅助函数由 [Taylor Otwell](https://github.com/taylorotwell) 和 [Nu
 
 `once` 辅助函数会执行给定的回调，并在整个请求期间把结果缓存在内存中。之后用同一个回调再次调用 `once` 函数时，会返回先前缓存的结果：
 
-    function random(): int
-    {
-        return once(function () {
-            return random_int(1, 1000);
-        });
-    }
+```php
+function random(): int
+{
+    return once(function () {
+        return random_int(1, 1000);
+    });
+}
 
-    random(); // 123
-    random(); // 123（缓存结果）
-    random(); // 123（缓存结果）
+random(); // 123
+random(); // 123（缓存结果）
+random(); // 123（缓存结果）
+```
 
 想了解更多关于 `once` 辅助函数的信息，请查看[辅助函数文档](/docs/{{version}}/helpers#method-once)。
 
@@ -366,10 +372,12 @@ _Schema 操作与数据库检查的改进由 [Hafez Divandari](https://github.co
 
 Laravel 11 提供了更多数据库 Schema 操作与检查方法，包括原生的修改、重命名和删除列。此外，还提供了高级空间类型、非默认 Schema 名称，以及用于操作表、视图、列、索引和外键的原生 Schema 方法：
 
-    use Illuminate\Support\Facades\Schema;
+```php
+use Illuminate\Support\Facades\Schema;
 
-    $tables = Schema::getTables();
-    $views = Schema::getViews();
-    $columns = Schema::getColumns('users');
-    $indexes = Schema::getIndexes('users');
-    $foreignKeys = Schema::getForeignKeys('users');
+$tables = Schema::getTables();
+$views = Schema::getViews();
+$columns = Schema::getColumns('users');
+$indexes = Schema::getIndexes('users');
+$foreignKeys = Schema::getForeignKeys('users');
+```

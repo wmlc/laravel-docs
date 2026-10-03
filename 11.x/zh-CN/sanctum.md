@@ -70,25 +70,29 @@ php artisan install:api
 
 虽然通常没有这个必要，但你仍然可以扩展 Sanctum 内部使用的 `PersonalAccessToken` 模型：
 
-    use Laravel\Sanctum\PersonalAccessToken as SanctumPersonalAccessToken;
+```php
+use Laravel\Sanctum\PersonalAccessToken as SanctumPersonalAccessToken;
 
-    class PersonalAccessToken extends SanctumPersonalAccessToken
-    {
-        // ...
-    }
+class PersonalAccessToken extends SanctumPersonalAccessToken
+{
+    // ...
+}
+```
 
 然后，你可以通过 Sanctum 提供的 `usePersonalAccessTokenModel` 方法指示 Sanctum 使用你的自定义模型。通常应在应用 `AppServiceProvider` 文件的 `boot` 方法中调用该方法：
 
-    use App\Models\Sanctum\PersonalAccessToken;
-    use Laravel\Sanctum\Sanctum;
+```php
+use App\Models\Sanctum\PersonalAccessToken;
+use Laravel\Sanctum\Sanctum;
 
-    /**
-     * 引导任意应用服务。
-     */
-    public function boot(): void
-    {
-        Sanctum::usePersonalAccessTokenModel(PersonalAccessToken::class);
-    }
+/**
+ * 引导任意应用服务。
+ */
+public function boot(): void
+{
+    Sanctum::usePersonalAccessTokenModel(PersonalAccessToken::class);
+}
+```
 
 <a name="api-token-authentication"></a>
 ## API 令牌认证
@@ -103,72 +107,88 @@ Sanctum 允许你签发可用于认证 API 请求的 API 令牌 / 个人访问�
 
 要开始为用户签发令牌，你的 User 模型应当使用 `Laravel\Sanctum\HasApiTokens` Trait：
 
-    use Laravel\Sanctum\HasApiTokens;
+```php
+use Laravel\Sanctum\HasApiTokens;
 
-    class User extends Authenticatable
-    {
-        use HasApiTokens, HasFactory, Notifiable;
-    }
+class User extends Authenticatable
+{
+    use HasApiTokens, HasFactory, Notifiable;
+}
+```
 
 要签发令牌，可以使用 `createToken` 方法。`createToken` 方法返回一个 `Laravel\Sanctum\NewAccessToken` 实例。API 令牌在存入数据库前会使用 SHA-256 哈希处理，但你可以通过 `NewAccessToken` 实例的 `plainTextToken` 属性访问令牌的明文值。你应当在令牌创建后立即把这个值展示给用户：
 
-    use Illuminate\Http\Request;
+```php
+use Illuminate\Http\Request;
 
-    Route::post('/tokens/create', function (Request $request) {
-        $token = $request->user()->createToken($request->token_name);
+Route::post('/tokens/create', function (Request $request) {
+    $token = $request->user()->createToken($request->token_name);
 
-        return ['token' => $token->plainTextToken];
-    });
+    return ['token' => $token->plainTextToken];
+});
+```
 
 你可以通过 `HasApiTokens` Trait 提供的 `tokens` Eloquent 关联访问该用户的全部令牌：
 
-    foreach ($user->tokens as $token) {
-        // ...
-    }
+```php
+foreach ($user->tokens as $token) {
+    // ...
+}
+```
 
 <a name="token-abilities"></a>
 ### 令牌能力
 
 Sanctum 允许你为令牌分配"能力"。能力的作用与 OAuth 中的"作用域"类似。你可以把一个由字符串组成的能力数组作为 `createToken` 方法的第二个参数传入：
 
-    return $user->createToken('token-name', ['server:update'])->plainTextToken;
+```php
+return $user->createToken('token-name', ['server:update'])->plainTextToken;
+```
 
 在处理由 Sanctum 认证通过的传入请求时，你可以使用 `tokenCan` 或 `tokenCant` 方法判断令牌是否拥有某项能力：
 
-    if ($user->tokenCan('server:update')) {
-        // ...
-    }
+```php
+if ($user->tokenCan('server:update')) {
+    // ...
+}
 
-    if ($user->tokenCant('server:update')) {
-        // ...
-    }
+if ($user->tokenCant('server:update')) {
+    // ...
+}
+```
 
 <a name="token-ability-middleware"></a>
 #### 令牌能力中间件
 
 Sanctum 还包含两个中间件，可用于验证传入请求是否由拥有指定能力的令牌完成认证。要开始使用，请在应用的 `bootstrap/app.php` 文件中定义以下中间件别名：
 
-    use Laravel\Sanctum\Http\Middleware\CheckAbilities;
-    use Laravel\Sanctum\Http\Middleware\CheckForAnyAbility;
+```php
+use Laravel\Sanctum\Http\Middleware\CheckAbilities;
+use Laravel\Sanctum\Http\Middleware\CheckForAnyAbility;
 
-    ->withMiddleware(function (Middleware $middleware) {
-        $middleware->alias([
-            'abilities' => CheckAbilities::class,
-            'ability' => CheckForAnyAbility::class,
-        ]);
-    })
+->withMiddleware(function (Middleware $middleware) {
+    $middleware->alias([
+        'abilities' => CheckAbilities::class,
+        'ability' => CheckForAnyAbility::class,
+    ]);
+})
+```
 
 `abilities` 中间件可以分配给路由，用于验证传入请求的令牌是否拥有列出的全部能力：
 
-    Route::get('/orders', function () {
-        // 令牌同时拥有 "check-status" 和 "place-orders" 能力...
-    })->middleware(['auth:sanctum', 'abilities:check-status,place-orders']);
+```php
+Route::get('/orders', function () {
+    // 令牌同时拥有 "check-status" 和 "place-orders" 能力...
+})->middleware(['auth:sanctum', 'abilities:check-status,place-orders']);
+```
 
 `ability` 中间件可以分配给路由，用于验证传入请求的令牌是否至少拥有列出的其中*一项*能力：
 
-    Route::get('/orders', function () {
-        // 令牌拥有 "check-status" 或 "place-orders" 能力...
-    })->middleware(['auth:sanctum', 'ability:check-status,place-orders']);
+```php
+Route::get('/orders', function () {
+    // 令牌拥有 "check-status" 或 "place-orders" 能力...
+})->middleware(['auth:sanctum', 'ability:check-status,place-orders']);
+```
 
 <a name="first-party-ui-initiated-requests"></a>
 #### 第一方 UI 发起的请求
@@ -193,25 +213,29 @@ return $request->user()->id === $server->user_id &&
 
 你可能想知道，为什么我们建议你使用 `sanctum` 守卫来认证应用 `routes/web.php` 文件中的路由。请记住，Sanctum 会先尝试使用 Laravel 常规的会话认证 Cookie 对传入请求进行认证。如果该 Cookie 不存在，Sanctum 随后会尝试使用请求 `Authorization` 头中的令牌进行认证。此外，使用 Sanctum 认证所有请求，能确保我们始终可以对当前已认证的用户实例调用 `tokenCan` 方法：
 
-    use Illuminate\Http\Request;
+```php
+use Illuminate\Http\Request;
 
-    Route::get('/user', function (Request $request) {
-        return $request->user();
-    })->middleware('auth:sanctum');
+Route::get('/user', function (Request $request) {
+    return $request->user();
+})->middleware('auth:sanctum');
+```
 
 <a name="revoking-tokens"></a>
 ### 撤销令牌
 
 你可以通过 `Laravel\Sanctum\HasApiTokens` Trait 提供的 `tokens` 关联，把令牌从数据库中删除，以此"撤销"令牌：
 
-    // 撤销所有令牌...
-    $user->tokens()->delete();
+```php
+// 撤销所有令牌...
+$user->tokens()->delete();
 
-    // 撤销用于认证当前请求的令牌...
-    $request->user()->currentAccessToken()->delete();
+// 撤销用于认证当前请求的令牌...
+$request->user()->currentAccessToken()->delete();
 
-    // 撤销指定令牌...
-    $user->tokens()->where('id', $tokenId)->delete();
+// 撤销指定令牌...
+$user->tokens()->where('id', $tokenId)->delete();
+```
 
 <a name="token-expiration"></a>
 ### 令牌过期
@@ -264,9 +288,11 @@ Sanctum 还为那些需要与 Laravel 驱动的 API 通信的单页应用（SPA�
 
 接下来，你应当告诉 Laravel：来自你的 SPA 的传入请求可以使用 Laravel 会话 Cookie 进行认证，同时仍允许来自第三方或移动应用的请求使用 API 令牌认证。只需在应用的 `bootstrap/app.php` 文件中调用 `statefulApi` 中间件方法即可轻松实现：
 
-    ->withMiddleware(function (Middleware $middleware) {
-        $middleware->statefulApi();
-    })
+```php
+->withMiddleware(function (Middleware $middleware) {
+    $middleware->statefulApi();
+})
+```
 
 <a name="cors-and-cookies"></a>
 #### CORS 与 Cookie
@@ -290,7 +316,9 @@ axios.defaults.withXSRFToken = true;
 
 最后，你应当确保应用的会话 Cookie 域名配置支持根域名的任意子域名。你可以在应用的 `config/session.php` 配置文件中为域名添加前导 `.` 来实现：
 
-    'domain' => '.domain.com',
+```php
+'domain' => '.domain.com',
+```
 
 <a name="spa-authenticating"></a>
 ### 认证
@@ -325,26 +353,30 @@ CSRF 保护初始化完成后，你应当向 Laravel 应用的 `/login` 路由�
 
 若要保护路由，使所有传入请求都必须通过认证，你应当在 `routes/api.php` 文件中为 API 路由挂载 `sanctum` 认证守卫。该守卫会确保传入请求要么以来自你的 SPA 的有状态认证请求通过认证，要么在请求来自第三方时包含有效的 API 令牌头：
 
-    use Illuminate\Http\Request;
+```php
+use Illuminate\Http\Request;
 
-    Route::get('/user', function (Request $request) {
-        return $request->user();
-    })->middleware('auth:sanctum');
+Route::get('/user', function (Request $request) {
+    return $request->user();
+})->middleware('auth:sanctum');
+```
 
 <a name="authorizing-private-broadcast-channels"></a>
 ### 授权私有广播频道
 
 如果你的 SPA 需要与[私有 / 在线状态广播频道](/docs/{{version}}/broadcasting#authorizing-channels)进行认证，你应当从应用 `bootstrap/app.php` 文件中 `withRouting` 方法包含的 `channels` 配置项里移除该条目。相反，你应当调用 `withBroadcasting` 方法，以便为应用的广播路由指定正确的中间件：
 
-    return Application::configure(basePath: dirname(__DIR__))
-        ->withRouting(
-            web: __DIR__.'/../routes/web.php',
-            // ...
-        )
-        ->withBroadcasting(
-            __DIR__.'/../routes/channels.php',
-            ['prefix' => 'api', 'middleware' => ['api', 'auth:sanctum']],
-        )
+```php
+return Application::configure(basePath: dirname(__DIR__))
+    ->withRouting(
+        web: __DIR__.'/../routes/web.php',
+        // ...
+    )
+    ->withBroadcasting(
+        __DIR__.'/../routes/channels.php',
+        ['prefix' => 'api', 'middleware' => ['api', 'auth:sanctum']],
+    )
+```
 
 接下来，为了让 Pusher 的授权请求成功，你需要在初始化 [Laravel Echo](/docs/{{version}}/broadcasting#client-side-installation) 时提供一个自定义的 Pusher `authorizer`。这样你的应用就可以配置 Pusher 使用那个[已正确配置跨域请求](#cors-and-cookies)的 `axios` 实例：
 
@@ -385,28 +417,30 @@ window.Echo = new Echo({
 
 通常，你会在移动应用的"登录"页面向令牌端点发起请求。该端点会返回明文 API 令牌，你可以把它存储在移动设备上，用于发起后续的 API 请求：
 
-    use App\Models\User;
-    use Illuminate\Http\Request;
-    use Illuminate\Support\Facades\Hash;
-    use Illuminate\Validation\ValidationException;
+```php
+use App\Models\User;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\ValidationException;
 
-    Route::post('/sanctum/token', function (Request $request) {
-        $request->validate([
-            'email' => 'required|email',
-            'password' => 'required',
-            'device_name' => 'required',
+Route::post('/sanctum/token', function (Request $request) {
+    $request->validate([
+        'email' => 'required|email',
+        'password' => 'required',
+        'device_name' => 'required',
+    ]);
+
+    $user = User::where('email', $request->email)->first();
+
+    if (! $user || ! Hash::check($request->password, $user->password)) {
+        throw ValidationException::withMessages([
+            'email' => ['The provided credentials are incorrect.'],
         ]);
+    }
 
-        $user = User::where('email', $request->email)->first();
-
-        if (! $user || ! Hash::check($request->password, $user->password)) {
-            throw ValidationException::withMessages([
-                'email' => ['The provided credentials are incorrect.'],
-            ]);
-        }
-
-        return $user->createToken($request->device_name)->plainTextToken;
-    });
+    return $user->createToken($request->device_name)->plainTextToken;
+});
+```
 
 当移动应用使用该令牌向你的应用发起 API 请求时，应当把令牌作为 `Bearer` 令牌放入 `Authorization` 头中。
 
@@ -418,20 +452,24 @@ window.Echo = new Echo({
 
 如前文所述，你可以通过为路由挂载 `sanctum` 认证守卫来保护路由，使所有传入请求都必须通过认证：
 
-    Route::get('/user', function (Request $request) {
-        return $request->user();
-    })->middleware('auth:sanctum');
+```php
+Route::get('/user', function (Request $request) {
+    return $request->user();
+})->middleware('auth:sanctum');
+```
 
 <a name="revoking-mobile-api-tokens"></a>
 ### 撤销令牌
 
 为了让用户能够撤销签发给移动设备的 API 令牌，你可以在 Web 应用界面的"账号设置"部分按名称列出这些令牌，并配上一个"撤销"按钮。当用户点击"撤销"按钮时，你就可以把该令牌从数据库中删除。请记住，你可以通过 `Laravel\Sanctum\HasApiTokens` Trait 提供的 `tokens` 关联访问用户的 API 令牌：
 
-    // 撤销所有令牌...
-    $user->tokens()->delete();
+```php
+// 撤销所有令牌...
+$user->tokens()->delete();
 
-    // 撤销指定令牌...
-    $user->tokens()->where('id', $tokenId)->delete();
+// 撤销指定令牌...
+$user->tokens()->where('id', $tokenId)->delete();
+```
 
 <a name="testing"></a>
 ## 测试
@@ -473,7 +511,9 @@ public function test_task_list_can_be_retrieved(): void
 
 如果你想把全部能力都授予令牌，应当在传给 `actingAs` 方法的能力列表中包含 `*`：
 
-    Sanctum::actingAs(
-        User::factory()->create(),
-        ['*']
-    );
+```php
+Sanctum::actingAs(
+    User::factory()->create(),
+    ['*']
+);
+```

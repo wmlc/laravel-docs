@@ -138,24 +138,28 @@ _Enum casting was contributed by [Mohamed Said](https://github.com/themsaid)_.
 
 Eloquent now allows you to cast your attribute values to PHP ["backed" Enums](https://www.php.net/manual/en/language.enumerations.backed.php). To accomplish this, you may specify the attribute and enum you wish to cast in your model's `$casts` property array:
 
-    use App\Enums\ServerStatus;
+```php
+use App\Enums\ServerStatus;
 
-    /**
-     * The attributes that should be cast.
-     *
-     * @var array
-     */
-    protected $casts = [
-        'status' => ServerStatus::class,
-    ];
+/**
+ * The attributes that should be cast.
+ *
+ * @var array
+ */
+protected $casts = [
+    'status' => ServerStatus::class,
+];
+```
 
 Once you have defined the cast on your model, the specified attribute will be automatically cast to and from an enum when you interact with the attribute:
 
-    if ($server->status == ServerStatus::Provisioned) {
-        $server->status = ServerStatus::Ready;
+```php
+if ($server->status == ServerStatus::Provisioned) {
+    $server->status = ServerStatus::Ready;
 
-        $server->save();
-    }
+    $server->save();
+}
+```
 
 <a name="implicit-route-bindings-with-enums"></a>
 ### Implicit Route Bindings With Enums
@@ -187,31 +191,37 @@ _Forced scoped bindings was contributed by [Claudio Dekker](https://github.com/c
 
 In previous releases of Laravel, you may wish to scope the second Eloquent model in a route definition such that it must be a child of the previous Eloquent model. For example, consider this route definition that retrieves a blog post by slug for a specific user:
 
-    use App\Models\Post;
-    use App\Models\User;
+```php
+use App\Models\Post;
+use App\Models\User;
 
-    Route::get('/users/{user}/posts/{post:slug}', function (User $user, Post $post) {
-        return $post;
-    });
+Route::get('/users/{user}/posts/{post:slug}', function (User $user, Post $post) {
+    return $post;
+});
+```
 
 When using a custom keyed implicit binding as a nested route parameter, Laravel will automatically scope the query to retrieve the nested model by its parent using conventions to guess the relationship name on the parent. However, this behavior was only previously supported by Laravel when a custom key was used for the child route binding.
 
 However, in Laravel 9.x, you may now instruct Laravel to scope "child" bindings even when a custom key is not provided. To do so, you may invoke the `scopeBindings` method when defining your route:
 
-    use App\Models\Post;
-    use App\Models\User;
+```php
+use App\Models\Post;
+use App\Models\User;
 
-    Route::get('/users/{user}/posts/{post}', function (User $user, Post $post) {
-        return $post;
-    })->scopeBindings();
+Route::get('/users/{user}/posts/{post}', function (User $user, Post $post) {
+    return $post;
+})->scopeBindings();
+```
 
 Or, you may instruct an entire group of route definitions to use scoped bindings:
 
-    Route::scopeBindings()->group(function () {
-        Route::get('/users/{user}/posts/{post}', function (User $user, Post $post) {
-            return $post;
-        });
+```php
+Route::scopeBindings()->group(function () {
+    Route::get('/users/{user}/posts/{post}', function (User $user, Post $post) {
+        return $post;
     });
+});
+```
 
 <a name="controller-route-groups"></a>
 ### Controller Route Groups
@@ -220,12 +230,14 @@ _Route group improvements were contributed by [Luke Downing](https://github.com/
 
 You may now use the `controller` method to define the common controller for all of the routes within the group. Then, when defining the routes, you only need to provide the controller method that they invoke:
 
-    use App\Http\Controllers\OrderController;
+```php
+use App\Http\Controllers\OrderController;
 
-    Route::controller(OrderController::class)->group(function () {
-        Route::get('/orders/{id}', 'show');
-        Route::post('/orders', 'store');
-    });
+Route::controller(OrderController::class)->group(function () {
+    Route::get('/orders/{id}', 'show');
+    Route::post('/orders', 'store');
+});
+```
 
 <a name="full-text"></a>
 ### Full Text Indexes / Where Clauses
@@ -234,13 +246,17 @@ _Full text indexes and "where" clauses were contributed by [Taylor Otwell](https
 
 When using MySQL or PostgreSQL, the `fullText` method may now be added to column definitions to generate full text indexes:
 
-    $table->text('bio')->fullText();
+```php
+$table->text('bio')->fullText();
+```
 
 In addition, the `whereFullText` and `orWhereFullText` methods may be used to add full text "where" clauses to a query for columns that have [full text indexes](/docs/{{version}}/migrations#available-index-types). These methods will be transformed into the appropriate SQL for the underlying database system by Laravel. For example, a `MATCH AGAINST` clause will be generated for applications utilizing MySQL:
 
-    $users = DB::table('users')
-               ->whereFullText('bio', 'web developer')
-               ->get();
+```php
+$users = DB::table('users')
+           ->whereFullText('bio', 'web developer')
+           ->get();
+```
 
 <a name="laravel-scout-database-engine"></a>
 ### Laravel Scout Database Engine
@@ -291,7 +307,7 @@ In previous releases of Laravel, slot names were provided using a `name` attribu
 
 However, beginning in Laravel 9.x, you may specify the slot's name using a convenient, shorter syntax:
 
-```xml
+```blade
 <x-slot:title>
     Server Error
 </x-slot>
@@ -330,17 +346,19 @@ _Bootstrap 5 pagination views were contributed by [Jared Lewis](https://github.c
 
 Laravel now includes pagination views built using [Bootstrap 5](https://getbootstrap.com/). To use these views instead of the default Tailwind views, you may call the paginator's `useBootstrapFive` method within the `boot` method of your `App\Providers\AppServiceProvider` class:
 
-    use Illuminate\Pagination\Paginator;
+```php
+use Illuminate\Pagination\Paginator;
 
-    /**
-     * Bootstrap any application services.
-     *
-     * @return void
-     */
-    public function boot()
-    {
-        Paginator::useBootstrapFive();
-    }
+/**
+ * Bootstrap any application services.
+ *
+ * @return void
+ */
+public function boot()
+{
+    Paginator::useBootstrapFive();
+}
+```
 
 <a name="improved-validation-of-nested-array-data"></a>
 ### Improved Validation Of Nested Array Data
@@ -349,18 +367,20 @@ _Improved validation of nested array inputs was contributed by [Steve Bauman](ht
 
 Sometimes you may need to access the value for a given nested array element when assigning validation rules to the attribute. You may now accomplish this using the `Rule::forEach` method. The `forEach` method accepts a closure that will be invoked for each iteration of the array attribute under validation and will receive the attribute's value and explicit, fully-expanded attribute name. The closure should return an array of rules to assign to the array element:
 
-    use App\Rules\HasPermission;
-    use Illuminate\Support\Facades\Validator;
-    use Illuminate\Validation\Rule;
+```php
+use App\Rules\HasPermission;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
 
-    $validator = Validator::make($request->all(), [
-        'companies.*.id' => Rule::forEach(function ($value, $attribute) {
-            return [
-                Rule::exists(Company::class, 'id'),
-                new HasPermission('manage-company', $value),
-            ];
-        }),
-    ]);
+$validator = Validator::make($request->all(), [
+    'companies.*.id' => Rule::forEach(function ($value, $attribute) {
+        return [
+            Rule::exists(Company::class, 'id'),
+            new HasPermission('manage-company', $value),
+        ];
+    }),
+]);
+```
 
 <a name="laravel-breeze-api"></a>
 ### Laravel Breeze API & Next.js
@@ -448,23 +468,31 @@ Laravel 9.x introduces two new, convenient helper functions that you may use in 
 
 The `str` function returns a new `Illuminate\Support\Stringable` instance for the given string. This function is equivalent to the `Str::of` method:
 
-    $string = str('Taylor')->append(' Otwell');
+```php
+$string = str('Taylor')->append(' Otwell');
 
-    // 'Taylor Otwell'
+// 'Taylor Otwell'
+```
 
 If no argument is provided to the `str` function, the function returns an instance of `Illuminate\Support\Str`:
 
-    $snake = str()->snake('LaravelFramework');
+```php
+$snake = str()->snake('LaravelFramework');
 
-    // 'laravel_framework'
+// 'laravel_framework'
+```
 
 <a name="new-helpers-to-route"></a>
 #### `to_route`
 
 The `to_route` function generates a redirect HTTP response for a given named route, providing an expressive way to redirect to named routes from your routes and controllers:
 
-    return to_route('users.show', ['user' => 1]);
+```php
+return to_route('users.show', ['user' => 1]);
+```
 
 If necessary, you may pass the HTTP status code that should be assigned to the redirect and any additional response headers as the third and fourth arguments to the to_route method:
 
-    return to_route('users.show', ['user' => 1], 302, ['X-Framework' => 'Laravel']);
+```php
+return to_route('users.show', ['user' => 1], 302, ['X-Framework' => 'Laravel']);
+```

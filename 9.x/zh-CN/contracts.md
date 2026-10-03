@@ -38,45 +38,47 @@ Laravel 中许多类型的类都通过[服务容器](/docs/{{version}}/container
 
 例如，看看这个事件监听器：
 
-    <?php
+```php
+<?php
 
-    namespace App\Listeners;
+namespace App\Listeners;
 
-    use App\Events\OrderWasPlaced;
-    use App\Models\User;
-    use Illuminate\Contracts\Redis\Factory;
+use App\Events\OrderWasPlaced;
+use App\Models\User;
+use Illuminate\Contracts\Redis\Factory;
 
-    class CacheOrderInformation
+class CacheOrderInformation
+{
+    /**
+     * Redis 工厂实现。
+     *
+     * @var \Illuminate\Contracts\Redis\Factory
+     */
+    protected $redis;
+
+    /**
+     * 创建新的事件处理器实例。
+     *
+     * @param  \Illuminate\Contracts\Redis\Factory  $redis
+     * @return void
+     */
+    public function __construct(Factory $redis)
     {
-        /**
-         * Redis 工厂实现。
-         *
-         * @var \Illuminate\Contracts\Redis\Factory
-         */
-        protected $redis;
-
-        /**
-         * 创建新的事件处理器实例。
-         *
-         * @param  \Illuminate\Contracts\Redis\Factory  $redis
-         * @return void
-         */
-        public function __construct(Factory $redis)
-        {
-            $this->redis = $redis;
-        }
-
-        /**
-         * 处理事件。
-         *
-         * @param  \App\Events\OrderWasPlaced  $event
-         * @return void
-         */
-        public function handle(OrderWasPlaced $event)
-        {
-            //
-        }
+        $this->redis = $redis;
     }
+
+    /**
+     * 处理事件。
+     *
+     * @param  \App\Events\OrderWasPlaced  $event
+     * @return void
+     */
+    public function handle(OrderWasPlaced $event)
+    {
+        //
+    }
+}
+```
 
 当事件监听器被解析时，服务容器会读取类构造函数上的类型提示，并注入相应的值。要了解更多关于在服务容器中注册内容的信息，请查看[其文档](/docs/{{version}}/container)。
 

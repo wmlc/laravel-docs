@@ -98,17 +98,19 @@ php artisan vendor:publish --tag="cashier-migrations"
 
 如果希望完全阻止 Cashier 的迁移运行，可以使用 Cashier 提供的 `ignoreMigrations`。通常，应在 `AppServiceProvider` 的 `register` 方法中调用此方法：
 
-    use Laravel\Paddle\Cashier;
+```php
+use Laravel\Paddle\Cashier;
 
-    /**
-     * 注册任何应用服务。
-     *
-     * @return void
-     */
-    public function register()
-    {
-        Cashier::ignoreMigrations();
-    }
+/**
+ * 注册任何应用服务。
+ *
+ * @return void
+ */
+public function register()
+{
+    Cashier::ignoreMigrations();
+}
+```
 
 <a name="configuration"></a>
 ## 配置
@@ -118,22 +120,26 @@ php artisan vendor:publish --tag="cashier-migrations"
 
 使用 Cashier 之前，必须将 `Billable` Trait 添加到用户模型定义中。此 Trait 提供了各种方法，用于执行常见的计费任务，如创建订阅、应用优惠券和更新支付方式信息：
 
-    use Laravel\Paddle\Billable;
+```php
+use Laravel\Paddle\Billable;
 
-    class User extends Authenticatable
-    {
-        use Billable;
-    }
+class User extends Authenticatable
+{
+    use Billable;
+}
+```
 
 如果有非用户的可计费实体，也可以将此 Trait 添加到这些类中：
 
-    use Illuminate\Database\Eloquent\Model;
-    use Laravel\Paddle\Billable;
+```php
+use Illuminate\Database\Eloquent\Model;
+use Laravel\Paddle\Billable;
 
-    class Team extends Model
-    {
-        use Billable;
-    }
+class Team extends Model
+{
+    use Billable;
+}
+```
 
 <a name="api-keys"></a>
 ### API 密钥
@@ -185,28 +191,32 @@ CASHIER_CURRENCY_LOCALE=nl_BE
 
 可以通过定义自己的模型并扩展相应的 Cashier 模型来自由扩展 Cashier 内部使用的模型：
 
-    use Laravel\Paddle\Subscription as CashierSubscription;
+```php
+use Laravel\Paddle\Subscription as CashierSubscription;
 
-    class Subscription extends CashierSubscription
-    {
-        // ...
-    }
+class Subscription extends CashierSubscription
+{
+    // ...
+}
+```
 
 定义模型后，可以通过 `Laravel\Paddle\Cashier` 类指示 Cashier 使用自定义模型。通常，应在应用 `App\Providers\AppServiceProvider` 类的 `boot` 方法中告知 Cashier 使用自定义模型：
 
-    use App\Models\Cashier\Receipt;
-    use App\Models\Cashier\Subscription;
+```php
+use App\Models\Cashier\Receipt;
+use App\Models\Cashier\Subscription;
 
-    /**
-     * 引导任何应用服务。
-     *
-     * @return void
-     */
-    public function boot()
-    {
-        Cashier::useReceiptModel(Receipt::class);
-        Cashier::useSubscriptionModel(Subscription::class);
-    }
+/**
+ * 引导任何应用服务。
+ *
+ * @return void
+ */
+public function boot()
+{
+    Cashier::useReceiptModel(Receipt::class);
+    Cashier::useSubscriptionModel(Subscription::class);
+}
+```
 
 <a name="core-concepts"></a>
 ## 核心概念
@@ -216,20 +226,22 @@ CASHIER_CURRENCY_LOCALE=nl_BE
 
 Paddle 缺乏用于执行订阅状态更改的完整 CRUD API。因此，与 Paddle 的大多数交互通过其[结账小部件](https://developer.paddle.com/guides/how-tos/checkout/paddle-checkout)完成。在显示结账小部件之前，必须使用 Cashier 生成"支付链接"。"支付链接"将告知结账小部件我们希望执行的计费操作：
 
-    use App\Models\User;
-    use Illuminate\Http\Request;
+```php
+use App\Models\User;
+use Illuminate\Http\Request;
 
-    Route::get('/user/subscribe', function (Request $request) {
-        $payLink = $request->user()->newSubscription('default', $premium = 34567)
-            ->returnTo(route('home'))
-            ->create();
+Route::get('/user/subscribe', function (Request $request) {
+    $payLink = $request->user()->newSubscription('default', $premium = 34567)
+        ->returnTo(route('home'))
+        ->create();
 
-        return view('billing', ['payLink' => $payLink]);
-    });
+    return view('billing', ['payLink' => $payLink]);
+});
+```
 
 Cashier 包含一个 `paddle-button` [Blade 组件](/docs/{{version}}/blade#components)。可以将支付链接 URL 作为"prop"传递给此组件。点击此按钮时，将显示 Paddle 的结账小部件：
 
-```html
+```blade
 <x-paddle-button :url="$payLink" class="px-8 py-4">
     Subscribe
 </x-paddle-button>
@@ -237,7 +249,7 @@ Cashier 包含一个 `paddle-button` [Blade 组件](/docs/{{version}}/blade#comp
 
 默认情况下，这将显示一个带有标准 Paddle 样式的按钮。可以通过在组件上添加 `data-theme="none"` 属性来移除所有 Paddle 样式：
 
-```html
+```blade
 <x-paddle-button :url="$payLink" class="px-8 py-4" data-theme="none">
     Subscribe
 </x-paddle-button>
@@ -255,15 +267,19 @@ Paddle 结账小部件是异步的。用户在小部件中创建或更新订阅�
 
 也可以不使用 Laravel 内置的 Blade 组件手动渲染支付链接。首先，按之前示例所示生成支付链接 URL：
 
-    $payLink = $request->user()->newSubscription('default', $premium = 34567)
-        ->returnTo(route('home'))
-        ->create();
+```php
+$payLink = $request->user()->newSubscription('default', $premium = 34567)
+    ->returnTo(route('home'))
+    ->create();
+```
 
 接下来，将支付链接 URL 附加到 HTML 中的 `a` 元素：
 
-    <a href="#!" class="ml-4 paddle_button" data-override="{{ $payLink }}">
-        Paddle Checkout
-    </a>
+```blade
+<a href="#!" class="ml-4 paddle_button" data-override="{{ $payLink }}">
+    Paddle Checkout
+</a>
+```
 
 <a name="payments-requiring-additional-confirmation"></a>
 #### 需要额外确认的付款
@@ -337,13 +353,15 @@ $options = [
 
 因此，显示订阅时应始终按订阅逐个告知用户哪个邮箱地址或支付方式信息与订阅关联。可以使用 `Laravel\Paddle\Subscription` 模型提供的以下方法检索此信息：
 
-    $subscription = $user->subscription('default');
+```php
+$subscription = $user->subscription('default');
 
-    $subscription->paddleEmail();
-    $subscription->paymentMethod();
-    $subscription->cardBrand();
-    $subscription->cardLastFour();
-    $subscription->cardExpirationDate();
+$subscription->paddleEmail();
+$subscription->paymentMethod();
+$subscription->cardBrand();
+$subscription->cardLastFour();
+$subscription->cardExpirationDate();
+```
 
 目前无法通过 Paddle API 修改用户的邮箱地址。当用户希望更新其在 Paddle 中的邮箱地址时，唯一的方式是联系 Paddle 客户支持。与 Paddle 沟通时，需要提供订阅的 `paddleEmail` 值以协助 Paddle 更新正确的用户。
 
@@ -352,15 +370,19 @@ $options = [
 
 Paddle 允许按货币自定义价格，实质上允许为不同国家配置不同价格。Cashier Paddle 允许使用 `productPrices` 方法检索给定产品的所有价格。此方法接受希望检索价格的产品的产品 ID：
 
-    use Laravel\Paddle\Cashier;
+```php
+use Laravel\Paddle\Cashier;
 
-    $prices = Cashier::productPrices([123, 456]);
+$prices = Cashier::productPrices([123, 456]);
+```
 
 货币将根据请求的 IP 地址确定；但也可以选择提供特定国家来检索价格：
 
-    use Laravel\Paddle\Cashier;
+```php
+use Laravel\Paddle\Cashier;
 
-    $prices = Cashier::productPrices([123, 456], ['customer_country' => 'BE']);
+$prices = Cashier::productPrices([123, 456], ['customer_country' => 'BE']);
+```
 
 检索价格后，可以按需显示：
 
@@ -399,9 +421,11 @@ Paddle 允许按货币自定义价格，实质上允许为不同国家配置不�
 
 如果用户已是客户且希望显示适用于该客户的价格，可以直接从客户实例检索价格：
 
-    use App\Models\User;
+```php
+use App\Models\User;
 
-    $prices = User::find(1)->productPrices([123, 456]);
+$prices = User::find(1)->productPrices([123, 456]);
+```
 
 Cashier 内部将使用用户的 [`paddleCountry` 方法](#customer-defaults)以其货币检索价格。例如，居住在美国的用户将看到美元价格，而比利时用户将看到欧元价格。如果找不到匹配的货币，将使用产品的默认货币。可以在 Paddle 控制面板中自定义产品或订阅方案的所有价格。
 
@@ -410,11 +434,13 @@ Cashier 内部将使用用户的 [`paddleCountry` 方法](#customer-defaults)以
 
 也可以选择在优惠券减免后显示价格。调用 `productPrices` 方法时，优惠券可以以逗号分隔的字符串传递：
 
-    use Laravel\Paddle\Cashier;
+```php
+use Laravel\Paddle\Cashier;
 
-    $prices = Cashier::productPrices([123, 456], [
-        'coupons' => 'SUMMERSALE,20PERCENTOFF'
-    ]);
+$prices = Cashier::productPrices([123, 456], [
+    'coupons' => 'SUMMERSALE,20PERCENTOFF'
+]);
+```
 
 然后，使用 `price` 方法显示计算后的价格：
 
@@ -447,41 +473,43 @@ Cashier 内部将使用用户的 [`paddleCountry` 方法](#customer-defaults)以
 
 Cashier 允许在创建支付链接时为客户定义一些有用的默认值。设置这些默认值可以预填客户的邮箱地址、国家和邮政编码，使其可以直接进入结账小部件的付款部分。可以通过在可计费模型上覆盖以下方法来设置这些默认值：
 
-    /**
-     * 获取与 Paddle 关联的客户邮箱地址。
-     *
-     * @return string|null
-     */
-    public function paddleEmail()
-    {
-        return $this->email;
-    }
+```php
+/**
+ * 获取与 Paddle 关联的客户邮箱地址。
+ *
+ * @return string|null
+ */
+public function paddleEmail()
+{
+    return $this->email;
+}
 
-    /**
-     * 获取与 Paddle 关联的客户国家。
-     *
-     * 这需要是 2 字母代码。支持的国家请参见以下链接。
-     *
-     * @return string|null
-     * @link https://developer.paddle.com/reference/platform-parameters/supported-countries
-     */
-    public function paddleCountry()
-    {
-        //
-    }
+/**
+ * 获取与 Paddle 关联的客户国家。
+ *
+ * 这需要是 2 字母代码。支持的国家请参见以下链接。
+ *
+ * @return string|null
+ * @link https://developer.paddle.com/reference/platform-parameters/supported-countries
+ */
+public function paddleCountry()
+{
+    //
+}
 
-    /**
-     * 获取与 Paddle 关联的客户邮政编码。
-     *
-     * 需要此信息的国家请参见以下链接。
-     *
-     * @return string|null
-     * @link https://developer.paddle.com/reference/platform-parameters/supported-countries#countries-requiring-postcode
-     */
-    public function paddlePostcode()
-    {
-        //
-    }
+/**
+ * 获取与 Paddle 关联的客户邮政编码。
+ *
+ * 需要此信息的国家请参见以下链接。
+ *
+ * @return string|null
+ * @link https://developer.paddle.com/reference/platform-parameters/supported-countries#countries-requiring-postcode
+ */
+public function paddlePostcode()
+{
+    //
+}
+```
 
 这些默认值将用于 Cashier 中生成[支付链接](#pay-links)的每个操作。
 
@@ -493,15 +521,17 @@ Cashier 允许在创建支付链接时为客户定义一些有用的默认值。
 
 要创建订阅，首先从数据库检索可计费模型实例，通常是 `App\Models\User` 的实例。检索到模型实例后，可以使用 `newSubscription` 方法创建模型的订阅支付链接：
 
-    use Illuminate\Http\Request;
+```php
+use Illuminate\Http\Request;
 
-    Route::get('/user/subscribe', function (Request $request) {
-        $payLink = $request->user()->newSubscription('default', $premium = 12345)
-            ->returnTo(route('home'))
-            ->create();
+Route::get('/user/subscribe', function (Request $request) {
+    $payLink = $request->user()->newSubscription('default', $premium = 12345)
+        ->returnTo(route('home'))
+        ->create();
 
-        return view('billing', ['payLink' => $payLink]);
-    });
+    return view('billing', ['payLink' => $payLink]);
+});
+```
 
 传递给 `newSubscription` 方法的第一个参数应为订阅的内部名称。如果应用仅提供单一订阅，可以将其命名为 `default` 或 `primary`。此订阅名称仅供应用内部使用，不应向用户显示。此外，它不应包含空格，且在创建订阅后不应更改。传递给 `newSubscription` 方法的第二个参数是用户订阅的特定方案。此值应对应 Paddle 中方案的标识符。`returnTo` 方法接受用户成功完成结账后重定向到的 URL。
 
@@ -520,31 +550,37 @@ Cashier 允许在创建支付链接时为客户定义一些有用的默认值。
 
 如果希望指定额外的客户或订阅详情，可以将它们作为键 / 值对数组传递给 `create` 方法。要了解 Paddle 支持的额外字段，请查阅 Paddle 关于[生成支付链接](https://developer.paddle.com/api-reference/product-api/pay-links/createpaylink)的文档：
 
-    $payLink = $user->newSubscription('default', $monthly = 12345)
-        ->returnTo(route('home'))
-        ->create([
-            'vat_number' => $vatNumber,
-        ]);
+```php
+$payLink = $user->newSubscription('default', $monthly = 12345)
+    ->returnTo(route('home'))
+    ->create([
+        'vat_number' => $vatNumber,
+    ]);
+```
 
 <a name="subscriptions-coupons"></a>
 #### 优惠券
 
 如果希望在创建订阅时应用优惠券，可以使用 `withCoupon` 方法：
 
-    $payLink = $user->newSubscription('default', $monthly = 12345)
-        ->returnTo(route('home'))
-        ->withCoupon('code')
-        ->create();
+```php
+$payLink = $user->newSubscription('default', $monthly = 12345)
+    ->returnTo(route('home'))
+    ->withCoupon('code')
+    ->create();
+```
 
 <a name="metadata"></a>
 #### 元数据
 
 也可以使用 `withMetadata` 方法传递元数据数组：
 
-    $payLink = $user->newSubscription('default', $monthly = 12345)
-        ->returnTo(route('home'))
-        ->withMetadata(['key' => 'value'])
-        ->create();
+```php
+$payLink = $user->newSubscription('default', $monthly = 12345)
+    ->returnTo(route('home'))
+    ->withMetadata(['key' => 'value'])
+    ->create();
+```
 
 > **Warning**  
 > 提供元数据时，请避免使用 `subscription_name` 作为元数据键。此键保留供 Cashier 内部使用。
@@ -554,107 +590,129 @@ Cashier 允许在创建支付链接时为客户定义一些有用的默认值。
 
 用户订阅应用后，可以使用多种便捷方法检查其订阅状态。首先，如果用户有活跃订阅，`subscribed` 方法返回 `true`，即使订阅当前处于试用期内也是如此：
 
-    if ($user->subscribed('default')) {
-        //
-    }
+```php
+if ($user->subscribed('default')) {
+    //
+}
+```
 
 `subscribed` 方法也适合作为[路由中间件](/docs/{{version}}/middleware)，允许根据用户的订阅状态过滤对路由和控制器的访问：
 
-    <?php
+```php
+<?php
 
-    namespace App\Http\Middleware;
+namespace App\Http\Middleware;
 
-    use Closure;
+use Closure;
 
-    class EnsureUserIsSubscribed
+class EnsureUserIsSubscribed
+{
+    /**
+     * 处理传入请求。
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  \Closure  $next
+     * @return mixed
+     */
+    public function handle($request, Closure $next)
     {
-        /**
-         * 处理传入请求。
-         *
-         * @param  \Illuminate\Http\Request  $request
-         * @param  \Closure  $next
-         * @return mixed
-         */
-        public function handle($request, Closure $next)
-        {
-            if ($request->user() && ! $request->user()->subscribed('default')) {
-                // 此用户不是付费客户...
-                return redirect('billing');
-            }
-
-            return $next($request);
+        if ($request->user() && ! $request->user()->subscribed('default')) {
+            // 此用户不是付费客户...
+            return redirect('billing');
         }
+
+        return $next($request);
     }
+}
+```
 
 如果希望确定用户是否仍处于试用期内，可以使用 `onTrial` 方法。此方法可用于确定是否应向用户显示仍在试用期内的警告：
 
-    if ($user->subscription('default')->onTrial()) {
-        //
-    }
+```php
+if ($user->subscription('default')->onTrial()) {
+    //
+}
+```
 
 可以使用 `subscribedToPlan` 方法根据给定的 Paddle 方案 ID 确定用户是否订阅了给定方案。在此示例中，将确定用户的 `default` 订阅是否活跃订阅了月度方案：
 
-    if ($user->subscribedToPlan($monthly = 12345, 'default')) {
-        //
-    }
+```php
+if ($user->subscribedToPlan($monthly = 12345, 'default')) {
+    //
+}
+```
 
 通过向 `subscribedToPlan` 方法传递数组，可以确定用户的 `default` 订阅是否活跃订阅了月度或年度方案：
 
-    if ($user->subscribedToPlan([$monthly = 12345, $yearly = 54321], 'default')) {
-        //
-    }
+```php
+if ($user->subscribedToPlan([$monthly = 12345, $yearly = 54321], 'default')) {
+    //
+}
+```
 
 可以使用 `recurring` 方法确定用户当前是否已订阅且不再处于试用期内：
 
-    if ($user->subscription('default')->recurring()) {
-        //
-    }
+```php
+if ($user->subscription('default')->recurring()) {
+    //
+}
+```
 
 <a name="cancelled-subscription-status"></a>
 #### 已取消订阅状态
 
 要确定用户曾是活跃订阅者但已取消订阅，可以使用 `cancelled` 方法：
 
-    if ($user->subscription('default')->cancelled()) {
-        //
-    }
+```php
+if ($user->subscription('default')->cancelled()) {
+    //
+}
+```
 
 也可以确定用户是否已取消订阅但仍处于"宽限期"内直到订阅完全过期。例如，如果用户在 3 月 5 日取消了原定于 3 月 10 日过期的订阅，则用户在 3 月 10 日之前都处于"宽限期"。注意，在此期间 `subscribed` 方法仍返回 `true`：
 
-    if ($user->subscription('default')->onGracePeriod()) {
-        //
-    }
+```php
+if ($user->subscription('default')->onGracePeriod()) {
+    //
+}
+```
 
 要确定用户是否已取消订阅且不再处于"宽限期"内，可以使用 `ended` 方法：
 
-    if ($user->subscription('default')->ended()) {
-        //
-    }
+```php
+if ($user->subscription('default')->ended()) {
+    //
+}
+```
 
 <a name="past-due-status"></a>
 #### 逾期状态
 
 如果订阅付款失败，将被标记为 `past_due`。当订阅处于此状态时，在客户更新支付信息之前它将不会活跃。可以使用订阅实例上的 `pastDue` 方法确定订阅是否逾期：
 
-    if ($user->subscription('default')->pastDue()) {
-        //
-    }
+```php
+if ($user->subscription('default')->pastDue()) {
+    //
+}
+```
 
 当订阅逾期时，应指示用户[更新其支付信息](#updating-payment-information)。可以在 [Paddle 订阅设置](https://vendors.paddle.com/subscription-settings)中配置如何处理逾期订阅。
 
 如果希望订阅在 `past_due` 状态时仍被视为活跃，可以使用 Cashier 提供的 `keepPastDueSubscriptionsActive` 方法。通常，应在 `AppServiceProvider` 的 `register` 方法中调用此方法：
 
-    use Laravel\Paddle\Cashier;
+```php
+use Laravel\Paddle\Cashier;
 
-    /**
-     * 注册任何应用服务。
-     *
-     * @return void
-     */
-    public function register()
-    {
-        Cashier::keepPastDueSubscriptionsActive();
-    }
+/**
+ * 注册任何应用服务。
+ *
+ * @return void
+ */
+public function register()
+{
+    Cashier::keepPastDueSubscriptionsActive();
+}
+```
 
 > **Warning**  
 > 当订阅处于 `past_due` 状态时，在支付信息更新之前无法更改。因此，`swap` 和 `updateQuantity` 方法在订阅处于 `past_due` 状态时会抛出异常。
@@ -664,35 +722,41 @@ Cashier 允许在创建支付链接时为客户定义一些有用的默认值。
 
 大多数订阅状态也可作为查询作用域使用，以便轻松查询数据库中处于给定状态的订阅：
 
-    // 获取所有活跃订阅...
-    $subscriptions = Subscription::query()->active()->get();
+```php
+// 获取所有活跃订阅...
+$subscriptions = Subscription::query()->active()->get();
 
-    // 获取用户的所有已取消订阅...
-    $subscriptions = $user->subscriptions()->cancelled()->get();
+// 获取用户的所有已取消订阅...
+$subscriptions = $user->subscriptions()->cancelled()->get();
+```
 
 可用作用域的完整列表如下：
 
-    Subscription::query()->active();
-    Subscription::query()->onTrial();
-    Subscription::query()->notOnTrial();
-    Subscription::query()->pastDue();
-    Subscription::query()->recurring();
-    Subscription::query()->ended();
-    Subscription::query()->paused();
-    Subscription::query()->notPaused();
-    Subscription::query()->onPausedGracePeriod();
-    Subscription::query()->notOnPausedGracePeriod();
-    Subscription::query()->cancelled();
-    Subscription::query()->notCancelled();
-    Subscription::query()->onGracePeriod();
-    Subscription::query()->notOnGracePeriod();
+```php
+Subscription::query()->active();
+Subscription::query()->onTrial();
+Subscription::query()->notOnTrial();
+Subscription::query()->pastDue();
+Subscription::query()->recurring();
+Subscription::query()->ended();
+Subscription::query()->paused();
+Subscription::query()->notPaused();
+Subscription::query()->onPausedGracePeriod();
+Subscription::query()->notOnPausedGracePeriod();
+Subscription::query()->cancelled();
+Subscription::query()->notCancelled();
+Subscription::query()->onGracePeriod();
+Subscription::query()->notOnGracePeriod();
+```
 
 <a name="subscription-single-charges"></a>
 ### 订阅单次收费
 
 订阅单次收费允许在订阅基础上向订阅者收取一次性费用：
 
-    $response = $user->subscription('default')->charge(12.99, 'Support Add-on');
+```php
+$response = $user->subscription('default')->charge(12.99, 'Support Add-on');
+```
 
 与[单次收费](#single-charges)不同，此方法将立即向客户存储的订阅支付方式收费。收费金额应始终以订阅的货币定义。
 
@@ -701,15 +765,17 @@ Cashier 允许在创建支付链接时为客户定义一些有用的默认值。
 
 Paddle 始终为每个订阅保存一种支付方式。如果希望更新订阅的默认支付方式，应首先使用订阅模型上的 `updateUrl` 方法生成订阅"更新 URL"：
 
-    use App\Models\User;
+```php
+use App\Models\User;
 
-    $user = User::find(1);
+$user = User::find(1);
 
-    $updateUrl = $user->subscription('default')->updateUrl();
+$updateUrl = $user->subscription('default')->updateUrl();
+```
 
 然后，可以使用生成的 URL 结合 Cashier 提供的 `paddle-button` Blade 组件，允许用户启动 Paddle 小部件并更新其支付信息：
 
-```html
+```blade
 <x-paddle-button :url="$updateUrl" class="px-8 py-4">
     Update Card
 </x-paddle-button>
@@ -722,17 +788,21 @@ Paddle 始终为每个订阅保存一种支付方式。如果希望更新订阅�
 
 用户订阅应用后，可能偶尔希望更改到新的订阅方案。要更新用户的订阅方案，应将 Paddle 方案的标识符传递给订阅的 `swap` 方法：
 
-    use App\Models\User;
+```php
+use App\Models\User;
 
-    $user = User::find(1);
+$user = User::find(1);
 
-    $user->subscription('default')->swap($premium = 34567);
+$user->subscription('default')->swap($premium = 34567);
+```
 
 如果希望切换方案并立即向用户开具发票而非等待下一个计费周期，可以使用 `swapAndInvoice` 方法：
 
-    $user = User::find(1);
+```php
+$user = User::find(1);
 
-    $user->subscription('default')->swapAndInvoice($premium = 34567);
+$user->subscription('default')->swapAndInvoice($premium = 34567);
+```
 
 > **Warning**  
 > 试用期内无法切换方案。有关此限制的更多信息，请参见 [Paddle 文档](https://developer.paddle.com/api-reference/subscription-api/users/updateuser#usage-notes)。
@@ -742,32 +812,40 @@ Paddle 始终为每个订阅保存一种支付方式。如果希望更新订阅�
 
 默认情况下，Paddle 在方案之间切换时按比例计算费用。可以使用 `noProrate` 方法更新订阅而不按比例计算费用：
 
-    $user->subscription('default')->noProrate()->swap($premium = 34567);
+```php
+$user->subscription('default')->noProrate()->swap($premium = 34567);
+```
 
 <a name="subscription-quantity"></a>
 ### 订阅数量
 
 有时订阅受"数量"影响。例如，项目管理应用可能每月每个项目收费 10 美元。要轻松增减订阅数量，使用 `incrementQuantity` 和 `decrementQuantity` 方法：
 
-    $user = User::find(1);
+```php
+$user = User::find(1);
 
-    $user->subscription('default')->incrementQuantity();
+$user->subscription('default')->incrementQuantity();
 
-    // 将订阅当前数量加 5...
-    $user->subscription('default')->incrementQuantity(5);
+// 将订阅当前数量加 5...
+$user->subscription('default')->incrementQuantity(5);
 
-    $user->subscription('default')->decrementQuantity();
+$user->subscription('default')->decrementQuantity();
 
-    // 将订阅当前数量减 5...
-    $user->subscription('default')->decrementQuantity(5);
+// 将订阅当前数量减 5...
+$user->subscription('default')->decrementQuantity(5);
+```
 
 或者，可以使用 `updateQuantity` 方法设置特定数量：
 
-    $user->subscription('default')->updateQuantity(10);
+```php
+$user->subscription('default')->updateQuantity(10);
+```
 
 可以使用 `noProrate` 方法更新订阅数量而不按比例计算费用：
 
-    $user->subscription('default')->noProrate()->updateQuantity(10);
+```php
+$user->subscription('default')->noProrate()->updateQuantity(10);
+```
 
 <a name="subscription-modifiers"></a>
 ### 订阅修饰符
@@ -776,20 +854,26 @@ Paddle 始终为每个订阅保存一种支付方式。如果希望更新订阅�
 
 例如，可能希望提供标准订阅的"高级支持"附加项。可以这样创建此修饰符：
 
-    $modifier = $user->subscription('default')->newModifier(12.99)->create();
+```php
+$modifier = $user->subscription('default')->newModifier(12.99)->create();
+```
 
 以上示例将在订阅上添加 12.99 美元的附加项。默认情况下，此费用将在为订阅配置的每个间隔周期性收取。如果需要，可以使用修饰符的 `description` 方法为修饰符添加可读描述：
 
-    $modifier = $user->subscription('default')->newModifier(12.99)
-        ->description('Premium Support')
-        ->create();
+```php
+$modifier = $user->subscription('default')->newModifier(12.99)
+    ->description('Premium Support')
+    ->create();
+```
 
 为说明如何使用修饰符实现计量计费，假设应用按用户发送的每条短信收费。首先，应在 Paddle 控制面板中创建一个 0 美元的方案。用户订阅此方案后，可以将代表每次单独收费的修饰符添加到订阅：
 
-    $modifier = $user->subscription('default')->newModifier(0.99)
-        ->description('New text message')
-        ->oneTime()
-        ->create();
+```php
+$modifier = $user->subscription('default')->newModifier(0.99)
+    ->description('New text message')
+    ->oneTime()
+    ->create();
+```
 
 如上所示，创建此修饰符时调用了 `oneTime` 方法。此方法将确保修饰符仅收费一次，不会每个计费间隔周期性收取。
 
@@ -798,19 +882,23 @@ Paddle 始终为每个订阅保存一种支付方式。如果希望更新订阅�
 
 可以通过 `modifiers` 方法检索订阅的所有修饰符列表：
 
-    $modifiers = $user->subscription('default')->modifiers();
+```php
+$modifiers = $user->subscription('default')->modifiers();
 
-    foreach ($modifiers as $modifier) {
-        $modifier->amount(); // $0.99
-        $modifier->description; // New text message.
-    }
+foreach ($modifiers as $modifier) {
+    $modifier->amount(); // $0.99
+    $modifier->description; // New text message.
+}
+```
 
 <a name="deleting-modifiers"></a>
 #### 删除修饰符
 
 可以通过在 `Laravel\Paddle\Modifier` 实例上调用 `delete` 方法来删除修饰符：
 
-    $modifier->delete();
+```php
+$modifier->delete();
+```
 
 <a name="multiple-subscriptions"></a>
 ### 多个订阅
@@ -819,42 +907,54 @@ Paddle 允许客户同时拥有多个订阅。例如，可能经营一家提供�
 
 当应用创建订阅时，可以将订阅名称传递给 `newSubscription` 方法。名称可以是表示用户发起的订阅类型的任意字符串：
 
-    use Illuminate\Http\Request;
+```php
+use Illuminate\Http\Request;
 
-    Route::post('/swimming/subscribe', function (Request $request) {
-        $request->user()
-            ->newSubscription('swimming', $swimmingMonthly = 12345)
-            ->create($request->paymentMethodId);
+Route::post('/swimming/subscribe', function (Request $request) {
+    $request->user()
+        ->newSubscription('swimming', $swimmingMonthly = 12345)
+        ->create($request->paymentMethodId);
 
-        // ...
-    });
+    // ...
+});
+```
 
 在此示例中，为客户发起了月度游泳订阅。但他们可能希望稍后切换到年度订阅。调整客户订阅时，可以简单地在 `swimming` 订阅上切换价格：
 
-    $user->subscription('swimming')->swap($swimmingYearly = 34567);
+```php
+$user->subscription('swimming')->swap($swimmingYearly = 34567);
+```
 
 当然，也可以完全取消订阅：
 
-    $user->subscription('swimming')->cancel();
+```php
+$user->subscription('swimming')->cancel();
+```
 
 <a name="pausing-subscriptions"></a>
 ### 暂停订阅
 
 要暂停订阅，在用户订阅上调用 `pause` 方法：
 
-    $user->subscription('default')->pause();
+```php
+$user->subscription('default')->pause();
+```
 
 当订阅暂停时，Cashier 会自动在数据库中设置 `paused_from` 列。此列用于确定 `paused` 方法应何时开始返回 `true`。例如，如果客户在 3 月 1 日暂停订阅，但订阅原定于 3 月 5 日才续订，则 `paused` 方法将持续返回 `false` 直到 3 月 5 日。这是因为通常允许用户继续使用应用直到当前计费周期结束。
 
 可以使用 `onPausedGracePeriod` 方法确定用户是否已暂停订阅但仍处于"宽限期"：
 
-    if ($user->subscription('default')->onPausedGracePeriod()) {
-        //
-    }
+```php
+if ($user->subscription('default')->onPausedGracePeriod()) {
+    //
+}
+```
 
 要恢复暂停的订阅，可以在用户订阅上调用 `unpause` 方法：
 
-    $user->subscription('default')->unpause();
+```php
+$user->subscription('default')->unpause();
+```
 
 > **Warning**  
 > 订阅暂停期间无法修改。如果要切换到不同方案或更新数量，必须先恢复订阅。
@@ -864,19 +964,25 @@ Paddle 允许客户同时拥有多个订阅。例如，可能经营一家提供�
 
 要取消订阅，在用户订阅上调用 `cancel` 方法：
 
-    $user->subscription('default')->cancel();
+```php
+$user->subscription('default')->cancel();
+```
 
 当订阅取消时，Cashier 会自动在数据库中设置 `ends_at` 列。此列用于确定 `subscribed` 方法应何时开始返回 `false`。例如，如果客户在 3 月 1 日取消订阅，但订阅原定于 3 月 5 日才结束，则 `subscribed` 方法将持续返回 `true` 直到 3 月 5 日。这是因为通常允许用户继续使用应用直到当前计费周期结束。
 
 可以使用 `onGracePeriod` 方法确定用户是否已取消订阅但仍处于"宽限期"：
 
-    if ($user->subscription('default')->onGracePeriod()) {
-        //
-    }
+```php
+if ($user->subscription('default')->onGracePeriod()) {
+    //
+}
+```
 
 如果希望立即取消订阅，可以在用户订阅上调用 `cancelNow` 方法：
 
-    $user->subscription('default')->cancelNow();
+```php
+$user->subscription('default')->cancelNow();
+```
 
 > **Warning**  
 > Paddle 的订阅取消后无法恢复。如果客户希望恢复订阅，必须重新订阅新订阅。
@@ -892,16 +998,18 @@ Paddle 允许客户同时拥有多个订阅。例如，可能经营一家提供�
 
 如果希望在为客户提供试用期的同时预先收集支付方式信息，应在创建订阅支付链接时使用 `trialDays` 方法：
 
-    use Illuminate\Http\Request;
+```php
+use Illuminate\Http\Request;
 
-    Route::get('/user/subscribe', function (Request $request) {
-        $payLink = $request->user()->newSubscription('default', $monthly = 12345)
-                    ->returnTo(route('home'))
-                    ->trialDays(10)
-                    ->create();
+Route::get('/user/subscribe', function (Request $request) {
+    $payLink = $request->user()->newSubscription('default', $monthly = 12345)
+                ->returnTo(route('home'))
+                ->trialDays(10)
+                ->create();
 
-        return view('billing', ['payLink' => $payLink]);
-    });
+    return view('billing', ['payLink' => $payLink]);
+});
+```
 
 此方法将在应用数据库中的订阅记录上设置试用期结束日期，并指示 Paddle 在此日期之后才开始向客户计费。
 
@@ -910,23 +1018,27 @@ Paddle 允许客户同时拥有多个订阅。例如，可能经营一家提供�
 
 可以使用用户实例的 `onTrial` 方法或订阅实例的 `onTrial` 方法确定用户是否处于试用期内。以下两个示例是等效的：
 
-    if ($user->onTrial('default')) {
-        //
-    }
+```php
+if ($user->onTrial('default')) {
+    //
+}
 
-    if ($user->subscription('default')->onTrial()) {
-        //
-    }
+if ($user->subscription('default')->onTrial()) {
+    //
+}
+```
 
 要确定现有试用是否已过期，可以使用 `hasExpiredTrial` 方法：
 
-    if ($user->hasExpiredTrial('default')) {
-        //
-    }
+```php
+if ($user->hasExpiredTrial('default')) {
+    //
+}
 
-    if ($user->subscription('default')->hasExpiredTrial()) {
-        //
-    }
+if ($user->subscription('default')->hasExpiredTrial()) {
+    //
+}
+```
 
 <a name="defining-trial-days-in-paddle-cashier"></a>
 #### 在 Paddle / Cashier 中定义试用天数
@@ -938,45 +1050,55 @@ Paddle 允许客户同时拥有多个订阅。例如，可能经营一家提供�
 
 如果希望在不预先收集用户支付方式信息的情况下提供试用期，可以将附加到用户的客户记录上的 `trial_ends_at` 列设置为所需的试用结束日期。这通常在用户注册期间完成：
 
-    use App\Models\User;
+```php
+use App\Models\User;
 
-    $user = User::create([
-        // ...
-    ]);
+$user = User::create([
+    // ...
+]);
 
-    $user->createAsCustomer([
-        'trial_ends_at' => now()->addDays(10)
-    ]);
+$user->createAsCustomer([
+    'trial_ends_at' => now()->addDays(10)
+]);
+```
 
 Cashier 将此类试用称为"通用试用"，因为它不附加到任何现有订阅。如果当前日期未超过 `trial_ends_at` 的值，`User` 实例上的 `onTrial` 方法将返回 `true`：
 
-    if ($user->onTrial()) {
-        // 用户处于试用期内...
-    }
+```php
+if ($user->onTrial()) {
+    // 用户处于试用期内...
+}
+```
 
 准备好为用户创建实际订阅后，可以像往常一样使用 `newSubscription` 方法：
 
-    use Illuminate\Http\Request;
+```php
+use Illuminate\Http\Request;
 
-    Route::get('/user/subscribe', function (Request $request) {
-        $payLink = $user->newSubscription('default', $monthly = 12345)
-            ->returnTo(route('home'))
-            ->create();
+Route::get('/user/subscribe', function (Request $request) {
+    $payLink = $user->newSubscription('default', $monthly = 12345)
+        ->returnTo(route('home'))
+        ->create();
 
-        return view('billing', ['payLink' => $payLink]);
-    });
+    return view('billing', ['payLink' => $payLink]);
+});
+```
 
 要检索用户的试用结束日期，可以使用 `trialEndsAt` 方法。如果用户处于试用期，此方法将返回 Carbon 日期实例，否则返回 `null`。如果希望获取默认订阅以外特定订阅的试用结束日期，也可以传递可选的订阅名称参数：
 
-    if ($user->onTrial()) {
-        $trialEndsAt = $user->trialEndsAt('main');
-    }
+```php
+if ($user->onTrial()) {
+    $trialEndsAt = $user->trialEndsAt('main');
+}
+```
 
 如果希望明确知道用户处于"通用"试用期内且尚未创建实际订阅，可以使用 `onGenericTrial` 方法：
 
-    if ($user->onGenericTrial()) {
-        // 用户处于"通用"试用期内...
-    }
+```php
+if ($user->onGenericTrial()) {
+    // 用户处于"通用"试用期内...
+}
+```
 
 > **Warning**  
 > Paddle 订阅创建后无法延长或修改试用期。
@@ -1004,9 +1126,11 @@ Paddle 可以通过 Webhook 通知应用各种事件。默认情况下，指向 
 
 由于 Paddle Webhook 需要绕过 Laravel 的 [CSRF 保护](/docs/{{version}}/csrf)，请务必在 `App\Http\Middleware\VerifyCsrfToken` 中间件中将此 URI 列为例外，或将路由列在 `web` 中间件组之外：
 
-    protected $except = [
-        'paddle/*',
-    ];
+```php
+protected $except = [
+    'paddle/*',
+];
+```
 
 <a name="webhooks-local-development"></a>
 #### Webhook 与本地开发
@@ -1023,46 +1147,50 @@ Cashier 自动处理失败收费导致的订阅取消和其他常见 Paddle Webh
 
 两个事件都包含 Paddle Webhook 的完整负载。例如，如果希望处理 `invoice.payment_succeeded` Webhook，可以注册一个将处理该事件的[监听器](/docs/{{version}}/events#defining-listeners)：
 
-    <?php
+```php
+<?php
 
-    namespace App\Listeners;
+namespace App\Listeners;
 
-    use Laravel\Paddle\Events\WebhookReceived;
+use Laravel\Paddle\Events\WebhookReceived;
 
-    class PaddleEventListener
+class PaddleEventListener
+{
+    /**
+     * 处理接收到的 Paddle Webhook。
+     *
+     * @param  \Laravel\Paddle\Events\WebhookReceived  $event
+     * @return void
+     */
+    public function handle(WebhookReceived $event)
     {
-        /**
-         * 处理接收到的 Paddle Webhook。
-         *
-         * @param  \Laravel\Paddle\Events\WebhookReceived  $event
-         * @return void
-         */
-        public function handle(WebhookReceived $event)
-        {
-            if ($event->payload['alert_name'] === 'payment_succeeded') {
-                // 处理传入事件...
-            }
+        if ($event->payload['alert_name'] === 'payment_succeeded') {
+            // 处理传入事件...
         }
     }
+}
+```
 
 定义监听器后，可以在应用的 `EventServiceProvider` 中注册：
 
-    <?php
+```php
+<?php
 
-    namespace App\Providers;
+namespace App\Providers;
 
-    use App\Listeners\PaddleEventListener;
-    use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
-    use Laravel\Paddle\Events\WebhookReceived;
+use App\Listeners\PaddleEventListener;
+use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
+use Laravel\Paddle\Events\WebhookReceived;
 
-    class EventServiceProvider extends ServiceProvider
-    {
-        protected $listen = [
-            WebhookReceived::class => [
-                PaddleEventListener::class,
-            ],
-        ];
-    }
+class EventServiceProvider extends ServiceProvider
+{
+    protected $listen = [
+        WebhookReceived::class => [
+            PaddleEventListener::class,
+        ],
+    ];
+}
+```
 
 Cashier 还会发出专用于接收到的 Webhook 类型的事件。除了来自 Paddle 的完整负载外，它们还包含用于处理 Webhook 的相关模型，如可计费模型、订阅或收据：
 
@@ -1093,13 +1221,15 @@ CASHIER_WEBHOOK=https://example.com/my-paddle-webhook-url
 
 如果希望对客户进行一次性收费，可以使用可计费模型实例上的 `charge` 方法生成收费的支付链接。`charge` 方法接受收费金额（浮点数）作为第一个参数，收费描述作为第二个参数：
 
-    use Illuminate\Http\Request;
+```php
+use Illuminate\Http\Request;
 
-    Route::get('/store', function (Request $request) {
-        return view('store', [
-            'payLink' => $user->charge(12.99, 'Action Figure')
-        ]);
-    });
+Route::get('/store', function (Request $request) {
+    return view('store', [
+        'payLink' => $user->charge(12.99, 'Action Figure')
+    ]);
+});
+```
 
 生成支付链接后，可以使用 Cashier 提供的 `paddle-button` Blade 组件允许用户启动 Paddle 小部件并完成收费：
 
@@ -1111,9 +1241,11 @@ CASHIER_WEBHOOK=https://example.com/my-paddle-webhook-url
 
 `charge` 方法接受数组作为第三个参数，允许将任何希望的选项传递给底层 Paddle 支付链接创建。请查阅 [Paddle 文档](https://developer.paddle.com/api-reference/product-api/pay-links/createpaylink)以了解创建收费时可用的选项：
 
-    $payLink = $user->charge(12.99, 'Action Figure', [
-        'custom_option' => $value,
-    ]);
+```php
+$payLink = $user->charge(12.99, 'Action Figure', [
+    'custom_option' => $value,
+]);
+```
 
 收费以 `cashier.currency` 配置选项中指定的货币进行。默认情况下，此设置为 USD。可以通过在应用 `.env` 文件中定义 `CASHIER_CURRENCY` 环境变量来覆盖默认货币：
 
@@ -1123,23 +1255,27 @@ CASHIER_CURRENCY=EUR
 
 也可以使用 Paddle 的动态定价匹配系统[按货币覆盖价格](https://developer.paddle.com/api-reference/product-api/pay-links/createpaylink#price-overrides)。为此，传递价格数组而非固定金额：
 
-    $payLink = $user->charge([
-        'USD:19.99',
-        'EUR:15.99',
-    ], 'Action Figure');
+```php
+$payLink = $user->charge([
+    'USD:19.99',
+    'EUR:15.99',
+], 'Action Figure');
+```
 
 <a name="charging-products"></a>
 ### 收费产品
 
 如果希望对 Paddle 中配置的特定产品进行一次性收费，可以使用可计费模型实例上的 `chargeProduct` 方法生成支付链接：
 
-    use Illuminate\Http\Request;
+```php
+use Illuminate\Http\Request;
 
-    Route::get('/store', function (Request $request) {
-        return view('store', [
-            'payLink' => $request->user()->chargeProduct($productId = 123)
-        ]);
-    });
+Route::get('/store', function (Request $request) {
+    return view('store', [
+        'payLink' => $request->user()->chargeProduct($productId = 123)
+    ]);
+});
+```
 
 然后，可以将支付链接提供给 `paddle-button` 组件以允许用户初始化 Paddle 小部件：
 
@@ -1151,30 +1287,36 @@ CASHIER_CURRENCY=EUR
 
 `chargeProduct` 方法接受数组作为第二个参数，允许将任何希望的选项传递给底层 Paddle 支付链接创建。请查阅 [Paddle 文档](https://developer.paddle.com/api-reference/product-api/pay-links/createpaylink)以了解创建收费时可用的选项：
 
-    $payLink = $user->chargeProduct($productId, [
-        'custom_option' => $value,
-    ]);
+```php
+$payLink = $user->chargeProduct($productId, [
+    'custom_option' => $value,
+]);
+```
 
 <a name="refunding-orders"></a>
 ### 退款订单
 
 如果需要退款 Paddle 订单，可以使用 `refund` 方法。此方法接受 Paddle 订单 ID 作为第一个参数。可以使用 `receipts` 方法检索给定可计费模型的收据：
 
-    use App\Models\User;
+```php
+use App\Models\User;
 
-    $user = User::find(1);
+$user = User::find(1);
 
-    $receipt = $user->receipts()->first();
+$receipt = $user->receipts()->first();
 
-    $refundRequestId = $user->refund($receipt->order_id);
+$refundRequestId = $user->refund($receipt->order_id);
+```
 
 也可以选择指定退款金额和退款原因：
 
-    $receipt = $user->receipts()->first();
+```php
+$receipt = $user->receipts()->first();
 
-    $refundRequestId = $user->refund(
-        $receipt->order_id, 5.00, 'Unused product time'
-    );
+$refundRequestId = $user->refund(
+    $receipt->order_id, 5.00, 'Unused product time'
+);
+```
 
 > **Note**  
 > 联系 Paddle 支持时，可以使用 `$refundRequestId` 作为退款参考。
@@ -1184,15 +1326,17 @@ CASHIER_CURRENCY=EUR
 
 可以通过 `receipts` 属性轻松检索可计费模型的收据数组：
 
-    use App\Models\User;
+```php
+use App\Models\User;
 
-    $user = User::find(1);
+$user = User::find(1);
 
-    $receipts = $user->receipts;
+$receipts = $user->receipts;
+```
 
 列出客户的收据时，可以使用收据实例的方法显示相关收据信息。例如，可能希望在表格中列出每个收据，允许用户轻松下载任何收据：
 
-```html
+```blade
 <table>
     @foreach ($receipts as $receipt)
         <tr>
@@ -1209,14 +1353,16 @@ CASHIER_CURRENCY=EUR
 
 可以使用 `lastPayment` 和 `nextPayment` 方法检索和显示客户周期订阅的过去或未来付款：
 
-    use App\Models\User;
+```php
+use App\Models\User;
 
-    $user = User::find(1);
+$user = User::find(1);
 
-    $subscription = $user->subscription('default');
+$subscription = $user->subscription('default');
 
-    $lastPayment = $subscription->lastPayment();
-    $nextPayment = $subscription->nextPayment();
+$lastPayment = $subscription->lastPayment();
+$nextPayment = $subscription->nextPayment();
+```
 
 这两个方法都将返回 `Laravel\Paddle\Payment` 实例；但当计费周期已结束（如订阅已取消）时，`nextPayment` 将返回 `null`：
 
@@ -1231,46 +1377,50 @@ Next payment: {{ $nextPayment->amount() }} due on {{ $nextPayment->date()->forma
 
 或者，可以通过[监听](/docs/{{version}}/events) Cashier 分发的 `WebhookReceived` 事件中的 `subscription_payment_failed` Paddle 事件来执行更精确的自定义。还应确保在 Paddle 控制面板的 Webhook 设置中启用"Subscription Payment Failed"选项：
 
-    <?php
+```php
+<?php
 
-    namespace App\Listeners;
+namespace App\Listeners;
 
-    use Laravel\Paddle\Events\WebhookReceived;
+use Laravel\Paddle\Events\WebhookReceived;
 
-    class PaddleEventListener
+class PaddleEventListener
+{
+    /**
+     * 处理接收到的 Paddle Webhook。
+     *
+     * @param  \Laravel\Paddle\Events\WebhookReceived  $event
+     * @return void
+     */
+    public function handle(WebhookReceived $event)
     {
-        /**
-         * 处理接收到的 Paddle Webhook。
-         *
-         * @param  \Laravel\Paddle\Events\WebhookReceived  $event
-         * @return void
-         */
-        public function handle(WebhookReceived $event)
-        {
-            if ($event->payload['alert_name'] === 'subscription_payment_failed') {
-                // 处理失败的订阅付款...
-            }
+        if ($event->payload['alert_name'] === 'subscription_payment_failed') {
+            // 处理失败的订阅付款...
         }
     }
+}
+```
 
 定义监听器后，应在应用的 `EventServiceProvider` 中注册：
 
-    <?php
+```php
+<?php
 
-    namespace App\Providers;
+namespace App\Providers;
 
-    use App\Listeners\PaddleEventListener;
-    use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
-    use Laravel\Paddle\Events\WebhookReceived;
+use App\Listeners\PaddleEventListener;
+use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
+use Laravel\Paddle\Events\WebhookReceived;
 
-    class EventServiceProvider extends ServiceProvider
-    {
-        protected $listen = [
-            WebhookReceived::class => [
-                PaddleEventListener::class,
-            ],
-        ];
-    }
+class EventServiceProvider extends ServiceProvider
+{
+    protected $listen = [
+        WebhookReceived::class => [
+            PaddleEventListener::class,
+        ],
+    ];
+}
+```
 
 <a name="testing"></a>
 ## 测试

@@ -64,7 +64,9 @@
 
 Eloquent 关联定义在 Eloquent 模型类的方法上。由于关联同时也可以作为强大的[查询构造器](/docs/{{version}}/queries)，把关联定义为方法能提供强大的方法链式调用和查询能力。例如，我们可以在这个 `posts` 关联上继续链式添加查询约束：
 
-    $user->posts()->where('active', 1)->get();
+```php
+$user->posts()->where('active', 1)->get();
+```
 
 不过，在深入使用关联之前，我们先来了解如何定义 Eloquent 支持的每一种关联类型。
 
@@ -73,127 +75,149 @@ Eloquent 关联定义在 Eloquent 模型类的方法上。由于关联同时也�
 
 一对一关联是一种非常基础的数据库关联。例如，一个 `User` 模型可能关联到一个 `Phone` 模型。要定义这个关联，我们在 `User` 模型上放置一个 `phone` 方法。`phone` 方法应当调用 `hasOne` 方法并返回其结果。通过模型的 `Illuminate\Database\Eloquent\Model` 基类，你的模型可以使用 `hasOne` 方法：
 
-    <?php
+```php
+<?php
 
-    namespace App\Models;
+namespace App\Models;
 
-    use Illuminate\Database\Eloquent\Model;
-    use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
-    class User extends Model
+class User extends Model
+{
+    /**
+     * 获取与该用户关联的电话。
+     */
+    public function phone(): HasOne
     {
-        /**
-         * 获取与该用户关联的电话。
-         */
-        public function phone(): HasOne
-        {
-            return $this->hasOne(Phone::class);
-        }
+        return $this->hasOne(Phone::class);
     }
+}
+```
 
 传给 `hasOne` 方法的第一个参数是关联模型类的名称。关联定义之后，你就可以通过 Eloquent 的动态属性获取关联记录。动态属性让你可以像访问模型上定义的属性那样访问关联方法：
 
-    $phone = User::find(1)->phone;
+```php
+$phone = User::find(1)->phone;
+```
 
 Eloquent 会根据父模型名称确定该关联的外键。在这个例子中，`Phone` 模型会被自动假定具有 `user_id` 外键。如果你想覆盖这一约定，可以向 `hasOne` 方法传入第二个参数：
 
-    return $this->hasOne(Phone::class, 'foreign_key');
+```php
+return $this->hasOne(Phone::class, 'foreign_key');
+```
 
 此外，Eloquent 假定外键的值应当与父级的主键列匹配。换句话说，Eloquent 会在 `Phone` 记录的 `user_id` 列中查找用户 `id` 列的值。如果你希望该关联使用 `id` 或你模型的 `$primaryKey` 属性之外的主键值，可以向 `hasOne` 方法传入第三个参数：
 
-    return $this->hasOne(Phone::class, 'foreign_key', 'local_key');
+```php
+return $this->hasOne(Phone::class, 'foreign_key', 'local_key');
+```
 
 <a name="one-to-one-defining-the-inverse-of-the-relationship"></a>
 #### 定义关联的反向关联
 
 现在，我们可以通过 `User` 模型访问 `Phone` 模型。接下来，让我们在 `Phone` 模型上定义一个关联，以便访问拥有该电话的用户。我们可以使用 `belongsTo` 方法定义 `hasOne` 关联的反向关联：
 
-    <?php
+```php
+<?php
 
-    namespace App\Models;
+namespace App\Models;
 
-    use Illuminate\Database\Eloquent\Model;
-    use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-    class Phone extends Model
+class Phone extends Model
+{
+    /**
+     * 获取拥有该电话的用户。
+     */
+    public function user(): BelongsTo
     {
-        /**
-         * 获取拥有该电话的用户。
-         */
-        public function user(): BelongsTo
-        {
-            return $this->belongsTo(User::class);
-        }
+        return $this->belongsTo(User::class);
     }
+}
+```
 
 调用 `user` 方法时，Eloquent 会尝试查找一个 `User` 模型，其 `id` 与 `Phone` 模型上的 `user_id` 列相匹配。
 
 Eloquent 通过检查关联方法的名称，并在方法名后附加 `_id` 来确定外键名称。因此，在这个例子中，Eloquent 假定 `Phone` 模型具有 `user_id` 列。不过，如果 `Phone` 模型上的外键不是 `user_id`，你可以把自定义的键名作为 `belongsTo` 方法的第二个参数传入：
 
-    /**
-     * 获取拥有该电话的用户。
-     */
-    public function user(): BelongsTo
-    {
-        return $this->belongsTo(User::class, 'foreign_key');
-    }
+```php
+/**
+ * 获取拥有该电话的用户。
+ */
+public function user(): BelongsTo
+{
+    return $this->belongsTo(User::class, 'foreign_key');
+}
+```
 
 如果父模型没有使用 `id` 作为主键，或者你希望使用其他列来查找关联模型，可以向 `belongsTo` 方法传入第三个参数，指定父表的自定义键：
 
-    /**
-     * 获取拥有该电话的用户。
-     */
-    public function user(): BelongsTo
-    {
-        return $this->belongsTo(User::class, 'foreign_key', 'owner_key');
-    }
+```php
+/**
+ * 获取拥有该电话的用户。
+ */
+public function user(): BelongsTo
+{
+    return $this->belongsTo(User::class, 'foreign_key', 'owner_key');
+}
+```
 
 <a name="one-to-many"></a>
 ### 一对多 / Has Many
 
 一对多关联用于定义单个模型是一个或多个子模型的父级这类关联。例如，一篇博客帖子可能有无数条评论。与所有其他 Eloquent 关联一样，一对多关联也是通过在 Eloquent 模型上定义方法来定义的：
 
-    <?php
+```php
+<?php
 
-    namespace App\Models;
+namespace App\Models;
 
-    use Illuminate\Database\Eloquent\Model;
-    use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
-    class Post extends Model
+class Post extends Model
+{
+    /**
+     * 获取该博客帖子的评论。
+     */
+    public function comments(): HasMany
     {
-        /**
-         * 获取该博客帖子的评论。
-         */
-        public function comments(): HasMany
-        {
-            return $this->hasMany(Comment::class);
-        }
+        return $this->hasMany(Comment::class);
     }
+}
+```
 
 请记住，Eloquent 会自动确定 `Comment` 模型对应的外键列。按照约定，Eloquent 会取父模型名称的「短横线命名（snake case）」形式，并在其后附加 `_id`。因此，在这个例子中，Eloquent 会假定 `Comment` 模型上的外键列是 `post_id`。
 
 关联方法定义之后，你就可以通过访问 `comments` 属性获取关联评论的[集合](/docs/{{version}}/eloquent-collections)。请记住，由于 Eloquent 提供了「动态关联属性」，你可以像访问模型上定义的属性那样访问关联方法：
 
-    use App\Models\Post;
+```php
+use App\Models\Post;
 
-    $comments = Post::find(1)->comments;
+$comments = Post::find(1)->comments;
 
-    foreach ($comments as $comment) {
-        // ...
-    }
+foreach ($comments as $comment) {
+    // ...
+}
+```
 
 由于所有关联同时也可以作为查询构造器，你可以通过调用 `comments` 方法并继续在查询上链式添加条件，为该关联查询添加更多约束：
 
-    $comment = Post::find(1)->comments()
-        ->where('title', 'foo')
-        ->first();
+```php
+$comment = Post::find(1)->comments()
+    ->where('title', 'foo')
+    ->first();
+```
 
 与 `hasOne` 方法一样，你也可以向 `hasMany` 方法传入额外参数来覆盖外键和本地键：
 
-    return $this->hasMany(Comment::class, 'foreign_key');
+```php
+return $this->hasMany(Comment::class, 'foreign_key');
 
-    return $this->hasMany(Comment::class, 'foreign_key', 'local_key');
+return $this->hasMany(Comment::class, 'foreign_key', 'local_key');
+```
 
 <a name="automatically-hydrating-parent-models-on-children"></a>
 #### 在子模型上自动填充父模型
@@ -214,23 +238,25 @@ foreach ($posts as $post) {
 
 如果你希望 Eloquent 自动在子模型上填充父模型，可以在定义 `hasMany` 关联时调用 `chaperone` 方法：
 
-    <?php
+```php
+<?php
 
-    namespace App\Models;
+namespace App\Models;
 
-    use Illuminate\Database\Eloquent\Model;
-    use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
-    class Post extends Model
+class Post extends Model
+{
+    /**
+     * 获取该博客帖子的评论。
+     */
+    public function comments(): HasMany
     {
-        /**
-         * 获取该博客帖子的评论。
-         */
-        public function comments(): HasMany
-        {
-            return $this->hasMany(Comment::class)->chaperone();
-        }
+        return $this->hasMany(Comment::class)->chaperone();
     }
+}
+```
 
 或者，如果你希望在运行时选择启用自动填充父模型，可以在预加载该关联时调用 `chaperone` 模型：
 
@@ -247,31 +273,35 @@ $posts = Post::with([
 
 现在我们能够访问一篇帖子的所有评论，接下来定义一个关联，让评论能够访问其父级帖子。要定义 `hasMany` 关联的反向关联，请在子模型上定义一个调用 `belongsTo` 方法的关联方法：
 
-    <?php
+```php
+<?php
 
-    namespace App\Models;
+namespace App\Models;
 
-    use Illuminate\Database\Eloquent\Model;
-    use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-    class Comment extends Model
+class Comment extends Model
+{
+    /**
+     * 获取拥有该评论的帖子。
+     */
+    public function post(): BelongsTo
     {
-        /**
-         * 获取拥有该评论的帖子。
-         */
-        public function post(): BelongsTo
-        {
-            return $this->belongsTo(Post::class);
-        }
+        return $this->belongsTo(Post::class);
     }
+}
+```
 
 关联定义之后，你就可以通过访问 `post`「动态关联属性」获取一条评论的父级帖子：
 
-    use App\Models\Comment;
+```php
+use App\Models\Comment;
 
-    $comment = Comment::find(1);
+$comment = Comment::find(1);
 
-    return $comment->post->title;
+return $comment->post->title;
+```
 
 在上例中，Eloquent 会尝试查找一个 `Post` 模型，其 `id` 与 `Comment` 模型上的 `post_id` 列相匹配。
 
@@ -279,81 +309,97 @@ Eloquent 通过检查关联方法的名称，并在方法名后附加一个 `_` 
 
 不过，如果你的关联外键不遵循这些约定，你可以把自定义外键名作为 `belongsTo` 方法的第二个参数传入：
 
-    /**
-     * 获取拥有该评论的帖子。
-     */
-    public function post(): BelongsTo
-    {
-        return $this->belongsTo(Post::class, 'foreign_key');
-    }
+```php
+/**
+ * 获取拥有该评论的帖子。
+ */
+public function post(): BelongsTo
+{
+    return $this->belongsTo(Post::class, 'foreign_key');
+}
+```
 
 如果你的父模型没有使用 `id` 作为主键，或者你希望使用其他列来查找关联模型，可以向 `belongsTo` 方法传入第三个参数，指定父表的自定义键：
 
-    /**
-     * 获取拥有该评论的帖子。
-     */
-    public function post(): BelongsTo
-    {
-        return $this->belongsTo(Post::class, 'foreign_key', 'owner_key');
-    }
+```php
+/**
+ * 获取拥有该评论的帖子。
+ */
+public function post(): BelongsTo
+{
+    return $this->belongsTo(Post::class, 'foreign_key', 'owner_key');
+}
+```
 
 <a name="default-models"></a>
 #### 默认模型
 
 `belongsTo`、`hasOne`、`hasOneThrough` 和 `morphOne` 关联允许你定义一个默认模型，当给定关联为 `null` 时就会返回该模型。这种模式通常被称为[空对象模式](https://en.wikipedia.org/wiki/Null_Object_pattern)，有助于消除代码中的条件判断。在下面的例子中，如果 `Post` 模型没有关联用户，`user` 关联将返回一个空的 `App\Models\User` 模型：
 
-    /**
-     * 获取该帖子的作者。
-     */
-    public function user(): BelongsTo
-    {
-        return $this->belongsTo(User::class)->withDefault();
-    }
+```php
+/**
+ * 获取该帖子的作者。
+ */
+public function user(): BelongsTo
+{
+    return $this->belongsTo(User::class)->withDefault();
+}
+```
 
 如果希望为默认模型填充属性，可以向 `withDefault` 方法传入一个数组或闭包：
 
-    /**
-     * 获取该帖子的作者。
-     */
-    public function user(): BelongsTo
-    {
-        return $this->belongsTo(User::class)->withDefault([
-            'name' => 'Guest Author',
-        ]);
-    }
+```php
+/**
+ * 获取该帖子的作者。
+ */
+public function user(): BelongsTo
+{
+    return $this->belongsTo(User::class)->withDefault([
+        'name' => 'Guest Author',
+    ]);
+}
 
-    /**
-     * 获取该帖子的作者。
-     */
-    public function user(): BelongsTo
-    {
-        return $this->belongsTo(User::class)->withDefault(function (User $user, Post $post) {
-            $user->name = 'Guest Author';
-        });
-    }
+/**
+ * 获取该帖子的作者。
+ */
+public function user(): BelongsTo
+{
+    return $this->belongsTo(User::class)->withDefault(function (User $user, Post $post) {
+        $user->name = 'Guest Author';
+    });
+}
+```
 
 <a name="querying-belongs-to-relationships"></a>
 #### 查询 Belongs To 关联
 
 在查询某个「belongs to」关联的子模型时，你可以手动构建 `where` 子句来获取对应的 Eloquent 模型：
 
-    use App\Models\Post;
+```php
+use App\Models\Post;
 
-    $posts = Post::where('user_id', $user->id)->get();
+$posts = Post::where('user_id', $user->id)->get();
+```
 
 不过，你可能会发现使用 `whereBelongsTo` 方法更方便，该方法会自动确定给定模型对应的关联和外键：
 
-    $posts = Post::whereBelongsTo($user)->get();
+```php
+$posts = Post::whereBelongsTo($user)->get();
+```
 
 你也可以向 `whereBelongsTo` 方法传入一个[集合](/docs/{{version}}/eloquent-collections)实例。这样做时，Laravel 会获取属于该集合中任意父级模型的模型：
 
-    $users = User::where('vip', true)->get();
+```php
+$users = User::where('vip', true)->get();
 
-    $posts = Post::whereBelongsTo($users)->get();
+$posts = Post::whereBelongsTo($users)->get();
+```
 
 默认情况下，Laravel 会根据模型的类名确定与给定模型关联的关联；不过，你也可以把关联名作为 `whereBelongsTo` 方法的第二个参数手动指定：
 
-    $posts = Post::whereBelongsTo($user, 'author')->get();
+```php
+$posts = Post::whereBelongsTo($user, 'author')->get();
+```
 
 <a name="has-one-of-many"></a>
 ### Has One of Many
@@ -451,39 +497,43 @@ public function currentPricing(): HasOne
 
 例如，在一个车辆维修店应用中，每个 `Mechanic` 模型可能关联一个 `Car` 模型，而每个 `Car` 模型可能关联一个 `Owner` 模型。虽然机械师和车主在数据库中并没有直接关联，但机械师可以_通过_`Car` 模型访问车主。让我们看看定义该关联所需的表：
 
-    mechanics
-        id - integer
-        name - string
+```text
+mechanics
+    id - integer
+    name - string
 
-    cars
-        id - integer
-        model - string
-        mechanic_id - integer
+cars
+    id - integer
+    model - string
+    mechanic_id - integer
 
-    owners
-        id - integer
-        name - string
-        car_id - integer
+owners
+    id - integer
+    name - string
+    car_id - integer
+```
 
 我们已经了解了该关联的表结构，接下来在 `Mechanic` 模型上定义该关联：
 
-    <?php
+```php
+<?php
 
-    namespace App\Models;
+namespace App\Models;
 
-    use Illuminate\Database\Eloquent\Model;
-    use Illuminate\Database\Eloquent\Relations\HasOneThrough;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasOneThrough;
 
-    class Mechanic extends Model
+class Mechanic extends Model
+{
+    /**
+     * 获取该车辆的车主。
+     */
+    public function carOwner(): HasOneThrough
     {
-        /**
-         * 获取该车辆的车主。
-         */
-        public function carOwner(): HasOneThrough
-        {
-            return $this->hasOneThrough(Owner::class, Car::class);
-        }
+        return $this->hasOneThrough(Owner::class, Car::class);
     }
+}
+```
 
 传给 `hasOneThrough` 方法的第一个参数是我们希望访问的最终模型的名称，第二个参数则是中间模型的名称。
 
@@ -502,23 +552,25 @@ return $this->throughCars()->hasOwner();
 
 执行该关联的查询时，会使用 Eloquent 常规的外键约定。如果你想自定义该关联的键，可以把它们作为 `hasOneThrough` 方法的第三和第四个参数传入。第三个参数是中间模型上的外键名称。第四个参数是最终模型上的外键名称。第五个参数是本地键，第六个参数则是中间模型的本地键：
 
-    class Mechanic extends Model
+```php
+class Mechanic extends Model
+{
+    /**
+     * 获取该车辆的车主。
+     */
+    public function carOwner(): HasOneThrough
     {
-        /**
-         * 获取该车辆的车主。
-         */
-        public function carOwner(): HasOneThrough
-        {
-            return $this->hasOneThrough(
-                Owner::class,
-                Car::class,
-                'mechanic_id', // cars 表上的外键……
-                'car_id', // owners 表上的外键……
-                'id', // mechanics 表上的本地键……
-                'id' // cars 表上的本地键……
-            );
-        }
+        return $this->hasOneThrough(
+            Owner::class,
+            Car::class,
+            'mechanic_id', // cars 表上的外键……
+            'car_id', // owners 表上的外键……
+            'id', // mechanics 表上的本地键……
+            'id' // cars 表上的本地键……
+        );
     }
+}
+```
 
 或者，如前所述，如果相关关联已经在参与该关联的所有模型上定义好了，你也可以调用 `through` 方法并传入这些关联的名称，以链式方式定义「has-one-through」关联。这种方式的优势在于可以复用现有关联上已经定义好的键约定：
 
@@ -535,39 +587,43 @@ return $this->throughCars()->hasOwner();
 
 「has-many-through」关联提供了一种便捷方式，可以通过一个中间关联访问较远的关联。例如，假设我们正在构建一个类似 [Laravel Vapor](https://vapor.laravel.com) 的部署平台。`Project` 模型可以通过中间的 `Environment` 模型访问许多 `Deployment` 模型。以这个例子来看，你可以轻松收集某个项目的所有部署。让我们看看定义该关联所需的表：
 
-    projects
-        id - integer
-        name - string
+```text
+projects
+    id - integer
+    name - string
 
-    environments
-        id - integer
-        project_id - integer
-        name - string
+environments
+    id - integer
+    project_id - integer
+    name - string
 
-    deployments
-        id - integer
-        environment_id - integer
-        commit_hash - string
+deployments
+    id - integer
+    environment_id - integer
+    commit_hash - string
+```
 
 我们已经了解了该关联的表结构，接下来在 `Project` 模型上定义该关联：
 
-    <?php
+```php
+<?php
 
-    namespace App\Models;
+namespace App\Models;
 
-    use Illuminate\Database\Eloquent\Model;
-    use Illuminate\Database\Eloquent\Relations\HasManyThrough;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 
-    class Project extends Model
+class Project extends Model
+{
+    /**
+     * 获取该项目的所有部署。
+     */
+    public function deployments(): HasManyThrough
     {
-        /**
-         * 获取该项目的所有部署。
-         */
-        public function deployments(): HasManyThrough
-        {
-            return $this->hasManyThrough(Deployment::class, Environment::class);
-        }
+        return $this->hasManyThrough(Deployment::class, Environment::class);
     }
+}
+```
 
 传给 `hasManyThrough` 方法的第一个参数是我们希望访问的最终模型的名称，第二个参数则是中间模型的名称。
 
@@ -588,20 +644,22 @@ return $this->throughEnvironments()->hasDeployments();
 
 执行该关联的查询时，会使用 Eloquent 常规的外键约定。如果你想自定义该关联的键，可以把它们作为 `hasManyThrough` 方法的第三和第四个参数传入。第三个参数是中间模型上的外键名称。第四个参数是最终模型上的外键名称。第五个参数是本地键，第六个参数则是中间模型的本地键：
 
-    class Project extends Model
+```php
+class Project extends Model
+{
+    public function deployments(): HasManyThrough
     {
-        public function deployments(): HasManyThrough
-        {
-            return $this->hasManyThrough(
-                Deployment::class,
-                Environment::class,
-                'project_id', // environments 表上的外键……
-                'environment_id', // deployments 表上的外键……
-                'id', // projects 表上的本地键……
-                'id' // environments 表上的本地键……
-            );
-        }
+        return $this->hasManyThrough(
+            Deployment::class,
+            Environment::class,
+            'project_id', // environments 表上的外键……
+            'environment_id', // deployments 表上的外键……
+            'id', // projects 表上的本地键……
+            'id' // environments 表上的本地键……
+        );
     }
+}
+```
 
 或者，如前所述，如果相关关联已经在参与该关联的所有模型上定义好了，你也可以调用 `through` 方法并传入这些关联的名称，以链式方式定义「has-many-through」关联。这种方式的优势在于可以复用现有关联上已经定义好的键约定：
 
@@ -618,47 +676,53 @@ return $this->throughEnvironments()->hasDeployments();
 
 通常会在模型上添加额外方法来限定关联的范围。例如，你可能会给 `User` 模型添加一个 `featuredPosts` 方法，用额外的 `where` 约束来限定范围更大的 `posts` 关联：
 
-    <?php
+```php
+<?php
 
-    namespace App\Models;
+namespace App\Models;
 
-    use Illuminate\Database\Eloquent\Model;
-    use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
-    class User extends Model
+class User extends Model
+{
+    /**
+     * 获取该用户的帖子。
+     */
+    public function posts(): HasMany
     {
-        /**
-         * 获取该用户的帖子。
-         */
-        public function posts(): HasMany
-        {
-            return $this->hasMany(Post::class)->latest();
-        }
-
-        /**
-         * 获取该用户的精选帖子。
-         */
-        public function featuredPosts(): HasMany
-        {
-            return $this->posts()->where('featured', true);
-        }
+        return $this->hasMany(Post::class)->latest();
     }
-
-不过，如果你尝试通过 `featuredPosts` 方法创建模型，其 `featured` 属性将不会被设置为 `true`。如果你希望通过关联方法创建模型，同时指定应当添加到该关联所创建的所有模型上的属性，可以在构建关联查询时使用 `withAttributes` 方法：
 
     /**
      * 获取该用户的精选帖子。
      */
     public function featuredPosts(): HasMany
     {
-        return $this->posts()->withAttributes(['featured' => true]);
+        return $this->posts()->where('featured', true);
     }
+}
+```
+
+不过，如果你尝试通过 `featuredPosts` 方法创建模型，其 `featured` 属性将不会被设置为 `true`。如果你希望通过关联方法创建模型，同时指定应当添加到该关联所创建的所有模型上的属性，可以在构建关联查询时使用 `withAttributes` 方法：
+
+```php
+/**
+ * 获取该用户的精选帖子。
+ */
+public function featuredPosts(): HasMany
+{
+    return $this->posts()->withAttributes(['featured' => true]);
+}
+```
 
 `withAttributes` 方法会使用给定属性为查询添加 `where` 子句约束，同时也会把给定属性添加到通过该关联方法创建的任何模型上：
 
-    $post = $user->featuredPosts()->create(['title' => 'Featured Post']);
+```php
+$post = $user->featuredPosts()->create(['title' => 'Featured Post']);
 
-    $post->featured; // true
+$post->featured; // true
+```
 
 <a name="many-to-many"></a>
 ## 多对多关联
@@ -672,85 +736,99 @@ return $this->throughEnvironments()->hasDeployments();
 
 请记住，由于一个角色可以属于多个用户，我们不能简单地在 `roles` 表上放一个 `user_id` 列。那样会意味着一个角色只能属于单个用户。为了支持把角色赋予多个用户，才需要 `role_user` 表。该关联的表结构可以概括如下：
 
-    users
-        id - integer
-        name - string
+```text
+users
+    id - integer
+    name - string
 
-    roles
-        id - integer
-        name - string
+roles
+    id - integer
+    name - string
 
-    role_user
-        user_id - integer
-        role_id - integer
+role_user
+    user_id - integer
+    role_id - integer
+```
 
 <a name="many-to-many-model-structure"></a>
 #### 模型结构
 
 多对多关联通过编写一个返回 `belongsToMany` 方法结果的方法来定义。`belongsToMany` 方法由 `Illuminate\Database\Eloquent\Model` 基类提供，你应用中所有 Eloquent 模型都使用该基类。例如，让我们在 `User` 模型上定义一个 `roles` 方法。传给该方法的第一个参数是关联模型类的名称：
 
-    <?php
+```php
+<?php
 
-    namespace App\Models;
+namespace App\Models;
 
-    use Illuminate\Database\Eloquent\Model;
-    use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
-    class User extends Model
+class User extends Model
+{
+    /**
+     * 属于该用户的角色。
+     */
+    public function roles(): BelongsToMany
     {
-        /**
-         * 属于该用户的角色。
-         */
-        public function roles(): BelongsToMany
-        {
-            return $this->belongsToMany(Role::class);
-        }
+        return $this->belongsToMany(Role::class);
     }
+}
+```
 
 关联定义之后，你就可以通过 `roles` 动态关联属性访问该用户的角色：
 
-    use App\Models\User;
+```php
+use App\Models\User;
 
-    $user = User::find(1);
+$user = User::find(1);
 
-    foreach ($user->roles as $role) {
-        // ...
-    }
+foreach ($user->roles as $role) {
+    // ...
+}
+```
 
 由于所有关联同时也可以作为查询构造器，你可以通过调用 `roles` 方法并继续在查询上链式添加条件，为该关联查询添加更多约束：
 
-    $roles = User::find(1)->roles()->orderBy('name')->get();
+```php
+$roles = User::find(1)->roles()->orderBy('name')->get();
+```
 
 为了确定该关联中间表的表名，Eloquent 会按字母顺序拼接两个关联模型名称。不过，你可以自由覆盖这一约定。只需把第二个参数传给 `belongsToMany` 方法即可：
 
-    return $this->belongsToMany(Role::class, 'role_user');
+```php
+return $this->belongsToMany(Role::class, 'role_user');
+```
 
 除了自定义中间表的名称之外，你还可以向 `belongsToMany` 方法传入额外参数，来自定义该表中键的列名。第三个参数是你正在定义关联的那个模型的外键名称，第四个参数则是你要连接的那个模型的外键名称：
 
-    return $this->belongsToMany(Role::class, 'role_user', 'user_id', 'role_id');
+```php
+return $this->belongsToMany(Role::class, 'role_user', 'user_id', 'role_id');
+```
 
 <a name="many-to-many-defining-the-inverse-of-the-relationship"></a>
 #### 定义关联的反向关联
 
 要定义多对多关联的「反向」关联，你应当在关联模型上定义一个同样返回 `belongsToMany` 方法结果的方法。为了完成前面的用户 / 角色例子，让我们在 `Role` 模型上定义 `users` 方法：
 
-    <?php
+```php
+<?php
 
-    namespace App\Models;
+namespace App\Models;
 
-    use Illuminate\Database\Eloquent\Model;
-    use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
-    class Role extends Model
+class Role extends Model
+{
+    /**
+     * 属于该角色的用户。
+     */
+    public function users(): BelongsToMany
     {
-        /**
-         * 属于该角色的用户。
-         */
-        public function users(): BelongsToMany
-        {
-            return $this->belongsToMany(User::class);
-        }
+        return $this->belongsToMany(User::class);
     }
+}
+```
 
 可以看到，该关联的定义与其 `User` 模型中的对应写法完全相同，唯一的区别是引用了 `App\Models\User` 模型。由于我们复用了 `belongsToMany` 方法，在定义多对多关联的「反向」关联时，所有常用的表和键自定义选项都同样可用。
 
@@ -759,23 +837,29 @@ return $this->throughEnvironments()->hasDeployments();
 
 如你已经了解到的，使用多对多关联需要存在一张中间表。Eloquent 提供了一些非常便捷的方式来与该表交互。例如，假设我们的 `User` 模型关联了许多 `Role` 模型。访问该关联之后，就可以通过模型上的 `pivot` 属性访问中间表：
 
-    use App\Models\User;
+```php
+use App\Models\User;
 
-    $user = User::find(1);
+$user = User::find(1);
 
-    foreach ($user->roles as $role) {
-        echo $role->pivot->created_at;
-    }
+foreach ($user->roles as $role) {
+    echo $role->pivot->created_at;
+}
+```
 
 请注意，我们获取的每个 `Role` 模型都会自动被赋予一个 `pivot` 属性。该属性包含一个代表中间表的模型。
 
 默认情况下，`pivot` 模型上只存在模型的各个键。如果你的中间表包含额外的属性，必须在定义该关联时指定它们：
 
-    return $this->belongsToMany(Role::class)->withPivot('active', 'created_by');
+```php
+return $this->belongsToMany(Role::class)->withPivot('active', 'created_by');
+```
 
 如果你希望中间表带有由 Eloquent 自动维护的 `created_at` 和 `updated_at` 时间戳，可以在定义该关联时调用 `withTimestamps` 方法：
 
-    return $this->belongsToMany(Role::class)->withTimestamps();
+```php
+return $this->belongsToMany(Role::class)->withTimestamps();
+```
 
 > [!WARNING]
 > 使用 Eloquent 自动维护时间戳的中间表，必须同时具备 `created_at` 和 `updated_at` 两个时间戳列。
@@ -787,61 +871,71 @@ return $this->throughEnvironments()->hasDeployments();
 
 例如，如果你的应用中包含可以订阅播客的用户，那么用户与播客之间很可能存在一个多对多关联。如果是这种情况，你可能希望把中间表属性重命名为 `subscription` 而不是 `pivot`。这可以通过在定义该关联时使用 `as` 方法来完成：
 
-    return $this->belongsToMany(Podcast::class)
-        ->as('subscription')
-        ->withTimestamps();
+```php
+return $this->belongsToMany(Podcast::class)
+    ->as('subscription')
+    ->withTimestamps();
+```
 
 自定义的中间表属性指定之后，你就可以使用自定义的名称访问中间表数据：
 
-    $users = User::with('podcasts')->get();
+```php
+$users = User::with('podcasts')->get();
 
-    foreach ($users->flatMap->podcasts as $podcast) {
-        echo $podcast->subscription->created_at;
-    }
+foreach ($users->flatMap->podcasts as $podcast) {
+    echo $podcast->subscription->created_at;
+}
+```
 
 <a name="filtering-queries-via-intermediate-table-columns"></a>
 ### 通过中间表列过滤查询
 
 你还可以使用 `wherePivot`、`wherePivotIn`、`wherePivotNotIn`、`wherePivotBetween`、`wherePivotNotBetween`、`wherePivotNull` 和 `wherePivotNotNull` 方法，在定义关联时过滤 `belongsToMany` 关联查询所返回的结果：
 
-    return $this->belongsToMany(Role::class)
-        ->wherePivot('approved', 1);
+```php
+return $this->belongsToMany(Role::class)
+    ->wherePivot('approved', 1);
 
-    return $this->belongsToMany(Role::class)
-        ->wherePivotIn('priority', [1, 2]);
+return $this->belongsToMany(Role::class)
+    ->wherePivotIn('priority', [1, 2]);
 
-    return $this->belongsToMany(Role::class)
-        ->wherePivotNotIn('priority', [1, 2]);
+return $this->belongsToMany(Role::class)
+    ->wherePivotNotIn('priority', [1, 2]);
 
-    return $this->belongsToMany(Podcast::class)
-        ->as('subscriptions')
-        ->wherePivotBetween('created_at', ['2020-01-01 00:00:00', '2020-12-31 00:00:00']);
+return $this->belongsToMany(Podcast::class)
+    ->as('subscriptions')
+    ->wherePivotBetween('created_at', ['2020-01-01 00:00:00', '2020-12-31 00:00:00']);
 
-    return $this->belongsToMany(Podcast::class)
-        ->as('subscriptions')
-        ->wherePivotNotBetween('created_at', ['2020-01-01 00:00:00', '2020-12-31 00:00:00']);
+return $this->belongsToMany(Podcast::class)
+    ->as('subscriptions')
+    ->wherePivotNotBetween('created_at', ['2020-01-01 00:00:00', '2020-12-31 00:00:00']);
 
-    return $this->belongsToMany(Podcast::class)
-        ->as('subscriptions')
-        ->wherePivotNull('expired_at');
+return $this->belongsToMany(Podcast::class)
+    ->as('subscriptions')
+    ->wherePivotNull('expired_at');
 
-    return $this->belongsToMany(Podcast::class)
-        ->as('subscriptions')
-        ->wherePivotNotNull('expired_at');
+return $this->belongsToMany(Podcast::class)
+    ->as('subscriptions')
+    ->wherePivotNotNull('expired_at');
+```
 
 `wherePivot` 会为查询添加一个 where 子句约束，但在通过所定义的关联创建新模型时不会添加该指定值。如果你需要既查询又创建带有特定中间表值的关联，可以使用 `withPivotValue` 方法：
 
-    return $this->belongsToMany(Role::class)
-            ->withPivotValue('approved', 1);
+```php
+return $this->belongsToMany(Role::class)
+        ->withPivotValue('approved', 1);
+```
 
 <a name="ordering-queries-via-intermediate-table-columns"></a>
 ### 通过中间表列对查询排序
 
 你可以使用 `orderByPivot` 方法对 `belongsToMany` 关联查询所返回的结果排序。在下面的例子中，我们会获取该用户所有最新的徽章：
 
-    return $this->belongsToMany(Badge::class)
-        ->where('rank', 'gold')
-        ->orderByPivot('created_at', 'desc');
+```php
+return $this->belongsToMany(Badge::class)
+    ->where('rank', 'gold')
+    ->orderByPivot('created_at', 'desc');
+```
 
 <a name="defining-custom-intermediate-table-models"></a>
 ### 定义自定义中间表模型
@@ -850,36 +944,40 @@ return $this->throughEnvironments()->hasDeployments();
 
 自定义的多对多中间表模型应当继承 `Illuminate\Database\Eloquent\Relations\Pivot` 类，而自定义的多态多对多中间表模型应当继承 `Illuminate\Database\Eloquent\Relations\MorphPivot` 类。例如，我们可以定义一个使用自定义 `RoleUser` 中间表模型的 `Role` 模型：
 
-    <?php
+```php
+<?php
 
-    namespace App\Models;
+namespace App\Models;
 
-    use Illuminate\Database\Eloquent\Model;
-    use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
-    class Role extends Model
+class Role extends Model
+{
+    /**
+     * 属于该角色的用户。
+     */
+    public function users(): BelongsToMany
     {
-        /**
-         * 属于该角色的用户。
-         */
-        public function users(): BelongsToMany
-        {
-            return $this->belongsToMany(User::class)->using(RoleUser::class);
-        }
+        return $this->belongsToMany(User::class)->using(RoleUser::class);
     }
+}
+```
 
 定义 `RoleUser` 模型时，你应当继承 `Illuminate\Database\Eloquent\Relations\Pivot` 类：
 
-    <?php
+```php
+<?php
 
-    namespace App\Models;
+namespace App\Models;
 
-    use Illuminate\Database\Eloquent\Relations\Pivot;
+use Illuminate\Database\Eloquent\Relations\Pivot;
 
-    class RoleUser extends Pivot
-    {
-        // ...
-    }
+class RoleUser extends Pivot
+{
+    // ...
+}
+```
 
 > [!WARNING]
 > 中间表模型不能使用 `SoftDeletes` Trait。如果你需要对中间表记录进行软删除，请考虑把中间表模型转换为真正的 Eloquent 模型。
@@ -889,12 +987,14 @@ return $this->throughEnvironments()->hasDeployments();
 
 如果你定义了一个使用自定义中间表模型的多对多关联，并且该中间表模型具有自增主键，就应当确保你的自定义中间表模型类定义了一个设置为 `true` 的 `incrementing` 属性。
 
-    /**
-     * 指示 ID 是否自增。
-     *
-     * @var bool
-     */
-    public $incrementing = true;
+```php
+/**
+ * 指示 ID 是否自增。
+ *
+ * @var bool
+ */
+public $incrementing = true;
+```
 
 <a name="polymorphic-relationships"></a>
 ## 多态关联
@@ -909,19 +1009,21 @@ return $this->throughEnvironments()->hasDeployments();
 
 一对一多态关联与普通的一对一关联类似；不过，子模型可以通过单个关联属于多种类型的模型。例如，博客 `Post` 和 `User` 可以与 `Image` 模型共享一个多态关联。使用一对一多态关联，可以让你拥有一张唯一的图片表，其中的图片可同时关联到帖子和用户。首先，我们来看看表结构：
 
-    posts
-        id - integer
-        name - string
+```text
+posts
+    id - integer
+    name - string
 
-    users
-        id - integer
-        name - string
+users
+    id - integer
+    name - string
 
-    images
-        id - integer
-        url - string
-        imageable_id - integer
-        imageable_type - string
+images
+    id - integer
+    url - string
+    imageable_id - integer
+    imageable_type - string
+```
 
 请注意 `images` 表上的 `imageable_id` 和 `imageable_type` 两列。`imageable_id` 列将包含帖子或用户的 ID 值，而 `imageable_type` 列将包含父模型的类名。Eloquent 会使用 `imageable_type` 列来判断在访问 `imageable` 关联时应当返回哪种「类型」的父模型。在这个例子中，该列会包含 `App\Models\Post` 或 `App\Models\User`。
 
@@ -930,70 +1032,76 @@ return $this->throughEnvironments()->hasDeployments();
 
 接下来，让我们看看构建该关联所需的模型定义：
 
-    <?php
+```php
+<?php
 
-    namespace App\Models;
+namespace App\Models;
 
-    use Illuminate\Database\Eloquent\Model;
-    use Illuminate\Database\Eloquent\Relations\MorphTo;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\MorphTo;
 
-    class Image extends Model
+class Image extends Model
+{
+    /**
+     * 获取父级的 imageable 模型（用户或帖子）。
+     */
+    public function imageable(): MorphTo
     {
-        /**
-         * 获取父级的 imageable 模型（用户或帖子）。
-         */
-        public function imageable(): MorphTo
-        {
-            return $this->morphTo();
-        }
+        return $this->morphTo();
     }
+}
 
-    use Illuminate\Database\Eloquent\Model;
-    use Illuminate\Database\Eloquent\Relations\MorphOne;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\MorphOne;
 
-    class Post extends Model
+class Post extends Model
+{
+    /**
+     * 获取该帖子的图片。
+     */
+    public function image(): MorphOne
     {
-        /**
-         * 获取该帖子的图片。
-         */
-        public function image(): MorphOne
-        {
-            return $this->morphOne(Image::class, 'imageable');
-        }
+        return $this->morphOne(Image::class, 'imageable');
     }
+}
 
-    use Illuminate\Database\Eloquent\Model;
-    use Illuminate\Database\Eloquent\Relations\MorphOne;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\MorphOne;
 
-    class User extends Model
+class User extends Model
+{
+    /**
+     * 获取该用户的图片。
+     */
+    public function image(): MorphOne
     {
-        /**
-         * 获取该用户的图片。
-         */
-        public function image(): MorphOne
-        {
-            return $this->morphOne(Image::class, 'imageable');
-        }
+        return $this->morphOne(Image::class, 'imageable');
     }
+}
+```
 
 <a name="one-to-one-polymorphic-retrieving-the-relationship"></a>
 #### 获取该关联
 
 数据库表和模型定义之后，你就可以通过模型访问这些关联。例如，要获取某个帖子的图片，我们可以访问 `image` 动态关联属性：
 
-    use App\Models\Post;
+```php
+use App\Models\Post;
 
-    $post = Post::find(1);
+$post = Post::find(1);
 
-    $image = $post->image;
+$image = $post->image;
+```
 
 你还可以通过访问执行 `morphTo` 调用的方法名，来获取该多态模型的父级。在这个例子中，就是 `Image` 模型上的 `imageable` 方法。因此，我们会把该方法作为动态关联属性来访问：
 
-    use App\Models\Image;
+```php
+use App\Models\Image;
 
-    $image = Image::find(1);
+$image = Image::find(1);
 
-    $imageable = $image->imageable;
+$imageable = $image->imageable;
+```
 
 `Image` 模型上的 `imageable` 关联会返回一个 `Post` 或 `User` 实例，取决于拥有该图片的是哪种类型的模型。
 
@@ -1002,13 +1110,15 @@ return $this->throughEnvironments()->hasDeployments();
 
 如有需要，你可以指定该多态子模型所使用的「id」和「type」列的名称。如果你这样做了，请确保始终把关联名称作为 `morphTo` 方法的第一个参数传入。这个值通常应当与方法名相同，因此你可以使用 PHP 的 `__FUNCTION__` 常量：
 
-    /**
-     * 获取该图片所属的模型。
-     */
-    public function imageable(): MorphTo
-    {
-        return $this->morphTo(__FUNCTION__, 'imageable_type', 'imageable_id');
-    }
+```php
+/**
+ * 获取该图片所属的模型。
+ */
+public function imageable(): MorphTo
+{
+    return $this->morphTo(__FUNCTION__, 'imageable_type', 'imageable_id');
+}
+```
 
 <a name="one-to-many-polymorphic-relations"></a>
 ### 一对多（多态）
@@ -1018,93 +1128,101 @@ return $this->throughEnvironments()->hasDeployments();
 
 一对多多态关联与普通的一对多关联类似；不过，子模型可以通过单个关联属于多种类型的模型。例如，假设你应用中的用户可以对帖子和视频「评论」。使用多态关联，你可以用一张 `comments` 表来同时存放帖子和视频的评论。首先，让我们看看构建该关联所需的表结构：
 
-    posts
-        id - integer
-        title - string
-        body - text
+```text
+posts
+    id - integer
+    title - string
+    body - text
 
-    videos
-        id - integer
-        title - string
-        url - string
+videos
+    id - integer
+    title - string
+    url - string
 
-    comments
-        id - integer
-        body - text
-        commentable_id - integer
-        commentable_type - string
+comments
+    id - integer
+    body - text
+    commentable_id - integer
+    commentable_type - string
+```
 
 <a name="one-to-many-polymorphic-model-structure"></a>
 #### 模型结构
 
 接下来，让我们看看构建该关联所需的模型定义：
 
-    <?php
+```php
+<?php
 
-    namespace App\Models;
+namespace App\Models;
 
-    use Illuminate\Database\Eloquent\Model;
-    use Illuminate\Database\Eloquent\Relations\MorphTo;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\MorphTo;
 
-    class Comment extends Model
+class Comment extends Model
+{
+    /**
+     * 获取父级的 commentable 模型（帖子或视频）。
+     */
+    public function commentable(): MorphTo
     {
-        /**
-         * 获取父级的 commentable 模型（帖子或视频）。
-         */
-        public function commentable(): MorphTo
-        {
-            return $this->morphTo();
-        }
+        return $this->morphTo();
     }
+}
 
-    use Illuminate\Database\Eloquent\Model;
-    use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 
-    class Post extends Model
+class Post extends Model
+{
+    /**
+     * 获取该帖子的所有评论。
+     */
+    public function comments(): MorphMany
     {
-        /**
-         * 获取该帖子的所有评论。
-         */
-        public function comments(): MorphMany
-        {
-            return $this->morphMany(Comment::class, 'commentable');
-        }
+        return $this->morphMany(Comment::class, 'commentable');
     }
+}
 
-    use Illuminate\Database\Eloquent\Model;
-    use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 
-    class Video extends Model
+class Video extends Model
+{
+    /**
+     * 获取该视频的所有评论。
+     */
+    public function comments(): MorphMany
     {
-        /**
-         * 获取该视频的所有评论。
-         */
-        public function comments(): MorphMany
-        {
-            return $this->morphMany(Comment::class, 'commentable');
-        }
+        return $this->morphMany(Comment::class, 'commentable');
     }
+}
+```
 
 <a name="one-to-many-polymorphic-retrieving-the-relationship"></a>
 #### 获取该关联
 
 数据库表和模型定义之后，你就可以通过模型的动态关联属性访问这些关联。例如，要访问某个帖子的所有评论，我们可以使用 `comments` 动态属性：
 
-    use App\Models\Post;
+```php
+use App\Models\Post;
 
-    $post = Post::find(1);
+$post = Post::find(1);
 
-    foreach ($post->comments as $comment) {
-        // ...
-    }
+foreach ($post->comments as $comment) {
+    // ...
+}
+```
 
 你还可以通过访问执行 `morphTo` 调用的方法名，来获取某个多态子模型的父级。在这个例子中，就是 `Comment` 模型上的 `commentable` 方法。因此，我们会把该方法作为动态关联属性来访问，以获取该评论的父级模型：
 
-    use App\Models\Comment;
+```php
+use App\Models\Comment;
 
-    $comment = Comment::find(1);
+$comment = Comment::find(1);
 
-    $commentable = $comment->commentable;
+$commentable = $comment->commentable;
+```
 
 `Comment` 模型上的 `commentable` 关联会返回一个 `Post` 或 `Video` 实例，取决于该评论的父级是哪一种类型的模型。
 
@@ -1127,16 +1245,18 @@ foreach ($posts as $post) {
 
 如果你希望 Eloquent 自动在子模型上填充父模型，可以在定义 `morphMany` 关联时调用 `chaperone` 方法：
 
-    class Post extends Model
+```php
+class Post extends Model
+{
+    /**
+     * 获取该帖子的所有评论。
+     */
+    public function comments(): MorphMany
     {
-        /**
-         * 获取该帖子的所有评论。
-         */
-        public function comments(): MorphMany
-        {
-            return $this->morphMany(Comment::class, 'commentable')->chaperone();
-        }
+        return $this->morphMany(Comment::class, 'commentable')->chaperone();
     }
+}
+```
 
 或者，如果你希望在运行时选择启用自动填充父模型，可以在预加载该关联时调用 `chaperone` 模型：
 
@@ -1200,22 +1320,24 @@ public function bestImage(): MorphOne
 
 多对多多态关联比「morph one」和「morph many」关联略为复杂。例如，`Post` 模型和 `Video` 模型可以与 `Tag` 模型共享一个多态关联。在这种情况下使用多对多多态关联，可以让你的应用拥有一张唯一的标签表，其中的标签可关联到帖子或视频。首先，让我们看看构建该关联所需的表结构：
 
-    posts
-        id - integer
-        name - string
+```text
+posts
+    id - integer
+    name - string
 
-    videos
-        id - integer
-        name - string
+videos
+    id - integer
+    name - string
 
-    tags
-        id - integer
-        name - string
+tags
+    id - integer
+    name - string
 
-    taggables
-        tag_id - integer
-        taggable_id - integer
-        taggable_type - string
+taggables
+    tag_id - integer
+    taggable_id - integer
+    taggable_type - string
+```
 
 > [!NOTE]
 > 在深入多态多对多关联之前，你不妨先阅读一下关于普通[多对多关联](#many-to-many)的文档。
@@ -1227,23 +1349,25 @@ public function bestImage(): MorphOne
 
 `morphToMany` 方法接受关联模型的名称以及「关联名称」。基于我们为中间表所取的名称及其包含的键，我们把该关联称为「taggable」：
 
-    <?php
+```php
+<?php
 
-    namespace App\Models;
+namespace App\Models;
 
-    use Illuminate\Database\Eloquent\Model;
-    use Illuminate\Database\Eloquent\Relations\MorphToMany;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\MorphToMany;
 
-    class Post extends Model
+class Post extends Model
+{
+    /**
+     * 获取该帖子的所有标签。
+     */
+    public function tags(): MorphToMany
     {
-        /**
-         * 获取该帖子的所有标签。
-         */
-        public function tags(): MorphToMany
-        {
-            return $this->morphToMany(Tag::class, 'taggable');
-        }
+        return $this->morphToMany(Tag::class, 'taggable');
     }
+}
+```
 
 <a name="many-to-many-polymorphic-defining-the-inverse-of-the-relationship"></a>
 #### 定义关联的反向关联
@@ -1252,58 +1376,64 @@ public function bestImage(): MorphOne
 
 `morphedByMany` 方法接受关联模型的名称以及「关联名称」。基于我们为中间表所取的名称及其包含的键，我们把该关联称为「taggable」：
 
-    <?php
+```php
+<?php
 
-    namespace App\Models;
+namespace App\Models;
 
-    use Illuminate\Database\Eloquent\Model;
-    use Illuminate\Database\Eloquent\Relations\MorphToMany;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\MorphToMany;
 
-    class Tag extends Model
+class Tag extends Model
+{
+    /**
+     * 获取所有被赋予该标签的帖子。
+     */
+    public function posts(): MorphToMany
     {
-        /**
-         * 获取所有被赋予该标签的帖子。
-         */
-        public function posts(): MorphToMany
-        {
-            return $this->morphedByMany(Post::class, 'taggable');
-        }
-
-        /**
-         * 获取所有被赋予该标签的视频。
-         */
-        public function videos(): MorphToMany
-        {
-            return $this->morphedByMany(Video::class, 'taggable');
-        }
+        return $this->morphedByMany(Post::class, 'taggable');
     }
+
+    /**
+     * 获取所有被赋予该标签的视频。
+     */
+    public function videos(): MorphToMany
+    {
+        return $this->morphedByMany(Video::class, 'taggable');
+    }
+}
+```
 
 <a name="many-to-many-polymorphic-retrieving-the-relationship"></a>
 #### 获取该关联
 
 数据库表和模型定义之后，你就可以通过模型访问这些关联。例如，要访问某个帖子的所有标签，你可以使用 `tags` 动态关联属性：
 
-    use App\Models\Post;
+```php
+use App\Models\Post;
 
-    $post = Post::find(1);
+$post = Post::find(1);
 
-    foreach ($post->tags as $tag) {
-        // ...
-    }
+foreach ($post->tags as $tag) {
+    // ...
+}
+```
 
 你还可以通过访问执行 `morphedByMany` 调用的方法名，从多态子模型获取该多态关联的父级。在这个例子中，就是 `Tag` 模型上的 `posts` 或 `videos` 方法：
 
-    use App\Models\Tag;
+```php
+use App\Models\Tag;
 
-    $tag = Tag::find(1);
+$tag = Tag::find(1);
 
-    foreach ($tag->posts as $post) {
-        // ...
-    }
+foreach ($tag->posts as $post) {
+    // ...
+}
 
-    foreach ($tag->videos as $video) {
-        // ...
-    }
+foreach ($tag->videos as $video) {
+    // ...
+}
+```
 
 <a name="custom-polymorphic-types"></a>
 ### 自定义多态类型
@@ -1312,22 +1442,26 @@ public function bestImage(): MorphOne
 
 例如，你可以不使用模型名称作为「类型」，而改用 `post` 和 `video` 这样的简单字符串。这样一来，即使模型被重命名，数据库中多态「类型」列的值依然有效：
 
-    use Illuminate\Database\Eloquent\Relations\Relation;
+```php
+use Illuminate\Database\Eloquent\Relations\Relation;
 
-    Relation::enforceMorphMap([
-        'post' => 'App\Models\Post',
-        'video' => 'App\Models\Video',
-    ]);
+Relation::enforceMorphMap([
+    'post' => 'App\Models\Post',
+    'video' => 'App\Models\Video',
+]);
+```
 
 你可以在 `App\Providers\AppServiceProvider` 类的 `boot` 方法中调用 `enforceMorphMap` 方法，也可以根据需要创建一个单独的服务提供者。
 
 你可以在运行时通过模型的 `getMorphClass` 方法确定给定模型的多态别名。相反，你也可以使用 `Relation::getMorphedModel` 方法确定与某个多态别名关联的完全限定类名：
 
-    use Illuminate\Database\Eloquent\Relations\Relation;
+```php
+use Illuminate\Database\Eloquent\Relations\Relation;
 
-    $alias = $post->getMorphClass();
+$alias = $post->getMorphClass();
 
-    $class = Relation::getMorphedModel($alias);
+$class = Relation::getMorphedModel($alias);
+```
 
 > [!WARNING]
 > 向已有应用中添加「多态映射」时，数据库中每个仍包含完全限定类的多态 `*_type` 列值，都需要转换成对应的「映射」名称。
@@ -1339,12 +1473,14 @@ public function bestImage(): MorphOne
 
 `resolveRelationUsing` 方法的第一个参数接受期望的关联名称。传给该方法的第二个参数应当是一个闭包，该闭包接受模型实例并返回一个合法的 Eloquent 关联定义。通常，你应当在某个[服务提供者（Service Provider）](/docs/{{version}}/providers)的 `boot` 方法中配置动态关联：
 
-    use App\Models\Order;
-    use App\Models\Customer;
+```php
+use App\Models\Order;
+use App\Models\Customer;
 
-    Order::resolveRelationUsing('customer', function (Order $orderModel) {
-        return $orderModel->belongsTo(Customer::class, 'customer_id');
-    });
+Order::resolveRelationUsing('customer', function (Order $orderModel) {
+    return $orderModel->belongsTo(Customer::class, 'customer_id');
+});
+```
 
 > [!WARNING]
 > 定义动态关联时，务必始终向 Eloquent 关联方法提供显式的键名参数。
@@ -1356,31 +1492,35 @@ public function bestImage(): MorphOne
 
 例如，假设有一个博客应用，其中 `User` 模型关联许多 `Post` 模型：
 
-    <?php
+```php
+<?php
 
-    namespace App\Models;
+namespace App\Models;
 
-    use Illuminate\Database\Eloquent\Model;
-    use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
-    class User extends Model
+class User extends Model
+{
+    /**
+     * 获取该用户的所有帖子。
+     */
+    public function posts(): HasMany
     {
-        /**
-         * 获取该用户的所有帖子。
-         */
-        public function posts(): HasMany
-        {
-            return $this->hasMany(Post::class);
-        }
+        return $this->hasMany(Post::class);
     }
+}
+```
 
 你可以查询 `posts` 关联，并像这样为该关联添加额外的约束：
 
-    use App\Models\User;
+```php
+use App\Models\User;
 
-    $user = User::find(1);
+$user = User::find(1);
 
-    $user->posts()->where('active', 1)->get();
+$user->posts()->where('active', 1)->get();
+```
 
 你可以在该关联上使用 Laravel[查询构造器](/docs/{{version}}/queries)的任何方法，因此请务必阅读查询构造器文档，了解所有可供你使用的方法。
 
@@ -1389,10 +1529,12 @@ public function bestImage(): MorphOne
 
 如上例所示，你在查询关联时可以自由为其添加额外的约束。不过，在关联上链式调用 `orWhere` 子句时要小心，因为 `orWhere` 子句在逻辑上会与关联约束归为同一层级：
 
-    $user->posts()
-            ->where('active', 1)
-            ->orWhere('votes', '>=', 100)
-            ->get();
+```php
+$user->posts()
+        ->where('active', 1)
+        ->orWhere('votes', '>=', 100)
+        ->get();
+```
 
 上例会生成如下 SQL。可以看到，`or` 子句要求查询返回_任意_一篇票数超过 100 的帖子。该查询不再限定于特定用户：
 
@@ -1404,14 +1546,16 @@ where user_id = ? and active = 1 or votes >= 100
 
 在大多数情况下，你应当使用[逻辑分组](/docs/{{version}}/queries#logical-grouping)把条件检查用括号括起来：
 
-    use Illuminate\Database\Eloquent\Builder;
+```php
+use Illuminate\Database\Eloquent\Builder;
 
-    $user->posts()
-        ->where(function (Builder $query) {
-            return $query->where('active', 1)
-                ->orWhere('votes', '>=', 100);
-        })
-        ->get();
+$user->posts()
+    ->where(function (Builder $query) {
+        return $query->where('active', 1)
+            ->orWhere('votes', '>=', 100);
+    })
+    ->get();
+```
 
 上例会生成如下 SQL。请注意，逻辑分组已正确地把约束归组，该查询仍然限定于特定用户：
 
@@ -1426,13 +1570,15 @@ where user_id = ? and (active = 1 or votes >= 100)
 
 如果你不需要为 Eloquent 关联查询添加额外的约束，可以像访问属性那样访问该关联。例如，继续使用我们的 `User` 和 `Post` 示例模型，可以这样访问某个用户的所有帖子：
 
-    use App\Models\User;
+```php
+use App\Models\User;
 
-    $user = User::find(1);
+$user = User::find(1);
 
-    foreach ($user->posts as $post) {
-        // ...
-    }
+foreach ($user->posts as $post) {
+    // ...
+}
+```
 
 动态关联属性会执行「惰性加载」，也就是说，只有在你真正访问它们时才会加载关联数据。因此，开发者常常使用[预加载](#eager-loading)来预先加载那些已知会在模型加载后被访问的关联。预加载能显著减少加载模型关联时必须执行的 SQL 查询数量。
 
@@ -1441,34 +1587,42 @@ where user_id = ? and (active = 1 or votes >= 100)
 
 在获取模型记录时，你可能希望根据某个关联是否存在来限制结果。例如，假设你想获取所有至少有一条评论的博客帖子。为此，你可以把关联名称传给 `has` 和 `orHas` 方法：
 
-    use App\Models\Post;
+```php
+use App\Models\Post;
 
-    // 获取所有至少有一条评论的帖子……
-    $posts = Post::has('comments')->get();
+// 获取所有至少有一条评论的帖子……
+$posts = Post::has('comments')->get();
+```
 
 你还可以指定运算符和数量值，以进一步自定义查询：
 
-    // 获取所有至少有三条评论的帖子……
-    $posts = Post::has('comments', '>=', 3)->get();
+```php
+// 获取所有至少有三条评论的帖子……
+$posts = Post::has('comments', '>=', 3)->get();
+```
 
 嵌套的 `has` 语句可以使用「点」记号法来构造。例如，你可以获取所有至少有一条评论、且该评论至少有一张图片的帖子：
 
-    // 获取至少有一条带图片评论的帖子……
-    $posts = Post::has('comments.images')->get();
+```php
+// 获取至少有一条带图片评论的帖子……
+$posts = Post::has('comments.images')->get();
+```
 
 如果你需要更强大的功能，可以使用 `whereHas` 和 `orWhereHas` 方法为 `has` 查询定义额外的查询约束，例如检查某条评论的内容：
 
-    use Illuminate\Database\Eloquent\Builder;
+```php
+use Illuminate\Database\Eloquent\Builder;
 
-    // 获取至少有一条包含 code% 之类单词的评论的帖子……
-    $posts = Post::whereHas('comments', function (Builder $query) {
-        $query->where('content', 'like', 'code%');
-    })->get();
+// 获取至少有一条包含 code% 之类单词的评论的帖子……
+$posts = Post::whereHas('comments', function (Builder $query) {
+    $query->where('content', 'like', 'code%');
+})->get();
 
-    // 获取至少有十条包含 code% 之类单词的评论的帖子……
-    $posts = Post::whereHas('comments', function (Builder $query) {
-        $query->where('content', 'like', 'code%');
-    }, '>=', 10)->get();
+// 获取至少有十条包含 code% 之类单词的评论的帖子……
+$posts = Post::whereHas('comments', function (Builder $query) {
+    $query->where('content', 'like', 'code%');
+}, '>=', 10)->get();
+```
 
 > [!WARNING]
 > Eloquent 目前不支持跨数据库查询关联是否存在。这些关联必须存在于同一个数据库中。
@@ -1478,99 +1632,117 @@ where user_id = ? and (active = 1 or votes >= 100)
 
 如果你只想用一个简单的 where 条件附加在关联查询上来查询某个关联是否存在，那么使用 `whereRelation`、`orWhereRelation`、`whereMorphRelation` 和 `orWhereMorphRelation` 方法会更为方便。例如，我们可以查询所有拥有未审核评论的帖子：
 
-    use App\Models\Post;
+```php
+use App\Models\Post;
 
-    $posts = Post::whereRelation('comments', 'is_approved', false)->get();
+$posts = Post::whereRelation('comments', 'is_approved', false)->get();
+```
 
 当然，和调用查询构造器的 `where` 方法一样，你也可以指定运算符：
 
-    $posts = Post::whereRelation(
-        'comments', 'created_at', '>=', now()->subHour()
-    )->get();
+```php
+$posts = Post::whereRelation(
+    'comments', 'created_at', '>=', now()->subHour()
+)->get();
+```
 
 <a name="querying-relationship-absence"></a>
 ### 查询关联是否不存在
 
 在获取模型记录时，你可能希望根据某个关联是否不存在来限制结果。例如，假设你想获取所有**没有**任何评论的博客帖子。为此，你可以把关联名称传给 `doesntHave` 和 `orDoesntHave` 方法：
 
-    use App\Models\Post;
+```php
+use App\Models\Post;
 
-    $posts = Post::doesntHave('comments')->get();
+$posts = Post::doesntHave('comments')->get();
+```
 
 如果你需要更强大的功能，可以使用 `whereDoesntHave` 和 `orWhereDoesntHave` 方法为 `doesntHave` 查询添加额外的查询约束，例如检查某条评论的内容：
 
-    use Illuminate\Database\Eloquent\Builder;
+```php
+use Illuminate\Database\Eloquent\Builder;
 
-    $posts = Post::whereDoesntHave('comments', function (Builder $query) {
-        $query->where('content', 'like', 'code%');
-    })->get();
+$posts = Post::whereDoesntHave('comments', function (Builder $query) {
+    $query->where('content', 'like', 'code%');
+})->get();
+```
 
 你可以使用「点」记号法对嵌套关联执行查询。例如，下面的查询将获取所有没有评论的帖子；不过，由未被封禁的作者所发表的评论所属的帖子也会被包含在结果中：
 
-    use Illuminate\Database\Eloquent\Builder;
+```php
+use Illuminate\Database\Eloquent\Builder;
 
-    $posts = Post::whereDoesntHave('comments.author', function (Builder $query) {
-        $query->where('banned', 0);
-    })->get();
+$posts = Post::whereDoesntHave('comments.author', function (Builder $query) {
+    $query->where('banned', 0);
+})->get();
+```
 
 <a name="querying-morph-to-relationships"></a>
 ### 查询 Morph To 关联
 
 要查询「morph to」关联是否存在，你可以使用 `whereHasMorph` 和 `whereDoesntHaveMorph` 方法。这些方法的第一个参数接受关联名称。接下来，这些方法接受你希望包含在查询中的关联模型名称。最后，你还可以提供一个闭包来自定义该关联查询：
 
-    use App\Models\Comment;
-    use App\Models\Post;
-    use App\Models\Video;
-    use Illuminate\Database\Eloquent\Builder;
+```php
+use App\Models\Comment;
+use App\Models\Post;
+use App\Models\Video;
+use Illuminate\Database\Eloquent\Builder;
 
-    // 获取关联到标题包含 code% 的帖子或视频的评论……
-    $comments = Comment::whereHasMorph(
-        'commentable',
-        [Post::class, Video::class],
-        function (Builder $query) {
-            $query->where('title', 'like', 'code%');
-        }
-    )->get();
+// 获取关联到标题包含 code% 的帖子或视频的评论……
+$comments = Comment::whereHasMorph(
+    'commentable',
+    [Post::class, Video::class],
+    function (Builder $query) {
+        $query->where('title', 'like', 'code%');
+    }
+)->get();
 
-    // 获取关联到标题不包含 code% 的帖子的评论……
-    $comments = Comment::whereDoesntHaveMorph(
-        'commentable',
-        Post::class,
-        function (Builder $query) {
-            $query->where('title', 'like', 'code%');
-        }
-    )->get();
+// 获取关联到标题不包含 code% 的帖子的评论……
+$comments = Comment::whereDoesntHaveMorph(
+    'commentable',
+    Post::class,
+    function (Builder $query) {
+        $query->where('title', 'like', 'code%');
+    }
+)->get();
+```
 
 你偶尔可能需要根据关联多态模型的「类型」来添加查询约束。传给 `whereHasMorph` 方法的闭包，其第二个参数可以接收一个 `$type` 值。该参数让你可以检查正在构建的查询的「类型」：
 
-    use Illuminate\Database\Eloquent\Builder;
+```php
+use Illuminate\Database\Eloquent\Builder;
 
-    $comments = Comment::whereHasMorph(
-        'commentable',
-        [Post::class, Video::class],
-        function (Builder $query, string $type) {
-            $column = $type === Post::class ? 'content' : 'title';
+$comments = Comment::whereHasMorph(
+    'commentable',
+    [Post::class, Video::class],
+    function (Builder $query, string $type) {
+        $column = $type === Post::class ? 'content' : 'title';
 
-            $query->where($column, 'like', 'code%');
-        }
-    )->get();
+        $query->where($column, 'like', 'code%');
+    }
+)->get();
+```
 
 有时你可能想查询某个「morph to」关联父级的子模型。你可以使用 `whereMorphedTo` 和 `whereNotMorphedTo` 方法来实现，它们会自动为给定模型确定正确的多态类型映射。这些方法的第一个参数接受 `morphTo` 关联的名称，第二个参数接受关联的父级模型：
 
-    $comments = Comment::whereMorphedTo('commentable', $post)
-        ->orWhereMorphedTo('commentable', $video)
-        ->get();
+```php
+$comments = Comment::whereMorphedTo('commentable', $post)
+    ->orWhereMorphedTo('commentable', $video)
+    ->get();
+```
 
 <a name="querying-all-morph-to-related-models"></a>
 #### 查询所有关联模型
 
 你可以提供 `*` 作为通配值，而不必传入一组可能的多态模型。这会指示 Laravel 从数据库中获取所有可能的多态类型。Laravel 会额外执行一次查询来完成此操作：
 
-    use Illuminate\Database\Eloquent\Builder;
+```php
+use Illuminate\Database\Eloquent\Builder;
 
-    $comments = Comment::whereHasMorph('commentable', '*', function (Builder $query) {
-        $query->where('title', 'like', 'foo%');
-    })->get();
+$comments = Comment::whereHasMorph('commentable', '*', function (Builder $query) {
+    $query->where('title', 'like', 'foo%');
+})->get();
+```
 
 <a name="aggregating-related-models"></a>
 ## 聚合关联模型
@@ -1580,95 +1752,115 @@ where user_id = ? and (active = 1 or votes >= 100)
 
 有时你可能想统计某个给定关联的关联模型数量，而不必真正加载这些模型。为此，你可以使用 `withCount` 方法。`withCount` 方法会在结果模型上放置一个 `{relation}_count` 属性：
 
-    use App\Models\Post;
+```php
+use App\Models\Post;
 
-    $posts = Post::withCount('comments')->get();
+$posts = Post::withCount('comments')->get();
 
-    foreach ($posts as $post) {
-        echo $post->comments_count;
-    }
+foreach ($posts as $post) {
+    echo $post->comments_count;
+}
+```
 
 通过向 `withCount` 方法传入一个数组，你可以为多个关联添加「计数」，也可以为查询添加额外的约束：
 
-    use Illuminate\Database\Eloquent\Builder;
+```php
+use Illuminate\Database\Eloquent\Builder;
 
-    $posts = Post::withCount(['votes', 'comments' => function (Builder $query) {
-        $query->where('content', 'like', 'code%');
-    }])->get();
+$posts = Post::withCount(['votes', 'comments' => function (Builder $query) {
+    $query->where('content', 'like', 'code%');
+}])->get();
 
-    echo $posts[0]->votes_count;
-    echo $posts[0]->comments_count;
+echo $posts[0]->votes_count;
+echo $posts[0]->comments_count;
+```
 
 你也可以为关联计数结果设置别名，从而允许对同一个关联进行多次计数：
 
-    use Illuminate\Database\Eloquent\Builder;
+```php
+use Illuminate\Database\Eloquent\Builder;
 
-    $posts = Post::withCount([
-        'comments',
-        'comments as pending_comments_count' => function (Builder $query) {
-            $query->where('approved', false);
-        },
-    ])->get();
+$posts = Post::withCount([
+    'comments',
+    'comments as pending_comments_count' => function (Builder $query) {
+        $query->where('approved', false);
+    },
+])->get();
 
-    echo $posts[0]->comments_count;
-    echo $posts[0]->pending_comments_count;
+echo $posts[0]->comments_count;
+echo $posts[0]->pending_comments_count;
+```
 
 <a name="deferred-count-loading"></a>
 #### 延迟计数加载
 
 使用 `loadCount` 方法，你可以在父级模型已被获取之后再加载关联计数：
 
-    $book = Book::first();
+```php
+$book = Book::first();
 
-    $book->loadCount('genres');
+$book->loadCount('genres');
+```
 
 如果你需要为计数查询设置额外的查询约束，可以传入一个以你希望计数的关联为键的数组。数组的值应当是接收查询构造器实例的闭包：
 
-    $book->loadCount(['reviews' => function (Builder $query) {
-        $query->where('rating', 5);
-    }])
+```php
+$book->loadCount(['reviews' => function (Builder $query) {
+    $query->where('rating', 5);
+}])
+```
 
 <a name="relationship-counting-and-custom-select-statements"></a>
 #### 关联计数与自定义 select 语句
 
 如果你要把 `withCount` 与 `select` 语句结合使用，请确保在 `select` 方法之后调用 `withCount`：
 
-    $posts = Post::select(['title', 'body'])
-        ->withCount('comments')
-        ->get();
+```php
+$posts = Post::select(['title', 'body'])
+    ->withCount('comments')
+    ->get();
+```
 
 <a name="other-aggregate-functions"></a>
 ### 其他聚合函数
 
 除了 `withCount` 方法之外，Eloquent 还提供了 `withMin`、`withMax`、`withAvg`、`withSum` 和 `withExists` 方法。这些方法会在结果模型上放置一个 `{relation}_{function}_{column}` 属性：
 
-    use App\Models\Post;
+```php
+use App\Models\Post;
 
-    $posts = Post::withSum('comments', 'votes')->get();
+$posts = Post::withSum('comments', 'votes')->get();
 
-    foreach ($posts as $post) {
-        echo $post->comments_sum_votes;
-    }
+foreach ($posts as $post) {
+    echo $post->comments_sum_votes;
+}
+```
 
 如果你希望用另一个名称访问聚合函数的结果，可以指定自己的别名：
 
-    $posts = Post::withSum('comments as total_comments', 'votes')->get();
+```php
+$posts = Post::withSum('comments as total_comments', 'votes')->get();
 
-    foreach ($posts as $post) {
-        echo $post->total_comments;
-    }
+foreach ($posts as $post) {
+    echo $post->total_comments;
+}
+```
 
 与 `loadCount` 方法一样，这些方法也有延迟加载的版本。你可以对已经获取的 Eloquent 模型执行这些额外的聚合操作：
 
-    $post = Post::first();
+```php
+$post = Post::first();
 
-    $post->loadSum('comments', 'votes');
+$post->loadSum('comments', 'votes');
+```
 
 如果你要把这些聚合方法与 `select` 语句结合使用，请确保在 `select` 方法之后调用这些聚合方法：
 
-    $posts = Post::select(['title', 'body'])
-        ->withExists('comments')
-        ->get();
+```php
+$posts = Post::select(['title', 'body'])
+    ->withExists('comments')
+    ->get();
+```
 
 <a name="counting-related-models-on-morph-to-relationships"></a>
 ### 对 Morph To 关联的模型计数
@@ -1679,70 +1871,80 @@ where user_id = ? and (active = 1 or votes >= 100)
 
 现在，假设我们想获取 `ActivityFeed` 实例，并为每个 `ActivityFeed` 实例预加载 `parentable` 父级模型。此外，我们还想获取与每个父级照片关联的标签数量，以及与每个父级帖子关联的评论数量：
 
-    use Illuminate\Database\Eloquent\Relations\MorphTo;
+```php
+use Illuminate\Database\Eloquent\Relations\MorphTo;
 
-    $activities = ActivityFeed::with([
-        'parentable' => function (MorphTo $morphTo) {
-            $morphTo->morphWithCount([
-                Photo::class => ['tags'],
-                Post::class => ['comments'],
-            ]);
-        }])->get();
+$activities = ActivityFeed::with([
+    'parentable' => function (MorphTo $morphTo) {
+        $morphTo->morphWithCount([
+            Photo::class => ['tags'],
+            Post::class => ['comments'],
+        ]);
+    }])->get();
+```
 
 <a name="morph-to-deferred-count-loading"></a>
 #### 延迟计数加载
 
 假设我们已经获取了一组 `ActivityFeed` 模型，现在希望为这些活动流所关联的各种 `parentable` 模型加载嵌套的关联计数。你可以使用 `loadMorphCount` 方法来实现：
 
-    $activities = ActivityFeed::with('parentable')->get();
+```php
+$activities = ActivityFeed::with('parentable')->get();
 
-    $activities->loadMorphCount('parentable', [
-        Photo::class => ['tags'],
-        Post::class => ['comments'],
-    ]);
+$activities->loadMorphCount('parentable', [
+    Photo::class => ['tags'],
+    Post::class => ['comments'],
+]);
+```
 
 <a name="eager-loading"></a>
 ## 预加载
 
 当把 Eloquent 关联当作属性访问时，关联模型会被「惰性加载」。这意味着关联数据在你首次访问该属性之前并不会真正被加载。不过，Eloquent 可以在你查询父级模型时就「预加载」关联。预加载可以缓解「N + 1」查询问题。为了说明 N + 1 查询问题，考虑一个「belongs to」某个 `Author` 模型的 `Book` 模型：
 
-    <?php
+```php
+<?php
 
-    namespace App\Models;
+namespace App\Models;
 
-    use Illuminate\Database\Eloquent\Model;
-    use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-    class Book extends Model
+class Book extends Model
+{
+    /**
+     * 获取撰写该书的作者。
+     */
+    public function author(): BelongsTo
     {
-        /**
-         * 获取撰写该书的作者。
-         */
-        public function author(): BelongsTo
-        {
-            return $this->belongsTo(Author::class);
-        }
+        return $this->belongsTo(Author::class);
     }
+}
+```
 
 现在，让我们获取所有书籍及其作者：
 
-    use App\Models\Book;
+```php
+use App\Models\Book;
 
-    $books = Book::all();
+$books = Book::all();
 
-    foreach ($books as $book) {
-        echo $book->author->name;
-    }
+foreach ($books as $book) {
+    echo $book->author->name;
+}
+```
 
 这个循环会执行一次查询获取数据库表中的所有书籍，然后为每本书再执行一次查询以获取该书的作者。因此，如果有 25 本书，上面的代码会运行 26 次查询：一次用于获取原始书籍，另有 25 次用于获取每本书的作者。
 
 所幸，我们可以使用预加载把这一操作减少到仅两次查询。在构建查询时，你可以使用 `with` 方法指定应当预加载哪些关联：
 
-    $books = Book::with('author')->get();
+```php
+$books = Book::with('author')->get();
 
-    foreach ($books as $book) {
-        echo $book->author->name;
-    }
+foreach ($books as $book) {
+    echo $book->author->name;
+}
+```
 
 对于该操作，只会执行两次查询——一次获取所有书籍，一次获取所有书籍对应的所有作者：
 
@@ -1757,66 +1959,78 @@ select * from authors where id in (1, 2, 3, 4, 5, ...)
 
 有时你可能需要预加载若干个不同的关联。为此，只需把一组关联传给 `with` 方法：
 
-    $books = Book::with(['author', 'publisher'])->get();
+```php
+$books = Book::with(['author', 'publisher'])->get();
+```
 
 <a name="nested-eager-loading"></a>
 #### 嵌套预加载
 
 要预加载某个关联的关联，可以使用「点」语法。例如，让我们预加载所有书籍的作者以及该作者的所有联系人：
 
-    $books = Book::with('author.contacts')->get();
+```php
+$books = Book::with('author.contacts')->get();
+```
 
 或者，你也可以通过向 `with` 方法传入一个嵌套数组来指定嵌套预加载的关联，这在预加载多个嵌套关联时会很方便：
 
-    $books = Book::with([
-        'author' => [
-            'contacts',
-            'publisher',
-        ],
-    ])->get();
+```php
+$books = Book::with([
+    'author' => [
+        'contacts',
+        'publisher',
+    ],
+])->get();
+```
 
 <a name="nested-eager-loading-morphto-relationships"></a>
 #### 嵌套预加载 `morphTo` 关联
 
 如果你想预加载一个 `morphTo` 关联，以及该关联可能返回的各种实体上的嵌套关联，可以把 `with` 方法与该 `morphTo` 关联的 `morphWith` 方法结合使用。为帮助说明该方法，请考虑以下模型：
 
-    <?php
+```php
+<?php
 
-    use Illuminate\Database\Eloquent\Model;
-    use Illuminate\Database\Eloquent\Relations\MorphTo;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\MorphTo;
 
-    class ActivityFeed extends Model
+class ActivityFeed extends Model
+{
+    /**
+     * 获取该活动流记录的父级。
+     */
+    public function parentable(): MorphTo
     {
-        /**
-         * 获取该活动流记录的父级。
-         */
-        public function parentable(): MorphTo
-        {
-            return $this->morphTo();
-        }
+        return $this->morphTo();
     }
+}
+```
 
 在这个例子中，假设 `Event`、`Photo` 和 `Post` 模型可能会创建 `ActivityFeed` 模型。此外，假设 `Event` 模型属于某个 `Calendar` 模型，`Photo` 模型关联着 `Tag` 模型，而 `Post` 模型属于某个 `Author` 模型。
 
 使用这些模型定义和关联，我们可以获取 `ActivityFeed` 模型实例，并预加载所有 `parentable` 模型及其各自的嵌套关联：
 
-    use Illuminate\Database\Eloquent\Relations\MorphTo;
+```php
+use Illuminate\Database\Eloquent\Relations\MorphTo;
 
-    $activities = ActivityFeed::query()
-        ->with(['parentable' => function (MorphTo $morphTo) {
-            $morphTo->morphWith([
-                Event::class => ['calendar'],
-                Photo::class => ['tags'],
-                Post::class => ['author'],
-            ]);
-        }])->get();
+$activities = ActivityFeed::query()
+    ->with(['parentable' => function (MorphTo $morphTo) {
+        $morphTo->morphWith([
+            Event::class => ['calendar'],
+            Photo::class => ['tags'],
+            Post::class => ['author'],
+        ]);
+    }])->get();
+```
 
 <a name="eager-loading-specific-columns"></a>
 #### 预加载特定列
 
 你并不总需要获取所关联模型的每一列。为此，Eloquent 允许你指定希望获取该关联的哪些列：
 
-    $books = Book::with('author:id,name,book_id')->get();
+```php
+$books = Book::with('author:id,name,book_id')->get();
+```
 
 > [!WARNING]
 > 使用该功能时，你应当始终在希望获取的列列表中包含 `id` 列以及所有相关的外键列。
@@ -1826,82 +2040,94 @@ select * from authors where id in (1, 2, 3, 4, 5, ...)
 
 有时你可能希望在获取模型时总是加载某些关联。为此，你可以在模型上定义一个 `$with` 属性：
 
-    <?php
+```php
+<?php
 
-    namespace App\Models;
+namespace App\Models;
 
-    use Illuminate\Database\Eloquent\Model;
-    use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-    class Book extends Model
+class Book extends Model
+{
+    /**
+     * 应当总是被加载的关联。
+     *
+     * @var array
+     */
+    protected $with = ['author'];
+
+    /**
+     * 获取撰写该书的作者。
+     */
+    public function author(): BelongsTo
     {
-        /**
-         * 应当总是被加载的关联。
-         *
-         * @var array
-         */
-        protected $with = ['author'];
-
-        /**
-         * 获取撰写该书的作者。
-         */
-        public function author(): BelongsTo
-        {
-            return $this->belongsTo(Author::class);
-        }
-
-        /**
-         * 获取该书的体裁。
-         */
-        public function genre(): BelongsTo
-        {
-            return $this->belongsTo(Genre::class);
-        }
+        return $this->belongsTo(Author::class);
     }
+
+    /**
+     * 获取该书的体裁。
+     */
+    public function genre(): BelongsTo
+    {
+        return $this->belongsTo(Genre::class);
+    }
+}
+```
 
 如果你希望在某一次查询中从 `$with` 属性里移除某个项，可以使用 `without` 方法：
 
-    $books = Book::without('author')->get();
+```php
+$books = Book::without('author')->get();
+```
 
 如果你希望在某一次查询中覆盖 `$with` 属性里的所有项，可以使用 `withOnly` 方法：
 
-    $books = Book::withOnly('genre')->get();
+```php
+$books = Book::withOnly('genre')->get();
+```
 
 <a name="constraining-eager-loads"></a>
 ### 约束预加载
 
 有时你可能希望预加载某个关联，同时为预加载查询指定额外的查询条件。为此，你可以把一组关联传给 `with` 方法，其中数组的键是关联名称，数组的值是一个闭包，它会为预加载查询添加额外的约束：
 
-    use App\Models\User;
-    use Illuminate\Contracts\Database\Eloquent\Builder;
+```php
+use App\Models\User;
+use Illuminate\Contracts\Database\Eloquent\Builder;
 
-    $users = User::with(['posts' => function (Builder $query) {
-        $query->where('title', 'like', '%code%');
-    }])->get();
+$users = User::with(['posts' => function (Builder $query) {
+    $query->where('title', 'like', '%code%');
+}])->get();
+```
 
 在这个例子中，Eloquent 只会预加载 `title` 列中包含 `code` 一词的帖子。你还可以调用其他[查询构造器](/docs/{{version}}/queries)方法，进一步自定义预加载操作：
 
-    $users = User::with(['posts' => function (Builder $query) {
-        $query->orderBy('created_at', 'desc');
-    }])->get();
+```php
+$users = User::with(['posts' => function (Builder $query) {
+    $query->orderBy('created_at', 'desc');
+}])->get();
+```
 
 <a name="constraining-eager-loading-of-morph-to-relationships"></a>
 #### 约束 `morphTo` 关联的预加载
 
 如果你正在预加载一个 `morphTo` 关联，Eloquent 会运行多次查询来获取每种类型的关联模型。你可以使用 `MorphTo` 关联的 `constrain` 方法为这些查询分别添加额外的约束：
 
-    use Illuminate\Database\Eloquent\Relations\MorphTo;
+```php
+use Illuminate\Database\Eloquent\Relations\MorphTo;
 
-    $comments = Comment::with(['commentable' => function (MorphTo $morphTo) {
-        $morphTo->constrain([
-            Post::class => function ($query) {
-                $query->whereNull('hidden_at');
-            },
-            Video::class => function ($query) {
-                $query->where('type', 'educational');
-            },
-        ]);
-    }])->get();
+$comments = Comment::with(['commentable' => function (MorphTo $morphTo) {
+    $morphTo->constrain([
+        Post::class => function ($query) {
+            $query->whereNull('hidden_at');
+        },
+        Video::class => function ($query) {
+            $query->where('type', 'educational');
+        },
+    ]);
+}])->get();
+```
 
 在这个例子中，Eloquent 只会预加载未被隐藏的帖子，以及 `type` 值为 "educational" 的视频。
 
@@ -1910,34 +2136,42 @@ select * from authors where id in (1, 2, 3, 4, 5, ...)
 
 你有时可能需要在按相同条件加载关联的同时检查某个关联是否存在。例如，你可能希望只获取拥有满足给定查询条件的子 `Post` 模型的 `User` 模型，同时预加载这些匹配的帖子。可以使用 `withWhereHas` 方法来实现：
 
-    use App\Models\User;
+```php
+use App\Models\User;
 
-    $users = User::withWhereHas('posts', function ($query) {
-        $query->where('featured', true);
-    })->get();
+$users = User::withWhereHas('posts', function ($query) {
+    $query->where('featured', true);
+})->get();
+```
 
 <a name="lazy-eager-loading"></a>
 ### 惰性预加载
 
 有时你可能需要在父级模型已被获取之后再预加载某个关联。例如，如果你需要动态决定是否加载关联模型，这可能会很有用：
 
-    use App\Models\Book;
+```php
+use App\Models\Book;
 
-    $books = Book::all();
+$books = Book::all();
 
-    if ($someCondition) {
-        $books->load('author', 'publisher');
-    }
+if ($someCondition) {
+    $books->load('author', 'publisher');
+}
+```
 
 如果你需要为预加载查询设置额外的查询约束，可以传入一个以你希望加载的关联为键的数组。数组的值应当是接收查询实例的闭包实例：
 
-    $author->load(['books' => function (Builder $query) {
-        $query->orderBy('published_date', 'asc');
-    }]);
+```php
+$author->load(['books' => function (Builder $query) {
+    $query->orderBy('published_date', 'asc');
+}]);
+```
 
 如果只想在某个关联尚未被加载时才加载它，可以使用 `loadMissing` 方法：
 
-    $book->loadMissing('author');
+```php
+$book->loadMissing('author');
+```
 
 <a name="nested-lazy-eager-loading-morphto"></a>
 #### 嵌套惰性预加载与 `morphTo`
@@ -1946,33 +2180,37 @@ select * from authors where id in (1, 2, 3, 4, 5, ...)
 
 该方法的第一个参数接受 `morphTo` 关联的名称，第二个参数接受一组模型 / 关联键值对。为帮助说明该方法，请考虑以下模型：
 
-    <?php
+```php
+<?php
 
-    use Illuminate\Database\Eloquent\Model;
-    use Illuminate\Database\Eloquent\Relations\MorphTo;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\MorphTo;
 
-    class ActivityFeed extends Model
+class ActivityFeed extends Model
+{
+    /**
+     * 获取该活动流记录的父级。
+     */
+    public function parentable(): MorphTo
     {
-        /**
-         * 获取该活动流记录的父级。
-         */
-        public function parentable(): MorphTo
-        {
-            return $this->morphTo();
-        }
+        return $this->morphTo();
     }
+}
+```
 
 在这个例子中，假设 `Event`、`Photo` 和 `Post` 模型可能会创建 `ActivityFeed` 模型。此外，假设 `Event` 模型属于某个 `Calendar` 模型，`Photo` 模型关联着 `Tag` 模型，而 `Post` 模型属于某个 `Author` 模型。
 
 使用这些模型定义和关联，我们可以获取 `ActivityFeed` 模型实例，并预加载所有 `parentable` 模型及其各自的嵌套关联：
 
-    $activities = ActivityFeed::with('parentable')
-        ->get()
-        ->loadMorph('parentable', [
-            Event::class => ['calendar'],
-            Photo::class => ['tags'],
-            Post::class => ['author'],
-        ]);
+```php
+$activities = ActivityFeed::with('parentable')
+    ->get()
+    ->loadMorph('parentable', [
+        Event::class => ['calendar'],
+        Photo::class => ['tags'],
+        Post::class => ['author'],
+    ]);
+```
 
 <a name="preventing-lazy-loading"></a>
 ### 阻止惰性加载
@@ -2013,85 +2251,101 @@ Model::handleLazyLoadingViolationUsing(function (Model $model, string $relation)
 
 Eloquent 提供了用于向关联添加新模型的便捷方法。例如，你可能需要为某个帖子添加一条新评论。你不必手动在 `Comment` 模型上设置 `post_id` 属性，而是可以使用该关联的 `save` 方法来插入这条评论：
 
-    use App\Models\Comment;
-    use App\Models\Post;
+```php
+use App\Models\Comment;
+use App\Models\Post;
 
-    $comment = new Comment(['message' => 'A new comment.']);
+$comment = new Comment(['message' => 'A new comment.']);
 
-    $post = Post::find(1);
+$post = Post::find(1);
 
-    $post->comments()->save($comment);
+$post->comments()->save($comment);
+```
 
 请注意，我们并没有把 `comments` 关联当作动态属性来访问。相反，我们调用了 `comments` 方法来获取该关联的实例。`save` 方法会自动为新的 `Comment` 模型添加相应的 `post_id` 值。
 
 如果你需要保存多个关联模型，可以使用 `saveMany` 方法：
 
-    $post = Post::find(1);
+```php
+$post = Post::find(1);
 
-    $post->comments()->saveMany([
-        new Comment(['message' => 'A new comment.']),
-        new Comment(['message' => 'Another new comment.']),
-    ]);
+$post->comments()->saveMany([
+    new Comment(['message' => 'A new comment.']),
+    new Comment(['message' => 'Another new comment.']),
+]);
+```
 
 `save` 和 `saveMany` 方法会持久化给定的模型实例，但不会把新持久化的模型添加到父级模型上已加载的任何内存关联中。如果你打算在使用 `save` 或 `saveMany` 方法之后访问该关联，可以使用 `refresh` 方法重新加载该模型及其关联：
 
-    $post->comments()->save($comment);
+```php
+$post->comments()->save($comment);
 
-    $post->refresh();
+$post->refresh();
 
-    // 所有评论，包括刚刚保存的那条……
-    $post->comments;
+// 所有评论，包括刚刚保存的那条……
+$post->comments;
+```
 
 <a name="the-push-method"></a>
 #### 递归保存模型与关联
 
 如果你希望 `save` 你的模型及其所有关联，可以使用 `push` 方法。在这个例子中，`Post` 模型以及它的评论和评论的作者都会被保存：
 
-    $post = Post::find(1);
+```php
+$post = Post::find(1);
 
-    $post->comments[0]->message = 'Message';
-    $post->comments[0]->author->name = 'Author Name';
+$post->comments[0]->message = 'Message';
+$post->comments[0]->author->name = 'Author Name';
 
-    $post->push();
+$post->push();
+```
 
 `pushQuietly` 方法可用于在不触发任何事件的情况下保存模型及其关联：
 
-    $post->pushQuietly();
+```php
+$post->pushQuietly();
+```
 
 <a name="the-create-method"></a>
 ### `create` 方法
 
 除了 `save` 和 `saveMany` 方法之外，你还可以使用 `create` 方法，它接受一个属性数组、创建一个模型并将其插入数据库。`save` 和 `create` 的区别在于，`save` 接受一个完整的 Eloquent 模型实例，而 `create` 接受一个普通的 PHP `array`。`create` 方法会返回新创建的模型：
 
-    use App\Models\Post;
+```php
+use App\Models\Post;
 
-    $post = Post::find(1);
+$post = Post::find(1);
 
-    $comment = $post->comments()->create([
-        'message' => 'A new comment.',
-    ]);
+$comment = $post->comments()->create([
+    'message' => 'A new comment.',
+]);
+```
 
 你可以使用 `createMany` 方法创建多个关联模型：
 
-    $post = Post::find(1);
+```php
+$post = Post::find(1);
 
-    $post->comments()->createMany([
-        ['message' => 'A new comment.'],
-        ['message' => 'Another new comment.'],
-    ]);
+$post->comments()->createMany([
+    ['message' => 'A new comment.'],
+    ['message' => 'Another new comment.'],
+]);
+```
 
 `createQuietly` 和 `createManyQuietly` 方法可用于在不派发任何事件的情况下创建一个或多个模型：
 
-    $user = User::find(1);
+```php
+$user = User::find(1);
 
-    $user->posts()->createQuietly([
-        'title' => 'Post title.',
-    ]);
+$user->posts()->createQuietly([
+    'title' => 'Post title.',
+]);
 
-    $user->posts()->createManyQuietly([
-        ['title' => 'First post.'],
-        ['title' => 'Second post.'],
-    ]);
+$user->posts()->createManyQuietly([
+    ['title' => 'First post.'],
+    ['title' => 'Second post.'],
+]);
+```
 
 你还可以使用 `findOrNew`、`firstOrNew`、`firstOrCreate` 和 `updateOrCreate` 方法来[在关联上创建和更新模型](/docs/{{version}}/eloquent#upserts)。
 
@@ -2103,19 +2357,23 @@ Eloquent 提供了用于向关联添加新模型的便捷方法。例如，你�
 
 如果你想把一个子模型关联到新的父模型，可以使用 `associate` 方法。在这个例子中，`User` 模型定义了一个指向 `Account` 模型的 `belongsTo` 关联。该 `associate` 方法会设置子模型上的外键：
 
-    use App\Models\Account;
+```php
+use App\Models\Account;
 
-    $account = Account::find(10);
+$account = Account::find(10);
 
-    $user->account()->associate($account);
+$user->account()->associate($account);
 
-    $user->save();
+$user->save();
+```
 
 要把父模型从子模型上移除，可以使用 `dissociate` 方法。该方法会把该关联的外键设置为 `null`：
 
-    $user->account()->dissociate();
+```php
+$user->account()->dissociate();
 
-    $user->save();
+$user->save();
+```
 
 <a name="updating-many-to-many-relationships"></a>
 ### 多对多关联
@@ -2125,78 +2383,100 @@ Eloquent 提供了用于向关联添加新模型的便捷方法。例如，你�
 
 Eloquent 还提供了一些方法，让处理多对多关联更加方便。例如，假设一个用户可以拥有许多角色，一个角色也可以拥有许多用户。你可以使用 `attach` 方法把一个角色附加到某个用户上，方式是在该关联的中间表中插入一条记录：
 
-    use App\Models\User;
+```php
+use App\Models\User;
 
-    $user = User::find(1);
+$user = User::find(1);
 
-    $user->roles()->attach($roleId);
+$user->roles()->attach($roleId);
+```
 
 把关联附加到模型时，你还可以传入一组要插入中间表的额外数据：
 
-    $user->roles()->attach($roleId, ['expires' => $expires]);
+```php
+$user->roles()->attach($roleId, ['expires' => $expires]);
+```
 
 有时可能需要从某个用户身上移除一个角色。要移除一条多对多关联记录，请使用 `detach` 方法。`detach` 方法会从中间表中删除相应的记录；不过，这两个模型都会保留在数据库中：
 
-    // 从该用户身上解除附加单个角色……
-    $user->roles()->detach($roleId);
+```php
+// 从该用户身上解除附加单个角色……
+$user->roles()->detach($roleId);
 
-    // 从该用户身上解除附加所有角色……
-    $user->roles()->detach();
+// 从该用户身上解除附加所有角色……
+$user->roles()->detach();
+```
 
 为方便起见，`attach` 和 `detach` 也接受 ID 数组作为输入：
 
-    $user = User::find(1);
+```php
+$user = User::find(1);
 
-    $user->roles()->detach([1, 2, 3]);
+$user->roles()->detach([1, 2, 3]);
 
-    $user->roles()->attach([
-        1 => ['expires' => $expires],
-        2 => ['expires' => $expires],
-    ]);
+$user->roles()->attach([
+    1 => ['expires' => $expires],
+    2 => ['expires' => $expires],
+]);
+```
 
 <a name="syncing-associations"></a>
 #### 同步关联
 
 你还可以使用 `sync` 方法来构建多对多关联。`sync` 方法接受一个要放置到中间表上的 ID 数组。任何不在给定数组中的 ID 都会从中间表中被移除。因此，在该操作完成后，中间表中只会存在给定数组中的 ID：
 
-    $user->roles()->sync([1, 2, 3]);
+```php
+$user->roles()->sync([1, 2, 3]);
+```
 
 你还可以连同这些 ID 一起传入额外的中间表值：
 
-    $user->roles()->sync([1 => ['expires' => true], 2, 3]);
+```php
+$user->roles()->sync([1 => ['expires' => true], 2, 3]);
+```
 
 如果你希望为每个同步的模型 ID 插入相同的中间表值，可以使用 `syncWithPivotValues` 方法：
 
-    $user->roles()->syncWithPivotValues([1, 2, 3], ['active' => true]);
+```php
+$user->roles()->syncWithPivotValues([1, 2, 3], ['active' => true]);
+```
 
 如果你不希望解除附加那些在给定数组中缺失的已有 ID，可以使用 `syncWithoutDetaching` 方法：
 
-    $user->roles()->syncWithoutDetaching([1, 2, 3]);
+```php
+$user->roles()->syncWithoutDetaching([1, 2, 3]);
+```
 
 <a name="toggling-associations"></a>
 #### 切换关联状态
 
 多对多关联还提供了一个 `toggle` 方法，它会「切换」给定关联模型 ID 的附加状态。如果给定 ID 当前已附加，就会被解除附加；反之，如果当前未附加，就会被附加：
 
-    $user->roles()->toggle([1, 2, 3]);
+```php
+$user->roles()->toggle([1, 2, 3]);
+```
 
 你还可以连同这些 ID 一起传入额外的中间表值：
 
-    $user->roles()->toggle([
-        1 => ['expires' => true],
-        2 => ['expires' => true],
-    ]);
+```php
+$user->roles()->toggle([
+    1 => ['expires' => true],
+    2 => ['expires' => true],
+]);
+```
 
 <a name="updating-a-record-on-the-intermediate-table"></a>
 #### 更新中间表上的记录
 
 如果你需要更新该关联中间表中的某一行，可以使用 `updateExistingPivot` 方法。该方法接受中间表记录的外键和一个待更新的属性数组：
 
-    $user = User::find(1);
+```php
+$user = User::find(1);
 
-    $user->roles()->updateExistingPivot($roleId, [
-        'active' => false,
-    ]);
+$user->roles()->updateExistingPivot($roleId, [
+    'active' => false,
+]);
+```
 
 <a name="touching-parent-timestamps"></a>
 ## 更新父级时间戳
@@ -2205,30 +2485,32 @@ Eloquent 还提供了一些方法，让处理多对多关联更加方便。例�
 
 例如，当一个 `Comment` 模型被更新时，你可能希望自动「触碰」所属 `Post` 的 `updated_at` 时间戳，把它设置为当前日期和时间。为此，你可以在子模型上添加一个 `touches` 属性，其中包含那些在子模型被更新时应当更新其 `updated_at` 时间戳的关联名称：
 
-    <?php
+```php
+<?php
 
-    namespace App\Models;
+namespace App\Models;
 
-    use Illuminate\Database\Eloquent\Model;
-    use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-    class Comment extends Model
+class Comment extends Model
+{
+    /**
+     * 所有需要被触碰的关联。
+     *
+     * @var array
+     */
+    protected $touches = ['post'];
+
+    /**
+     * 获取该评论所属的帖子。
+     */
+    public function post(): BelongsTo
     {
-        /**
-         * 所有需要被触碰的关联。
-         *
-         * @var array
-         */
-        protected $touches = ['post'];
-
-        /**
-         * 获取该评论所属的帖子。
-         */
-        public function post(): BelongsTo
-        {
-            return $this->belongsTo(Post::class);
-        }
+        return $this->belongsTo(Post::class);
     }
+}
+```
 
 > [!WARNING]
 > 只有当子模型使用 Eloquent 的 `save` 方法更新时，父级模型的时间戳才会被更新。

@@ -144,51 +144,55 @@ php artisan test --parallel --recreate-databases
 
 借助 `ParallelTesting` Facade，你可以指定在某个进程或测试用例的 `setUp` 和 `tearDown` 阶段执行的代码。给定的闭包会分别接收到包含进程标记和当前测试用例的 `$token` 与 `$testCase` 变量：
 
-    <?php
+```php
+<?php
 
-    namespace App\Providers;
+namespace App\Providers;
 
-    use Illuminate\Support\Facades\Artisan;
-    use Illuminate\Support\Facades\ParallelTesting;
-    use Illuminate\Support\ServiceProvider;
-    use PHPUnit\Framework\TestCase;
+use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\ParallelTesting;
+use Illuminate\Support\ServiceProvider;
+use PHPUnit\Framework\TestCase;
 
-    class AppServiceProvider extends ServiceProvider
+class AppServiceProvider extends ServiceProvider
+{
+    /**
+     * 引导任何应用服务。
+     */
+    public function boot(): void
     {
-        /**
-         * 引导任何应用服务。
-         */
-        public function boot(): void
-        {
-            ParallelTesting::setUpProcess(function (int $token) {
-                // ...
-            });
+        ParallelTesting::setUpProcess(function (int $token) {
+            // ...
+        });
 
-            ParallelTesting::setUpTestCase(function (int $token, TestCase $testCase) {
-                // ...
-            });
+        ParallelTesting::setUpTestCase(function (int $token, TestCase $testCase) {
+            // ...
+        });
 
-            // 创建测试数据库时执行……
-            ParallelTesting::setUpTestDatabase(function (string $database, int $token) {
-                Artisan::call('db:seed');
-            });
+        // 创建测试数据库时执行……
+        ParallelTesting::setUpTestDatabase(function (string $database, int $token) {
+            Artisan::call('db:seed');
+        });
 
-            ParallelTesting::tearDownTestCase(function (int $token, TestCase $testCase) {
-                // ...
-            });
+        ParallelTesting::tearDownTestCase(function (int $token, TestCase $testCase) {
+            // ...
+        });
 
-            ParallelTesting::tearDownProcess(function (int $token) {
-                // ...
-            });
-        }
+        ParallelTesting::tearDownProcess(function (int $token) {
+            // ...
+        });
     }
+}
+```
 
 <a name="accessing-the-parallel-testing-token"></a>
 #### 访问并行测试标记
 
 如果你想在应用测试代码的其他位置访问当前的并行进程"标记"，可以使用 `token` 方法。该标记是单个测试进程的唯一字符串标识，可用于在并行测试进程之间划分资源。例如，Laravel 会自动把该标记追加到每个并行测试进程所创建的测试数据库末尾：
 
-    $token = ParallelTesting::token();
+```php
+$token = ParallelTesting::token();
+```
 
 <a name="reporting-test-coverage"></a>
 ### 报告测试覆盖率

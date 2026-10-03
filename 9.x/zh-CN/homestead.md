@@ -186,7 +186,9 @@ init.bat
 
 `Homestead.yaml` 文件中的 `provider` 键指示应使用哪个 Vagrant 提供商：`virtualbox` 或 `parallels`：
 
-    provider: virtualbox
+```yaml
+provider: virtualbox
+```
 
 > **Warning**
 > 如果你使用 Apple Silicon，应当在 `Homestead.yaml` 文件中添加 `box: laravel/homestead-arm`。Apple Silicon 需要使用 Parallels 提供商。
@@ -265,7 +267,9 @@ Homestead 使用 `mDNS` 发布主机名以实现自动主机解析。如果在 `
 
 使用自动主机名最适合 Homestead 的[按项目安装](#per-project-installation)。如果在单个 Homestead 实例上托管多个站点，你可以将网站的「域名」添加到机器上的 `hosts` 文件中。`hosts` 文件会将 Homestead 站点的请求重定向到你的 Homestead 虚拟机。在 macOS 和 Linux 上，此文件位于 `/etc/hosts`。在 Windows 上，位于 `C:\Windows\System32\drivers\etc\hosts`。你添加到此文件的行如下所示：
 
-    192.168.56.56  homestead.test
+```text
+192.168.56.56  homestead.test
+```
 
 确保列出的 IP 地址是 `Homestead.yaml` 文件中设置的地址。将域名添加到 `hosts` 文件并启动 Vagrant box 后，你就可以通过浏览器访问站点：
 
@@ -476,8 +480,10 @@ sites:
 
 如果 Vagrant 没有自动管理你的「hosts」文件，你可能还需要将新站点添加到该文件中。在 macOS 和 Linux 上，此文件位于 `/etc/hosts`。在 Windows 上，位于 `C:\Windows\System32\drivers\etc\hosts`：
 
-    192.168.56.56  homestead.test
-    192.168.56.56  another.test
+```text
+192.168.56.56  homestead.test
+192.168.56.56  another.test
+```
 
 添加站点后，从 Homestead 目录执行 `vagrant reload --provision` 终端命令。
 
@@ -626,7 +632,9 @@ databases:
 
 当 Homestead 虚拟机被销毁时，Homestead 可以自动备份你的数据库。要使用此功能，你必须使用 Vagrant 2.1.0 或更高版本。或者，如果你使用较旧版本的 Vagrant，必须安装 `vagrant-triggers` 插件。要启用自动数据库备份，请在 `Homestead.yaml` 文件中添加以下行：
 
-    backup: true
+```yaml
+backup: true
+```
 
 配置后，当执行 `vagrant destroy` 命令时，Homestead 会将数据库导出到 `.backup/mysql_backup` 和 `.backup/postgres_backup` 目录。这些目录可以在安装 Homestead 的文件夹中找到，如果使用[按项目安装](#per-project-installation)方法，则在项目根目录中。
 
@@ -667,21 +675,25 @@ MAIL_ENCRYPTION=null
 
 [Minio](https://github.com/minio/minio) 是一个具有 Amazon S3 兼容 API 的开源对象存储服务器。要安装 Minio，请在 `Homestead.yaml` 文件的 [features](#installing-optional-features) 部分添加以下配置选项：
 
-    minio: true
+```yaml
+minio: true
+```
 
 默认情况下，Minio 可通过端口 9600 访问。你可以通过访问 `http://localhost:9600` 来访问 Minio 控制面板。默认访问密钥为 `homestead`，默认密钥为 `secretkey`。访问 Minio 时，你应当始终使用区域 `us-east-1`。
 
 要使用 Minio，你需要调整应用 `config/filesystems.php` 配置文件中的 S3 磁盘配置。你需要在磁盘配置中添加 `use_path_style_endpoint` 选项，并将 `url` 键更改为 `endpoint`：
 
-    's3' => [
-        'driver' => 's3',
-        'key' => env('AWS_ACCESS_KEY_ID'),
-        'secret' => env('AWS_SECRET_ACCESS_KEY'),
-        'region' => env('AWS_DEFAULT_REGION'),
-        'bucket' => env('AWS_BUCKET'),
-        'endpoint' => env('AWS_URL'),
-        'use_path_style_endpoint' => true,
-    ]
+```php
+'s3' => [
+    'driver' => 's3',
+    'key' => env('AWS_ACCESS_KEY_ID'),
+    'secret' => env('AWS_SECRET_ACCESS_KEY'),
+    'region' => env('AWS_DEFAULT_REGION'),
+    'bucket' => env('AWS_BUCKET'),
+    'endpoint' => env('AWS_URL'),
+    'use_path_style_endpoint' => true,
+]
+```
 
 最后，确保 `.env` 文件具有以下选项：
 
@@ -768,7 +780,9 @@ xdebug.start_with_request = yes
 
 要调试 PHP CLI 应用，请在 Homestead 虚拟机内使用 `xphp` shell 别名：
 
-    xphp /path/to/script
+```shell
+xphp /path/to/script
+```
 
 <a name="profiling-applications-with-blackfire"></a>
 ### 使用 Blackfire 分析应用

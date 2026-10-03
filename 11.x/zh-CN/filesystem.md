@@ -45,9 +45,11 @@ Laravel 的文件系统配置文件位于 `config/filesystems.php`。在该文�
 
 使用 `local` 驱动时，所有文件操作都相对于 `filesystems` 配置文件中定义的 `root` 目录。默认情况下，该值为 `storage/app/private` 目录。因此，以下方法会写入 `storage/app/private/example.txt`：
 
-    use Illuminate\Support\Facades\Storage;
+```php
+use Illuminate\Support\Facades\Storage;
 
-    Storage::disk('local')->put('example.txt', 'Contents');
+Storage::disk('local')->put('example.txt', 'Contents');
+```
 
 <a name="the-public-disk"></a>
 ### 公共磁盘
@@ -64,14 +66,18 @@ php artisan storage:link
 
 文件存储完成且符号链接创建之后，你可以使用 `asset` 辅助函数为这些文件创建 URL：
 
-    echo asset('storage/file.txt');
+```php
+echo asset('storage/file.txt');
+```
 
 你也可以在 `filesystems` 配置文件中配置额外的符号链接。运行 `storage:link` 命令时，每个配置好的链接都会被创建：
 
-    'links' => [
-        public_path('storage') => storage_path('app/public'),
-        public_path('images') => storage_path('app/images'),
-    ],
+```php
+'links' => [
+    public_path('storage') => storage_path('app/public'),
+    public_path('images') => storage_path('app/images'),
+],
+```
 
 `storage:unlink` 命令可用于销毁你配置好的符号链接：
 
@@ -114,19 +120,21 @@ composer require league/flysystem-ftp "^3.0"
 
 Laravel 的 Flysystem 集成与 FTP 配合良好；不过，框架默认的 `config/filesystems.php` 配置文件并未包含示例配置。如果你需要配置 FTP 文件系统，可以使用下面的配置示例：
 
-    'ftp' => [
-        'driver' => 'ftp',
-        'host' => env('FTP_HOST'),
-        'username' => env('FTP_USERNAME'),
-        'password' => env('FTP_PASSWORD'),
+```php
+'ftp' => [
+    'driver' => 'ftp',
+    'host' => env('FTP_HOST'),
+    'username' => env('FTP_USERNAME'),
+    'password' => env('FTP_PASSWORD'),
 
-        // 可选的 FTP 设置...
-        // 'port' => env('FTP_PORT', 21),
-        // 'root' => env('FTP_ROOT'),
-        // 'passive' => true,
-        // 'ssl' => true,
-        // 'timeout' => 30,
-    ],
+    // 可选的 FTP 设置...
+    // 'port' => env('FTP_PORT', 21),
+    // 'root' => env('FTP_ROOT'),
+    // 'passive' => true,
+    // 'ssl' => true,
+    // 'timeout' => 30,
+],
+```
 
 <a name="sftp-driver-configuration"></a>
 #### SFTP 驱动配置
@@ -139,31 +147,33 @@ composer require league/flysystem-sftp-v3 "^3.0"
 
 Laravel 的 Flysystem 集成与 SFTP 配合良好；不过，框架默认的 `config/filesystems.php` 配置文件并未包含示例配置。如果你需要配置 SFTP 文件系统，可以使用下面的配置示例：
 
-    'sftp' => [
-        'driver' => 'sftp',
-        'host' => env('SFTP_HOST'),
+```php
+'sftp' => [
+    'driver' => 'sftp',
+    'host' => env('SFTP_HOST'),
 
-        // 基本认证设置...
-        'username' => env('SFTP_USERNAME'),
-        'password' => env('SFTP_PASSWORD'),
+    // 基本认证设置...
+    'username' => env('SFTP_USERNAME'),
+    'password' => env('SFTP_PASSWORD'),
 
-        // 基于 SSH 密钥并带加密口令的认证设置...
-        'privateKey' => env('SFTP_PRIVATE_KEY'),
-        'passphrase' => env('SFTP_PASSPHRASE'),
+    // 基于 SSH 密钥并带加密口令的认证设置...
+    'privateKey' => env('SFTP_PRIVATE_KEY'),
+    'passphrase' => env('SFTP_PASSPHRASE'),
 
-        // 文件／目录权限设置...
-        'visibility' => 'private', // `private` = 0600, `public` = 0644
-        'directory_visibility' => 'private', // `private` = 0700, `public` = 0755
+    // 文件／目录权限设置...
+    'visibility' => 'private', // `private` = 0600, `public` = 0644
+    'directory_visibility' => 'private', // `private` = 0700, `public` = 0755
 
-        // 可选的 SFTP 设置...
-        // 'hostFingerprint' => env('SFTP_HOST_FINGERPRINT'),
-        // 'maxTries' => 4,
-        // 'passphrase' => env('SFTP_PASSPHRASE'),
-        // 'port' => env('SFTP_PORT', 22),
-        // 'root' => env('SFTP_ROOT', ''),
-        // 'timeout' => 30,
-        // 'useAgent' => true,
-    ],
+    // 可选的 SFTP 设置...
+    // 'hostFingerprint' => env('SFTP_HOST_FINGERPRINT'),
+    // 'maxTries' => 4,
+    // 'passphrase' => env('SFTP_PASSPHRASE'),
+    // 'port' => env('SFTP_PORT', 22),
+    // 'root' => env('SFTP_ROOT', ''),
+    // 'timeout' => 30,
+    // 'useAgent' => true,
+],
+```
 
 <a name="scoped-and-read-only-filesystems"></a>
 ### 限定范围与只读文件系统
@@ -207,7 +217,9 @@ composer require league/flysystem-read-only "^3.0"
 
 通常情况下，把磁盘凭据更新为与计划使用的服务凭据一致后，你只需更新 `endpoint` 配置选项的值。该选项的值通常通过 `AWS_ENDPOINT` 环境变量定义：
 
-    'endpoint' => env('AWS_ENDPOINT', 'https://minio:9000'),
+```php
+'endpoint' => env('AWS_ENDPOINT', 'https://minio:9000'),
+```
 
 <a name="minio"></a>
 #### MinIO
@@ -226,13 +238,17 @@ AWS_URL=http://localhost:9000/local
 
 你可以使用 `Storage` Facade 与任意已配置的磁盘交互。例如，可以使用该 Facade 上的 `put` 方法把头像存储到默认磁盘。如果你在未先调用 `disk` 方法的情况下直接调用 `Storage` Facade 上的方法，该方法会自动作用于默认磁盘：
 
-    use Illuminate\Support\Facades\Storage;
+```php
+use Illuminate\Support\Facades\Storage;
 
-    Storage::put('avatars/1', $content);
+Storage::put('avatars/1', $content);
+```
 
 如果你的应用与多个磁盘交互，可以使用 `Storage` Facade 上的 `disk` 方法操作特定磁盘上的文件：
 
-    Storage::disk('s3')->put('avatars/1', $content);
+```php
+Storage::disk('s3')->put('avatars/1', $content);
+```
 
 <a name="on-demand-disks"></a>
 ### 按需创建的磁盘
@@ -255,41 +271,53 @@ $disk->put('image.jpg', $content);
 
 `get` 方法可用于获取文件内容。该方法会返回文件的原始字符串内容。请记住，所有文件路径都应相对于磁盘的「根」位置指定：
 
-    $contents = Storage::get('file.jpg');
+```php
+$contents = Storage::get('file.jpg');
+```
 
 如果你要获取的文件包含 JSON，可以使用 `json` 方法获取该文件并解码其内容：
 
-    $orders = Storage::json('orders.json');
+```php
+$orders = Storage::json('orders.json');
+```
 
 `exists` 方法可用于判断文件是否存在于磁盘上：
 
-    if (Storage::disk('s3')->exists('file.jpg')) {
-        // ...
-    }
+```php
+if (Storage::disk('s3')->exists('file.jpg')) {
+    // ...
+}
+```
 
 `missing` 方法可用于判断文件是否已从磁盘中丢失：
 
-    if (Storage::disk('s3')->missing('file.jpg')) {
-        // ...
-    }
+```php
+if (Storage::disk('s3')->missing('file.jpg')) {
+    // ...
+}
+```
 
 <a name="downloading-files"></a>
 ### 下载文件
 
 `download` 方法可用于生成一个响应，强制用户浏览器下载指定路径的文件。`download` 方法的第二个参数接受文件名，它将决定下载文件的用户所看到的文件名。最后，你还可以把一组 HTTP 响应头作为方法的第三个参数传入：
 
-    return Storage::download('file.jpg');
+```php
+return Storage::download('file.jpg');
 
-    return Storage::download('file.jpg', $name, $headers);
+return Storage::download('file.jpg', $name, $headers);
+```
 
 <a name="file-urls"></a>
 ### 文件 URL
 
 你可以使用 `url` 方法获取指定文件的 URL。如果你使用 `local` 驱动，该方法通常只是在给定路径前加上 `/storage`，并返回指向该文件的相对 URL。如果你使用 `s3` 驱动，则会返回完整的远程 URL：
 
-    use Illuminate\Support\Facades\Storage;
+```php
+use Illuminate\Support\Facades\Storage;
 
-    $url = Storage::url('file.jpg');
+$url = Storage::url('file.jpg');
+```
 
 使用 `local` 驱动时，所有应当可公开访问的文件都应放在 `storage/app/public` 目录中。此外，你应当在 `public/storage` 处[创建一个符号链接](#the-public-disk)，指向 `storage/app/public` 目录。
 
@@ -301,24 +329,28 @@ $disk->put('image.jpg', $content);
 
 如果你想修改使用 `Storage` Facade 生成的 URL 的主机，可以在磁盘的配置数组中添加或修改 `url` 选项：
 
-    'public' => [
-        'driver' => 'local',
-        'root' => storage_path('app/public'),
-        'url' => env('APP_URL').'/storage',
-        'visibility' => 'public',
-        'throw' => false,
-    ],
+```php
+'public' => [
+    'driver' => 'local',
+    'root' => storage_path('app/public'),
+    'url' => env('APP_URL').'/storage',
+    'visibility' => 'public',
+    'throw' => false,
+],
+```
 
 <a name="temporary-urls"></a>
 ### 临时 URL
 
 使用 `temporaryUrl` 方法，你可以为通过 `local` 和 `s3` 驱动存储的文件创建临时 URL。该方法接受一个路径和一个指定 URL 过期时间的 `DateTime` 实例：
 
-    use Illuminate\Support\Facades\Storage;
+```php
+use Illuminate\Support\Facades\Storage;
 
-    $url = Storage::temporaryUrl(
-        'file.jpg', now()->addMinutes(5)
-    );
+$url = Storage::temporaryUrl(
+    'file.jpg', now()->addMinutes(5)
+);
+```
 
 <a name="enabling-local-temporary-urls"></a>
 #### 启用本地临时 URL
@@ -339,47 +371,51 @@ $disk->put('image.jpg', $content);
 
 如果你需要指定额外的 [S3 请求参数](https://docs.aws.amazon.com/AmazonS3/latest/API/RESTObjectGET.html#RESTObjectGET-requests)，可以把请求参数数组作为 `temporaryUrl` 方法的第三个参数传入：
 
-    $url = Storage::temporaryUrl(
-        'file.jpg',
-        now()->addMinutes(5),
-        [
-            'ResponseContentType' => 'application/octet-stream',
-            'ResponseContentDisposition' => 'attachment; filename=file2.jpg',
-        ]
-    );
+```php
+$url = Storage::temporaryUrl(
+    'file.jpg',
+    now()->addMinutes(5),
+    [
+        'ResponseContentType' => 'application/octet-stream',
+        'ResponseContentDisposition' => 'attachment; filename=file2.jpg',
+    ]
+);
+```
 
 <a name="customizing-temporary-urls"></a>
 #### 定制临时 URL
 
 如果你需要为特定存储磁盘定制临时 URL 的创建方式，可以使用 `buildTemporaryUrlsUsing` 方法。例如，如果你有一个控制器允许你下载通过某个通常不支持临时 URL 的磁盘存储的文件，这个方法会很有用。通常应当从某个服务提供者的 `boot` 方法中调用该方法：
 
-    <?php
+```php
+<?php
 
-    namespace App\Providers;
+namespace App\Providers;
 
-    use DateTime;
-    use Illuminate\Support\Facades\Storage;
-    use Illuminate\Support\Facades\URL;
-    use Illuminate\Support\ServiceProvider;
+use DateTime;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\URL;
+use Illuminate\Support\ServiceProvider;
 
-    class AppServiceProvider extends ServiceProvider
+class AppServiceProvider extends ServiceProvider
+{
+    /**
+     * 引导任何应用服务。
+     */
+    public function boot(): void
     {
-        /**
-         * 引导任何应用服务。
-         */
-        public function boot(): void
-        {
-            Storage::disk('local')->buildTemporaryUrlsUsing(
-                function (string $path, DateTime $expiration, array $options) {
-                    return URL::temporarySignedRoute(
-                        'files.download',
-                        $expiration,
-                        array_merge($options, ['path' => $path])
-                    );
-                }
-            );
-        }
+        Storage::disk('local')->buildTemporaryUrlsUsing(
+            function (string $path, DateTime $expiration, array $options) {
+                return URL::temporarySignedRoute(
+                    'files.download',
+                    $expiration,
+                    array_merge($options, ['path' => $path])
+                );
+            }
+        );
     }
+}
+```
 
 <a name="temporary-upload-urls"></a>
 #### 临时上传 URL
@@ -389,11 +425,13 @@ $disk->put('image.jpg', $content);
 
 如果你需要生成一个可直接从客户端应用上传文件的临时 URL，可以使用 `temporaryUploadUrl` 方法。该方法接受一个路径和一个指定 URL 过期时间的 `DateTime` 实例。`temporaryUploadUrl` 方法返回一个关联数组，可以解构为上传 URL 和上传请求中应当包含的响应头：
 
-    use Illuminate\Support\Facades\Storage;
+```php
+use Illuminate\Support\Facades\Storage;
 
-    ['url' => $url, 'headers' => $headers] = Storage::temporaryUploadUrl(
-        'file.jpg', now()->addMinutes(5)
-    );
+['url' => $url, 'headers' => $headers] = Storage::temporaryUploadUrl(
+    'file.jpg', now()->addMinutes(5)
+);
+```
 
 该方法主要适用于无服务器环境，这类环境要求客户端应用直接把文件上传到 Amazon S3 之类的云存储系统。
 
@@ -402,138 +440,168 @@ $disk->put('image.jpg', $content);
 
 除了读写文件之外，Laravel 还能提供文件本身的相关信息。例如，`size` 方法可用于获取文件字节数：
 
-    use Illuminate\Support\Facades\Storage;
+```php
+use Illuminate\Support\Facades\Storage;
 
-    $size = Storage::size('file.jpg');
+$size = Storage::size('file.jpg');
+```
 
 `lastModified` 方法返回文件最后修改时间对应的 UNIX 时间戳：
 
-    $time = Storage::lastModified('file.jpg');
+```php
+$time = Storage::lastModified('file.jpg');
+```
 
 指定文件的 MIME 类型可以通过 `mimeType` 方法获取：
 
-    $mime = Storage::mimeType('file.jpg');
+```php
+$mime = Storage::mimeType('file.jpg');
+```
 
 <a name="file-paths"></a>
 #### 文件路径
 
 你可以使用 `path` 方法获取指定文件的路径。如果你使用 `local` 驱动，该方法会返回文件的绝对路径。如果你使用 `s3` 驱动，该方法会返回文件在 S3 存储桶中的相对路径：
 
-    use Illuminate\Support\Facades\Storage;
+```php
+use Illuminate\Support\Facades\Storage;
 
-    $path = Storage::path('file.jpg');
+$path = Storage::path('file.jpg');
+```
 
 <a name="storing-files"></a>
 ## 存储文件
 
 `put` 方法可用于把文件内容存储到磁盘上。你也可以向 `put` 方法传入一个 PHP `resource`，它会使用 Flysystem 底层的流支持。请记住，所有文件路径都应相对于为该磁盘配置的「根」位置指定：
 
-    use Illuminate\Support\Facades\Storage;
+```php
+use Illuminate\Support\Facades\Storage;
 
-    Storage::put('file.jpg', $contents);
+Storage::put('file.jpg', $contents);
 
-    Storage::put('file.jpg', $resource);
+Storage::put('file.jpg', $resource);
+```
 
 <a name="failed-writes"></a>
 #### 写入失败
 
 如果 `put` 方法（或其它「写」操作）无法把文件写入磁盘，就会返回 `false`：
 
-    if (! Storage::put('file.jpg', $contents)) {
-        // 该文件无法写入磁盘...
-    }
+```php
+if (! Storage::put('file.jpg', $contents)) {
+    // 该文件无法写入磁盘...
+}
+```
 
 如果愿意，你可以在文件系统磁盘的配置数组中定义 `throw` 选项。当该选项定义为 `true` 时，`put` 等「写」方法会在写操作失败时抛出 `League\Flysystem\UnableToWriteFile` 实例：
 
-    'public' => [
-        'driver' => 'local',
-        // ...
-        'throw' => true,
-    ],
+```php
+'public' => [
+    'driver' => 'local',
+    // ...
+    'throw' => true,
+],
+```
 
 <a name="prepending-appending-to-files"></a>
 ### 前置与追加内容到文件
 
 `prepend` 和 `append` 方法允许你写入文件的开头或结尾：
 
-    Storage::prepend('file.log', 'Prepended Text');
+```php
+Storage::prepend('file.log', 'Prepended Text');
 
-    Storage::append('file.log', 'Appended Text');
+Storage::append('file.log', 'Appended Text');
+```
 
 <a name="copying-moving-files"></a>
 ### 复制与移动文件
 
 `copy` 方法可用于把已有文件复制到磁盘上的新位置，而 `move` 方法可用于重命名已有文件或把它移动到新位置：
 
-    Storage::copy('old/file.jpg', 'new/file.jpg');
+```php
+Storage::copy('old/file.jpg', 'new/file.jpg');
 
-    Storage::move('old/file.jpg', 'new/file.jpg');
+Storage::move('old/file.jpg', 'new/file.jpg');
+```
 
 <a name="automatic-streaming"></a>
 ### 自动流式传输
 
 把文件流式传输到存储可以显著减少内存占用。如果你希望 Laravel 自动把给定文件流式传输到你的存储位置，可以使用 `putFile` 或 `putFileAs` 方法。该方法接受一个 `Illuminate\Http\File` 或 `Illuminate\Http\UploadedFile` 实例，并自动把文件流式传输到你期望的位置：
 
-    use Illuminate\Http\File;
-    use Illuminate\Support\Facades\Storage;
+```php
+use Illuminate\Http\File;
+use Illuminate\Support\Facades\Storage;
 
-    // 为文件名自动生成唯一 ID...
-    $path = Storage::putFile('photos', new File('/path/to/photo'));
+// 为文件名自动生成唯一 ID...
+$path = Storage::putFile('photos', new File('/path/to/photo'));
 
-    // 手动指定文件名...
-    $path = Storage::putFileAs('photos', new File('/path/to/photo'), 'photo.jpg');
+// 手动指定文件名...
+$path = Storage::putFileAs('photos', new File('/path/to/photo'), 'photo.jpg');
+```
 
 关于 `putFile` 方法有几点重要事项需要注意。注意，我们只指定了目录名，而没有指定文件名。默认情况下，`putFile` 方法会生成一个唯一 ID 作为文件名。文件的扩展名将通过检查文件的 MIME 类型来确定。`putFile` 方法会返回文件的路径，因此你可以把包含生成文件名的完整路径存入数据库。
 
 `putFile` 和 `putFileAs` 方法还接受一个参数，用于指定所存储文件的「可见性」。如果你把文件存储在 Amazon S3 之类的云磁盘上，并希望通过生成的 URL 公开访问文件，这一点尤其有用：
 
-    Storage::putFile('photos', new File('/path/to/photo'), 'public');
+```php
+Storage::putFile('photos', new File('/path/to/photo'), 'public');
+```
 
 <a name="file-uploads"></a>
 ### 文件上传
 
 在 Web 应用中，存储文件最常见的用例之一是存储用户上传的文件，例如照片和文档。Laravel 让你可以轻松地使用上传文件实例上的 `store` 方法来存储上传的文件。调用 `store` 方法时，传入你希望存储上传文件的路径：
 
-    <?php
+```php
+<?php
 
-    namespace App\Http\Controllers;
+namespace App\Http\Controllers;
 
-    use App\Http\Controllers\Controller;
-    use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
 
-    class UserAvatarController extends Controller
+class UserAvatarController extends Controller
+{
+    /**
+     * 更新用户的头像。
+     */
+    public function update(Request $request): string
     {
-        /**
-         * 更新用户的头像。
-         */
-        public function update(Request $request): string
-        {
-            $path = $request->file('avatar')->store('avatars');
+        $path = $request->file('avatar')->store('avatars');
 
-            return $path;
-        }
+        return $path;
     }
+}
+```
 
 这个示例中有几点重要事项需要注意。注意，我们只指定了目录名，而没有指定文件名。默认情况下，`store` 方法会生成一个唯一 ID 作为文件名。文件的扩展名将通过检查文件的 MIME 类型来确定。`store` 方法会返回文件的路径，因此你可以把包含生成文件名的完整路径存入数据库。
 
 你也可以在 `Storage` Facade 上调用 `putFile` 方法，执行与上例相同的文件存储操作：
 
-    $path = Storage::putFile('avatars', $request->file('avatar'));
+```php
+$path = Storage::putFile('avatars', $request->file('avatar'));
+```
 
 <a name="specifying-a-file-name"></a>
 #### 指定文件名
 
 如果你不希望为所存储的文件自动分配文件名，可以使用 `storeAs` 方法，它接收路径、文件名以及（可选的）磁盘作为参数：
 
-    $path = $request->file('avatar')->storeAs(
-        'avatars', $request->user()->id
-    );
+```php
+$path = $request->file('avatar')->storeAs(
+    'avatars', $request->user()->id
+);
+```
 
 你也可以在 `Storage` Facade 上使用 `putFileAs` 方法，它会执行与上例相同的文件存储操作：
 
-    $path = Storage::putFileAs(
-        'avatars', $request->file('avatar'), $request->user()->id
-    );
+```php
+$path = Storage::putFileAs(
+    'avatars', $request->file('avatar'), $request->user()->id
+);
+```
 
 > [!WARNING]
 > 不可打印的字符和无效的 Unicode 字符会自动从文件路径中移除。因此，你可能需要在把文件路径传给 Laravel 的文件存储方法之前先对其做净化处理。文件路径会使用 `League\Flysystem\WhitespacePathNormalizer::normalizePath` 方法进行规范化。
@@ -543,34 +611,42 @@ $disk->put('image.jpg', $content);
 
 默认情况下，该上传文件的 `store` 方法会使用你的默认磁盘。如果你想指定其它磁盘，请把磁盘名作为 `store` 方法的第二个参数传入：
 
-    $path = $request->file('avatar')->store(
-        'avatars/'.$request->user()->id, 's3'
-    );
+```php
+$path = $request->file('avatar')->store(
+    'avatars/'.$request->user()->id, 's3'
+);
+```
 
 如果你使用 `storeAs` 方法，可以把磁盘名作为方法的第三个参数传入：
 
-    $path = $request->file('avatar')->storeAs(
-        'avatars',
-        $request->user()->id,
-        's3'
-    );
+```php
+$path = $request->file('avatar')->storeAs(
+    'avatars',
+    $request->user()->id,
+    's3'
+);
+```
 
 <a name="other-uploaded-file-information"></a>
 #### 其它上传文件信息
 
 如果你想获取上传文件的原始名称和扩展名，可以使用 `getClientOriginalName` 和 `getClientOriginalExtension` 方法：
 
-    $file = $request->file('avatar');
+```php
+$file = $request->file('avatar');
 
-    $name = $file->getClientOriginalName();
-    $extension = $file->getClientOriginalExtension();
+$name = $file->getClientOriginalName();
+$extension = $file->getClientOriginalExtension();
+```
 
 不过请记住，`getClientOriginalName` 和 `getClientOriginalExtension` 方法被认为是不安全的，因为文件名和扩展名可能被恶意用户篡改。因此，通常你应当优先使用 `hashName` 和 `extension` 方法来获取给定文件上传的名称和扩展名：
 
-    $file = $request->file('avatar');
+```php
+$file = $request->file('avatar');
 
-    $name = $file->hashName(); // 生成唯一的随机名称...
-    $extension = $file->extension(); // 根据文件的 MIME 类型确定扩展名...
+$name = $file->hashName(); // 生成唯一的随机名称...
+$extension = $file->extension(); // 根据文件的 MIME 类型确定扩展名...
+```
 
 <a name="file-visibility"></a>
 ### 文件可见性
@@ -579,63 +655,75 @@ $disk->put('image.jpg', $content);
 
 你可以在通过 `put` 方法写入文件时设置其可见性：
 
-    use Illuminate\Support\Facades\Storage;
+```php
+use Illuminate\Support\Facades\Storage;
 
-    Storage::put('file.jpg', $contents, 'public');
+Storage::put('file.jpg', $contents, 'public');
+```
 
 如果文件已经被存储，可以通过 `getVisibility` 和 `setVisibility` 方法获取并设置其可见性：
 
-    $visibility = Storage::getVisibility('file.jpg');
+```php
+$visibility = Storage::getVisibility('file.jpg');
 
-    Storage::setVisibility('file.jpg', 'public');
+Storage::setVisibility('file.jpg', 'public');
+```
 
 与上传文件交互时，可以使用 `storePublicly` 和 `storePubliclyAs` 方法以 `public` 可见性存储上传文件：
 
-    $path = $request->file('avatar')->storePublicly('avatars', 's3');
+```php
+$path = $request->file('avatar')->storePublicly('avatars', 's3');
 
-    $path = $request->file('avatar')->storePubliclyAs(
-        'avatars',
-        $request->user()->id,
-        's3'
-    );
+$path = $request->file('avatar')->storePubliclyAs(
+    'avatars',
+    $request->user()->id,
+    's3'
+);
+```
 
 <a name="local-files-and-visibility"></a>
 #### 本地文件与可见性
 
 使用 `local` 驱动时，`public` [可见性](#file-visibility)对应目录的 `0755` 权限和文件的 `0644` 权限。你可以在应用的 `filesystems` 配置文件中修改权限映射：
 
-    'local' => [
-        'driver' => 'local',
-        'root' => storage_path('app'),
-        'permissions' => [
-            'file' => [
-                'public' => 0644,
-                'private' => 0600,
-            ],
-            'dir' => [
-                'public' => 0755,
-                'private' => 0700,
-            ],
+```php
+'local' => [
+    'driver' => 'local',
+    'root' => storage_path('app'),
+    'permissions' => [
+        'file' => [
+            'public' => 0644,
+            'private' => 0600,
         ],
-        'throw' => false,
+        'dir' => [
+            'public' => 0755,
+            'private' => 0700,
+        ],
     ],
+    'throw' => false,
+],
+```
 
 <a name="deleting-files"></a>
 ## 删除文件
 
 `delete` 方法接受一个文件名或一组要删除的文件：
 
-    use Illuminate\Support\Facades\Storage;
+```php
+use Illuminate\Support\Facades\Storage;
 
-    Storage::delete('file.jpg');
+Storage::delete('file.jpg');
 
-    Storage::delete(['file.jpg', 'file2.jpg']);
+Storage::delete(['file.jpg', 'file2.jpg']);
+```
 
 必要时，你可以指定要从哪个磁盘上删除文件：
 
-    use Illuminate\Support\Facades\Storage;
+```php
+use Illuminate\Support\Facades\Storage;
 
-    Storage::disk('s3')->delete('path/file.jpg');
+Storage::disk('s3')->delete('path/file.jpg');
+```
 
 <a name="directories"></a>
 ## 目录
@@ -645,34 +733,42 @@ $disk->put('image.jpg', $content);
 
 `files` 方法返回给定目录下所有文件的数组。如果你想获取某个目录下包含所有子目录在内的全部文件列表，可以使用 `allFiles` 方法：
 
-    use Illuminate\Support\Facades\Storage;
+```php
+use Illuminate\Support\Facades\Storage;
 
-    $files = Storage::files($directory);
+$files = Storage::files($directory);
 
-    $files = Storage::allFiles($directory);
+$files = Storage::allFiles($directory);
+```
 
 <a name="get-all-directories-within-a-directory"></a>
 #### 获取目录中的所有子目录
 
 `directories` 方法返回给定目录下所有子目录的数组。此外，你可以使用 `allDirectories` 方法获取某个目录及其所有子目录下的全部目录列表：
 
-    $directories = Storage::directories($directory);
+```php
+$directories = Storage::directories($directory);
 
-    $directories = Storage::allDirectories($directory);
+$directories = Storage::allDirectories($directory);
+```
 
 <a name="create-a-directory"></a>
 #### 创建目录
 
 `makeDirectory` 方法会创建给定目录，包括其中所需的任何子目录：
 
-    Storage::makeDirectory($directory);
+```php
+Storage::makeDirectory($directory);
+```
 
 <a name="delete-a-directory"></a>
 #### 删除目录
 
 最后，`deleteDirectory` 方法可用于移除一个目录及其中的所有文件：
 
-    Storage::deleteDirectory($directory);
+```php
+Storage::deleteDirectory($directory);
+```
 
 <a name="testing"></a>
 ## 测试
@@ -764,46 +860,48 @@ composer require spatie/flysystem-dropbox
 
 接下来，你可以在应用某个[服务提供者](/docs/{{version}}/providers)的 `boot` 方法中注册该驱动。为此，你应当使用 `Storage` Facade 的 `extend` 方法：
 
-    <?php
+```php
+<?php
 
-    namespace App\Providers;
+namespace App\Providers;
 
-    use Illuminate\Contracts\Foundation\Application;
-    use Illuminate\Filesystem\FilesystemAdapter;
-    use Illuminate\Support\Facades\Storage;
-    use Illuminate\Support\ServiceProvider;
-    use League\Flysystem\Filesystem;
-    use Spatie\Dropbox\Client as DropboxClient;
-    use Spatie\FlysystemDropbox\DropboxAdapter;
+use Illuminate\Contracts\Foundation\Application;
+use Illuminate\Filesystem\FilesystemAdapter;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\ServiceProvider;
+use League\Flysystem\Filesystem;
+use Spatie\Dropbox\Client as DropboxClient;
+use Spatie\FlysystemDropbox\DropboxAdapter;
 
-    class AppServiceProvider extends ServiceProvider
+class AppServiceProvider extends ServiceProvider
+{
+    /**
+     * 注册任何应用服务。
+     */
+    public function register(): void
     {
-        /**
-         * 注册任何应用服务。
-         */
-        public function register(): void
-        {
-            // ...
-        }
-
-        /**
-         * 引导任何应用服务。
-         */
-        public function boot(): void
-        {
-            Storage::extend('dropbox', function (Application $app, array $config) {
-                $adapter = new DropboxAdapter(new DropboxClient(
-                    $config['authorization_token']
-                ));
-
-                return new FilesystemAdapter(
-                    new Filesystem($adapter, $config),
-                    $adapter,
-                    $config
-                );
-            });
-        }
+        // ...
     }
+
+    /**
+     * 引导任何应用服务。
+     */
+    public function boot(): void
+    {
+        Storage::extend('dropbox', function (Application $app, array $config) {
+            $adapter = new DropboxAdapter(new DropboxClient(
+                $config['authorization_token']
+            ));
+
+            return new FilesystemAdapter(
+                new Filesystem($adapter, $config),
+                $adapter,
+                $config
+            );
+        });
+    }
+}
+```
 
 `extend` 方法的第一个参数是驱动名称，第二个参数是接收 `$app` 和 `$config` 变量的闭包。该闭包必须返回一个 `Illuminate\Filesystem\FilesystemAdapter` 实例。`$config` 变量包含 `config/filesystems.php` 中为指定磁盘定义的值。
 

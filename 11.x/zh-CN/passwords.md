@@ -52,9 +52,11 @@
 
 首先，我们来定义请求密码重置链接所需的路由。要开始实现，我们先定义一条返回密码重置链接请求表单视图的路由：
 
-    Route::get('/forgot-password', function () {
-        return view('auth.forgot-password');
-    })->middleware('guest')->name('password.request');
+```php
+Route::get('/forgot-password', function () {
+    return view('auth.forgot-password');
+})->middleware('guest')->name('password.request');
+```
 
 该路由返回的视图应包含一个带 `email` 字段的表单，允许用户针对某个邮箱地址请求密码重置链接。
 
@@ -63,20 +65,22 @@
 
 接下来，我们来定义一条处理"忘记密码"视图表单提交请求的路由。该路由负责校验邮箱地址，并把密码重置请求发送给对应的用户：
 
-    use Illuminate\Http\Request;
-    use Illuminate\Support\Facades\Password;
+```php
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Password;
 
-    Route::post('/forgot-password', function (Request $request) {
-        $request->validate(['email' => 'required|email']);
+Route::post('/forgot-password', function (Request $request) {
+    $request->validate(['email' => 'required|email']);
 
-        $status = Password::sendResetLink(
-            $request->only('email')
-        );
+    $status = Password::sendResetLink(
+        $request->only('email')
+    );
 
-        return $status === Password::ResetLinkSent
-            ? back()->with(['status' => __($status)])
-            : back()->withErrors(['email' => __($status)]);
-    })->middleware('guest')->name('password.email');
+    return $status === Password::ResetLinkSent
+        ? back()->with(['status' => __($status)])
+        : back()->withErrors(['email' => __($status)]);
+})->middleware('guest')->name('password.email');
+```
 
 在继续之前，我们来更仔细地审视这条路由。首先，请求的 `email` 属性会被校验。接下来，我们使用 Laravel 内置的"密码代理"（通过 `Password` Facade 使用）向用户发送密码重置链接。密码代理会负责按给定字段（此处为邮箱地址）检索用户，并通过 Laravel 内置的[通知系统](/docs/{{version}}/notifications)向用户发送密码重置链接。
 
@@ -98,9 +102,11 @@
 
 接下来，我们来定义用户点击发给他们的密码重置链接并提供新密码后实际重置密码所需的路由。首先，我们定义一条路由，用于展示用户点击重置密码链接时呈现的重置密码表单。该路由会接收一个 `token` 参数，我们稍后会用它来验证密码重置请求：
 
-    Route::get('/reset-password/{token}', function (string $token) {
-        return view('auth.reset-password', ['token' => $token]);
-    })->middleware('guest')->name('password.reset');
+```php
+Route::get('/reset-password/{token}', function (string $token) {
+    return view('auth.reset-password', ['token' => $token]);
+})->middleware('guest')->name('password.reset');
+```
 
 该路由返回的视图应展示一个表单，其中包含 `email` 字段、`password` 字段、`password_confirmation` 字段，以及一个隐藏的 `token` 字段，该字段应包含路由收到的密钥 `$token` 的值。
 
@@ -109,37 +115,39 @@
 
 当然，我们需要定义一条路由来实际处理密码重置表单的提交。该路由负责校验传入的请求，并更新数据库中用户的密码：
 
-    use App\Models\User;
-    use Illuminate\Auth\Events\PasswordReset;
-    use Illuminate\Http\Request;
-    use Illuminate\Support\Facades\Hash;
-    use Illuminate\Support\Facades\Password;
-    use Illuminate\Support\Str;
+```php
+use App\Models\User;
+use Illuminate\Auth\Events\PasswordReset;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Password;
+use Illuminate\Support\Str;
 
-    Route::post('/reset-password', function (Request $request) {
-        $request->validate([
-            'token' => 'required',
-            'email' => 'required|email',
-            'password' => 'required|min:8|confirmed',
-        ]);
+Route::post('/reset-password', function (Request $request) {
+    $request->validate([
+        'token' => 'required',
+        'email' => 'required|email',
+        'password' => 'required|min:8|confirmed',
+    ]);
 
-        $status = Password::reset(
-            $request->only('email', 'password', 'password_confirmation', 'token'),
-            function (User $user, string $password) {
-                $user->forceFill([
-                    'password' => Hash::make($password)
-                ])->setRememberToken(Str::random(60));
+    $status = Password::reset(
+        $request->only('email', 'password', 'password_confirmation', 'token'),
+        function (User $user, string $password) {
+            $user->forceFill([
+                'password' => Hash::make($password)
+            ])->setRememberToken(Str::random(60));
 
-                $user->save();
+            $user->save();
 
-                event(new PasswordReset($user));
-            }
-        );
+            event(new PasswordReset($user));
+        }
+    );
 
-        return $status === Password::PasswordReset
-            ? redirect()->route('login')->with('status', __($status))
-            : back()->withErrors(['email' => [__($status)]]);
-    })->middleware('guest')->name('password.update');
+    return $status === Password::PasswordReset
+        ? redirect()->route('login')->with('status', __($status))
+        : back()->withErrors(['email' => [__($status)]]);
+})->middleware('guest')->name('password.update');
+```
 
 在继续之前，我们来更仔细地审视这条路由。首先，请求的 `token`、`email` 和 `password` 属性会被校验。接下来，我们使用 Laravel 内置的"密码代理"（通过 `Password` Facade 使用）来验证密码重置请求的凭据。
 
@@ -160,9 +168,11 @@ php artisan auth:clear-resets
 
 如果你想把这一过程自动化，可以考虑把该命令加入应用的[调度器](/docs/{{version}}/scheduling)：
 
-    use Illuminate\Support\Facades\Schedule;
+```php
+use Illuminate\Support\Facades\Schedule;
 
-    Schedule::command('auth:clear-resets')->everyFifteenMinutes();
+Schedule::command('auth:clear-resets')->everyFifteenMinutes();
+```
 
 <a name="password-customization"></a>
 ## 自定义
@@ -172,34 +182,38 @@ php artisan auth:clear-resets
 
 你可以使用 `ResetPassword` 通知类提供的 `createUrlUsing` 方法自定义密码重置链接 URL。该方法接受一个闭包，闭包接收正在接收通知的用户实例以及密码重置链接令牌。通常，你应该在 `App\Providers\AppServiceProvider` 服务提供者的 `boot` 方法中调用该方法：
 
-    use App\Models\User;
-    use Illuminate\Auth\Notifications\ResetPassword;
+```php
+use App\Models\User;
+use Illuminate\Auth\Notifications\ResetPassword;
 
-    /**
-     * 引导任何应用服务。
-     */
-    public function boot(): void
-    {
-        ResetPassword::createUrlUsing(function (User $user, string $token) {
-            return 'https://example.com/reset-password?token='.$token;
-        });
-    }
+/**
+ * 引导任何应用服务。
+ */
+public function boot(): void
+{
+    ResetPassword::createUrlUsing(function (User $user, string $token) {
+        return 'https://example.com/reset-password?token='.$token;
+    });
+}
+```
 
 <a name="reset-email-customization"></a>
 #### 重置邮件自定义
 
 你可以轻松修改用于向用户发送密码重置链接的通知类。要开始修改，请覆盖 `App\Models\User` 模型上的 `sendPasswordResetNotification` 方法。在该方法中，你可以使用自己创建的任意[通知类](/docs/{{version}}/notifications)发送通知。密码重置的 `$token` 是该方法接收的第一个参数。你可以用这个 `$token` 构建自定义的密码重置 URL，并把通知发送给用户：
 
-    use App\Notifications\ResetPasswordNotification;
+```php
+use App\Notifications\ResetPasswordNotification;
 
-    /**
-     * 向用户发送密码重置通知。
-     *
-     * @param  string  $token
-     */
-    public function sendPasswordResetNotification($token): void
-    {
-        $url = 'https://example.com/reset-password?token='.$token;
+/**
+ * 向用户发送密码重置通知。
+ *
+ * @param  string  $token
+ */
+public function sendPasswordResetNotification($token): void
+{
+    $url = 'https://example.com/reset-password?token='.$token;
 
-        $this->notify(new ResetPasswordNotification($url));
-    }
+    $this->notify(new ResetPasswordNotification($url));
+}
+```

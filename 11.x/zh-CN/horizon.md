@@ -58,33 +58,37 @@ php artisan horizon:install
 
 安装之后，你首先应当熟悉 Horizon 的主要配置项 `environments`。该配置项是一个数组，包含应用运行所处的各个环境，并为每个环境定义工作进程选项。默认情况下，该条目包含 `production` 和 `local` 两个环境。不过，你也可以按需添加更多环境：
 
-    'environments' => [
-        'production' => [
-            'supervisor-1' => [
-                'maxProcesses' => 10,
-                'balanceMaxShift' => 1,
-                'balanceCooldown' => 3,
-            ],
-        ],
-
-        'local' => [
-            'supervisor-1' => [
-                'maxProcesses' => 3,
-            ],
+```php
+'environments' => [
+    'production' => [
+        'supervisor-1' => [
+            'maxProcesses' => 10,
+            'balanceMaxShift' => 1,
+            'balanceCooldown' => 3,
         ],
     ],
+
+    'local' => [
+        'supervisor-1' => [
+            'maxProcesses' => 3,
+        ],
+    ],
+],
+```
 
 你也可以定义一个通配环境（`*`），当找不到其它匹配环境时将使用它：
 
-    'environments' => [
-        // ...
+```php
+'environments' => [
+    // ...
 
-        '*' => [
-            'supervisor-1' => [
-                'maxProcesses' => 3,
-            ],
+    '*' => [
+        'supervisor-1' => [
+            'maxProcesses' => 3,
         ],
     ],
+],
+```
 
 启动 Horizon 时，它会使用应用当前所处环境的工作进程配置选项。通常，环境由 `APP_ENV` [环境变量](/docs/{{version}}/configuration#determining-the-current-environment)的值决定。例如，默认的 `local` Horizon 环境配置为启动三个工作进程，并自动平衡分配给每个队列的工作进程数量。默认的 `production` 环境配置为最多启动 10 个工作进程，并自动平衡分配给每个队列的工作进程数量。
 
@@ -103,14 +107,16 @@ php artisan horizon:install
 
 当应用处于[维护模式](/docs/{{version}}/configuration#maintenance-mode)时，除非在 Horizon 配置文件中把监督者的 `force` 选项定义为 `true`，否则 Horizon 不会处理排队任务：
 
-    'environments' => [
-        'production' => [
-            'supervisor-1' => [
-                // ...
-                'force' => true,
-            ],
+```php
+'environments' => [
+    'production' => [
+        'supervisor-1' => [
+            // ...
+            'force' => true,
         ],
     ],
+],
+```
 
 <a name="default-values"></a>
 #### 默认值
@@ -122,27 +128,31 @@ php artisan horizon:install
 
 与 Laravel 默认队列系统不同，Horizon 允许你从三种工作进程平衡策略中选择：`simple`、`auto` 和 `false`。`simple` 策略会在工作进程之间平均分配传入的任务：
 
-    'balance' => 'simple',
+```php
+'balance' => 'simple',
+```
 
 作为配置文件的默认选项，`auto` 策略会根据队列当前的工作负载调整每个队列的工作进程数量。例如，如果 `notifications` 队列有 1,000 个待处理任务，而 `render` 队列为空，Horizon 就会向 `notifications` 队列分配更多工作进程，直到该队列被清空。
 
 使用 `auto` 策略时，你可以定义 `minProcesses` 和 `maxProcesses` 配置项，分别控制每个队列的最少进程数，以及 Horizon 整体扩缩容时最多可扩展到的工作进程数：
 
-    'environments' => [
-        'production' => [
-            'supervisor-1' => [
-                'connection' => 'redis',
-                'queue' => ['default'],
-                'balance' => 'auto',
-                'autoScalingStrategy' => 'time',
-                'minProcesses' => 1,
-                'maxProcesses' => 10,
-                'balanceMaxShift' => 1,
-                'balanceCooldown' => 3,
-                'tries' => 3,
-            ],
+```php
+'environments' => [
+    'production' => [
+        'supervisor-1' => [
+            'connection' => 'redis',
+            'queue' => ['default'],
+            'balance' => 'auto',
+            'autoScalingStrategy' => 'time',
+            'minProcesses' => 1,
+            'maxProcesses' => 10,
+            'balanceMaxShift' => 1,
+            'balanceCooldown' => 3,
+            'tries' => 3,
         ],
     ],
+],
+```
 
 `autoScalingStrategy` 配置值决定 Horizon 是根据清空队列所需的总时间（`time` 策略），还是根据队列中的任务总数（`size` 策略）来为队列分配更多工作进程。
 
@@ -155,19 +165,21 @@ php artisan horizon:install
 
 Horizon 仪表盘可通过 `/horizon` 路由访问。默认情况下，你只能在 `local` 环境中访问该仪表盘。不过，在 `app/Providers/HorizonServiceProvider.php` 文件中有一个[授权门](/docs/{{version}}/authorization#gates)定义。该授权门控制着在**非本地**环境中对 Horizon 的访问。你可以根据需要自由修改该门，以限制对你 Horizon 安装的访问：
 
-    /**
-     * 注册 Horizon 授权门。
-     *
-     * 该授权门决定谁可以在非本地环境中访问 Horizon。
-     */
-    protected function gate(): void
-    {
-        Gate::define('viewHorizon', function (User $user) {
-            return in_array($user->email, [
-                'taylor@laravel.com',
-            ]);
-        });
-    }
+```php
+/**
+ * 注册 Horizon 授权门。
+ *
+ * 该授权门决定谁可以在非本地环境中访问 Horizon。
+ */
+protected function gate(): void
+{
+    Gate::define('viewHorizon', function (User $user) {
+        return in_array($user->email, [
+            'taylor@laravel.com',
+        ]);
+    });
+}
+```
 
 <a name="alternative-authentication-strategies"></a>
 #### 备选的认证策略
@@ -179,20 +191,24 @@ Horizon 仪表盘可通过 `/horizon` 路由访问。默认情况下，你只能
 
 有时，你可能不希望查看应用或第三方包分发的某些任务。与其让这些任务在"已完成任务"列表中占据空间，不如把它们静默。要开始使用，请把任务的类名添加到应用 `horizon` 配置文件的 `silenced` 配置项中：
 
-    'silenced' => [
-        App\Jobs\ProcessPodcast::class,
-    ],
+```php
+'silenced' => [
+    App\Jobs\ProcessPodcast::class,
+],
+```
 
 另外，你想静默的任务可以实现 `Laravel\Horizon\Contracts\Silenced` 接口。如果任务实现了该接口，即使它不在 `silenced` 配置数组中，也会被自动静默：
 
-    use Laravel\Horizon\Contracts\Silenced;
+```php
+use Laravel\Horizon\Contracts\Silenced;
 
-    class ProcessPodcast implements ShouldQueue, Silenced
-    {
-        use Queueable;
+class ProcessPodcast implements ShouldQueue, Silenced
+{
+    use Queueable;
 
-        // ...
-    }
+    // ...
+}
+```
 
 <a name="upgrading-horizon"></a>
 ## 升级 Horizon
@@ -308,78 +324,86 @@ sudo supervisorctl start horizon
 
 Horizon 允许你为任务分配"标签"，包括可邮件化对象、广播事件、通知和排队的事件监听器。事实上，Horizon 会根据任务所附带的 Eloquent 模型，智能且自动地为大多数任务打标签。例如，看看下面这个任务：
 
-    <?php
+```php
+<?php
 
-    namespace App\Jobs;
+namespace App\Jobs;
 
-    use App\Models\Video;
-    use Illuminate\Contracts\Queue\ShouldQueue;
-    use Illuminate\Foundation\Queue\Queueable;
+use App\Models\Video;
+use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Foundation\Queue\Queueable;
 
-    class RenderVideo implements ShouldQueue
+class RenderVideo implements ShouldQueue
+{
+    use Queueable;
+
+    /**
+     * 创建一个新的任务实例。
+     */
+    public function __construct(
+        public Video $video,
+    ) {}
+
+    /**
+     * 执行任务。
+     */
+    public function handle(): void
     {
-        use Queueable;
-
-        /**
-         * 创建一个新的任务实例。
-         */
-        public function __construct(
-            public Video $video,
-        ) {}
-
-        /**
-         * 执行任务。
-         */
-        public function handle(): void
-        {
-            // ...
-        }
+        // ...
     }
+}
+```
 
 如果该任务入队时携带一个 `id` 属性为 `1` 的 `App\Models\Video` 实例，它会自动获得标签 `App\Models\Video:1`。这是因为 Horizon 会在任务的属性中搜索 Eloquent 模型。如果找到 Eloquent 模型，Horizon 就会用模型的类名和主键智能地为该任务打标签：
 
-    use App\Jobs\RenderVideo;
-    use App\Models\Video;
+```php
+use App\Jobs\RenderVideo;
+use App\Models\Video;
 
-    $video = Video::find(1);
+$video = Video::find(1);
 
-    RenderVideo::dispatch($video);
+RenderVideo::dispatch($video);
+```
 
 <a name="manually-tagging-jobs"></a>
 #### 手动为任务打标签
 
 如果你想手动为某个可排队对象定义标签，可以在该类上定义 `tags` 方法：
 
-    class RenderVideo implements ShouldQueue
+```php
+class RenderVideo implements ShouldQueue
+{
+    /**
+     * 获取应当分配给该任务的标签。
+     *
+     * @return array<int, string>
+     */
+    public function tags(): array
     {
-        /**
-         * 获取应当分配给该任务的标签。
-         *
-         * @return array<int, string>
-         */
-        public function tags(): array
-        {
-            return ['render', 'video:'.$this->video->id];
-        }
+        return ['render', 'video:'.$this->video->id];
     }
+}
+```
 
 <a name="manually-tagging-event-listeners"></a>
 #### 手动为事件监听器打标签
 
 在获取排队事件监听器的标签时，Horizon 会自动把事件实例传给 `tags` 方法，让你得以把事件数据加入标签：
 
-    class SendRenderNotifications implements ShouldQueue
+```php
+class SendRenderNotifications implements ShouldQueue
+{
+    /**
+     * 获取应当分配给该监听器的标签。
+     *
+     * @return array<int, string>
+     */
+    public function tags(VideoRendered $event): array
     {
-        /**
-         * 获取应当分配给该监听器的标签。
-         *
-         * @return array<int, string>
-         */
-        public function tags(VideoRendered $event): array
-        {
-            return ['video:'.$event->video->id];
-        }
+        return ['video:'.$event->video->id];
     }
+}
+```
 
 <a name="notifications"></a>
 ## 通知
@@ -389,37 +413,43 @@ Horizon 允许你为任务分配"标签"，包括可邮件化对象、广播事�
 
 如果你希望在某个队列等待时间过长时收到通知，可以使用 `Horizon::routeMailNotificationsTo`、`Horizon::routeSlackNotificationsTo` 和 `Horizon::routeSmsNotificationsTo` 方法。你可以在应用 `App\Providers\HorizonServiceProvider` 的 `boot` 方法中调用这些方法：
 
-    /**
-     * 引导任何应用服务。
-     */
-    public function boot(): void
-    {
-        parent::boot();
+```php
+/**
+ * 引导任何应用服务。
+ */
+public function boot(): void
+{
+    parent::boot();
 
-        Horizon::routeSmsNotificationsTo('15556667777');
-        Horizon::routeMailNotificationsTo('example@example.com');
-        Horizon::routeSlackNotificationsTo('slack-webhook-url', '#channel');
-    }
+    Horizon::routeSmsNotificationsTo('15556667777');
+    Horizon::routeMailNotificationsTo('example@example.com');
+    Horizon::routeSlackNotificationsTo('slack-webhook-url', '#channel');
+}
+```
 
 <a name="configuring-notification-wait-time-thresholds"></a>
 #### 配置通知等待时间阈值
 
 你可以在应用 `config/horizon.php` 配置文件中配置多少秒算作"长时间等待"。该文件中的 `waits` 配置项让你可以为每个连接 / 队列组合控制长时间等待阈值。任何未定义的连接 / 队列组合都默认使用 60 秒的长时间等待阈值：
 
-    'waits' => [
-        'redis:critical' => 30,
-        'redis:default' => 60,
-        'redis:batch' => 120,
-    ],
+```php
+'waits' => [
+    'redis:critical' => 30,
+    'redis:default' => 60,
+    'redis:batch' => 120,
+],
+```
 
 <a name="metrics"></a>
 ## 指标
 
 Horizon 内置一个指标仪表盘，提供任务与队列等待时间及吞吐量的相关信息。为了让该仪表盘有数据，你应在应用 `routes/console.php` 文件中把 Horizon 的 `snapshot` Artisan 命令配置为每五分钟运行一次：
 
-    use Illuminate\Support\Facades\Schedule;
+```php
+use Illuminate\Support\Facades\Schedule;
 
-    Schedule::command('horizon:snapshot')->everyFiveMinutes();
+Schedule::command('horizon:snapshot')->everyFiveMinutes();
+```
 
 <a name="deleting-failed-jobs"></a>
 ## 删除失败任务

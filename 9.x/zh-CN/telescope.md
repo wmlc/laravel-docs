@@ -76,18 +76,20 @@ php artisan migrate
 
 运行 `telescope:install` 后，你应从应用程序的 `config/app.php` 配置文件中移除 `TelescopeServiceProvider` 服务提供者注册。相反，在 `App\Providers\AppServiceProvider` 类的 `register` 方法中手动注册 Telescope 的服务提供者。我们将在注册提供者之前确保当前环境为 `local`：
 
-    /**
-     * 注册任何应用程序服务。
-     *
-     * @return void
-     */
-    public function register()
-    {
-        if ($this->app->environment('local')) {
-            $this->app->register(\Laravel\Telescope\TelescopeServiceProvider::class);
-            $this->app->register(TelescopeServiceProvider::class);
-        }
+```php
+/**
+ * 注册任何应用程序服务。
+ *
+ * @return void
+ */
+public function register()
+{
+    if ($this->app->environment('local')) {
+        $this->app->register(\Laravel\Telescope\TelescopeServiceProvider::class);
+        $this->app->register(TelescopeServiceProvider::class);
     }
+}
+```
 
 最后，你还应通过在 `composer.json` 文件中添加以下内容来防止 Telescope 包被[自动发现](/docs/{{version}}/packages#package-discovery)：
 
@@ -108,39 +110,47 @@ php artisan migrate
 
 如果需要，你可以使用 `enabled` 配置选项完全禁用 Telescope 的数据收集：
 
-    'enabled' => env('TELESCOPE_ENABLED', true),
+```php
+'enabled' => env('TELESCOPE_ENABLED', true),
+```
 
 <a name="data-pruning"></a>
 ### 数据清理
 
 如果不进行清理，`telescope_entries` 表会非常快速地累积记录。为缓解此问题，你应该[调度](/docs/{{version}}/scheduling) `telescope:prune` Artisan 命令每日运行：
 
-    $schedule->command('telescope:prune')->daily();
+```php
+$schedule->command('telescope:prune')->daily();
+```
 
 默认情况下，所有超过 24 小时的条目都将被清理。你可以在调用命令时使用 `hours` 选项来确定保留 Telescope 数据的时间。例如，以下命令将删除所有超过 48 小时前创建的记录：
 
-    $schedule->command('telescope:prune --hours=48')->daily();
+```php
+$schedule->command('telescope:prune --hours=48')->daily();
+```
 
 <a name="dashboard-authorization"></a>
 ### 仪表盘授权
 
 可以在 `/telescope` 路由访问 Telescope 仪表盘。默认情况下，你只能在 `local` 环境中访问此仪表盘。在 `app/Providers/TelescopeServiceProvider.php` 文件中，有一个[授权门](/docs/{{version}}/authorization#gates)定义。此授权门控制**非本地**环境下对 Telescope 的访问。你可以根据需要自由修改此门，以限制对 Telescope 安装的访问：
 
-    /**
-     * 注册 Telescope 门。
-     *
-     * 此门确定谁可以在非本地环境中访问 Telescope。
-     *
-     * @return void
-     */
-    protected function gate()
-    {
-        Gate::define('viewTelescope', function ($user) {
-            return in_array($user->email, [
-                'taylor@laravel.com',
-            ]);
-        });
-    }
+```php
+/**
+ * 注册 Telescope 门。
+ *
+ * 此门确定谁可以在非本地环境中访问 Telescope。
+ *
+ * @return void
+ */
+protected function gate()
+{
+    Gate::define('viewTelescope', function ($user) {
+        return in_array($user->email, [
+            'taylor@laravel.com',
+        ]);
+    });
+}
+```
 
 > **Warning**  
 > 你应确保在生产环境中将 `APP_ENV` 环境变量更改为 `production`。否则，你的 Telescope 安装将公开可用。
@@ -176,107 +186,117 @@ php artisan telescope:publish
 
 你可以通过 `App\Providers\TelescopeServiceProvider` 类中定义的 `filter` 闭包来过滤 Telescope 记录的数据。默认情况下，此闭包在 `local` 环境中记录所有数据，在所有其他环境中记录异常、失败的作业、计划任务和带有受监视标签的数据：
 
-    use Laravel\Telescope\IncomingEntry;
-    use Laravel\Telescope\Telescope;
+```php
+use Laravel\Telescope\IncomingEntry;
+use Laravel\Telescope\Telescope;
 
-    /**
-     * 注册任何应用程序服务。
-     *
-     * @return void
-     */
-    public function register()
-    {
-        $this->hideSensitiveRequestDetails();
+/**
+ * 注册任何应用程序服务。
+ *
+ * @return void
+ */
+public function register()
+{
+    $this->hideSensitiveRequestDetails();
 
-        Telescope::filter(function (IncomingEntry $entry) {
-            if ($this->app->environment('local')) {
-                return true;
-            }
+    Telescope::filter(function (IncomingEntry $entry) {
+        if ($this->app->environment('local')) {
+            return true;
+        }
 
-            return $entry->isReportableException() ||
-                $entry->isFailedJob() ||
-                $entry->isScheduledTask() ||
-                $entry->isSlowQuery() ||
-                $entry->hasMonitoredTag();
-        });
-    }
+        return $entry->isReportableException() ||
+            $entry->isFailedJob() ||
+            $entry->isScheduledTask() ||
+            $entry->isSlowQuery() ||
+            $entry->hasMonitoredTag();
+    });
+}
+```
 
 <a name="filtering-batches"></a>
 ### 批次
 
 虽然 `filter` 闭包过滤单个条目的数据，但你可以使用 `filterBatch` 方法注册一个闭包来过滤给定请求或控制台命令的所有数据。如果闭包返回 `true`，则所有条目都由 Telescope 记录：
 
-    use Illuminate\Support\Collection;
-    use Laravel\Telescope\Telescope;
+```php
+use Illuminate\Support\Collection;
+use Laravel\Telescope\Telescope;
 
-    /**
-     * 注册任何应用程序服务。
-     *
-     * @return void
-     */
-    public function register()
-    {
-        $this->hideSensitiveRequestDetails();
+/**
+ * 注册任何应用程序服务。
+ *
+ * @return void
+ */
+public function register()
+{
+    $this->hideSensitiveRequestDetails();
 
-        Telescope::filterBatch(function (Collection $entries) {
-            if ($this->app->environment('local')) {
-                return true;
-            }
+    Telescope::filterBatch(function (Collection $entries) {
+        if ($this->app->environment('local')) {
+            return true;
+        }
 
-            return $entries->contains(function ($entry) {
-                return $entry->isReportableException() ||
-                    $entry->isFailedJob() ||
-                    $entry->isScheduledTask() ||
-                    $entry->isSlowQuery() ||
-                    $entry->hasMonitoredTag();
-                });
-        });
-    }
+        return $entries->contains(function ($entry) {
+            return $entry->isReportableException() ||
+                $entry->isFailedJob() ||
+                $entry->isScheduledTask() ||
+                $entry->isSlowQuery() ||
+                $entry->hasMonitoredTag();
+            });
+    });
+}
+```
 
 <a name="tagging"></a>
 ## 标签
 
 Telescope 允许你通过"标签"搜索条目。通常，标签是 Eloquent 模型类名或已认证用户 ID，Telescope 会自动将其添加到条目中。有时，你可能希望将自定义标签附加到条目。为此，你可以使用 `Telescope::tag` 方法。`tag` 方法接受一个应返回标签数组的闭包。闭包返回的标签将与 Telescope 自动附加到条目的任何标签合并。通常，你应在 `App\Providers\TelescopeServiceProvider` 类的 `register` 方法中调用 `tag` 方法：
 
-    use Laravel\Telescope\IncomingEntry;
-    use Laravel\Telescope\Telescope;
+```php
+use Laravel\Telescope\IncomingEntry;
+use Laravel\Telescope\Telescope;
 
-    /**
-     * 注册任何应用程序服务。
-     *
-     * @return void
-     */
-    public function register()
-    {
-        $this->hideSensitiveRequestDetails();
+/**
+ * 注册任何应用程序服务。
+ *
+ * @return void
+ */
+public function register()
+{
+    $this->hideSensitiveRequestDetails();
 
-        Telescope::tag(function (IncomingEntry $entry) {
-            return $entry->type === 'request'
-                        ? ['status:'.$entry->content['response_status']]
-                        : [];
-        });
-     }
+    Telescope::tag(function (IncomingEntry $entry) {
+        return $entry->type === 'request'
+                    ? ['status:'.$entry->content['response_status']]
+                    : [];
+    });
+ }
+```
 
 <a name="available-watchers"></a>
 ## 可用监视器
 
 Telescope"监视器"在执行请求或控制台命令时收集应用程序数据。你可以在 `config/telescope.php` 配置文件中自定义要启用的监视器列表：
 
-    'watchers' => [
-        Watchers\CacheWatcher::class => true,
-        Watchers\CommandWatcher::class => true,
-        ...
-    ],
+```php
+'watchers' => [
+    Watchers\CacheWatcher::class => true,
+    Watchers\CommandWatcher::class => true,
+    ...
+],
+```
 
 某些监视器还允许你提供额外的自定义选项：
 
-    'watchers' => [
-        Watchers\QueryWatcher::class => [
-            'enabled' => env('TELESCOPE_QUERY_WATCHER', true),
-            'slow' => 100,
-        ],
-        ...
+```php
+'watchers' => [
+    Watchers\QueryWatcher::class => [
+        'enabled' => env('TELESCOPE_QUERY_WATCHER', true),
+        'slow' => 100,
     ],
+    ...
+],
+```
 
 <a name="batch-watcher"></a>
 ### Batch 监视器
@@ -293,13 +313,15 @@ Cache 监视器在缓存键被命中、未命中、更新和遗忘时记录数�
 
 Command 监视器在执行 Artisan 命令时记录参数、选项、退出代码和输出。如果你希望从监视器记录中排除某些命令，可以在 `config/telescope.php` 文件的 `ignore` 选项中指定命令：
 
-    'watchers' => [
-        Watchers\CommandWatcher::class => [
-            'enabled' => env('TELESCOPE_COMMAND_WATCHER', true),
-            'ignore' => ['key:generate'],
-        ],
-        ...
+```php
+'watchers' => [
+    Watchers\CommandWatcher::class => [
+        'enabled' => env('TELESCOPE_COMMAND_WATCHER', true),
+        'ignore' => ['key:generate'],
     ],
+    ...
+],
+```
 
 <a name="dump-watcher"></a>
 ### Dump 监视器
@@ -321,13 +343,15 @@ Exception 监视器记录应用程序抛出的任何可报告异常的数据和�
 
 Gate 监视器记录应用程序[门和策略](/docs/{{version}}/authorization)检查的数据和结果。如果你希望从监视器记录中排除某些能力，可以在 `config/telescope.php` 文件的 `ignore_abilities` 选项中指定：
 
-    'watchers' => [
-        Watchers\GateWatcher::class => [
-            'enabled' => env('TELESCOPE_GATE_WATCHER', true),
-            'ignore_abilities' => ['viewNova'],
-        ],
-        ...
+```php
+'watchers' => [
+    Watchers\GateWatcher::class => [
+        'enabled' => env('TELESCOPE_GATE_WATCHER', true),
+        'ignore_abilities' => ['viewNova'],
     ],
+    ...
+],
+```
 
 <a name="http-client-watcher"></a>
 ### HTTP Client 监视器
@@ -354,24 +378,28 @@ Mail 监视器允许你在浏览器中预览应用程序发送的[电子邮件](
 
 Model 监视器在分发 Eloquent[模型事件](/docs/{{version}}/eloquent#events)时记录模型更改。你可以通过监视器的 `events` 选项指定应记录哪些模型事件：
 
-    'watchers' => [
-        Watchers\ModelWatcher::class => [
-            'enabled' => env('TELESCOPE_MODEL_WATCHER', true),
-            'events' => ['eloquent.created*', 'eloquent.updated*'],
-        ],
-        ...
+```php
+'watchers' => [
+    Watchers\ModelWatcher::class => [
+        'enabled' => env('TELESCOPE_MODEL_WATCHER', true),
+        'events' => ['eloquent.created*', 'eloquent.updated*'],
     ],
+    ...
+],
+```
 
 如果你想记录给定请求期间水合的模型数量，请启用 `hydrations` 选项：
 
-    'watchers' => [
-        Watchers\ModelWatcher::class => [
-            'enabled' => env('TELESCOPE_MODEL_WATCHER', true),
-            'events' => ['eloquent.created*', 'eloquent.updated*'],
-            'hydrations' => true,
-        ],
-        ...
+```php
+'watchers' => [
+    Watchers\ModelWatcher::class => [
+        'enabled' => env('TELESCOPE_MODEL_WATCHER', true),
+        'events' => ['eloquent.created*', 'eloquent.updated*'],
+        'hydrations' => true,
     ],
+    ...
+],
+```
 
 <a name="notification-watcher"></a>
 ### Notification 监视器
@@ -383,13 +411,15 @@ Notification 监视器记录应用程序发送的所有[通知](/docs/{{version}
 
 Query 监视器记录应用程序执行的所有查询的原始 SQL、绑定和执行时间。监视器还会将任何慢于 100 毫秒的查询标记为 `slow`。你可以使用监视器的 `slow` 选项自定义慢查询阈值：
 
-    'watchers' => [
-        Watchers\QueryWatcher::class => [
-            'enabled' => env('TELESCOPE_QUERY_WATCHER', true),
-            'slow' => 50,
-        ],
-        ...
+```php
+'watchers' => [
+    Watchers\QueryWatcher::class => [
+        'enabled' => env('TELESCOPE_QUERY_WATCHER', true),
+        'slow' => 50,
     ],
+    ...
+],
+```
 
 <a name="redis-watcher"></a>
 ### Redis 监视器
@@ -401,13 +431,15 @@ Redis 监视器记录应用程序执行的所有 [Redis](/docs/{{version}}/redis
 
 Request 监视器记录与应用程序处理的任何请求关联的请求、头、会话和响应数据。你可以通过 `size_limit`（以千字节为单位）选项限制记录的响应数据：
 
-    'watchers' => [
-        Watchers\RequestWatcher::class => [
-            'enabled' => env('TELESCOPE_REQUEST_WATCHER', true),
-            'size_limit' => env('TELESCOPE_RESPONSE_SIZE_LIMIT', 64),
-        ],
-        ...
+```php
+'watchers' => [
+    Watchers\RequestWatcher::class => [
+        'enabled' => env('TELESCOPE_REQUEST_WATCHER', true),
+        'size_limit' => env('TELESCOPE_RESPONSE_SIZE_LIMIT', 64),
     ],
+    ...
+],
+```
 
 <a name="schedule-watcher"></a>
 ### Schedule 监视器
@@ -424,19 +456,21 @@ View 监视器记录渲染视图时使用的[视图](/docs/{{version}}/views)名
 
 Telescope 仪表盘显示保存给定条目时已认证用户的头像。默认情况下，Telescope 将使用 Gravatar Web 服务检索头像。但是，你可以通过在 `App\Providers\TelescopeServiceProvider` 类中注册回调来自定义头像 URL。回调将接收用户的 ID 和电子邮件地址，并应返回用户的头像图像 URL：
 
-    use App\Models\User;
-    use Laravel\Telescope\Telescope;
+```php
+use App\Models\User;
+use Laravel\Telescope\Telescope;
 
-    /**
-     * 注册任何应用程序服务。
-     *
-     * @return void
-     */
-    public function register()
-    {
-        // ...
+/**
+ * 注册任何应用程序服务。
+ *
+ * @return void
+ */
+public function register()
+{
+    // ...
 
-        Telescope::avatar(function ($id, $email) {
-            return '/avatars/'.User::find($id)->avatar_path;
-        });
-    }
+    Telescope::avatar(function ($id, $email) {
+        return '/avatars/'.User::find($id)->avatar_path;
+    });
+}
+```

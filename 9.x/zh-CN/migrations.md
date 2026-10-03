@@ -80,52 +80,15 @@ php artisan schema:dump --database=testing --prune
 
 在这两个方法中，可以使用 Laravel 的 schema 构造器来直观地创建和修改表。要了解 `Schema` 构造器上所有可用的方法，请[查看其文档](#creating-tables)。例如，以下迁移创建了一个 `flights` 表：
 
-    <?php
+```php
+<?php
 
-    use Illuminate\Database\Migrations\Migration;
-    use Illuminate\Database\Schema\Blueprint;
-    use Illuminate\Support\Facades\Schema;
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 
-    return new class extends Migration
-    {
-        /**
-         * 运行迁移。
-         *
-         * @return void
-         */
-        public function up()
-        {
-            Schema::create('flights', function (Blueprint $table) {
-                $table->id();
-                $table->string('name');
-                $table->string('airline');
-                $table->timestamps();
-            });
-        }
-
-        /**
-         * 回滚迁移。
-         *
-         * @return void
-         */
-        public function down()
-        {
-            Schema::drop('flights');
-        }
-    };
-
-<a name="setting-the-migration-connection"></a>
-#### 设置迁移连接
-
-如果迁移要与应用程序默认数据库连接以外的数据库连接交互，应当设置迁移的 `$connection` 属性：
-
-    /**
-     * 迁移应使用的数据库连接。
-     *
-     * @var string
-     */
-    protected $connection = 'pgsql';
-
+return new class extends Migration
+{
     /**
      * 运行迁移。
      *
@@ -133,8 +96,49 @@ php artisan schema:dump --database=testing --prune
      */
     public function up()
     {
-        //
+        Schema::create('flights', function (Blueprint $table) {
+            $table->id();
+            $table->string('name');
+            $table->string('airline');
+            $table->timestamps();
+        });
     }
+
+    /**
+     * 回滚迁移。
+     *
+     * @return void
+     */
+    public function down()
+    {
+        Schema::drop('flights');
+    }
+};
+```
+
+<a name="setting-the-migration-connection"></a>
+#### 设置迁移连接
+
+如果迁移要与应用程序默认数据库连接以外的数据库连接交互，应当设置迁移的 `$connection` 属性：
+
+```php
+/**
+ * 迁移应使用的数据库连接。
+ *
+ * @var string
+ */
+protected $connection = 'pgsql';
+
+/**
+ * 运行迁移。
+ *
+ * @return void
+ */
+public function up()
+{
+    //
+}
+```
 
 <a name="running-migrations"></a>
 ## 运行数据库迁移
@@ -240,15 +244,17 @@ php artisan migrate:fresh --seed
 
 要创建新的数据库表，使用 `Schema` Facade 的 `create` 方法。`create` 方法接受两个参数：第一个是表名，第二个是一个闭包，闭包接收一个可用于定义新表的 `Blueprint` 对象：
 
-    use Illuminate\Database\Schema\Blueprint;
-    use Illuminate\Support\Facades\Schema;
+```php
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 
-    Schema::create('users', function (Blueprint $table) {
-        $table->id();
-        $table->string('name');
-        $table->string('email');
-        $table->timestamps();
-    });
+Schema::create('users', function (Blueprint $table) {
+    $table->id();
+    $table->string('name');
+    $table->string('email');
+    $table->timestamps();
+});
+```
 
 创建表时，可以使用 schema 构造器的任何[字段方法](#creating-columns)来定义表的字段。
 
@@ -257,82 +263,100 @@ php artisan migrate:fresh --seed
 
 可以使用 `hasTable` 和 `hasColumn` 方法检查表或字段是否存在：
 
-    if (Schema::hasTable('users')) {
-        // "users" 表存在...
-    }
+```php
+if (Schema::hasTable('users')) {
+    // "users" 表存在...
+}
 
-    if (Schema::hasColumn('users', 'email')) {
-        // "users" 表存在且包含 "email" 字段...
-    }
+if (Schema::hasColumn('users', 'email')) {
+    // "users" 表存在且包含 "email" 字段...
+}
+```
 
 <a name="database-connection-table-options"></a>
 #### 数据库连接 & 表选项
 
 如果要在非应用程序默认连接的数据库连接上执行 schema 操作，使用 `connection` 方法：
 
-    Schema::connection('sqlite')->create('users', function (Blueprint $table) {
-        $table->id();
-    });
+```php
+Schema::connection('sqlite')->create('users', function (Blueprint $table) {
+    $table->id();
+});
+```
 
 此外，还有一些其他属性和方法可用于定义表创建的其他方面。使用 MySQL 时，`engine` 属性可用于指定表的存储引擎：
 
-    Schema::create('users', function (Blueprint $table) {
-        $table->engine = 'InnoDB';
+```php
+Schema::create('users', function (Blueprint $table) {
+    $table->engine = 'InnoDB';
 
-        // ...
-    });
+    // ...
+});
+```
 
 使用 MySQL 时，`charset` 和 `collation` 属性可用于指定所创建表的字符集和排序规则：
 
-    Schema::create('users', function (Blueprint $table) {
-        $table->charset = 'utf8mb4';
-        $table->collation = 'utf8mb4_unicode_ci';
+```php
+Schema::create('users', function (Blueprint $table) {
+    $table->charset = 'utf8mb4';
+    $table->collation = 'utf8mb4_unicode_ci';
 
-        // ...
-    });
+    // ...
+});
+```
 
 `temporary` 方法可用于指示表应当是"临时的"。临时表仅对当前连接的数据库会话可见，并在连接关闭时自动删除：
 
-    Schema::create('calculations', function (Blueprint $table) {
-        $table->temporary();
+```php
+Schema::create('calculations', function (Blueprint $table) {
+    $table->temporary();
 
-        // ...
-    });
+    // ...
+});
+```
 
 如果想为数据库表添加"注释"，可以在表实例上调用 `comment` 方法。表注释目前仅由 MySQL 和 Postgres 支持：
 
-    Schema::create('calculations', function (Blueprint $table) {
-        $table->comment('Business calculations');
+```php
+Schema::create('calculations', function (Blueprint $table) {
+    $table->comment('Business calculations');
 
-        // ...
-    });
+    // ...
+});
+```
 
 <a name="updating-tables"></a>
 ### 更新数据表
 
 `Schema` Facade 的 `table` 方法可用于更新现有表。与 `create` 方法类似，`table` 方法接受两个参数：表名和一个闭包，闭包接收一个 `Blueprint` 实例，可用于向表添加字段或索引：
 
-    use Illuminate\Database\Schema\Blueprint;
-    use Illuminate\Support\Facades\Schema;
+```php
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 
-    Schema::table('users', function (Blueprint $table) {
-        $table->integer('votes');
-    });
+Schema::table('users', function (Blueprint $table) {
+    $table->integer('votes');
+});
+```
 
 <a name="renaming-and-dropping-tables"></a>
 ### 重命名 / 删除数据表
 
 要重命名现有数据库表，使用 `rename` 方法：
 
-    use Illuminate\Support\Facades\Schema;
+```php
+use Illuminate\Support\Facades\Schema;
 
-    Schema::rename($from, $to);
+Schema::rename($from, $to);
+```
 
 要删除现有表，可以使用 `drop` 或 `dropIfExists` 方法：
 
-    Schema::drop('users');
+```php
+Schema::drop('users');
 
-    Schema::dropIfExists('users');
+Schema::dropIfExists('users');
+```
 
 <a name="renaming-tables-with-foreign-keys"></a>
 #### 重命名带有外键的表
@@ -347,12 +371,14 @@ php artisan migrate:fresh --seed
 
 `Schema` Facade 的 `table` 方法可用于更新现有表。与 `create` 方法类似，`table` 方法接受两个参数：表名和一个闭包，闭包接收一个 `Illuminate\Database\Schema\Blueprint` 实例，可用于向表添加字段：
 
-    use Illuminate\Database\Schema\Blueprint;
-    use Illuminate\Support\Facades\Schema;
+```php
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 
-    Schema::table('users', function (Blueprint $table) {
-        $table->integer('votes');
-    });
+Schema::table('users', function (Blueprint $table) {
+    $table->integer('votes');
+});
+```
 
 <a name="available-column-types"></a>
 ### 可用字段类型
@@ -454,210 +480,270 @@ schema 构造器蓝图提供了多种方法，对应于可以添加到数据库�
 
 `bigIncrements` 方法创建一个自增的 `UNSIGNED BIGINT`（主键）等价字段：
 
-    $table->bigIncrements('id');
+```php
+$table->bigIncrements('id');
+```
 
 <a name="column-method-bigInteger"></a>
 #### `bigInteger()` {.collection-method}
 
 `bigInteger` 方法创建一个 `BIGINT` 等价字段：
 
-    $table->bigInteger('votes');
+```php
+$table->bigInteger('votes');
+```
 
 <a name="column-method-binary"></a>
 #### `binary()` {.collection-method}
 
 `binary` 方法创建一个 `BLOB` 等价字段：
 
-    $table->binary('photo');
+```php
+$table->binary('photo');
+```
 
 <a name="column-method-boolean"></a>
 #### `boolean()` {.collection-method}
 
 `boolean` 方法创建一个 `BOOLEAN` 等价字段：
 
-    $table->boolean('confirmed');
+```php
+$table->boolean('confirmed');
+```
 
 <a name="column-method-char"></a>
 #### `char()` {.collection-method}
 
 `char` 方法创建一个指定长度的 `CHAR` 等价字段：
 
-    $table->char('name', 100);
+```php
+$table->char('name', 100);
+```
 
 <a name="column-method-dateTimeTz"></a>
 #### `dateTimeTz()` {.collection-method}
 
 `dateTimeTz` 方法创建一个带时区的 `DATETIME` 等价字段，可指定精度（总位数）：
 
-    $table->dateTimeTz('created_at', $precision = 0);
+```php
+$table->dateTimeTz('created_at', $precision = 0);
+```
 
 <a name="column-method-dateTime"></a>
 #### `dateTime()` {.collection-method}
 
 `dateTime` 方法创建一个 `DATETIME` 等价字段，可指定精度（总位数）：
 
-    $table->dateTime('created_at', $precision = 0);
+```php
+$table->dateTime('created_at', $precision = 0);
+```
 
 <a name="column-method-date"></a>
 #### `date()` {.collection-method}
 
 `date` 方法创建一个 `DATE` 等价字段：
 
-    $table->date('created_at');
+```php
+$table->date('created_at');
+```
 
 <a name="column-method-decimal"></a>
 #### `decimal()` {.collection-method}
 
 `decimal` 方法创建一个 `DECIMAL` 等价字段，可指定精度（总位数）和小数位数：
 
-    $table->decimal('amount', $precision = 8, $scale = 2);
+```php
+$table->decimal('amount', $precision = 8, $scale = 2);
+```
 
 <a name="column-method-double"></a>
 #### `double()` {.collection-method}
 
 `double` 方法创建一个 `DOUBLE` 等价字段，可指定精度（总位数）和小数位数：
 
-    $table->double('amount', 8, 2);
+```php
+$table->double('amount', 8, 2);
+```
 
 <a name="column-method-enum"></a>
 #### `enum()` {.collection-method}
 
 `enum` 方法创建一个 `ENUM` 等价字段，包含给定的有效值：
 
-    $table->enum('difficulty', ['easy', 'hard']);
+```php
+$table->enum('difficulty', ['easy', 'hard']);
+```
 
 <a name="column-method-float"></a>
 #### `float()` {.collection-method}
 
 `float` 方法创建一个 `FLOAT` 等价字段，可指定精度（总位数）和小数位数：
 
-    $table->float('amount', 8, 2);
+```php
+$table->float('amount', 8, 2);
+```
 
 <a name="column-method-foreignId"></a>
 #### `foreignId()` {.collection-method}
 
 `foreignId` 方法创建一个 `UNSIGNED BIGINT` 等价字段：
 
-    $table->foreignId('user_id');
+```php
+$table->foreignId('user_id');
+```
 
 <a name="column-method-foreignIdFor"></a>
 #### `foreignIdFor()` {.collection-method}
 
 `foreignIdFor` 方法为给定的模型类添加一个 `{column}_id UNSIGNED BIGINT` 等价字段：
 
-    $table->foreignIdFor(User::class);
+```php
+$table->foreignIdFor(User::class);
+```
 
 <a name="column-method-foreignUlid"></a>
 #### `foreignUlid()` {.collection-method}
 
 `foreignUlid` 方法创建一个 `ULID` 等价字段：
 
-    $table->foreignUlid('user_id');
+```php
+$table->foreignUlid('user_id');
+```
 
 <a name="column-method-foreignUuid"></a>
 #### `foreignUuid()` {.collection-method}
 
 `foreignUuid` 方法创建一个 `UUID` 等价字段：
 
-    $table->foreignUuid('user_id');
+```php
+$table->foreignUuid('user_id');
+```
 
 <a name="column-method-geometryCollection"></a>
 #### `geometryCollection()` {.collection-method}
 
 `geometryCollection` 方法创建一个 `GEOMETRYCOLLECTION` 等价字段：
 
-    $table->geometryCollection('positions');
+```php
+$table->geometryCollection('positions');
+```
 
 <a name="column-method-geometry"></a>
 #### `geometry()` {.collection-method}
 
 `geometry` 方法创建一个 `GEOMETRY` 等价字段：
 
-    $table->geometry('positions');
+```php
+$table->geometry('positions');
+```
 
 <a name="column-method-id"></a>
 #### `id()` {.collection-method}
 
 `id` 方法是 `bigIncrements` 方法的别名。默认情况下，该方法会创建一个 `id` 字段；但如果想为字段指定不同的名称，可以传入字段名：
 
-    $table->id();
+```php
+$table->id();
+```
 
 <a name="column-method-increments"></a>
 #### `increments()` {.collection-method}
 
 `increments` 方法创建一个自增的 `UNSIGNED INTEGER` 等价字段作为主键：
 
-    $table->increments('id');
+```php
+$table->increments('id');
+```
 
 <a name="column-method-integer"></a>
 #### `integer()` {.collection-method}
 
 `integer` 方法创建一个 `INTEGER` 等价字段：
 
-    $table->integer('votes');
+```php
+$table->integer('votes');
+```
 
 <a name="column-method-ipAddress"></a>
 #### `ipAddress()` {.collection-method}
 
 `ipAddress` 方法创建一个 `VARCHAR` 等价字段：
 
-    $table->ipAddress('visitor');
+```php
+$table->ipAddress('visitor');
+```
 
 <a name="column-method-json"></a>
 #### `json()` {.collection-method}
 
 `json` 方法创建一个 `JSON` 等价字段：
 
-    $table->json('options');
+```php
+$table->json('options');
+```
 
 <a name="column-method-jsonb"></a>
 #### `jsonb()` {.collection-method}
 
 `jsonb` 方法创建一个 `JSONB` 等价字段：
 
-    $table->jsonb('options');
+```php
+$table->jsonb('options');
+```
 
 <a name="column-method-lineString"></a>
 #### `lineString()` {.collection-method}
 
 `lineString` 方法创建一个 `LINESTRING` 等价字段：
 
-    $table->lineString('positions');
+```php
+$table->lineString('positions');
+```
 
 <a name="column-method-longText"></a>
 #### `longText()` {.collection-method}
 
 `longText` 方法创建一个 `LONGTEXT` 等价字段：
 
-    $table->longText('description');
+```php
+$table->longText('description');
+```
 
 <a name="column-method-macAddress"></a>
 #### `macAddress()` {.collection-method}
 
 `macAddress` 方法创建一个用于存储 MAC 地址的字段。某些数据库系统（如 PostgreSQL）为此类数据提供了专用的字段类型。其他数据库系统将使用字符串等价字段：
 
-    $table->macAddress('device');
+```php
+$table->macAddress('device');
+```
 
 <a name="column-method-mediumIncrements"></a>
 #### `mediumIncrements()` {.collection-method}
 
 `mediumIncrements` 方法创建一个自增的 `UNSIGNED MEDIUMINT` 等价字段作为主键：
 
-    $table->mediumIncrements('id');
+```php
+$table->mediumIncrements('id');
+```
 
 <a name="column-method-mediumInteger"></a>
 #### `mediumInteger()` {.collection-method}
 
 `mediumInteger` 方法创建一个 `MEDIUMINT` 等价字段：
 
-    $table->mediumInteger('votes');
+```php
+$table->mediumInteger('votes');
+```
 
 <a name="column-method-mediumText"></a>
 #### `mediumText()` {.collection-method}
 
 `mediumText` 方法创建一个 `MEDIUMTEXT` 等价字段：
 
-    $table->mediumText('description');
+```php
+$table->mediumText('description');
+```
 
 <a name="column-method-morphs"></a>
 #### `morphs()` {.collection-method}
@@ -666,231 +752,297 @@ schema 构造器蓝图提供了多种方法，对应于可以添加到数据库�
 
 此方法用于定义多态 [Eloquent 关联](/docs/{{version}}/eloquent-relationships) 所需的字段。在以下示例中，将创建 `taggable_id` 和 `taggable_type` 字段：
 
-    $table->morphs('taggable');
+```php
+$table->morphs('taggable');
+```
 
 <a name="column-method-multiLineString"></a>
 #### `multiLineString()` {.collection-method}
 
 `multiLineString` 方法创建一个 `MULTILINESTRING` 等价字段：
 
-    $table->multiLineString('positions');
+```php
+$table->multiLineString('positions');
+```
 
 <a name="column-method-multiPoint"></a>
 #### `multiPoint()` {.collection-method}
 
 `multiPoint` 方法创建一个 `MULTIPOINT` 等价字段：
 
-    $table->multiPoint('positions');
+```php
+$table->multiPoint('positions');
+```
 
 <a name="column-method-multiPolygon"></a>
 #### `multiPolygon()` {.collection-method}
 
 `multiPolygon` 方法创建一个 `MULTIPOLYGON` 等价字段：
 
-    $table->multiPolygon('positions');
+```php
+$table->multiPolygon('positions');
+```
 
 <a name="column-method-nullableTimestamps"></a>
 #### `nullableTimestamps()` {.collection-method}
 
 `nullableTimestamps` 方法是 [timestamps](#column-method-timestamps) 方法的别名：
 
-    $table->nullableTimestamps(0);
+```php
+$table->nullableTimestamps(0);
+```
 
 <a name="column-method-nullableMorphs"></a>
 #### `nullableMorphs()` {.collection-method}
 
 此方法类似于 [morphs](#column-method-morphs) 方法，但创建的字段将是 "nullable"（可为空）的：
 
-    $table->nullableMorphs('taggable');
+```php
+$table->nullableMorphs('taggable');
+```
 
 <a name="column-method-nullableUlidMorphs"></a>
 #### `nullableUlidMorphs()` {.collection-method}
 
 此方法类似于 [ulidMorphs](#column-method-ulidMorphs) 方法，但创建的字段将是 "nullable"（可为空）的：
 
-    $table->nullableUlidMorphs('taggable');
+```php
+$table->nullableUlidMorphs('taggable');
+```
 
 <a name="column-method-nullableUuidMorphs"></a>
 #### `nullableUuidMorphs()` {.collection-method}
 
 此方法类似于 [uuidMorphs](#column-method-uuidMorphs) 方法，但创建的字段将是 "nullable"（可为空）的：
 
-    $table->nullableUuidMorphs('taggable');
+```php
+$table->nullableUuidMorphs('taggable');
+```
 
 <a name="column-method-point"></a>
 #### `point()` {.collection-method}
 
 `point` 方法创建一个 `POINT` 等价字段：
 
-    $table->point('position');
+```php
+$table->point('position');
+```
 
 <a name="column-method-polygon"></a>
 #### `polygon()` {.collection-method}
 
 `polygon` 方法创建一个 `POLYGON` 等价字段：
 
-    $table->polygon('position');
+```php
+$table->polygon('position');
+```
 
 <a name="column-method-rememberToken"></a>
 #### `rememberToken()` {.collection-method}
 
 `rememberToken` 方法创建一个可为空的 `VARCHAR(100)` 等价字段，用于存储当前的 "remember me" [认证令牌](/docs/{{version}}/authentication#remembering-users)：
 
-    $table->rememberToken();
+```php
+$table->rememberToken();
+```
 
 <a name="column-method-set"></a>
 #### `set()` {.collection-method}
 
 `set` 方法创建一个 `SET` 等价字段，包含给定的有效值列表：
 
-    $table->set('flavors', ['strawberry', 'vanilla']);
+```php
+$table->set('flavors', ['strawberry', 'vanilla']);
+```
 
 <a name="column-method-smallIncrements"></a>
 #### `smallIncrements()` {.collection-method}
 
 `smallIncrements` 方法创建一个自增的 `UNSIGNED SMALLINT` 等价字段作为主键：
 
-    $table->smallIncrements('id');
+```php
+$table->smallIncrements('id');
+```
 
 <a name="column-method-smallInteger"></a>
 #### `smallInteger()` {.collection-method}
 
 `smallInteger` 方法创建一个 `SMALLINT` 等价字段：
 
-    $table->smallInteger('votes');
+```php
+$table->smallInteger('votes');
+```
 
 <a name="column-method-softDeletesTz"></a>
 #### `softDeletesTz()` {.collection-method}
 
 `softDeletesTz` 方法添加一个可为空的 `deleted_at` `TIMESTAMP`（带时区）等价字段，可指定精度（总位数）。此字段用于存储 Eloquent "软删除" 功能所需的 `deleted_at` 时间戳：
 
-    $table->softDeletesTz($column = 'deleted_at', $precision = 0);
+```php
+$table->softDeletesTz($column = 'deleted_at', $precision = 0);
+```
 
 <a name="column-method-softDeletes"></a>
 #### `softDeletes()` {.collection-method}
 
 `softDeletes` 方法添加一个可为空的 `deleted_at` `TIMESTAMP` 等价字段，可指定精度（总位数）。此字段用于存储 Eloquent "软删除" 功能所需的 `deleted_at` 时间戳：
 
-    $table->softDeletes($column = 'deleted_at', $precision = 0);
+```php
+$table->softDeletes($column = 'deleted_at', $precision = 0);
+```
 
 <a name="column-method-string"></a>
 #### `string()` {.collection-method}
 
 `string` 方法创建一个指定长度的 `VARCHAR` 等价字段：
 
-    $table->string('name', 100);
+```php
+$table->string('name', 100);
+```
 
 <a name="column-method-text"></a>
 #### `text()` {.collection-method}
 
 `text` 方法创建一个 `TEXT` 等价字段：
 
-    $table->text('description');
+```php
+$table->text('description');
+```
 
 <a name="column-method-timeTz"></a>
 #### `timeTz()` {.collection-method}
 
 `timeTz` 方法创建一个带时区的 `TIME` 等价字段，可指定精度（总位数）：
 
-    $table->timeTz('sunrise', $precision = 0);
+```php
+$table->timeTz('sunrise', $precision = 0);
+```
 
 <a name="column-method-time"></a>
 #### `time()` {.collection-method}
 
 `time` 方法创建一个 `TIME` 等价字段，可指定精度（总位数）：
 
-    $table->time('sunrise', $precision = 0);
+```php
+$table->time('sunrise', $precision = 0);
+```
 
 <a name="column-method-timestampTz"></a>
 #### `timestampTz()` {.collection-method}
 
 `timestampTz` 方法创建一个带时区的 `TIMESTAMP` 等价字段，可指定精度（总位数）：
 
-    $table->timestampTz('added_at', $precision = 0);
+```php
+$table->timestampTz('added_at', $precision = 0);
+```
 
 <a name="column-method-timestamp"></a>
 #### `timestamp()` {.collection-method}
 
 `timestamp` 方法创建一个 `TIMESTAMP` 等价字段，可指定精度（总位数）：
 
-    $table->timestamp('added_at', $precision = 0);
+```php
+$table->timestamp('added_at', $precision = 0);
+```
 
 <a name="column-method-timestampsTz"></a>
 #### `timestampsTz()` {.collection-method}
 
 `timestampsTz` 方法创建 `created_at` 和 `updated_at` `TIMESTAMP`（带时区）等价字段，可指定精度（总位数）：
 
-    $table->timestampsTz($precision = 0);
+```php
+$table->timestampsTz($precision = 0);
+```
 
 <a name="column-method-timestamps"></a>
 #### `timestamps()` {.collection-method}
 
 `timestamps` 方法创建 `created_at` 和 `updated_at` `TIMESTAMP` 等价字段，可指定精度（总位数）：
 
-    $table->timestamps($precision = 0);
+```php
+$table->timestamps($precision = 0);
+```
 
 <a name="column-method-tinyIncrements"></a>
 #### `tinyIncrements()` {.collection-method}
 
 `tinyIncrements` 方法创建一个自增的 `UNSIGNED TINYINT` 等价字段作为主键：
 
-    $table->tinyIncrements('id');
+```php
+$table->tinyIncrements('id');
+```
 
 <a name="column-method-tinyInteger"></a>
 #### `tinyInteger()` {.collection-method}
 
 `tinyInteger` 方法创建一个 `TINYINT` 等价字段：
 
-    $table->tinyInteger('votes');
+```php
+$table->tinyInteger('votes');
+```
 
 <a name="column-method-tinyText"></a>
 #### `tinyText()` {.collection-method}
 
 `tinyText` 方法创建一个 `TINYTEXT` 等价字段：
 
-    $table->tinyText('notes');
+```php
+$table->tinyText('notes');
+```
 
 <a name="column-method-unsignedBigInteger"></a>
 #### `unsignedBigInteger()` {.collection-method}
 
 `unsignedBigInteger` 方法创建一个 `UNSIGNED BIGINT` 等价字段：
 
-    $table->unsignedBigInteger('votes');
+```php
+$table->unsignedBigInteger('votes');
+```
 
 <a name="column-method-unsignedDecimal"></a>
 #### `unsignedDecimal()` {.collection-method}
 
 `unsignedDecimal` 方法创建一个 `UNSIGNED DECIMAL` 等价字段，可指定精度（总位数）和小数位数：
 
-    $table->unsignedDecimal('amount', $precision = 8, $scale = 2);
+```php
+$table->unsignedDecimal('amount', $precision = 8, $scale = 2);
+```
 
 <a name="column-method-unsignedInteger"></a>
 #### `unsignedInteger()` {.collection-method}
 
 `unsignedInteger` 方法创建一个 `UNSIGNED INTEGER` 等价字段：
 
-    $table->unsignedInteger('votes');
+```php
+$table->unsignedInteger('votes');
+```
 
 <a name="column-method-unsignedMediumInteger"></a>
 #### `unsignedMediumInteger()` {.collection-method}
 
 `unsignedMediumInteger` 方法创建一个 `UNSIGNED MEDIUMINT` 等价字段：
 
-    $table->unsignedMediumInteger('votes');
+```php
+$table->unsignedMediumInteger('votes');
+```
 
 <a name="column-method-unsignedSmallInteger"></a>
 #### `unsignedSmallInteger()` {.collection-method}
 
 `unsignedSmallInteger` 方法创建一个 `UNSIGNED SMALLINT` 等价字段：
 
-    $table->unsignedSmallInteger('votes');
+```php
+$table->unsignedSmallInteger('votes');
+```
 
 <a name="column-method-unsignedTinyInteger"></a>
 #### `unsignedTinyInteger()` {.collection-method}
 
 `unsignedTinyInteger` 方法创建一个 `UNSIGNED TINYINT` 等价字段：
 
-    $table->unsignedTinyInteger('votes');
+```php
+$table->unsignedTinyInteger('votes');
+```
 
 <a name="column-method-ulidMorphs"></a>
 #### `ulidMorphs()` {.collection-method}
@@ -899,7 +1051,9 @@ schema 构造器蓝图提供了多种方法，对应于可以添加到数据库�
 
 此方法用于定义使用 ULID 标识符的多态 [Eloquent 关联](/docs/{{version}}/eloquent-relationships) 所需的字段。在以下示例中，将创建 `taggable_id` 和 `taggable_type` 字段：
 
-    $table->ulidMorphs('taggable');
+```php
+$table->ulidMorphs('taggable');
+```
 
 <a name="column-method-uuidMorphs"></a>
 #### `uuidMorphs()` {.collection-method}
@@ -908,40 +1062,50 @@ schema 构造器蓝图提供了多种方法，对应于可以添加到数据库�
 
 此方法用于定义使用 UUID 标识符的多态 [Eloquent 关联](/docs/{{version}}/eloquent-relationships) 所需的字段。在以下示例中，将创建 `taggable_id` 和 `taggable_type` 字段：
 
-    $table->uuidMorphs('taggable');
+```php
+$table->uuidMorphs('taggable');
+```
 
 <a name="column-method-ulid"></a>
 #### `ulid()` {.collection-method}
 
 `ulid` 方法创建一个 `ULID` 等价字段：
 
-    $table->ulid('id');
+```php
+$table->ulid('id');
+```
 
 <a name="column-method-uuid"></a>
 #### `uuid()` {.collection-method}
 
 `uuid` 方法创建一个 `UUID` 等价字段：
 
-    $table->uuid('id');
+```php
+$table->uuid('id');
+```
 
 <a name="column-method-year"></a>
 #### `year()` {.collection-method}
 
 `year` 方法创建一个 `YEAR` 等价字段：
 
-    $table->year('birth_year');
+```php
+$table->year('birth_year');
+```
 
 <a name="column-modifiers"></a>
 ### 字段修饰符
 
 除了上面列出的字段类型外，向数据库表添加字段时还可以使用多个字段"修饰符"。例如，要将字段设为 "nullable"（可为空），可以使用 `nullable` 方法：
 
-    use Illuminate\Database\Schema\Blueprint;
-    use Illuminate\Support\Facades\Schema;
+```php
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 
-    Schema::table('users', function (Blueprint $table) {
-        $table->string('email')->nullable();
-    });
+Schema::table('users', function (Blueprint $table) {
+    $table->string('email')->nullable();
+});
+```
 
 下表包含所有可用的字段修饰符。此列表不包含[索引修饰符](#creating-indexes)：
 
@@ -971,29 +1135,31 @@ schema 构造器蓝图提供了多种方法，对应于可以添加到数据库�
 
 `default` 修饰符接受一个值或 `Illuminate\Database\Query\Expression` 实例。使用 `Expression` 实例会阻止 Laravel 将值用引号包裹，并允许使用数据库特定的函数。这在需要为 JSON 字段指定默认值时特别有用：
 
-    <?php
+```php
+<?php
 
-    use Illuminate\Support\Facades\Schema;
-    use Illuminate\Database\Schema\Blueprint;
-    use Illuminate\Database\Query\Expression;
-    use Illuminate\Database\Migrations\Migration;
+use Illuminate\Support\Facades\Schema;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Database\Query\Expression;
+use Illuminate\Database\Migrations\Migration;
 
-    return new class extends Migration
+return new class extends Migration
+{
+    /**
+     * 运行迁移。
+     *
+     * @return void
+     */
+    public function up()
     {
-        /**
-         * 运行迁移。
-         *
-         * @return void
-         */
-        public function up()
-        {
-            Schema::create('flights', function (Blueprint $table) {
-                $table->id();
-                $table->json('movies')->default(new Expression('(JSON_ARRAY())'));
-                $table->timestamps();
-            });
-        }
-    };
+        Schema::create('flights', function (Blueprint $table) {
+            $table->id();
+            $table->json('movies')->default(new Expression('(JSON_ARRAY())'));
+            $table->timestamps();
+        });
+    }
+};
+```
 
 > **Warning**
 > 默认表达式的支持取决于数据库驱动、数据库版本和字段类型。请参阅数据库的文档。此外，无法将原始 `default` 表达式（使用 `DB::raw`）与通过 `change` 方法进行的字段更改结合使用。
@@ -1003,11 +1169,13 @@ schema 构造器蓝图提供了多种方法，对应于可以添加到数据库�
 
 使用 MySQL 数据库时，可以使用 `after` 方法在 schema 中现有字段之后添加字段：
 
-    $table->after('password', function ($table) {
-        $table->string('address_line1');
-        $table->string('address_line2');
-        $table->string('city');
-    });
+```php
+$table->after('password', function ($table) {
+    $table->string('address_line1');
+    $table->string('address_line2');
+    $table->string('city');
+});
+```
 
 <a name="modifying-columns"></a>
 ### 修改字段
@@ -1017,7 +1185,9 @@ schema 构造器蓝图提供了多种方法，对应于可以添加到数据库�
 
 修改字段之前，必须使用 Composer 包管理器安装 `doctrine/dbal` 包。Doctrine DBAL 库用于确定字段的当前状态，并创建对字段进行所需更改所需的 SQL 查询：
 
-    composer require doctrine/dbal
+```shell
+composer require doctrine/dbal
+```
 
 如果计划修改使用 `timestamp` 方法创建的字段，还必须在应用程序的 `config/database.php` 配置文件中添加以下配置：
 
@@ -1039,15 +1209,19 @@ use Illuminate\Database\DBAL\TimestampType;
 
 `change` 方法允许修改现有字段的类型和属性。例如，可能需要增大 `string` 字段的长度。要查看 `change` 方法的用法，让我们将 `name` 字段的长度从 25 增加到 50。为此，只需定义字段的新状态，然后调用 `change` 方法：
 
-    Schema::table('users', function (Blueprint $table) {
-        $table->string('name', 50)->change();
-    });
+```php
+Schema::table('users', function (Blueprint $table) {
+    $table->string('name', 50)->change();
+});
+```
 
 也可以将字段修改为可为空：
 
-    Schema::table('users', function (Blueprint $table) {
-        $table->string('name', 50)->nullable()->change();
-    });
+```php
+Schema::table('users', function (Blueprint $table) {
+    $table->string('name', 50)->nullable()->change();
+});
+```
 
 > **Warning**
 > 以下字段类型可以被修改：`bigInteger`、`binary`、`boolean`、`char`、`date`、`dateTime`、`dateTimeTz`、`decimal`、`double`、`integer`、`json`、`longText`、`mediumText`、`smallInteger`、`string`、`text`、`time`、`tinyText`、`unsignedBigInteger`、`unsignedInteger`、`unsignedSmallInteger` 和 `uuid`。要修改 `timestamp` 字段类型，必须[注册 Doctrine 类型](#prerequisites)。
@@ -1057,9 +1231,11 @@ use Illuminate\Database\DBAL\TimestampType;
 
 要重命名字段，可以使用 schema 构造器提供的 `renameColumn` 方法：
 
-    Schema::table('users', function (Blueprint $table) {
-        $table->renameColumn('from', 'to');
-    });
+```php
+Schema::table('users', function (Blueprint $table) {
+    $table->renameColumn('from', 'to');
+});
+```
 
 <a name="renaming-columns-on-legacy-databases"></a>
 #### 在旧版数据库上重命名字段
@@ -1075,16 +1251,19 @@ use Illuminate\Database\DBAL\TimestampType;
 
 要删除字段，可以使用 schema 构造器的 `dropColumn` 方法：
 
-    Schema::table('users', function (Blueprint $table) {
-        $table->dropColumn('votes');
-    });
+```php
+Schema::table('users', function (Blueprint $table) {
+    $table->dropColumn('votes');
+});
+```
 
 可以通过向 `dropColumn` 方法传递字段名数组来从表中删除多个字段：
 
-    Schema::table('users', function (Blueprint $table) {
-        $table->dropColumn(['votes', 'avatar', 'location']);
-    });
-
+```php
+Schema::table('users', function (Blueprint $table) {
+    $table->dropColumn(['votes', 'avatar', 'location']);
+});
+```
 
 <a name="dropping-columns-on-legacy-databases"></a>
 #### 在旧版数据库上删除字段
@@ -1113,24 +1292,32 @@ Laravel 提供了几个与删除常见类型字段相关的便捷方法。每个
 
 Laravel schema 构造器支持多种类型的索引。以下示例创建一个新的 `email` 字段，并指定其值应当唯一。要创建索引，可以将 `unique` 方法链接到字段定义上：
 
-    use Illuminate\Database\Schema\Blueprint;
-    use Illuminate\Support\Facades\Schema;
+```php
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 
-    Schema::table('users', function (Blueprint $table) {
-        $table->string('email')->unique();
-    });
+Schema::table('users', function (Blueprint $table) {
+    $table->string('email')->unique();
+});
+```
 
 或者，可以在定义字段之后创建索引。为此，应当在 schema 构造器蓝图上调用 `unique` 方法。此方法接收应当添加唯一索引的字段名：
 
-    $table->unique('email');
+```php
+$table->unique('email');
+```
 
 甚至可以向索引方法传递字段数组来创建复合（或组合）索引：
 
-    $table->index(['account_id', 'created_at']);
+```php
+$table->index(['account_id', 'created_at']);
+```
 
 创建索引时，Laravel 会根据表名、字段名和索引类型自动生成索引名称，但可以向方法传递第二个参数来手动指定索引名称：
 
-    $table->unique('email', 'unique_email');
+```php
+$table->unique('email', 'unique_email');
+```
 
 <a name="available-index-types"></a>
 #### 可用索引类型
@@ -1152,17 +1339,19 @@ Laravel 的 schema 构造器蓝图类提供了创建 Laravel 支持的每种索�
 
 默认情况下，Laravel 使用 `utf8mb4` 字符集。如果运行的 MySQL 版本低于 5.7.7 或 MariaDB 版本低于 10.2.2，可能需要手动配置迁移生成的默认字符串长度，以便 MySQL 为其创建索引。可以在 `App\Providers\AppServiceProvider` 类的 `boot` 方法中调用 `Schema::defaultStringLength` 方法来配置默认字符串长度：
 
-    use Illuminate\Support\Facades\Schema;
+```php
+use Illuminate\Support\Facades\Schema;
 
-    /**
-     * 引导所有应用服务。
-     *
-     * @return void
-     */
-    public function boot()
-    {
-        Schema::defaultStringLength(191);
-    }
+/**
+ * 引导所有应用服务。
+ *
+ * @return void
+ */
+public function boot()
+{
+    Schema::defaultStringLength(191);
+}
+```
 
 或者，可以为数据库启用 `innodb_large_prefix` 选项。有关如何正确启用此选项的说明，请参阅数据库文档。
 
@@ -1171,7 +1360,9 @@ Laravel 的 schema 构造器蓝图类提供了创建 Laravel 支持的每种索�
 
 要重命名索引，可以使用 schema 构造器蓝图提供的 `renameIndex` 方法。此方法接收当前索引名称作为第一个参数，目标名称作为第二个参数：
 
-    $table->renameIndex('from', 'to')
+```php
+$table->renameIndex('from', 'to')
+```
 
 > **Warning**
 > 如果应用程序使用 SQLite 数据库，在使用 `renameIndex` 方法之前，必须通过 Composer 包管理器安装 `doctrine/dbal` 包。
@@ -1191,42 +1382,52 @@ Laravel 的 schema 构造器蓝图类提供了创建 Laravel 支持的每种索�
 
 如果向删除索引的方法传递字段数组，将根据表名、字段和索引类型生成约定的索引名称：
 
-    Schema::table('geo', function (Blueprint $table) {
-        $table->dropIndex(['state']); // 删除索引 'geo_state_index'
-    });
+```php
+Schema::table('geo', function (Blueprint $table) {
+    $table->dropIndex(['state']); // 删除索引 'geo_state_index'
+});
+```
 
 <a name="foreign-key-constraints"></a>
 ### 外键约束
 
 Laravel 还支持创建外键约束，用于在数据库层面强制引用完整性。例如，在 `posts` 表上定义一个 `user_id` 字段，引用 `users` 表上的 `id` 字段：
 
-    use Illuminate\Database\Schema\Blueprint;
-    use Illuminate\Support\Facades\Schema;
+```php
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 
-    Schema::table('posts', function (Blueprint $table) {
-        $table->unsignedBigInteger('user_id');
+Schema::table('posts', function (Blueprint $table) {
+    $table->unsignedBigInteger('user_id');
 
-        $table->foreign('user_id')->references('id')->on('users');
-    });
+    $table->foreign('user_id')->references('id')->on('users');
+});
+```
 
 由于此语法较为冗长，Laravel 提供了额外的、更简洁的方法，使用约定来提供更好的开发体验。使用 `foreignId` 方法创建字段时，上面的示例可以改写为：
 
-    Schema::table('posts', function (Blueprint $table) {
-        $table->foreignId('user_id')->constrained();
-    });
+```php
+Schema::table('posts', function (Blueprint $table) {
+    $table->foreignId('user_id')->constrained();
+});
+```
 
 `foreignId` 方法创建一个 `UNSIGNED BIGINT` 等价字段，而 `constrained` 方法会使用约定来确定被引用的表和字段名。如果表名不符合 Laravel 的约定，可以通过将表名作为参数传递给 `constrained` 方法来指定：
 
-    Schema::table('posts', function (Blueprint $table) {
-        $table->foreignId('user_id')->constrained('users');
-    });
+```php
+Schema::table('posts', function (Blueprint $table) {
+    $table->foreignId('user_id')->constrained('users');
+});
+```
 
 还可以为约束的 "on delete" 和 "on update" 属性指定所需的操作：
 
-    $table->foreignId('user_id')
-          ->constrained()
-          ->onUpdate('cascade')
-          ->onDelete('cascade');
+```php
+$table->foreignId('user_id')
+      ->constrained()
+      ->onUpdate('cascade')
+      ->onDelete('cascade');
+```
 
 还为这些操作提供了另一种更具表达性的语法：
 
@@ -1240,33 +1441,41 @@ Laravel 还支持创建外键约束，用于在数据库层面强制引用完整
 
 任何额外的[字段修饰符](#column-modifiers)必须在 `constrained` 方法之前调用：
 
-    $table->foreignId('user_id')
-          ->nullable()
-          ->constrained();
+```php
+$table->foreignId('user_id')
+      ->nullable()
+      ->constrained();
+```
 
 <a name="dropping-foreign-keys"></a>
 #### 删除外键
 
 要删除外键，可以使用 `dropForeign` 方法，将要删除的外键约束名称作为参数传递。外键约束使用与索引相同的命名约定。换句话说，外键约束名称基于表名和约束中的字段名，后跟 "\_foreign" 后缀：
 
-    $table->dropForeign('posts_user_id_foreign');
+```php
+$table->dropForeign('posts_user_id_foreign');
+```
 
 或者，可以向 `dropForeign` 方法传递包含持有外键的字段名的数组。该数组将使用 Laravel 的约束命名约定转换为外键约束名称：
 
-    $table->dropForeign(['user_id']);
+```php
+$table->dropForeign(['user_id']);
+```
 
 <a name="toggling-foreign-key-constraints"></a>
 #### 切换外键约束
 
 可以在迁移中使用以下方法来启用或禁用外键约束：
 
-    Schema::enableForeignKeyConstraints();
+```php
+Schema::enableForeignKeyConstraints();
 
-    Schema::disableForeignKeyConstraints();
+Schema::disableForeignKeyConstraints();
 
-    Schema::withoutForeignKeyConstraints(function () {
-        // 在此闭包内禁用约束...
-    });
+Schema::withoutForeignKeyConstraints(function () {
+    // 在此闭包内禁用约束...
+});
+```
 
 > **Warning**
 > SQLite 默认禁用外键约束。使用 SQLite 时，在尝试于迁移中创建外键之前，请确保在数据库配置中[启用外键支持](/docs/{{version}}/database#configuration)。此外，SQLite 仅在创建表时支持外键，[不支持在修改表时添加外键](https://www.sqlite.org/omitted.html)。

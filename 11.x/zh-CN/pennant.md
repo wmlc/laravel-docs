@@ -107,7 +107,9 @@ class AppServiceProvider extends ServiceProvider
 
 为方便起见，如果某个功能定义只返回一个 Lottery，可以完全省略闭包：
 
-    Feature::define('site-redesign', Lottery::odds(1, 1000));
+```php
+Feature::define('site-redesign', Lottery::odds(1, 1000));
+```
 
 <a name="class-based-features"></a>
 ### 基于类的功能
@@ -273,37 +275,41 @@ class PodcastController
 
 如果某个功能已启用，可以使用 `when` 方法以链式方式执行给定闭包。此外，你还可以提供第二个闭包，它会在功能未启用时执行：
 
-    <?php
+```php
+<?php
 
-    namespace App\Http\Controllers;
+namespace App\Http\Controllers;
 
-    use App\Features\NewApi;
-    use Illuminate\Http\Request;
-    use Illuminate\Http\Response;
-    use Laravel\Pennant\Feature;
+use App\Features\NewApi;
+use Illuminate\Http\Request;
+use Illuminate\Http\Response;
+use Laravel\Pennant\Feature;
 
-    class PodcastController
+class PodcastController
+{
+    /**
+     * 展示资源列表。
+     */
+    public function index(Request $request): Response
     {
-        /**
-         * 展示资源列表。
-         */
-        public function index(Request $request): Response
-        {
-            return Feature::when(NewApi::class,
-                fn () => $this->resolveNewApiResponse($request),
-                fn () => $this->resolveLegacyApiResponse($request),
-            );
-        }
-
-        // ...
+        return Feature::when(NewApi::class,
+            fn () => $this->resolveNewApiResponse($request),
+            fn () => $this->resolveLegacyApiResponse($request),
+        );
     }
+
+    // ...
+}
+```
 
 `unless` 方法与 `when` 方法相反，它在功能未启用时执行第一个闭包：
 
-    return Feature::unless(NewApi::class,
-        fn () => $this->resolveLegacyApiResponse($request),
-        fn () => $this->resolveNewApiResponse($request),
-    );
+```php
+return Feature::unless(NewApi::class,
+    fn () => $this->resolveLegacyApiResponse($request),
+    fn () => $this->resolveNewApiResponse($request),
+);
+```
 
 <a name="the-has-features-trait"></a>
 ### `HasFeatures` Trait
@@ -497,7 +503,9 @@ class NewApi
 
 如果需要手动清空内存缓存，可以使用 `Feature` Facade 提供的 `flushCache` 方法：
 
-    Feature::flushCache();
+```php
+Feature::flushCache();
+```
 
 <a name="scope"></a>
 ## 作用域
@@ -698,17 +706,21 @@ Pennant 附带的 Blade 指令也让你可以轻松地根据功能的当前值�
 
 调用[条件 `when`](#conditional-execution)方法时，该功能的丰富值会被传给第一个闭包：
 
-    Feature::when('purchase-button',
-        fn ($color) => /* ... */,
-        fn () => /* ... */,
-    );
+```php
+Feature::when('purchase-button',
+    fn ($color) => /* ... */,
+    fn () => /* ... */,
+);
+```
 
 同理，调用条件 `unless` 方法时，该功能的丰富值会被传给可选的第二个闭包：
 
-    Feature::unless('purchase-button',
-        fn () => /* ... */,
-        fn ($color) => /* ... */,
-    );
+```php
+Feature::unless('purchase-button',
+    fn () => /* ... */,
+    fn ($color) => /* ... */,
+);
+```
 
 <a name="retrieving-multiple-features"></a>
 ## 获取多个功能
@@ -740,25 +752,27 @@ Feature::all();
 
 如果你希望确保在使用 `all` 方法时始终包含功能类，可以使用 Pennant 的功能发现能力。要开始使用，在应用某个服务提供者中调用 `discover` 方法：
 
-    <?php
+```php
+<?php
 
-    namespace App\Providers;
+namespace App\Providers;
 
-    use Illuminate\Support\ServiceProvider;
-    use Laravel\Pennant\Feature;
+use Illuminate\Support\ServiceProvider;
+use Laravel\Pennant\Feature;
 
-    class AppServiceProvider extends ServiceProvider
+class AppServiceProvider extends ServiceProvider
+{
+    /**
+     * 引导任何应用服务。
+     */
+    public function boot(): void
     {
-        /**
-         * 引导任何应用服务。
-         */
-        public function boot(): void
-        {
-            Feature::discover();
+        Feature::discover();
 
-            // ...
-        }
+        // ...
     }
+}
+```
 
 `discover` 方法会注册你应用 `app/Features` 目录中的所有功能类。现在 `all` 方法会在结果中包含这些类，无论它们在当前请求期间是否已被检查：
 
@@ -1065,16 +1079,18 @@ class AppServiceProvider extends ServiceProvider
 
 驱动注册完成后，你就可以在应用的 `config/pennant.php` 配置文件中使用 `redis` 驱动：
 
-    'stores' => [
+```php
+'stores' => [
 
-        'redis' => [
-            'driver' => 'redis',
-            'connection' => null,
-        ],
-
-        // ...
-
+    'redis' => [
+        'driver' => 'redis',
+        'connection' => null,
     ],
+
+    // ...
+
+],
+```
 
 <a name="defining-features-externally"></a>
 ### 在外部定义功能

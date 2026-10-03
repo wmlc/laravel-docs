@@ -53,10 +53,12 @@ Laravel 包含大量便捷的验证规则，可以应用于数据，甚至提供
 
 首先，假设 `routes/web.php` 文件中定义了以下路由：
 
-    use App\Http\Controllers\PostController;
+```php
+use App\Http\Controllers\PostController;
 
-    Route::get('/post/create', [PostController::class, 'create']);
-    Route::post('/post', [PostController::class, 'store']);
+Route::get('/post/create', [PostController::class, 'create']);
+Route::post('/post', [PostController::class, 'store']);
+```
 
 `GET` 路由将显示供用户创建新博客文章的表单，而 `POST` 路由将把新博客文章存储到数据库中。
 
@@ -65,36 +67,38 @@ Laravel 包含大量便捷的验证规则，可以应用于数据，甚至提供
 
 接下来，看一个处理这些路由传入请求的简单控制器。暂时将 `store` 方法留空：
 
-    <?php
+```php
+<?php
 
-    namespace App\Http\Controllers;
+namespace App\Http\Controllers;
 
-    use App\Http\Controllers\Controller;
-    use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
 
-    class PostController extends Controller
+class PostController extends Controller
+{
+    /**
+     * 显示创建新博客文章的表单。
+     *
+     * @return \Illuminate\View\View
+     */
+    public function create()
     {
-        /**
-         * 显示创建新博客文章的表单。
-         *
-         * @return \Illuminate\View\View
-         */
-        public function create()
-        {
-            return view('post.create');
-        }
-
-        /**
-         * 存储新博客文章。
-         *
-         * @param  \Illuminate\Http\Request  $request
-         * @return \Illuminate\Http\Response
-         */
-        public function store(Request $request)
-        {
-            // 验证并存储博客文章...
-        }
+        return view('post.create');
     }
+
+    /**
+     * 存储新博客文章。
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function store(Request $request)
+    {
+        // 验证并存储博客文章...
+    }
+}
+```
 
 <a name="quick-writing-the-validation-logic"></a>
 ### 编写验证逻辑
@@ -105,47 +109,55 @@ Laravel 包含大量便捷的验证规则，可以应用于数据，甚至提供
 
 为了更好地理解 `validate` 方法，让我们回到 `store` 方法：
 
-    /**
-     * 存储新博客文章。
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
-        $validated = $request->validate([
-            'title' => 'required|unique:posts|max:255',
-            'body' => 'required',
-        ]);
+```php
+/**
+ * 存储新博客文章。
+ *
+ * @param  \Illuminate\Http\Request  $request
+ * @return \Illuminate\Http\Response
+ */
+public function store(Request $request)
+{
+    $validated = $request->validate([
+        'title' => 'required|unique:posts|max:255',
+        'body' => 'required',
+    ]);
 
-        // 博客文章有效...
-    }
+    // 博客文章有效...
+}
+```
 
 如上所示，验证规则传递给 `validate` 方法。不用担心——所有可用的验证规则都已[文档化](#available-validation-rules)。同样，如果验证失败，将自动生成正确的响应。如果验证通过，控制器将继续正常执行。
 
 或者，验证规则可以指定为规则数组，而非以 `|` 分隔的单个字符串：
 
-    $validatedData = $request->validate([
-        'title' => ['required', 'unique:posts', 'max:255'],
-        'body' => ['required'],
-    ]);
+```php
+$validatedData = $request->validate([
+    'title' => ['required', 'unique:posts', 'max:255'],
+    'body' => ['required'],
+]);
+```
 
 此外，可以使用 `validateWithBag` 方法验证请求并将任何错误消息存储在[命名错误包](#named-error-bags)中：
 
-    $validatedData = $request->validateWithBag('post', [
-        'title' => ['required', 'unique:posts', 'max:255'],
-        'body' => ['required'],
-    ]);
+```php
+$validatedData = $request->validateWithBag('post', [
+    'title' => ['required', 'unique:posts', 'max:255'],
+    'body' => ['required'],
+]);
+```
 
 <a name="stopping-on-first-validation-failure"></a>
 #### 首次验证失败时停止
 
 有时可能希望在首次验证失败后停止运行某个属性的验证规则。为此，将该属性的 `bail` 规则分配给它：
 
-    $request->validate([
-        'title' => 'bail|required|unique:posts|max:255',
-        'body' => 'required',
-    ]);
+```php
+$request->validate([
+    'title' => 'bail|required|unique:posts|max:255',
+    'body' => 'required',
+]);
+```
 
 在此示例中，如果 `title` 属性上的 `unique` 规则失败，将不会检查 `max` 规则。规则将按分配顺序验证。
 
@@ -154,18 +166,22 @@ Laravel 包含大量便捷的验证规则，可以应用于数据，甚至提供
 
 如果传入 HTTP 请求包含"嵌套"字段数据，可以在验证规则中使用"点"语法指定这些字段：
 
-    $request->validate([
-        'title' => 'required|unique:posts|max:255',
-        'author.name' => 'required',
-        'author.description' => 'required',
-    ]);
+```php
+$request->validate([
+    'title' => 'required|unique:posts|max:255',
+    'author.name' => 'required',
+    'author.description' => 'required',
+]);
+```
 
 另一方面，如果字段名包含字面意义的句点，可以通过用反斜杠转义句点来显式阻止将其解释为"点"语法：
 
-    $request->validate([
-        'title' => 'required|unique:posts|max:255',
-        'v1\.0' => 'required',
-    ]);
+```php
+$request->validate([
+    'title' => 'required|unique:posts|max:255',
+    'v1\.0' => 'required',
+]);
+```
 
 <a name="quick-displaying-the-validation-errors"></a>
 ### 显示验证错误
@@ -239,7 +255,9 @@ Laravel 的内置验证规则每个都有错误消息，位于应用的 `lang/en
 
 要从上一个请求检索闪存的输入，在 `Illuminate\Http\Request` 实例上调用 `old` 方法。`old` 方法将从[会话](/docs/{{version}}/session)中提取之前闪存的输入数据：
 
-    $title = $request->old('title');
+```php
+$title = $request->old('title');
+```
 
 Laravel 还提供全局 `old` 辅助函数。如果在 [Blade 模板](/docs/{{version}}/blade)中显示旧输入，使用 `old` 辅助函数重新填充表单更方便。如果给定字段不存在旧输入，将返回 `null`：
 
@@ -252,11 +270,13 @@ Laravel 还提供全局 `old` 辅助函数。如果在 [Blade 模板](/docs/{{ve
 
 默认情况下，Laravel 在应用的全局中间件栈中包含 `TrimStrings` 和 `ConvertEmptyStringsToNull` 中间件。这些中间件由 `App\Http\Kernel` 类列在栈中。因此，如果不希望验证器将 `null` 值视为无效，通常需要将"可选"请求字段标记为 `nullable`。例如：
 
-    $request->validate([
-        'title' => 'required|unique:posts|max:255',
-        'body' => 'required',
-        'publish_at' => 'nullable|date',
-    ]);
+```php
+$request->validate([
+    'title' => 'required|unique:posts|max:255',
+    'body' => 'required',
+    'publish_at' => 'nullable|date',
+]);
+```
 
 在此示例中，指定 `publish_at` 字段可以为 `null` 或有效的日期表示。如果未将 `nullable` 修饰符添加到规则定义中，验证器会将 `null` 视为无效日期。
 
@@ -304,41 +324,45 @@ php artisan make:request StorePostRequest
 
 如可能猜测的那样，`authorize` 方法负责确定当前已认证用户是否可以执行请求所代表的操作，而 `rules` 方法返回应应用于请求数据的验证规则：
 
-    /**
-     * 获取应用于请求的验证规则。
-     *
-     * @return array
-     */
-    public function rules()
-    {
-        return [
-            'title' => 'required|unique:posts|max:255',
-            'body' => 'required',
-        ];
-    }
+```php
+/**
+ * 获取应用于请求的验证规则。
+ *
+ * @return array
+ */
+public function rules()
+{
+    return [
+        'title' => 'required|unique:posts|max:255',
+        'body' => 'required',
+    ];
+}
+```
 
 > **Note**  
 > 可以在 `rules` 方法签名中类型提示所需的任何依赖。它们将通过 Laravel [服务容器](/docs/{{version}}/container)自动解析。
 
 那么，验证规则如何被评估？只需在控制器方法上类型提示请求。传入的表单请求在控制器方法被调用之前验证，这意味着无需用任何验证逻辑混乱控制器：
 
-    /**
-     * 存储新博客文章。
-     *
-     * @param  \App\Http\Requests\StorePostRequest  $request
-     * @return Illuminate\Http\Response
-     */
-    public function store(StorePostRequest $request)
-    {
-        // 传入请求有效...
+```php
+/**
+ * 存储新博客文章。
+ *
+ * @param  \App\Http\Requests\StorePostRequest  $request
+ * @return Illuminate\Http\Response
+ */
+public function store(StorePostRequest $request)
+{
+    // 传入请求有效...
 
-        // 检索已验证的输入数据...
-        $validated = $request->validated();
+    // 检索已验证的输入数据...
+    $validated = $request->validated();
 
-        // 检索部分已验证输入数据...
-        $validated = $request->safe()->only(['name', 'email']);
-        $validated = $request->safe()->except(['name', 'email']);
-    }
+    // 检索部分已验证输入数据...
+    $validated = $request->safe()->only(['name', 'email']);
+    $validated = $request->safe()->except(['name', 'email']);
+}
+```
 
 如果验证失败，将生成重定向响应将用户送回其之前的位置。错误也将闪存到会话以便显示。如果请求是 XHR 请求，将向用户返回包含 422 状态码的 HTTP 响应，其中包含[验证错误的 JSON 表示](#validation-error-response-format)。
 
@@ -347,95 +371,110 @@ php artisan make:request StorePostRequest
 
 如果希望为表单请求添加"后置"验证钩子，可以使用 `withValidator` 方法。此方法接收完全构造的验证器，允许在验证规则实际评估之前调用其任何方法：
 
-    /**
-     * 配置验证器实例。
-     *
-     * @param  \Illuminate\Validation\Validator  $validator
-     * @return void
-     */
-    public function withValidator($validator)
-    {
-        $validator->after(function ($validator) {
-            if ($this->somethingElseIsInvalid()) {
-                $validator->errors()->add('field', 'Something is wrong with this field!');
-            }
-        });
-    }
-
+```php
+/**
+ * 配置验证器实例。
+ *
+ * @param  \Illuminate\Validation\Validator  $validator
+ * @return void
+ */
+public function withValidator($validator)
+{
+    $validator->after(function ($validator) {
+        if ($this->somethingElseIsInvalid()) {
+            $validator->errors()->add('field', 'Something is wrong with this field!');
+        }
+    });
+}
+```
 
 <a name="request-stopping-on-first-validation-rule-failure"></a>
 #### 首次验证失败停止属性
 
 通过在请求类中添加 `stopOnFirstFailure` 属性，可以告知验证器在发生单个验证失败后应停止验证所有属性：
 
-    /**
-     * 指示验证器是否在首次规则失败时停止。
-     *
-     * @var bool
-     */
-    protected $stopOnFirstFailure = true;
+```php
+/**
+ * 指示验证器是否在首次规则失败时停止。
+ *
+ * @var bool
+ */
+protected $stopOnFirstFailure = true;
+```
 
 <a name="customizing-the-redirect-location"></a>
 #### 自定义重定向位置
 
 如前所述，表单请求验证失败时将生成重定向响应将用户送回其之前的位置。但可以自由自定义此行为。为此，在表单请求上定义 `$redirect` 属性：
 
-    /**
-     * 验证失败时用户应重定向到的 URI。
-     *
-     * @var string
-     */
-    protected $redirect = '/dashboard';
+```php
+/**
+ * 验证失败时用户应重定向到的 URI。
+ *
+ * @var string
+ */
+protected $redirect = '/dashboard';
+```
 
 或者，如果希望将用户重定向到命名路由，可以定义 `$redirectRoute` 属性：
 
-    /**
-     * 验证失败时用户应重定向到的路由。
-     *
-     * @var string
-     */
-    protected $redirectRoute = 'dashboard';
+```php
+/**
+ * 验证失败时用户应重定向到的路由。
+ *
+ * @var string
+ */
+protected $redirectRoute = 'dashboard';
+```
 
 <a name="authorizing-form-requests"></a>
 ### 授权表单请求
 
 表单请求类还包含 `authorize` 方法。在此方法中，可以确定已认证用户是否确实有权更新给定资源。例如，可以确定用户是否确实拥有其尝试更新的博客评论。很可能，将在此方法中与[授权门和策略](/docs/{{version}}/authorization)交互：
 
-    use App\Models\Comment;
+```php
+use App\Models\Comment;
 
-    /**
-     * 确定用户是否有权发起此请求。
-     *
-     * @return bool
-     */
-    public function authorize()
-    {
-        $comment = Comment::find($this->route('comment'));
+/**
+ * 确定用户是否有权发起此请求。
+ *
+ * @return bool
+ */
+public function authorize()
+{
+    $comment = Comment::find($this->route('comment'));
 
-        return $comment && $this->user()->can('update', $comment);
-    }
+    return $comment && $this->user()->can('update', $comment);
+}
+```
 
 由于所有表单请求都继承基础 Laravel 请求类，可以使用 `user` 方法访问当前已认证用户。还请注意上面示例中对 `route` 方法的调用。此方法允许访问正在调用的路由上定义的 URI 参数，例如以下示例中的 `{comment}` 参数：
 
-    Route::post('/comment/{comment});
+```php
+Route::post('/comment/{comment});
+```
 
 因此，如果应用利用[路由模型绑定](/docs/{{version}}/routing#route-model-binding)，代码可以更简洁，通过将解析的模型作为请求属性访问：
 
-    return $this->user()->can('update', $this->comment);
+```php
+return $this->user()->can('update', $this->comment);
+```
 
 如果 `authorize` 方法返回 `false`，将自动返回 403 状态码的 HTTP 响应，控制器方法不会执行。
 
 如果计划在应用的其他部分处理请求的授权逻辑，可以简单地从 `authorize` 方法返回 `true`：
 
-    /**
-     * 确定用户是否有权发起此请求。
-     *
-     * @return bool
-     */
-    public function authorize()
-    {
-        return true;
-    }
+```php
+/**
+ * 确定用户是否有权发起此请求。
+ *
+ * @return bool
+ */
+public function authorize()
+{
+    return true;
+}
+```
 
 > **Note**  
 > 可以在 `authorize` 方法签名中类型提示所需的任何依赖。它们将通过 Laravel [服务容器](/docs/{{version}}/container)自动解析。
@@ -445,113 +484,123 @@ php artisan make:request StorePostRequest
 
 可以通过覆盖 `messages` 方法来自定义表单请求使用的错误消息。此方法应返回属性 / 规则对及其对应错误消息的数组：
 
-    /**
-     * 获取定义验证规则的错误消息。
-     *
-     * @return array
-     */
-    public function messages()
-    {
-        return [
-            'title.required' => 'A title is required',
-            'body.required' => 'A message is required',
-        ];
-    }
+```php
+/**
+ * 获取定义验证规则的错误消息。
+ *
+ * @return array
+ */
+public function messages()
+{
+    return [
+        'title.required' => 'A title is required',
+        'body.required' => 'A message is required',
+    ];
+}
+```
 
 <a name="customizing-the-validation-attributes"></a>
 #### 自定义验证属性
 
 Laravel 许多内置验证规则错误消息包含 `:attribute` 占位符。如果希望验证消息的 `:attribute` 占位符替换为自定义属性名称，可以通过覆盖 `attributes` 方法指定自定义名称。此方法应返回属性 / 名称对的数组：
 
-    /**
-     * 获取验证器错误的自定义属性。
-     *
-     * @return array
-     */
-    public function attributes()
-    {
-        return [
-            'email' => 'email address',
-        ];
-    }
+```php
+/**
+ * 获取验证器错误的自定义属性。
+ *
+ * @return array
+ */
+public function attributes()
+{
+    return [
+        'email' => 'email address',
+    ];
+}
+```
 
 <a name="preparing-input-for-validation"></a>
 ### 为验证准备输入
 
 如果需要在应用验证规则之前准备或清理请求中的任何数据，可以使用 `prepareForValidation` 方法：
 
-    use Illuminate\Support\Str;
+```php
+use Illuminate\Support\Str;
 
-    /**
-     * 为验证准备数据。
-     *
-     * @return void
-     */
-    protected function prepareForValidation()
-    {
-        $this->merge([
-            'slug' => Str::slug($this->slug),
-        ]);
-    }
+/**
+ * 为验证准备数据。
+ *
+ * @return void
+ */
+protected function prepareForValidation()
+{
+    $this->merge([
+        'slug' => Str::slug($this->slug),
+    ]);
+}
+```
 
 同样，如果需要在验证完成后规范化任何请求数据，可以使用 `passedValidation` 方法：
 
-    use Illuminate\Support\Str;
+```php
+use Illuminate\Support\Str;
 
-    /**
-     * 处理通过的验证尝试。
-     *
-     * @return void
-     */
-    protected function passedValidation()
-    {
-        $this->replace(['name' => 'Taylor']);
-    }
+/**
+ * 处理通过的验证尝试。
+ *
+ * @return void
+ */
+protected function passedValidation()
+{
+    $this->replace(['name' => 'Taylor']);
+}
+```
 
 <a name="manually-creating-validators"></a>
 ## 手动创建验证器
 
 如果不想在请求上使用 `validate` 方法，可以使用 `Validator` [Facade](/docs/{{version}}/facades)手动创建验证器实例。Facade 上的 `make` 方法生成新的验证器实例：
 
-    <?php
+```php
+<?php
 
-    namespace App\Http\Controllers;
+namespace App\Http\Controllers;
 
-    use App\Http\Controllers\Controller;
-    use Illuminate\Http\Request;
-    use Illuminate\Support\Facades\Validator;
+use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
-    class PostController extends Controller
+class PostController extends Controller
+{
+    /**
+     * 存储新博客文章。
+     *
+     * @param  Request  $request
+     * @return Response
+     */
+    public function store(Request $request)
     {
-        /**
-         * 存储新博客文章。
-         *
-         * @param  Request  $request
-         * @return Response
-         */
-        public function store(Request $request)
-        {
-            $validator = Validator::make($request->all(), [
-                'title' => 'required|unique:posts|max:255',
-                'body' => 'required',
-            ]);
+        $validator = Validator::make($request->all(), [
+            'title' => 'required|unique:posts|max:255',
+            'body' => 'required',
+        ]);
 
-            if ($validator->fails()) {
-                return redirect('post/create')
-                            ->withErrors($validator)
-                            ->withInput();
-            }
-
-            // 检索已验证的输入...
-            $validated = $validator->validated();
-
-            // 检索部分已验证输入...
-            $validated = $validator->safe()->only(['name', 'email']);
-            $validated = $validator->safe()->except(['name', 'email']);
-
-            // 存储博客文章...
+        if ($validator->fails()) {
+            return redirect('post/create')
+                        ->withErrors($validator)
+                        ->withInput();
         }
+
+        // 检索已验证的输入...
+        $validated = $validator->validated();
+
+        // 检索部分已验证输入...
+        $validated = $validator->safe()->only(['name', 'email']);
+        $validated = $validator->safe()->except(['name', 'email']);
+
+        // 存储博客文章...
     }
+}
+```
 
 传递给 `make` 方法的第一个参数是正在验证的数据。第二个参数是应应用于数据的验证规则数组。
 
@@ -561,33 +610,41 @@ Laravel 许多内置验证规则错误消息包含 `:attribute` 占位符。如�
 
 `stopOnFirstFailure` 方法将告知验证器在发生单个验证失败后应停止验证所有属性：
 
-    if ($validator->stopOnFirstFailure()->fails()) {
-        // ...
-    }
+```php
+if ($validator->stopOnFirstFailure()->fails()) {
+    // ...
+}
+```
 
 <a name="automatic-redirection"></a>
 ### 自动重定向
 
 如果希望手动创建验证器实例但仍利用 HTTP 请求 `validate` 方法提供的自动重定向，可以在现有验证器实例上调用 `validate` 方法。如果验证失败，用户将自动重定向，或者对于 XHR 请求，将返回 [JSON 响应](#validation-error-response-format)：
 
-    Validator::make($request->all(), [
-        'title' => 'required|unique:posts|max:255',
-        'body' => 'required',
-    ])->validate();
+```php
+Validator::make($request->all(), [
+    'title' => 'required|unique:posts|max:255',
+    'body' => 'required',
+])->validate();
+```
 
 可以使用 `validateWithBag` 方法在验证失败时将错误消息存储在[命名错误包](#named-error-bags)中：
 
-    Validator::make($request->all(), [
-        'title' => 'required|unique:posts|max:255',
-        'body' => 'required',
-    ])->validateWithBag('post');
+```php
+Validator::make($request->all(), [
+    'title' => 'required|unique:posts|max:255',
+    'body' => 'required',
+])->validateWithBag('post');
+```
 
 <a name="named-error-bags"></a>
 ### 命名错误包
 
 如果单个页面上有多个表单，可能希望命名包含验证错误的 `MessageBag`，以便检索特定表单的错误消息。为此，将名称作为第二个参数传递给 `withErrors`：
 
-    return redirect('register')->withErrors($validator, 'login');
+```php
+return redirect('register')->withErrors($validator, 'login');
+```
 
 然后可以从 `$errors` 变量访问命名的 `MessageBag` 实例：
 
@@ -600,92 +657,112 @@ Laravel 许多内置验证规则错误消息包含 `:attribute` 占位符。如�
 
 如果需要，可以提供验证器实例应使用的自定义错误消息，而非 Laravel 提供的默认错误消息。有几种方式指定自定义消息。首先，可以将自定义消息作为第三个参数传递给 `Validator::make` 方法：
 
-    $validator = Validator::make($input, $rules, $messages = [
-        'required' => 'The :attribute field is required.',
-    ]);
+```php
+$validator = Validator::make($input, $rules, $messages = [
+    'required' => 'The :attribute field is required.',
+]);
+```
 
 在此示例中，`:attribute` 占位符将被替换为正在验证的字段的实际名称。还可以在验证消息中使用其他占位符。例如：
 
-    $messages = [
-        'same' => 'The :attribute and :other must match.',
-        'size' => 'The :attribute must be exactly :size.',
-        'between' => 'The :attribute value :input is not between :min - :max.',
-        'in' => 'The :attribute must be one of the following types: :values',
-    ];
+```php
+$messages = [
+    'same' => 'The :attribute and :other must match.',
+    'size' => 'The :attribute must be exactly :size.',
+    'between' => 'The :attribute value :input is not between :min - :max.',
+    'in' => 'The :attribute must be one of the following types: :values',
+];
+```
 
 <a name="specifying-a-custom-message-for-a-given-attribute"></a>
 #### 为给定属性指定自定义消息
 
 有时可能希望仅为特定属性指定自定义错误消息。可以使用"点"表示法实现。先指定属性名称，然后是规则：
 
-    $messages = [
-        'email.required' => 'We need to know your email address!',
-    ];
+```php
+$messages = [
+    'email.required' => 'We need to know your email address!',
+];
+```
 
 <a name="specifying-custom-attribute-values"></a>
 #### 指定自定义属性值
 
 Laravel 许多内置错误消息包含 `:attribute` 占位符，替换为正在验证的字段或属性名称。要自定义用于替换特定字段这些占位符的值，可以将自定义属性数组作为第四个参数传递给 `Validator::make` 方法：
 
-    $validator = Validator::make($input, $rules, $messages, [
-        'email' => 'email address',
-    ]);
+```php
+$validator = Validator::make($input, $rules, $messages, [
+    'email' => 'email address',
+]);
+```
 
 <a name="after-validation-hook"></a>
 ### 验证后钩子
 
 还可以附加在验证完成后运行的回调。这允许轻松执行进一步验证，甚至向消息集合添加更多错误消息。首先，在验证器实例上调用 `after` 方法：
 
-    $validator = Validator::make(/* ... */);
+```php
+$validator = Validator::make(/* ... */);
 
-    $validator->after(function ($validator) {
-        if ($this->somethingElseIsInvalid()) {
-            $validator->errors()->add(
-                'field', 'Something is wrong with this field!'
-            );
-        }
-    });
-
-    if ($validator->fails()) {
-        //
+$validator->after(function ($validator) {
+    if ($this->somethingElseIsInvalid()) {
+        $validator->errors()->add(
+            'field', 'Something is wrong with this field!'
+        );
     }
+});
+
+if ($validator->fails()) {
+    //
+}
+```
 
 <a name="working-with-validated-input"></a>
 ## 处理已验证输入
 
 使用表单请求或手动创建的验证器实例验证传入请求数据后，可能希望检索实际经过验证的传入请求数据。这可以通过几种方式完成。首先，可以在表单请求或验证器实例上调用 `validated` 方法。此方法返回已验证数据的数组：
 
-    $validated = $request->validated();
+```php
+$validated = $request->validated();
 
-    $validated = $validator->validated();
+$validated = $validator->validated();
+```
 
 或者，可以在表单请求或验证器实例上调用 `safe` 方法。此方法返回 `Illuminate\Support\ValidatedInput` 实例。此对象暴露 `only`、`except` 和 `all` 方法，用于检索已验证数据的子集或整个已验证数据数组：
 
-    $validated = $request->safe()->only(['name', 'email']);
+```php
+$validated = $request->safe()->only(['name', 'email']);
 
-    $validated = $request->safe()->except(['name', 'email']);
+$validated = $request->safe()->except(['name', 'email']);
 
-    $validated = $request->safe()->all();
+$validated = $request->safe()->all();
+```
 
 此外，`Illuminate\Support\ValidatedInput` 实例可以像数组一样迭代和访问：
 
-    // 已验证数据可迭代...
-    foreach ($request->safe() as $key => $value) {
-        //
-    }
+```php
+// 已验证数据可迭代...
+foreach ($request->safe() as $key => $value) {
+    //
+}
 
-    // 已验证数据可作为数组访问...
-    $validated = $request->safe();
+// 已验证数据可作为数组访问...
+$validated = $request->safe();
 
-    $email = $validated['email'];
+$email = $validated['email'];
+```
 
 如果希望向已验证数据添加额外字段，可以调用 `merge` 方法：
 
-    $validated = $request->safe()->merge(['name' => 'Taylor Otwell']);
+```php
+$validated = $request->safe()->merge(['name' => 'Taylor Otwell']);
+```
 
 如果希望将已验证数据检索为[集合](/docs/{{version}}/collections)实例，可以调用 `collect` 方法：
 
-    $collection = $request->safe()->collect();
+```php
+$collection = $request->safe()->collect();
+```
 
 <a name="working-with-error-messages"></a>
 ## 处理错误消息
@@ -697,42 +774,52 @@ Laravel 许多内置错误消息包含 `:attribute` 占位符，替换为正在�
 
 要检索给定字段的第一个错误消息，使用 `first` 方法：
 
-    $errors = $validator->errors();
+```php
+$errors = $validator->errors();
 
-    echo $errors->first('email');
+echo $errors->first('email');
+```
 
 <a name="retrieving-all-error-messages-for-a-field"></a>
 #### 检索字段的所有错误消息
 
 如果需要检索给定字段的所有消息数组，使用 `get` 方法：
 
-    foreach ($errors->get('email') as $message) {
-        //
-    }
+```php
+foreach ($errors->get('email') as $message) {
+    //
+}
+```
 
 如果正在验证数组表单字段，可以使用 `*` 字符检索每个数组元素的所有消息：
 
-    foreach ($errors->get('attachments.*') as $message) {
-        //
-    }
+```php
+foreach ($errors->get('attachments.*') as $message) {
+    //
+}
+```
 
 <a name="retrieving-all-error-messages-for-all-fields"></a>
 #### 检索所有字段的所有错误消息
 
 要检索所有字段的所有消息数组，使用 `all` 方法：
 
-    foreach ($errors->all() as $message) {
-        //
-    }
+```php
+foreach ($errors->all() as $message) {
+    //
+}
+```
 
 <a name="determining-if-messages-exist-for-a-field"></a>
 #### 确定字段是否存在消息
 
 `has` 方法可用于确定给定字段是否存在任何错误消息：
 
-    if ($errors->has('email')) {
-        //
-    }
+```php
+if ($errors->has('email')) {
+    //
+}
+```
 
 <a name="specifying-custom-messages-in-language-files"></a>
 ### 在语言文件中指定自定义消息
@@ -746,30 +833,36 @@ Laravel 的内置验证规则每个都有错误消息，位于应用的 `lang/en
 
 可以在应用的验证语言文件中自定义用于指定属性和规则组合的错误消息。为此，将消息自定义添加到应用 `lang/xx/validation.php` 语言文件的 `custom` 数组：
 
-    'custom' => [
-        'email' => [
-            'required' => 'We need to know your email address!',
-            'max' => 'Your email address is too long!'
-        ],
+```php
+'custom' => [
+    'email' => [
+        'required' => 'We need to know your email address!',
+        'max' => 'Your email address is too long!'
     ],
+],
+```
 
 <a name="specifying-attribute-in-language-files"></a>
 ### 在语言文件中指定属性
 
 Laravel 许多内置错误消息包含 `:attribute` 占位符，替换为正在验证的字段或属性名称。如果希望验证消息的 `:attribute` 部分替换为自定义值，可以在 `lang/xx/validation.php` 语言文件的 `attributes` 数组中指定自定义属性名称：
 
-    'attributes' => [
-        'email' => 'email address',
-    ],
+```php
+'attributes' => [
+    'email' => 'email address',
+],
+```
 
 <a name="specifying-values-in-language-files"></a>
 ### 在语言文件中指定值
 
 Laravel 一些内置验证规则错误消息包含 `:value` 占位符，替换为请求属性的当前值。但偶尔可能需要验证消息的 `:value` 部分替换为值的自定义表示。例如，考虑以下规则，指定如果 `payment_type` 值为 `cc` 则信用卡号必填：
 
-    Validator::make($request->all(), [
-        'credit_card_number' => 'required_if:payment_type,cc'
-    ]);
+```php
+Validator::make($request->all(), [
+    'credit_card_number' => 'required_if:payment_type,cc'
+]);
+```
 
 如果此验证规则失败，将产生以下错误消息：
 
@@ -779,11 +872,13 @@ The credit card number field is required when payment type is cc.
 
 可以在 `lang/xx/validation.php` 语言文件中通过定义 `values` 数组，指定更用户友好的值表示，而非显示 `cc` 作为支付类型值：
 
-    'values' => [
-        'payment_type' => [
-            'cc' => 'credit card'
-        ],
+```php
+'values' => [
+    'payment_type' => [
+        'cc' => 'credit card'
     ],
+],
+```
 
 定义此值后，验证规则将产生以下错误消息：
 
@@ -929,11 +1024,15 @@ The credit card number field is required when payment type is credit card.
 
 验证字段必须是给定日期之后的值。日期将传递给 `strtotime` PHP 函数以转换为有效的 `DateTime` 实例：
 
-    'start_date' => 'required|date|after:tomorrow'
+```php
+'start_date' => 'required|date|after:tomorrow'
+```
 
 除了传递要由 `strtotime` 评估的日期字符串外，可以指定另一个字段与日期比较：
 
-    'finish_date' => 'required|date|after:start_date'
+```php
+'finish_date' => 'required|date|after:start_date'
+```
 
 <a name="rule-after-or-equal"></a>
 #### after\_or\_equal:_date_
@@ -980,19 +1079,21 @@ The credit card number field is required when payment type is credit card.
 
 当向 `array` 规则提供额外值时，输入数组中的每个键必须存在于提供给规则的值列表中。在以下示例中，输入数组中的 `admin` 键无效，因为它不包含在提供给 `array` 规则的值列表中：
 
-    use Illuminate\Support\Facades\Validator;
+```php
+use Illuminate\Support\Facades\Validator;
 
-    $input = [
-        'user' => [
-            'name' => 'Taylor Otwell',
-            'username' => 'taylorotwell',
-            'admin' => true,
-        ],
-    ];
+$input = [
+    'user' => [
+        'name' => 'Taylor Otwell',
+        'username' => 'taylorotwell',
+        'admin' => true,
+    ],
+];
 
-    Validator::make($input, [
-        'user' => 'array:name,username',
-    ]);
+Validator::make($input, [
+    'user' => 'array:name,username',
+]);
+```
 
 通常，应始终指定数组中允许存在的数组键。
 
@@ -1008,9 +1109,11 @@ The credit card number field is required when payment type is credit card.
 
 虽然 `bail` 规则仅在遇到验证失败时停止验证特定字段，但 `stopOnFirstFailure` 方法将告知验证器在发生单个验证失败后应停止验证所有属性：
 
-    if ($validator->stopOnFirstFailure()->fails()) {
-        // ...
-    }
+```php
+if ($validator->stopOnFirstFailure()->fails()) {
+    // ...
+}
+```
 
 <a name="rule-before"></a>
 #### before:_date_
@@ -1042,7 +1145,9 @@ The credit card number field is required when payment type is credit card.
 
 验证字段必须与已认证用户的密码匹配。可以使用规则的第一个参数指定[认证守卫](/docs/{{version}}/authentication)：
 
-    'password' => 'current_password:api'
+```php
+'password' => 'current_password:api'
+```
 
 <a name="rule-date"></a>
 #### date
@@ -1064,11 +1169,13 @@ The credit card number field is required when payment type is credit card.
 
 验证字段必须是数值且必须包含指定的小数位数：
 
-    // 必须恰好有两位小数 (9.99)...
-    'price' => 'decimal:2'
+```php
+// 必须恰好有两位小数 (9.99)...
+'price' => 'decimal:2'
 
-    // 必须有 2 到 4 位小数...
-    'price' => 'decimal:2,4'
+// 必须有 2 到 4 位小数...
+'price' => 'decimal:2,4'
+```
 
 <a name="rule-declined"></a>
 #### declined
@@ -1100,40 +1207,52 @@ The credit card number field is required when payment type is credit card.
 
 验证的文件必须是满足规则参数指定尺寸约束的图像：
 
-    'avatar' => 'dimensions:min_width=100,min_height=200'
+```php
+'avatar' => 'dimensions:min_width=100,min_height=200'
+```
 
 可用约束有：_min\_width_、_max\_width_、_min\_height_、_max\_height_、_width_、_height_、_ratio_。
 
 _ratio_ 约束应表示为宽度除以高度。可以由 `3/2` 这样的分数或 `1.5` 这样的浮点数指定：
 
-    'avatar' => 'dimensions:ratio=3/2'
+```php
+'avatar' => 'dimensions:ratio=3/2'
+```
 
 由于此规则需要多个参数，可以使用 `Rule::dimensions` 方法流畅构造规则：
 
-    use Illuminate\Support\Facades\Validator;
-    use Illuminate\Validation\Rule;
+```php
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
 
-    Validator::make($data, [
-        'avatar' => [
-            'required',
-            Rule::dimensions()->maxWidth(1000)->maxHeight(500)->ratio(3 / 2),
-        ],
-    ]);
+Validator::make($data, [
+    'avatar' => [
+        'required',
+        Rule::dimensions()->maxWidth(1000)->maxHeight(500)->ratio(3 / 2),
+    ],
+]);
+```
 
 <a name="rule-distinct"></a>
 #### distinct
 
 验证数组时，验证字段不能有任何重复值：
 
-    'foo.*.id' => 'distinct'
+```php
+'foo.*.id' => 'distinct'
+```
 
 默认情况下，distinct 使用松散变量比较。要使用严格比较，可以在验证规则定义中添加 `strict` 参数：
 
-    'foo.*.id' => 'distinct:strict'
+```php
+'foo.*.id' => 'distinct:strict'
+```
 
 可以在验证规则参数中添加 `ignore_case` 使规则忽略大小写差异：
 
-    'foo.*.id' => 'distinct:ignore_case'
+```php
+'foo.*.id' => 'distinct:ignore_case'
+```
 
 <a name="rule-doesnt-start-with"></a>
 #### doesnt_start_with:_foo_,_bar_,...
@@ -1150,7 +1269,9 @@ _ratio_ 约束应表示为宽度除以高度。可以由 `3/2` 这样的分数�
 
 验证字段必须格式化为电子邮件地址。此验证规则利用 [`egulias/email-validator`](https://github.com/egulias/EmailValidator) 包验证电子邮件地址。默认应用 `RFCValidation` 验证器，但也可以应用其他验证样式：
 
-    'email' => 'email:rfc,dns'
+```php
+'email' => 'email:rfc,dns'
+```
 
 以上示例将应用 `RFCValidation` 和 `DNSCheckValidation` 验证。以下是可应用的验证样式完整列表：
 
@@ -1176,12 +1297,14 @@ _ratio_ 约束应表示为宽度除以高度。可以由 `3/2` 这样的分数�
 
 `Enum` 规则是基于类的规则，验证验证字段是否包含有效的枚举值。`Enum` 规则接受枚举名称作为其唯一构造函数参数：
 
-    use App\Enums\ServerStatus;
-    use Illuminate\Validation\Rules\Enum;
+```php
+use App\Enums\ServerStatus;
+use Illuminate\Validation\Rules\Enum;
 
-    $request->validate([
-        'status' => [new Enum(ServerStatus::class)],
-    ]);
+$request->validate([
+    'status' => [new Enum(ServerStatus::class)],
+]);
+```
 
 > **Warning**  
 > 枚举仅在 PHP 8.1+ 上可用。
@@ -1198,16 +1321,18 @@ _ratio_ 约束应表示为宽度除以高度。可以由 `3/2` 这样的分数�
 
 如果需要复杂的条件排除逻辑，可以使用 `Rule::excludeIf` 方法。此方法接受布尔值或闭包。给定闭包时，闭包应返回 `true` 或 `false` 以指示验证字段是否应排除：
 
-    use Illuminate\Support\Facades\Validator;
-    use Illuminate\Validation\Rule;
+```php
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
 
-    Validator::make($request->all(), [
-        'role_id' => Rule::excludeIf($request->user()->is_admin),
-    ]);
+Validator::make($request->all(), [
+    'role_id' => Rule::excludeIf($request->user()->is_admin),
+]);
 
-    Validator::make($request->all(), [
-        'role_id' => Rule::excludeIf(fn () => $request->user()->is_admin),
-    ]);
+Validator::make($request->all(), [
+    'role_id' => Rule::excludeIf(fn () => $request->user()->is_admin),
+]);
+```
 
 <a name="rule-exclude-unless"></a>
 #### exclude_unless:_anotherfield_,_value_
@@ -1232,7 +1357,9 @@ _ratio_ 约束应表示为宽度除以高度。可以由 `3/2` 这样的分数�
 <a name="basic-usage-of-exists-rule"></a>
 #### Exists 规则的基本用法
 
-    'state' => 'exists:states'
+```php
+'state' => 'exists:states'
+```
 
 如果未指定 `column` 选项，将使用字段名。因此，在此情况下，规则将验证 `states` 数据库表包含 `state` 列值匹配请求 `state` 属性值的记录。
 
@@ -1241,33 +1368,43 @@ _ratio_ 约束应表示为宽度除以高度。可以由 `3/2` 这样的分数�
 
 可以通过将数据库列名放在数据库表名之后来显式指定验证规则应使用的数据库列名：
 
-    'state' => 'exists:states,abbreviation'
+```php
+'state' => 'exists:states,abbreviation'
+```
 
 偶尔，可能需要为 `exists` 查询指定特定数据库连接。可以通过将连接名前置于表名来实现：
 
-    'email' => 'exists:connection.staff,email'
+```php
+'email' => 'exists:connection.staff,email'
+```
 
 除了直接指定表名外，可以指定应用于确定表名的 Eloquent 模型：
 
-    'user_id' => 'exists:App\Models\User,id'
+```php
+'user_id' => 'exists:App\Models\User,id'
+```
 
 如果希望自定义验证规则执行的查询，可以使用 `Rule` 类流畅定义规则。在此示例中，我们还将验证规则指定为数组，而非使用 `|` 字符分隔：
 
-    use Illuminate\Support\Facades\Validator;
-    use Illuminate\Validation\Rule;
+```php
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
 
-    Validator::make($data, [
-        'email' => [
-            'required',
-            Rule::exists('staff')->where(function ($query) {
-                return $query->where('account_id', 1);
-            }),
-        ],
-    ]);
+Validator::make($data, [
+    'email' => [
+        'required',
+        Rule::exists('staff')->where(function ($query) {
+            return $query->where('account_id', 1);
+        }),
+    ],
+]);
+```
 
 可以通过将列名作为 `exists` 方法的第二个参数提供，显式指定 `Rule::exists` 方法生成的 `exists` 规则应使用的数据库列名：
 
-    'state' => Rule::exists('states', 'abbreviation'),
+```php
+'state' => Rule::exists('states', 'abbreviation'),
+```
 
 <a name="rule-file"></a>
 #### file
@@ -1299,32 +1436,36 @@ _ratio_ 约束应表示为宽度除以高度。可以由 `3/2` 这样的分数�
 
 验证字段必须包含在给定值列表中。由于此规则通常需要 `implode` 数组，可以使用 `Rule::in` 方法流畅构造规则：
 
-    use Illuminate\Support\Facades\Validator;
-    use Illuminate\Validation\Rule;
+```php
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
 
-    Validator::make($data, [
-        'zones' => [
-            'required',
-            Rule::in(['first-zone', 'second-zone']),
-        ],
-    ]);
+Validator::make($data, [
+    'zones' => [
+        'required',
+        Rule::in(['first-zone', 'second-zone']),
+    ],
+]);
+```
 
 当 `in` 规则与 `array` 规则结合时，输入数组中的每个值必须存在于提供给 `in` 规则的值列表中。在以下示例中，输入数组中的 `LAS` 机场代码无效，因为它不包含在提供给 `in` 规则的机场列表中：
 
-    use Illuminate\Support\Facades\Validator;
-    use Illuminate\Validation\Rule;
+```php
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
 
-    $input = [
-        'airports' => ['NYC', 'LAS'],
-    ];
+$input = [
+    'airports' => ['NYC', 'LAS'],
+];
 
-    Validator::make($input, [
-        'airports' => [
-            'required',
-            'array',
-        ],
-        'airports.*' => Rule::in(['NYC', 'LIT']),
-    ]);
+Validator::make($input, [
+    'airports' => [
+        'required',
+        'array',
+    ],
+    'airports.*' => Rule::in(['NYC', 'LIT']),
+]);
+```
 
 <a name="rule-in-array"></a>
 #### in_array:_anotherfield_.*
@@ -1394,7 +1535,9 @@ _ratio_ 约束应表示为宽度除以高度。可以由 `3/2` 这样的分数�
 
 验证的文件必须匹配给定的 MIME 类型之一：
 
-    'video' => 'mimetypes:video/avi,video/mpeg,video/quicktime'
+```php
+'video' => 'mimetypes:video/avi,video/mpeg,video/quicktime'
+```
 
 为确定上传文件的 MIME 类型，将读取文件内容并由框架尝试猜测 MIME 类型，可能与客户端提供的 MIME 类型不同。
 
@@ -1406,7 +1549,9 @@ _ratio_ 约束应表示为宽度除以高度。可以由 `3/2` 这样的分数�
 <a name="basic-usage-of-mime-rule"></a>
 #### MIME 规则的基本用法
 
-    'photo' => 'mimes:jpg,bmp,png'
+```php
+'photo' => 'mimes:jpg,bmp,png'
+```
 
 即使只需指定扩展名，此规则实际上通过读取文件内容并猜测其 MIME 类型来验证文件的 MIME 类型。MIME 类型及其对应扩展名的完整列表可在以下位置找到：
 
@@ -1457,14 +1602,16 @@ _ratio_ 约束应表示为宽度除以高度。可以由 `3/2` 这样的分数�
 
 验证字段不能包含在给定值列表中。可以使用 `Rule::notIn` 方法流畅构造规则：
 
-    use Illuminate\Validation\Rule;
+```php
+use Illuminate\Validation\Rule;
 
-    Validator::make($data, [
-        'toppings' => [
-            'required',
-            Rule::notIn(['sprinkles', 'cherries']),
-        ],
-    ]);
+Validator::make($data, [
+    'toppings' => [
+        'required',
+        Rule::notIn(['sprinkles', 'cherries']),
+    ],
+]);
+```
 
 <a name="rule-not-regex"></a>
 #### not_regex:_pattern_
@@ -1521,16 +1668,18 @@ _ratio_ 约束应表示为宽度除以高度。可以由 `3/2` 这样的分数�
 
 如果需要复杂的条件禁止逻辑，可以使用 `Rule::prohibitedIf` 方法。此方法接受布尔值或闭包。给定闭包时，闭包应返回 `true` 或 `false` 以指示验证字段是否应禁止：
 
-    use Illuminate\Support\Facades\Validator;
-    use Illuminate\Validation\Rule;
+```php
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
 
-    Validator::make($request->all(), [
-        'role_id' => Rule::prohibitedIf($request->user()->is_admin),
-    ]);
+Validator::make($request->all(), [
+    'role_id' => Rule::prohibitedIf($request->user()->is_admin),
+]);
 
-    Validator::make($request->all(), [
-        'role_id' => Rule::prohibitedIf(fn () => $request->user()->is_admin),
-    ]);
+Validator::make($request->all(), [
+    'role_id' => Rule::prohibitedIf(fn () => $request->user()->is_admin),
+]);
+```
 
 <a name="rule-prohibited-unless"></a>
 #### prohibited_unless:_anotherfield_,_value_,...
@@ -1579,16 +1728,18 @@ _ratio_ 约束应表示为宽度除以高度。可以由 `3/2` 这样的分数�
 
 如果希望为 `required_if` 规则构造更复杂的条件，可以使用 `Rule::requiredIf` 方法。此方法接受布尔值或闭包。传递闭包时，闭包应返回 `true` 或 `false` 以指示验证字段是否必填：
 
-    use Illuminate\Support\Facades\Validator;
-    use Illuminate\Validation\Rule;
+```php
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
 
-    Validator::make($request->all(), [
-        'role_id' => Rule::requiredIf($request->user()->is_admin),
-    ]);
+Validator::make($request->all(), [
+    'role_id' => Rule::requiredIf($request->user()->is_admin),
+]);
 
-    Validator::make($request->all(), [
-        'role_id' => Rule::requiredIf(fn () => $request->user()->is_admin),
-    ]);
+Validator::make($request->all(), [
+    'role_id' => Rule::requiredIf(fn () => $request->user()->is_admin),
+]);
+```
 
 <a name="rule-required-unless"></a>
 #### required_unless:_anotherfield_,_value_,...
@@ -1630,17 +1781,19 @@ _ratio_ 约束应表示为宽度除以高度。可以由 `3/2` 这样的分数�
 
 验证字段的大小必须匹配给定 _value_。对于字符串数据，_value_ 对应字符数。对于数值数据，_value_ 对应给定的整数值（属性还必须具有 `numeric` 或 `integer` 规则）。对于数组，_size_ 对应数组的 `count`。对于文件，_size_ 对应文件大小（千字节）。看一些示例：
 
-    // 验证字符串恰好 12 个字符长...
-    'title' => 'size:12';
+```php
+// 验证字符串恰好 12 个字符长...
+'title' => 'size:12';
 
-    // 验证提供的整数等于 10...
-    'seats' => 'integer|size:10';
+// 验证提供的整数等于 10...
+'seats' => 'integer|size:10';
 
-    // 验证数组恰好有 5 个元素...
-    'tags' => 'array|size:5';
+// 验证数组恰好有 5 个元素...
+'tags' => 'array|size:5';
 
-    // 验证上传文件恰好 512 千字节...
-    'image' => 'file|size:512';
+// 验证上传文件恰好 512 千字节...
+'image' => 'file|size:512';
+```
 
 <a name="rule-starts-with"></a>
 #### starts_with:_foo_,_bar_,...
@@ -1666,17 +1819,23 @@ _ratio_ 约束应表示为宽度除以高度。可以由 `3/2` 这样的分数�
 
 除了直接指定表名外，可以指定应用于确定表名的 Eloquent 模型：
 
-    'email' => 'unique:App\Models\User,email_address'
+```php
+'email' => 'unique:App\Models\User,email_address'
+```
 
 `column` 选项可用于指定字段对应的数据库列。如果未指定 `column` 选项，将使用验证字段的名称。
 
-    'email' => 'unique:users,email_address'
+```php
+'email' => 'unique:users,email_address'
+```
 
 **指定自定义数据库连接**
 
 偶尔，可能需要为验证器进行的数据库查询设置自定义连接。为此，可以将连接名前置于表名：
 
-    'email' => 'unique:connection.users,email_address'
+```php
+'email' => 'unique:connection.users,email_address'
+```
 
 **强制唯一规则忽略给定 ID：**
 
@@ -1684,36 +1843,46 @@ _ratio_ 约束应表示为宽度除以高度。可以由 `3/2` 这样的分数�
 
 为指示验证器忽略用户 ID，我们将使用 `Rule` 类流畅定义规则。在此示例中，我们还将验证规则指定为数组，而非使用 `|` 字符分隔规则：
 
-    use Illuminate\Support\Facades\Validator;
-    use Illuminate\Validation\Rule;
+```php
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
 
-    Validator::make($data, [
-        'email' => [
-            'required',
-            Rule::unique('users')->ignore($user->id),
-        ],
-    ]);
+Validator::make($data, [
+    'email' => [
+        'required',
+        Rule::unique('users')->ignore($user->id),
+    ],
+]);
+```
 
 > **Warning**  
 > 切勿将任何用户控制的请求输入传递给 `ignore` 方法。相反，应仅传递系统生成的唯一 ID，如 Eloquent 模型实例的自增 ID 或 UUID。否则，应用将容易受到 SQL 注入攻击。
 
 除了将模型键的值传递给 `ignore` 方法外，还可以传递整个模型实例。Laravel 将自动从模型中提取键：
 
-    Rule::unique('users')->ignore($user)
+```php
+Rule::unique('users')->ignore($user)
+```
 
 如果表使用 `id` 以外的主键列名，可以在调用 `ignore` 方法时指定列名：
 
-    Rule::unique('users')->ignore($user->id, 'user_id')
+```php
+Rule::unique('users')->ignore($user->id, 'user_id')
+```
 
 默认情况下，`unique` 规则将检查与正在验证的属性名称匹配的列的唯一性。但可以将不同的列名作为 `unique` 方法的第二个参数传递：
 
-    Rule::unique('users', 'email_address')->ignore($user->id),
+```php
+Rule::unique('users', 'email_address')->ignore($user->id),
+```
 
 **添加额外 Where 子句：**
 
 可以通过使用 `where` 方法自定义查询来指定额外查询条件。例如，添加一个查询条件，将查询范围限制为仅搜索 `account_id` 列值为 `1` 的记录：
 
-    'email' => Rule::unique('users')->where(fn ($query) => $query->where('account_id', 1))
+```php
+'email' => Rule::unique('users')->where(fn ($query) => $query->where('account_id', 1))
+```
 
 <a name="rule-uppercase"></a>
 #### uppercase
@@ -1743,30 +1912,36 @@ _ratio_ 约束应表示为宽度除以高度。可以由 `3/2` 这样的分数�
 
 偶尔可能希望如果另一个字段具有给定值则不验证给定字段。可以使用 `exclude_if` 验证规则实现。在此示例中，如果 `has_appointment` 字段值为 `false`，则不会验证 `appointment_date` 和 `doctor_name` 字段：
 
-    use Illuminate\Support\Facades\Validator;
+```php
+use Illuminate\Support\Facades\Validator;
 
-    $validator = Validator::make($data, [
-        'has_appointment' => 'required|boolean',
-        'appointment_date' => 'exclude_if:has_appointment,false|required|date',
-        'doctor_name' => 'exclude_if:has_appointment,false|required|string',
-    ]);
+$validator = Validator::make($data, [
+    'has_appointment' => 'required|boolean',
+    'appointment_date' => 'exclude_if:has_appointment,false|required|date',
+    'doctor_name' => 'exclude_if:has_appointment,false|required|string',
+]);
+```
 
 或者，可以使用 `exclude_unless` 规则在另一个字段具有给定值之前不验证给定字段：
 
-    $validator = Validator::make($data, [
-        'has_appointment' => 'required|boolean',
-        'appointment_date' => 'exclude_unless:has_appointment,true|required|date',
-        'doctor_name' => 'exclude_unless:has_appointment,true|required|string',
-    ]);
+```php
+$validator = Validator::make($data, [
+    'has_appointment' => 'required|boolean',
+    'appointment_date' => 'exclude_unless:has_appointment,true|required|date',
+    'doctor_name' => 'exclude_unless:has_appointment,true|required|string',
+]);
+```
 
 <a name="validating-when-present"></a>
 #### 存在时验证
 
 在某些情况下，可能希望仅当字段存在于正在验证的数据中时才对该字段运行验证检查。要快速实现此目的，将 `sometimes` 规则添加到规则列表：
 
-    $v = Validator::make($data, [
-        'email' => 'sometimes|required|email',
-    ]);
+```php
+$v = Validator::make($data, [
+    'email' => 'sometimes|required|email',
+]);
+```
 
 在以上示例中，仅当 `email` 字段存在于 `$data` 数组中时才会验证。
 
@@ -1778,24 +1953,30 @@ _ratio_ 约束应表示为宽度除以高度。可以由 `3/2` 这样的分数�
 
 有时可能希望基于更复杂的条件逻辑添加验证规则。例如，可能希望仅当另一个字段的值大于 100 时才要求给定字段。或者，可能需要两个字段仅当另一个字段存在时才具有给定值。添加这些验证规则不必痛苦。首先，使用永不更改的 _静态规则_ 创建 `Validator` 实例：
 
-    use Illuminate\Support\Facades\Validator;
+```php
+use Illuminate\Support\Facades\Validator;
 
-    $validator = Validator::make($request->all(), [
-        'email' => 'required|email',
-        'games' => 'required|numeric',
-    ]);
+$validator = Validator::make($request->all(), [
+    'email' => 'required|email',
+    'games' => 'required|numeric',
+]);
+```
 
 假设我们的 Web 应用用于游戏收藏者。如果游戏收藏者注册应用且拥有超过 100 个游戏，我们希望他们解释为什么拥有这么多游戏。例如，也许他们经营游戏转售店，或者只是喜欢收藏游戏。要有条件地添加此要求，可以在 `Validator` 实例上使用 `sometimes` 方法。
 
-    $validator->sometimes('reason', 'required|max:500', function ($input) {
-        return $input->games >= 100;
-    });
+```php
+$validator->sometimes('reason', 'required|max:500', function ($input) {
+    return $input->games >= 100;
+});
+```
 
 传递给 `sometimes` 方法的第一个参数是条件验证的字段名。第二个参数是要添加的规则列表。如果作为第三个参数传递的闭包返回 `true`，将添加规则。此方法使构建复杂条件验证轻而易举。甚至可以一次为多个字段添加条件验证：
 
-    $validator->sometimes(['reason', 'cost'], 'required', function ($input) {
-        return $input->games >= 100;
-    });
+```php
+$validator->sometimes(['reason', 'cost'], 'required', function ($input) {
+    return $input->games >= 100;
+});
+```
 
 > **Note**  
 > 传递给闭包的 `$input` 参数将是 `Illuminate\Support\Fluent` 实例，可用于访问正在验证的输入和文件。
@@ -1805,26 +1986,28 @@ _ratio_ 约束应表示为宽度除以高度。可以由 `3/2` 这样的分数�
 
 有时可能希望基于同一嵌套数组中索引未知的另一个字段验证字段。在这些情况下，可以允许闭包接收第二个参数，即正在验证的数组中的当前单个项：
 
-    $input = [
-        'channels' => [
-            [
-                'type' => 'email',
-                'address' => 'abigail@example.com',
-            ],
-            [
-                'type' => 'url',
-                'address' => 'https://example.com',
-            ],
+```php
+$input = [
+    'channels' => [
+        [
+            'type' => 'email',
+            'address' => 'abigail@example.com',
         ],
-    ];
+        [
+            'type' => 'url',
+            'address' => 'https://example.com',
+        ],
+    ],
+];
 
-    $validator->sometimes('channels.*.address', 'email', function ($input, $item) {
-        return $item->type === 'email';
-    });
+$validator->sometimes('channels.*.address', 'email', function ($input, $item) {
+    return $item->type === 'email';
+});
 
-    $validator->sometimes('channels.*.address', 'url', function ($input, $item) {
-        return $item->type !== 'email';
-    });
+$validator->sometimes('channels.*.address', 'url', function ($input, $item) {
+    return $item->type !== 'email';
+});
+```
 
 与传递给闭包的 `$input` 参数一样，当属性数据是数组时 `$item` 参数是 `Illuminate\Support\Fluent` 实例；否则为字符串。
 
@@ -1833,19 +2016,21 @@ _ratio_ 约束应表示为宽度除以高度。可以由 `3/2` 这样的分数�
 
 如 [`array` 验证规则文档](#rule-array)所述，`array` 规则接受允许的数组键列表。如果数组中存在任何额外键，验证将失败：
 
-    use Illuminate\Support\Facades\Validator;
+```php
+use Illuminate\Support\Facades\Validator;
 
-    $input = [
-        'user' => [
-            'name' => 'Taylor Otwell',
-            'username' => 'taylorotwell',
-            'admin' => true,
-        ],
-    ];
+$input = [
+    'user' => [
+        'name' => 'Taylor Otwell',
+        'username' => 'taylorotwell',
+        'admin' => true,
+    ],
+];
 
-    Validator::make($input, [
-        'user' => 'array:username,locale',
-    ]);
+Validator::make($input, [
+    'user' => 'array:username,locale',
+]);
+```
 
 通常，应始终指定数组中允许存在的数组键。否则，验证器的 `validate` 和 `validated` 方法将返回所有已验证数据，包括数组及其所有键，即使这些键未被其他嵌套数组验证规则验证。
 
@@ -1854,70 +2039,80 @@ _ratio_ 约束应表示为宽度除以高度。可以由 `3/2` 这样的分数�
 
 验证基于嵌套数组的表单输入字段不必痛苦。可以使用"点表示法"验证数组中的属性。例如，如果传入 HTTP 请求包含 `photos[profile]` 字段，可以这样验证：
 
-    use Illuminate\Support\Facades\Validator;
+```php
+use Illuminate\Support\Facades\Validator;
 
-    $validator = Validator::make($request->all(), [
-        'photos.profile' => 'required|image',
-    ]);
+$validator = Validator::make($request->all(), [
+    'photos.profile' => 'required|image',
+]);
+```
 
 也可以验证数组的每个元素。例如，要验证给定数组输入字段中的每个邮箱唯一，可以执行以下操作：
 
-    $validator = Validator::make($request->all(), [
-        'person.*.email' => 'email|unique:users',
-        'person.*.first_name' => 'required_with:person.*.last_name',
-    ]);
+```php
+$validator = Validator::make($request->all(), [
+    'person.*.email' => 'email|unique:users',
+    'person.*.first_name' => 'required_with:person.*.last_name',
+]);
+```
 
 同样，可以在[语言文件中指定自定义验证消息](#custom-messages-for-specific-attributes)时使用 `*` 字符，使为基于数组的字段使用单一验证消息轻而易举：
 
-    'custom' => [
-        'person.*.email' => [
-            'unique' => 'Each person must have a unique email address',
-        ]
-    ],
+```php
+'custom' => [
+    'person.*.email' => [
+        'unique' => 'Each person must have a unique email address',
+    ]
+],
+```
 
 <a name="accessing-nested-array-data"></a>
 #### 访问嵌套数组数据
 
 有时在为属性分配验证规则时可能需要访问给定嵌套数组元素的值。可以使用 `Rule::forEach` 方法实现。`forEach` 方法接受一个闭包，将为正在验证的数组属性的每次迭代调用，并接收属性的值和显式、完全展开的属性名称。闭包应返回分配给数组元素的规则数组：
 
-    use App\Rules\HasPermission;
-    use Illuminate\Support\Facades\Validator;
-    use Illuminate\Validation\Rule;
+```php
+use App\Rules\HasPermission;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
 
-    $validator = Validator::make($request->all(), [
-        'companies.*.id' => Rule::forEach(function ($value, $attribute) {
-            return [
-                Rule::exists(Company::class, 'id'),
-                new HasPermission('manage-company', $value),
-            ];
-        }),
-    ]);
+$validator = Validator::make($request->all(), [
+    'companies.*.id' => Rule::forEach(function ($value, $attribute) {
+        return [
+            Rule::exists(Company::class, 'id'),
+            new HasPermission('manage-company', $value),
+        ];
+    }),
+]);
+```
 
 <a name="error-message-indexes-and-positions"></a>
 ### 错误消息索引与位置
 
 验证数组时，可能希望在应用显示的错误消息中引用验证失败的特定项的索引或位置。为此，可以在[自定义验证消息](#manual-customizing-the-error-messages)中包含 `:index`（从 `0` 开始）和 `:position`（从 `1` 开始）占位符：
 
-    use Illuminate\Support\Facades\Validator;
+```php
+use Illuminate\Support\Facades\Validator;
 
-    $input = [
-        'photos' => [
-            [
-                'name' => 'BeachVacation.jpg',
-                'description' => 'A photo of my beach vacation!',
-            ],
-            [
-                'name' => 'GrandCanyon.jpg',
-                'description' => '',
-            ],
+$input = [
+    'photos' => [
+        [
+            'name' => 'BeachVacation.jpg',
+            'description' => 'A photo of my beach vacation!',
         ],
-    ];
+        [
+            'name' => 'GrandCanyon.jpg',
+            'description' => '',
+        ],
+    ],
+];
 
-    Validator::validate($input, [
-        'photos.*.description' => 'required',
-    ], [
-        'photos.*.description.required' => 'Please describe photo #:position.',
-    ]);
+Validator::validate($input, [
+    'photos.*.description' => 'required',
+], [
+    'photos.*.description.required' => 'Please describe photo #:position.',
+]);
+```
 
 给定以上示例，验证将失败，用户将看到 _"Please describe photo #2."_ 的错误。
 
@@ -1926,32 +2121,36 @@ _ratio_ 约束应表示为宽度除以高度。可以由 `3/2` 这样的分数�
 
 Laravel 提供了多种验证规则用于验证上传文件，如 `mimes`、`image`、`min` 和 `max`。虽然可以自由在验证文件时单独指定这些规则，Laravel 还提供了流畅的文件验证规则构建器，可能更方便：
 
-    use Illuminate\Support\Facades\Validator;
-    use Illuminate\Validation\Rules\File;
+```php
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rules\File;
 
-    Validator::validate($input, [
-        'attachment' => [
-            'required',
-            File::types(['mp3', 'wav'])
-                ->min(1024)
-                ->max(12 * 1024),
-        ],
-    ]);
+Validator::validate($input, [
+    'attachment' => [
+        'required',
+        File::types(['mp3', 'wav'])
+            ->min(1024)
+            ->max(12 * 1024),
+    ],
+]);
+```
 
 如果应用接受用户上传的图像，可以使用 `File` 规则的 `image` 构造方法指示上传文件应为图像。此外，可以使用 `dimensions` 规则限制图像尺寸：
 
-    use Illuminate\Support\Facades\Validator;
-    use Illuminate\Validation\Rules\File;
+```php
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rules\File;
 
-    Validator::validate($input, [
-        'photo' => [
-            'required',
-            File::image()
-                ->min(1024)
-                ->max(12 * 1024)
-                ->dimensions(Rule::dimensions()->maxWidth(1000)->maxHeight(500)),
-        ],
-    ]);
+Validator::validate($input, [
+    'photo' => [
+        'required',
+        File::image()
+            ->min(1024)
+            ->max(12 * 1024)
+            ->dimensions(Rule::dimensions()->maxWidth(1000)->maxHeight(500)),
+    ],
+]);
+```
 
 > **Note**  
 > 有关验证图像尺寸的更多信息可在[尺寸规则文档](#rule-dimensions)中找到。
@@ -1968,49 +2167,59 @@ Laravel 提供了多种验证规则用于验证上传文件，如 `mimes`、`ima
 
 为确保密码具有足够的复杂度，可以使用 Laravel 的 `Password` 规则对象：
 
-    use Illuminate\Support\Facades\Validator;
-    use Illuminate\Validation\Rules\Password;
+```php
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rules\Password;
 
-    $validator = Validator::make($request->all(), [
-        'password' => ['required', 'confirmed', Password::min(8)],
-    ]);
+$validator = Validator::make($request->all(), [
+    'password' => ['required', 'confirmed', Password::min(8)],
+]);
+```
 
 `Password` 规则对象允许轻松自定义应用的密码复杂度要求，如指定密码至少需要一个字母、数字、符号或混合大小写字符：
 
-    // 至少 8 个字符...
-    Password::min(8)
+```php
+// 至少 8 个字符...
+Password::min(8)
 
-    // 至少一个字母...
-    Password::min(8)->letters()
+// 至少一个字母...
+Password::min(8)->letters()
 
-    // 至少一个大写和一个小写字母...
-    Password::min(8)->mixedCase()
+// 至少一个大写和一个小写字母...
+Password::min(8)->mixedCase()
 
-    // 至少一个数字...
-    Password::min(8)->numbers()
+// 至少一个数字...
+Password::min(8)->numbers()
 
-    // 至少一个符号...
-    Password::min(8)->symbols()
+// 至少一个符号...
+Password::min(8)->symbols()
+```
 
 此外，可以使用 `uncompromised` 方法确保密码未在公共密码数据泄露中泄露：
 
-    Password::min(8)->uncompromised()
+```php
+Password::min(8)->uncompromised()
+```
 
 内部，`Password` 规则对象使用 [k-Anonymity](https://en.wikipedia.org/wiki/K-anonymity) 模型，通过 [haveibeenpwned.com](https://haveibeenpwned.com) 服务确定密码是否已泄露，而不牺牲用户的隐私或安全。
 
 默认情况下，如果密码在数据泄露中出现至少一次，将被视为已泄露。可以使用 `uncompromised` 方法的第一个参数自定义此阈值：
 
-    // 确保密码在同一数据泄露中出现少于 3 次...
-    Password::min(8)->uncompromised(3);
+```php
+// 确保密码在同一数据泄露中出现少于 3 次...
+Password::min(8)->uncompromised(3);
+```
 
 当然，可以链式调用以上示例中的所有方法：
 
-    Password::min(8)
-        ->letters()
-        ->mixedCase()
-        ->numbers()
-        ->symbols()
-        ->uncompromised()
+```php
+Password::min(8)
+    ->letters()
+    ->mixedCase()
+    ->numbers()
+    ->symbols()
+    ->uncompromised()
+```
 
 <a name="defining-default-password-rules"></a>
 #### 定义默认密码规则
@@ -2039,17 +2248,21 @@ public function boot()
 
 然后，当希望将默认规则应用于正在验证的特定密码时，可以不带参数调用 `defaults` 方法：
 
-    'password' => ['required', Password::defaults()],
+```php
+'password' => ['required', Password::defaults()],
+```
 
 偶尔，可能希望将额外验证规则附加到默认密码验证规则。可以使用 `rules` 方法实现：
 
-    use App\Rules\ZxcvbnRule;
+```php
+use App\Rules\ZxcvbnRule;
 
-    Password::defaults(function () {
-        $rule = Password::min(8)->rules([new ZxcvbnRule]);
+Password::defaults(function () {
+    $rule = Password::min(8)->rules([new ZxcvbnRule]);
 
-        // ...
-    });
+    // ...
+});
+```
 
 <a name="custom-validation-rules"></a>
 ## 自定义验证规则
@@ -2065,153 +2278,169 @@ php artisan make:rule Uppercase --invokable
 
 创建规则后，就可以定义其行为。规则对象包含单个方法：`__invoke`。此方法接收属性名、其值和失败时应调用的回调（带验证错误消息）：
 
-    <?php
+```php
+<?php
 
-    namespace App\Rules;
+namespace App\Rules;
 
-    use Illuminate\Contracts\Validation\InvokableRule;
+use Illuminate\Contracts\Validation\InvokableRule;
 
-    class Uppercase implements InvokableRule
+class Uppercase implements InvokableRule
+{
+    /**
+     * 运行验证规则。
+     *
+     * @param  string  $attribute
+     * @param  mixed  $value
+     * @param  \Closure  $fail
+     * @return void
+     */
+    public function __invoke($attribute, $value, $fail)
     {
-        /**
-         * 运行验证规则。
-         *
-         * @param  string  $attribute
-         * @param  mixed  $value
-         * @param  \Closure  $fail
-         * @return void
-         */
-        public function __invoke($attribute, $value, $fail)
-        {
-            if (strtoupper($value) !== $value) {
-                $fail('The :attribute must be uppercase.');
-            }
+        if (strtoupper($value) !== $value) {
+            $fail('The :attribute must be uppercase.');
         }
     }
+}
+```
 
 定义规则后，可以通过将规则对象实例与其他验证规则一起传递来将其附加到验证器：
 
-    use App\Rules\Uppercase;
+```php
+use App\Rules\Uppercase;
 
-    $request->validate([
-        'name' => ['required', 'string', new Uppercase],
-    ]);
+$request->validate([
+    'name' => ['required', 'string', new Uppercase],
+]);
+```
 
 #### 翻译验证消息
 
 除了向 `$fail` 闭包提供字面错误消息外，还可以提供[翻译字符串键](/docs/{{version}}/localization)并指示 Laravel 翻译错误消息：
 
-    if (strtoupper($value) !== $value) {
-        $fail('validation.uppercase')->translate();
-    }
+```php
+if (strtoupper($value) !== $value) {
+    $fail('validation.uppercase')->translate();
+}
+```
 
 如有必要，可以向 `translate` 方法提供占位符替换和首选语言作为第一个和第二个参数：
 
-    $fail('validation.location')->translate([
-        'value' => $this->value,
-    ], 'fr')
+```php
+$fail('validation.location')->translate([
+    'value' => $this->value,
+], 'fr')
+```
 
 #### 访问额外数据
 
 如果自定义验证规则类需要访问正在验证的所有其他数据，规则类可以实现 `Illuminate\Contracts\Validation\DataAwareRule` 接口。此接口要求类定义 `setData` 方法。此方法将由 Laravel 自动调用（在验证继续之前），带所有正在验证的数据：
 
-    <?php
+```php
+<?php
 
-    namespace App\Rules;
+namespace App\Rules;
 
-    use Illuminate\Contracts\Validation\DataAwareRule;
-    use Illuminate\Contracts\Validation\InvokableRule;
+use Illuminate\Contracts\Validation\DataAwareRule;
+use Illuminate\Contracts\Validation\InvokableRule;
 
-    class Uppercase implements DataAwareRule, InvokableRule
+class Uppercase implements DataAwareRule, InvokableRule
+{
+    /**
+     * 所有正在验证的数据。
+     *
+     * @var array
+     */
+    protected $data = [];
+
+    // ...
+
+    /**
+     * 设置正在验证的数据。
+     *
+     * @param  array  $data
+     * @return $this
+     */
+    public function setData($data)
     {
-        /**
-         * 所有正在验证的数据。
-         *
-         * @var array
-         */
-        protected $data = [];
+        $this->data = $data;
 
-        // ...
-
-        /**
-         * 设置正在验证的数据。
-         *
-         * @param  array  $data
-         * @return $this
-         */
-        public function setData($data)
-        {
-            $this->data = $data;
-
-            return $this;
-        }
+        return $this;
     }
+}
+```
 
 或者，如果验证规则需要访问执行验证的验证器实例，可以实现 `ValidatorAwareRule` 接口：
 
-    <?php
+```php
+<?php
 
-    namespace App\Rules;
+namespace App\Rules;
 
-    use Illuminate\Contracts\Validation\InvokableRule;
-    use Illuminate\Contracts\Validation\ValidatorAwareRule;
+use Illuminate\Contracts\Validation\InvokableRule;
+use Illuminate\Contracts\Validation\ValidatorAwareRule;
 
-    class Uppercase implements InvokableRule, ValidatorAwareRule
+class Uppercase implements InvokableRule, ValidatorAwareRule
+{
+    /**
+     * 验证器实例。
+     *
+     * @var \Illuminate\Validation\Validator
+     */
+    protected $validator;
+
+    // ...
+
+    /**
+     * 设置当前验证器。
+     *
+     * @param  \Illuminate\Validation\Validator  $validator
+     * @return $this
+     */
+    public function setValidator($validator)
     {
-        /**
-         * 验证器实例。
-         *
-         * @var \Illuminate\Validation\Validator
-         */
-        protected $validator;
+        $this->validator = $validator;
 
-        // ...
-
-        /**
-         * 设置当前验证器。
-         *
-         * @param  \Illuminate\Validation\Validator  $validator
-         * @return $this
-         */
-        public function setValidator($validator)
-        {
-            $this->validator = $validator;
-
-            return $this;
-        }
+        return $this;
     }
+}
+```
 
 <a name="using-closures"></a>
 ### 使用闭包
 
 如果只需在整个应用中使用一次自定义规则的功能，可以使用闭包而非规则对象。闭包接收属性名、属性值和验证失败时应调用的 `$fail` 回调：
 
-    use Illuminate\Support\Facades\Validator;
+```php
+use Illuminate\Support\Facades\Validator;
 
-    $validator = Validator::make($request->all(), [
-        'title' => [
-            'required',
-            'max:255',
-            function ($attribute, $value, $fail) {
-                if ($value === 'foo') {
-                    $fail('The '.$attribute.' is invalid.');
-                }
-            },
-        ],
-    ]);
+$validator = Validator::make($request->all(), [
+    'title' => [
+        'required',
+        'max:255',
+        function ($attribute, $value, $fail) {
+            if ($value === 'foo') {
+                $fail('The '.$attribute.' is invalid.');
+            }
+        },
+    ],
+]);
+```
 
 <a name="implicit-rules"></a>
 ### 隐式规则
 
 默认情况下，当正在验证的属性不存在或包含空字符串时，不运行正常验证规则（包括自定义规则）。例如，[`unique`](#rule-unique) 规则不会对空字符串运行：
 
-    use Illuminate\Support\Facades\Validator;
+```php
+use Illuminate\Support\Facades\Validator;
 
-    $rules = ['name' => 'unique:users,name'];
+$rules = ['name' => 'unique:users,name'];
 
-    $input = ['name' => ''];
+$input = ['name' => ''];
 
-    Validator::make($input, $rules)->passes(); // true
+Validator::make($input, $rules)->passes(); // true
+```
 
 要使自定义规则在属性为空时也运行，规则必须暗示属性必填。要快速生成新的隐式规则对象，可以使用带 `--implicit` 选项的 `make:rule` Artisan 命令：
 

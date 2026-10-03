@@ -33,30 +33,36 @@ public function test_console_command(): void
 
 你可以使用 `assertNotExitCode` 方法断言该命令没有以指定的退出码结束：
 
-    $this->artisan('inspire')->assertNotExitCode(1);
+```php
+$this->artisan('inspire')->assertNotExitCode(1);
+```
 
 当然，所有终端命令成功时通常以状态码 `0` 退出，不成功时则以非零退出码退出。因此，为方便起见，你可以使用 `assertSuccessful` 和 `assertFailed` 断言来验证命令是否以成功或不成功的退出码结束：
 
-    $this->artisan('inspire')->assertSuccessful();
+```php
+$this->artisan('inspire')->assertSuccessful();
 
-    $this->artisan('inspire')->assertFailed();
+$this->artisan('inspire')->assertFailed();
+```
 
 <a name="input-output-expectations"></a>
 ## 输入 / 输出预期
 
 Laravel 允许你使用 `expectsQuestion` 方法轻松地"模拟"Console 命令的用户输入。此外，你还可以使用 `assertExitCode` 和 `expectsOutput` 方法指定你预期该 Console 命令输出的退出码和文本。例如，考虑以下 Console 命令：
 
-    Artisan::command('question', function () {
-        $name = $this->ask('What is your name?');
+```php
+Artisan::command('question', function () {
+    $name = $this->ask('What is your name?');
 
-        $language = $this->choice('Which language do you prefer?', [
-            'PHP',
-            'Ruby',
-            'Python',
-        ]);
+    $language = $this->choice('Which language do you prefer?', [
+        'PHP',
+        'Ruby',
+        'Python',
+    ]);
 
-        $this->line('Your name is '.$name.' and you prefer '.$language.'.');
-    });
+    $this->line('Your name is '.$name.' and you prefer '.$language.'.');
+});
+```
 
 你可以用以下测试来测试该命令：
 
@@ -165,23 +171,27 @@ public function test_console_command(): void
 
 在编写需要以"yes"或"no"回答来获取确认的命令时，可以使用 `expectsConfirmation` 方法：
 
-    $this->artisan('module:import')
-        ->expectsConfirmation('Do you really wish to run this command?', 'no')
-        ->assertExitCode(1);
+```php
+$this->artisan('module:import')
+    ->expectsConfirmation('Do you really wish to run this command?', 'no')
+    ->assertExitCode(1);
+```
 
 <a name="table-expectations"></a>
 #### 表格预期
 
 如果你的命令使用 Artisan 的 `table` 方法展示信息表格，为整张表格编写输出预期会相当繁琐。这时你可以改用 `expectsTable` 方法。该方法的第一个参数接收表格的表头，第二个参数接收表格的数据：
 
-    $this->artisan('users:all')
-        ->expectsTable([
-            'ID',
-            'Email',
-        ], [
-            [1, 'taylor@example.com'],
-            [2, 'abigail@example.com'],
-        ]);
+```php
+$this->artisan('users:all')
+    ->expectsTable([
+        'ID',
+        'Email',
+    ], [
+        [1, 'taylor@example.com'],
+        [2, 'abigail@example.com'],
+    ]);
+```
 
 <a name="console-events"></a>
 ## Console 事件

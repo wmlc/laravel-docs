@@ -232,7 +232,9 @@ valet unsecure laravel
 
 有时你可能希望配置 Valet，让访问未知 `test` 域名时提供一个"默认"站点，而不是 `404`。为此，你可以在 `~/.config/valet/config.json` 配置文件中添加一个 `default` 选项，其中填入应作为默认站点的站点路径：
 
-    "default": "/Users/Sally/Sites/example-site",
+```yaml
+"default": "/Users/Sally/Sites/example-site",
+```
 
 <a name="per-site-php-versions"></a>
 ### 按站点指定 PHP 版本
@@ -332,19 +334,21 @@ Valet 默认会把传入流量限制在内部的 `127.0.0.1` 接口上，以免�
 
 有些使用其他框架的应用可能依赖服务器环境变量，却没有提供在项目中配置这些变量的方式。Valet 允许你通过在项目根目录添加 `.valet-env.php` 文件来配置站点专属环境变量。该文件应当返回一个站点 / 环境变量对的数组，对于数组中指定的每个站点，这些变量都会被加入全局 `$_SERVER` 数组：
 
-    <?php
+```php
+<?php
 
-    return [
-        // 为 laravel.test 站点把 $_SERVER['key'] 设为 "value"...
-        'laravel' => [
-            'key' => 'value',
-        ],
+return [
+    // 为 laravel.test 站点把 $_SERVER['key'] 设为 "value"...
+    'laravel' => [
+        'key' => 'value',
+    ],
 
-        // 为所有站点把 $_SERVER['key'] 设为 "value"...
-        '*' => [
-            'key' => 'value',
-        ],
-    ];
+    // 为所有站点把 $_SERVER['key'] 设为 "value"...
+    '*' => [
+        'key' => 'value',
+    ],
+];
+```
 
 <a name="proxying-services"></a>
 ## 代理服务
@@ -391,32 +395,36 @@ valet proxies
 
 例如，假设我们正在编写一个 `WordPressValetDriver`。我们的 `serves` 方法可能看起来如下：
 
-    /**
-     * 判断该驱动是否为请求提供服务。
-     */
-    public function serves(string $sitePath, string $siteName, string $uri): bool
-    {
-        return is_dir($sitePath.'/wp-admin');
-    }
+```php
+/**
+ * 判断该驱动是否为请求提供服务。
+ */
+public function serves(string $sitePath, string $siteName, string $uri): bool
+{
+    return is_dir($sitePath.'/wp-admin');
+}
+```
 
 <a name="the-isstaticfile-method"></a>
 #### `isStaticFile` 方法
 
 `isStaticFile` 方法用于判断传入请求是否针对某个"静态"文件，例如图片或样式表。如果该文件是静态的，该方法应当返回该静态文件在磁盘上的完整路径。如果传入请求并非针对静态文件，该方法应当返回 `false`：
 
-    /**
-     * 判断传入请求是否针对静态文件。
-     *
-     * @return string|false
-     */
-    public function isStaticFile(string $sitePath, string $siteName, string $uri)
-    {
-        if (file_exists($staticFilePath = $sitePath.'/public/'.$uri)) {
-            return $staticFilePath;
-        }
-
-        return false;
+```php
+/**
+ * 判断传入请求是否针对静态文件。
+ *
+ * @return string|false
+ */
+public function isStaticFile(string $sitePath, string $siteName, string $uri)
+{
+    if (file_exists($staticFilePath = $sitePath.'/public/'.$uri)) {
+        return $staticFilePath;
     }
+
+    return false;
+}
+```
 
 > [!WARNING]
 > 只有当 `serves` 方法对传入请求返回 `true`，且请求 URI 不是 `/` 时，才会调用 `isStaticFile` 方法。
@@ -426,39 +434,43 @@ valet proxies
 
 `frontControllerPath` 方法应当返回你的应用"前端控制器"的完整路径，它通常是一个 "index.php" 文件或类似文件：
 
-    /**
-     * 获取应用前端控制器的完整解析路径。
-     */
-    public function frontControllerPath(string $sitePath, string $siteName, string $uri): string
-    {
-        return $sitePath.'/public/index.php';
-    }
+```php
+/**
+ * 获取应用前端控制器的完整解析路径。
+ */
+public function frontControllerPath(string $sitePath, string $siteName, string $uri): string
+{
+    return $sitePath.'/public/index.php';
+}
+```
 
 <a name="local-drivers"></a>
 ### 本地驱动
 
 如果你想为单个应用定义自定义 Valet 驱动，请在应用根目录创建 `LocalValetDriver.php` 文件。你的自定义驱动可以继承基础的 `ValetDriver` 类，也可以继承某个现有的应用专属驱动，例如 `LaravelValetDriver`：
 
-    use Valet\Drivers\LaravelValetDriver;
+```php
+use Valet\Drivers\LaravelValetDriver;
 
-    class LocalValetDriver extends LaravelValetDriver
+class LocalValetDriver extends LaravelValetDriver
+{
+    /**
+     * 判断该驱动是否为请求提供服务。
+     */
+    public function serves(string $sitePath, string $siteName, string $uri): bool
     {
-        /**
-         * 判断该驱动是否为请求提供服务。
-         */
-        public function serves(string $sitePath, string $siteName, string $uri): bool
-        {
-            return true;
-        }
-
-        /**
-         * 获取应用前端控制器的完整解析路径。
-         */
-        public function frontControllerPath(string $sitePath, string $siteName, string $uri): string
-        {
-            return $sitePath.'/public_html/index.php';
-        }
+        return true;
     }
+
+    /**
+     * 获取应用前端控制器的完整解析路径。
+     */
+    public function frontControllerPath(string $sitePath, string $siteName, string $uri): string
+    {
+        return $sitePath.'/public_html/index.php';
+    }
+}
+```
 
 <a name="other-valet-commands"></a>
 ## 其他 Valet 命令

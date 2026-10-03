@@ -187,7 +187,9 @@ init.bat
 
 `Homestead.yaml` 文件中的 `provider` 键指示应使用哪个 Vagrant provider：`virtualbox` 或 `parallels`：
 
-    provider: virtualbox
+```yaml
+provider: virtualbox
+```
 
 > [!WARNING]
 > 如果你使用 Apple Silicon，则必须使用 Parallels provider。
@@ -266,7 +268,9 @@ Homestead 使用 `mDNS` 发布主机名，以实现自动主机解析。如果�
 
 使用自动主机名对 Homestead 的[按项目安装](#per-project-installation)效果最好。如果你在单个 Homestead 实例上托管多个站点，可以把你这些站点的「域名」添加到机器上的 `hosts` 文件中。`hosts` 文件会把针对 Homestead 站点的请求重定向到你的 Homestead 虚拟机。在 macOS 和 Linux 上，该文件位于 `/etc/hosts`；在 Windows 上，它位于 `C:\Windows\System32\drivers\etc\hosts`。你添加到该文件中的行看起来像这样：
 
-    192.168.56.56  homestead.test
+```text
+192.168.56.56  homestead.test
+```
 
 请确保列出的 IP 地址与 `Homestead.yaml` 文件中设置的 IP 地址一致。把域名添加到 `hosts` 文件并启动 Vagrant box 之后，你就可以通过 web 浏览器访问该站点了：
 
@@ -473,8 +477,10 @@ sites:
 
 如果 Vagrant 没有自动管理你的「hosts」文件，你可能还需要把新站点添加到该文件中。在 macOS 和 Linux 上，该文件位于 `/etc/hosts`；在 Windows 上，它位于 `C:\Windows\System32\drivers\etc\hosts`：
 
-    192.168.56.56  homestead.test
-    192.168.56.56  another.test
+```text
+192.168.56.56  homestead.test
+192.168.56.56  another.test
+```
 
 站点添加完成后，在 Homestead 目录中执行 `vagrant reload --provision` 终端命令。
 
@@ -616,7 +622,9 @@ php83
 
 Homestead 可以在虚拟机被销毁时自动备份你的数据库。要使用该特性，你必须使用 Vagrant 2.1.0 或更高版本。或者，如果你使用的是较旧的 Vagrant 版本，则必须安装 `vagrant-triggers` 插件。要启用自动数据库备份，把下面这行添加到你的 `Homestead.yaml` 文件中：
 
-    backup: true
+```yaml
+backup: true
+```
 
 配置完成后，执行 `vagrant destroy` 命令时，Homestead 会把数据库导出到 `.backup/mysql_backup` 和 `.backup/postgres_backup` 目录。你可以安装 Homestead 的文件夹中找到这些目录；如果使用的是[按项目安装](#per-project-installation)方式，则可以在项目根目录中找到它们。
 
@@ -657,7 +665,9 @@ Mailpit 配置完成后，你可以通过 `http://localhost:8025` 访问 Mailpit
 
 [Minio](https://github.com/minio/minio) 是一个开源对象存储服务器，提供兼容 Amazon S3 的 API。要安装 Minio，请在 `Homestead.yaml` 文件的 [features](#installing-optional-features) 部分添加以下配置项：
 
-    minio: true
+```yaml
+minio: true
+```
 
 默认情况下，Minio 在 9600 端口上可用。通过访问 `http://localhost:9600` 可以打开 Minio 控制面板。默认访问密钥为 `homestead`，默认秘密密钥为 `secretkey`。访问 Minio 时，应始终使用 `us-east-1` 区域。
 
@@ -747,7 +757,9 @@ xdebug.start_with_request = yes
 
 要调试 PHP CLI 应用，请在 Homestead 虚拟机中使用 `xphp` shell 别名：
 
-    xphp /path/to/script
+```shell
+xphp /path/to/script
+```
 
 <a name="profiling-applications-with-blackfire"></a>
 ### 使用 Blackfire 分析应用性能

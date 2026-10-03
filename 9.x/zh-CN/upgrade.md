@@ -113,11 +113,15 @@ PHP 开始过渡到要求在 `offsetGet`、`offsetSet` 等方法上定义返回�
 
 `Illuminate\Contracts\Foundation\Application` 接口的 `storagePath` 方法已更新，现在接受一个 `$path` 参数。如果你实现了此接口，应相应更新实现：
 
-    public function storagePath($path = '');
-    
+```php
+public function storagePath($path = '');
+```
+
 类似地，`Illuminate\Foundation\Application` 类的 `langPath` 方法已更新，现在接受一个 `$path` 参数：
 
-    public function langPath($path = '');
+```php
+public function langPath($path = '');
+```
 
 #### 异常处理器的 `ignore` 方法
 
@@ -460,7 +464,9 @@ $collection->when(function ($collection) {
 
 如果你想为某个请求指定更长的超时时间，可以使用 `timeout` 方法：
 
-    $response = Http::timeout(120)->get(/* ... */);
+```php
+$response = Http::timeout(120)->get(/* ... */);
+```
 
 #### HTTP Fake 与中间件
 
@@ -503,44 +509,48 @@ composer require symfony/postmark-mailer symfony/http-client
 
 各种与 SwiftMailer 相关的方法（其中一些未文档化）已重命名为对应的 Symfony Mailer 方法。例如，`withSwiftMessage` 方法已重命名为 `withSymfonyMessage`：
 
-    // Laravel 8.x...
-    $this->withSwiftMessage(function ($message) {
-        $message->getHeaders()->addTextHeader(
-            'Custom-Header', 'Header Value'
-        );
-    });
+```php
+// Laravel 8.x...
+$this->withSwiftMessage(function ($message) {
+    $message->getHeaders()->addTextHeader(
+        'Custom-Header', 'Header Value'
+    );
+});
 
-    // Laravel 9.x...
-    use Symfony\Component\Mime\Email;
+// Laravel 9.x...
+use Symfony\Component\Mime\Email;
 
-    $this->withSymfonyMessage(function (Email $message) {
-        $message->getHeaders()->addTextHeader(
-            'Custom-Header', 'Header Value'
-        );
-    });
+$this->withSymfonyMessage(function (Email $message) {
+    $message->getHeaders()->addTextHeader(
+        'Custom-Header', 'Header Value'
+    );
+});
+```
 
 > **Warning**  
 > 请仔细查阅 [Symfony Mailer 文档](https://symfony.com/doc/6.0/mailer.html#creating-sending-messages)，了解与 `Symfony\Component\Mime\Email` 对象的所有可能交互。
 
 以下列表包含更详细的重命名方法概述。其中许多是用于直接与 SwiftMailer / Symfony Mailer 交互的底层方法，因此在大多数 Laravel 应用中可能不常使用：
 
-    Message::getSwiftMessage();
-    Message::getSymfonyMessage();
+```php
+Message::getSwiftMessage();
+Message::getSymfonyMessage();
 
-    Mailable::withSwiftMessage($callback);
-    Mailable::withSymfonyMessage($callback);
+Mailable::withSwiftMessage($callback);
+Mailable::withSymfonyMessage($callback);
 
-    MailMessage::withSwiftMessage($callback);
-    MailMessage::withSymfonyMessage($callback);
+MailMessage::withSwiftMessage($callback);
+MailMessage::withSymfonyMessage($callback);
 
-    Mailer::getSwiftMailer();
-    Mailer::getSymfonyTransport();
+Mailer::getSwiftMailer();
+Mailer::getSymfonyTransport();
 
-    Mailer::setSwiftMailer($swift);
-    Mailer::setSymfonyTransport(TransportInterface $transport);
+Mailer::setSwiftMailer($swift);
+Mailer::setSymfonyTransport(TransportInterface $transport);
 
-    MailManager::createTransport($config);
-    MailManager::createSymfonyTransport($config);
+MailManager::createTransport($config);
+MailManager::createSymfonyTransport($config);
+```
 
 #### 代理的 `Illuminate\Mail\Message` 方法
 
@@ -548,21 +558,23 @@ composer require symfony/postmark-mailer symfony/http-client
 
 同样，许多应用可能未与这些方法交互，因为它们未在 Laravel 文档中记录：
 
-    // Laravel 8.x...
-    $message
-        ->setFrom('taylor@laravel.com')
-        ->setTo('example@example.org')
-        ->setSubject('Order Shipped')
-        ->setBody('<h1>HTML</h1>', 'text/html')
-        ->addPart('Plain Text', 'text/plain');
+```php
+// Laravel 8.x...
+$message
+    ->setFrom('taylor@laravel.com')
+    ->setTo('example@example.org')
+    ->setSubject('Order Shipped')
+    ->setBody('<h1>HTML</h1>', 'text/html')
+    ->addPart('Plain Text', 'text/plain');
 
-    // Laravel 9.x...
-    $message
-        ->from('taylor@laravel.com')
-        ->to('example@example.org')
-        ->subject('Order Shipped')
-        ->html('<h1>HTML</h1>')
-        ->text('Plain Text');
+// Laravel 9.x...
+$message
+    ->from('taylor@laravel.com')
+    ->to('example@example.org')
+    ->subject('Order Shipped')
+    ->html('<h1>HTML</h1>')
+    ->text('Plain Text');
+```
 
 #### 生成的消息 ID
 
@@ -582,17 +594,19 @@ SwiftMailer 提供了通过 `mime.idgenerator.idright` 配置选项定义自定�
 
 不再支持为 SMTP 传输定义流选项。相反，如果相关选项受支持，你必须直接在配置中定义。例如，要禁用 TLS 对端验证：
 
-    'smtp' => [
-        // Laravel 8.x...
-        'stream' => [
-            'ssl' => [
-                'verify_peer' => false,
-            ],
+```php
+'smtp' => [
+    // Laravel 8.x...
+    'stream' => [
+        'ssl' => [
+            'verify_peer' => false,
         ],
-
-        // Laravel 9.x...
-        'verify_peer' => false,
     ],
+
+    // Laravel 9.x...
+    'verify_peer' => false,
+],
+```
 
 要了解可用的配置选项，请查阅 [Symfony Mailer 文档](https://symfony.com/doc/6.0/mailer.html#transport-setup)。
 

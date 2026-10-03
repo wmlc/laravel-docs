@@ -183,12 +183,14 @@ Laravel 内置了一条可用于监控应用状态的健康检查路由。在生
 
 默认情况下，健康检查路由在 `/up` 提供服务。如果应用启动时没有异常，它会返回 200 HTTP 响应；否则会返回 500 HTTP 响应。你可以在应用的 `bootstrap/app` 文件中配置该路由的 URI：
 
-    ->withRouting(
-        web: __DIR__.'/../routes/web.php',
-        commands: __DIR__.'/../routes/console.php',
-        health: '/up', // [tl! remove]
-        health: '/status', // [tl! add]
-    )
+```php
+->withRouting(
+    web: __DIR__.'/../routes/web.php',
+    commands: __DIR__.'/../routes/console.php',
+    health: '/up', // [tl! remove]
+    health: '/status', // [tl! add]
+)
+```
 
 当该路由收到 HTTP 请求时，Laravel 还会派发 `Illuminate\Foundation\Events\DiagnosingHealth` 事件，让你执行与你的应用相关的额外健康检查。在该事件的[监听器](/docs/{{version}}/events)中，你可以检查应用的数据库或缓存状态。如果发现应用存在问题，可以直接从监听器中抛出异常。
 

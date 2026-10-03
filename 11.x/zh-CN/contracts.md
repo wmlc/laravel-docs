@@ -38,31 +38,33 @@ Laravel 中许多类型的类都通过[服务容器（Service Container）](/doc
 
 例如，请看这个事件监听器：
 
-    <?php
+```php
+<?php
 
-    namespace App\Listeners;
+namespace App\Listeners;
 
-    use App\Events\OrderWasPlaced;
-    use App\Models\User;
-    use Illuminate\Contracts\Redis\Factory;
+use App\Events\OrderWasPlaced;
+use App\Models\User;
+use Illuminate\Contracts\Redis\Factory;
 
-    class CacheOrderInformation
+class CacheOrderInformation
+{
+    /**
+     * 创建一个新的事件处理器实例。
+     */
+    public function __construct(
+        protected Factory $redis,
+    ) {}
+
+    /**
+     * 处理事件。
+     */
+    public function handle(OrderWasPlaced $event): void
     {
-        /**
-         * 创建一个新的事件处理器实例。
-         */
-        public function __construct(
-            protected Factory $redis,
-        ) {}
-
-        /**
-         * 处理事件。
-         */
-        public function handle(OrderWasPlaced $event): void
-        {
-            // ...
-        }
+        // ...
     }
+}
+```
 
 事件监听器被解析时，服务容器会读取该类构造函数上的类型提示，并注入相应的值。想了解更多关于在服务容器中注册内容的信息，请查阅[相关文档](/docs/{{version}}/container)。
 

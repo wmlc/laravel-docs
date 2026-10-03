@@ -552,13 +552,15 @@ export default defineConfig({
 
 在 JavaScript 应用中，为经常引用的目录[创建别名](#aliases)是很常见的做法。不过，你也可以使用 `Illuminate\Support\Facades\Vite` 类上的 `macro` 方法创建用于 Blade 的别名。通常，「宏」应当在一个[服务提供者](/docs/{{version}}/providers)的 `boot` 方法中定义：
 
-    /**
-     * 引导任何应用服务。
-     */
-    public function boot(): void
-    {
-        Vite::macro('image', fn (string $asset) => $this->asset("resources/images/{$asset}"));
-    }
+```php
+/**
+ * 引导任何应用服务。
+ */
+public function boot(): void
+{
+    Vite::macro('image', fn (string $asset) => $this->asset("resources/images/{$asset}"));
+}
+```
 
 宏定义完成后，就可以在模板中调用它。例如，我们可以使用上面定义的 `image` 宏来引用位于 `resources/images/logo.png` 的资源：
 

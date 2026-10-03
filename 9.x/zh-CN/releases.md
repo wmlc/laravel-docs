@@ -138,24 +138,28 @@ _Enum 类型转换由 [Mohamed Said](https://github.com/themsaid) 贡献_。
 
 Eloquent 现在允许你将属性值转换为 PHP ["回退" Enum](https://www.php.net/manual/en/language.enumerations.backed.php)。为此，你可以在模型的 `$casts` 属性数组中指定要转换的属性和 enum：
 
-    use App\Enums\ServerStatus;
+```php
+use App\Enums\ServerStatus;
 
-    /**
-     * 应该进行类型转换的属性。
-     *
-     * @var array
-     */
-    protected $casts = [
-        'status' => ServerStatus::class,
-    ];
+/**
+ * 应该进行类型转换的属性。
+ *
+ * @var array
+ */
+protected $casts = [
+    'status' => ServerStatus::class,
+];
+```
 
 在模型上定义类型转换后，当你与该属性交互时，指定的属性会自动转换为 enum 或从 enum 转换回来：
 
-    if ($server->status == ServerStatus::Provisioned) {
-        $server->status = ServerStatus::Ready;
+```php
+if ($server->status == ServerStatus::Provisioned) {
+    $server->status = ServerStatus::Ready;
 
-        $server->save();
-    }
+    $server->save();
+}
+```
 
 <a name="implicit-route-bindings-with-enums"></a>
 ### 通过 Enum 实现的隐式路由绑定
@@ -187,31 +191,37 @@ _强制作用域绑定由 [Claudio Dekker](https://github.com/claudiodekker) 贡
 
 在之前的 Laravel 版本中，你可能希望对路由定义中的第二个 Eloquent 模型进行作用域限制，使其必须是前一个 Eloquent 模型的子级。例如，考虑以下根据 slug 为特定用户获取博客文章的路由定义：
 
-    use App\Models\Post;
-    use App\Models\User;
+```php
+use App\Models\Post;
+use App\Models\User;
 
-    Route::get('/users/{user}/posts/{post:slug}', function (User $user, Post $post) {
-        return $post;
-    });
+Route::get('/users/{user}/posts/{post:slug}', function (User $user, Post $post) {
+    return $post;
+});
+```
 
 当使用自定义键的隐式绑定作为嵌套路由参数时，Laravel 会自动对查询进行作用域限制，通过父级检索嵌套模型，并使用约定来猜测父级上的关联名称。然而，此前 Laravel 仅在子路由绑定使用自定义键时才支持此行为。
 
 不过，在 Laravel 9.x 中，即使未提供自定义键，你也可以指示 Laravel 对"子"绑定进行作用域限制。为此，你可以在定义路由时调用 `scopeBindings` 方法：
 
-    use App\Models\Post;
-    use App\Models\User;
+```php
+use App\Models\Post;
+use App\Models\User;
 
-    Route::get('/users/{user}/posts/{post}', function (User $user, Post $post) {
-        return $post;
-    })->scopeBindings();
+Route::get('/users/{user}/posts/{post}', function (User $user, Post $post) {
+    return $post;
+})->scopeBindings();
+```
 
 或者，你可以指示整组路由定义使用作用域绑定：
 
-    Route::scopeBindings()->group(function () {
-        Route::get('/users/{user}/posts/{post}', function (User $user, Post $post) {
-            return $post;
-        });
+```php
+Route::scopeBindings()->group(function () {
+    Route::get('/users/{user}/posts/{post}', function (User $user, Post $post) {
+        return $post;
     });
+});
+```
 
 <a name="controller-route-groups"></a>
 ### 控制器路由组
@@ -220,12 +230,14 @@ _路由组改进由 [Luke Downing](https://github.com/lukeraymonddowning) 贡献
 
 现在，你可以使用 `controller` 方法为组内所有路由定义公共控制器。然后，在定义路由时，只需提供它们调用的控制器方法：
 
-    use App\Http\Controllers\OrderController;
+```php
+use App\Http\Controllers\OrderController;
 
-    Route::controller(OrderController::class)->group(function () {
-        Route::get('/orders/{id}', 'show');
-        Route::post('/orders', 'store');
-    });
+Route::controller(OrderController::class)->group(function () {
+    Route::get('/orders/{id}', 'show');
+    Route::post('/orders', 'store');
+});
+```
 
 <a name="full-text"></a>
 ### 全文索引/Where 子句
@@ -234,13 +246,17 @@ _全文索引和 "where" 子句由 [Taylor Otwell](https://github.com/taylorotwe
 
 使用 MySQL 或 PostgreSQL 时，现在可以将 `fullText` 方法添加到列定义中以生成全文索引：
 
-    $table->text('bio')->fullText();
+```php
+$table->text('bio')->fullText();
+```
 
 此外，可以使用 `whereFullText` 和 `orWhereFullText` 方法为具有[全文索引](/docs/{{version}}/migrations#available-index-types)的列的查询添加全文 "where" 子句。Laravel 会将这些方法转换为底层数据库系统对应的 SQL。例如，对于使用 MySQL 的应用，将生成 `MATCH AGAINST` 子句：
 
-    $users = DB::table('users')
-               ->whereFullText('bio', 'web developer')
-               ->get();
+```php
+$users = DB::table('users')
+           ->whereFullText('bio', 'web developer')
+           ->get();
+```
 
 <a name="laravel-scout-database-engine"></a>
 ### Laravel Scout 数据库引擎
@@ -291,7 +307,7 @@ _插槽名称简写由 [Caleb Porzio](https://github.com/calebporzio) 贡献_。
 
 不过，从 Laravel 9.x 开始，你可以使用更便捷、更简短的语法指定插槽名称：
 
-```xml
+```blade
 <x-slot:title>
     Server Error
 </x-slot>
@@ -330,17 +346,19 @@ _Bootstrap 5 分页视图由 [Jared Lewis](https://github.com/jrd-lewis) 贡献_
 
 Laravel 现在包含使用 [Bootstrap 5](https://getbootstrap.com/) 构建的分页视图。要使用这些视图而非默认的 Tailwind 视图，你可以在 `App\Providers\AppServiceProvider` 类的 `boot` 方法中调用分页器的 `useBootstrapFive` 方法：
 
-    use Illuminate\Pagination\Paginator;
+```php
+use Illuminate\Pagination\Paginator;
 
-    /**
-     * 引导任何应用服务。
-     *
-     * @return void
-     */
-    public function boot()
-    {
-        Paginator::useBootstrapFive();
-    }
+/**
+ * 引导任何应用服务。
+ *
+ * @return void
+ */
+public function boot()
+{
+    Paginator::useBootstrapFive();
+}
+```
 
 <a name="improved-validation-of-nested-array-data"></a>
 ### 改进的嵌套数组数据验证
@@ -349,18 +367,20 @@ _改进的嵌套数组输入验证由 [Steve Bauman](https://github.com/stevebau
 
 有时在为属性分配验证规则时，你可能需要访问给定嵌套数组元素的值。现在可以使用 `Rule::forEach` 方法完成此操作。`forEach` 方法接受一个闭包，该闭包会在被验证的数组属性的每次迭代时被调用，并接收属性的值以及显式、完全展开的属性名。闭包应返回一个规则数组，用于分配给该数组元素：
 
-    use App\Rules\HasPermission;
-    use Illuminate\Support\Facades\Validator;
-    use Illuminate\Validation\Rule;
+```php
+use App\Rules\HasPermission;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
 
-    $validator = Validator::make($request->all(), [
-        'companies.*.id' => Rule::forEach(function ($value, $attribute) {
-            return [
-                Rule::exists(Company::class, 'id'),
-                new HasPermission('manage-company', $value),
-            ];
-        }),
-    ]);
+$validator = Validator::make($request->all(), [
+    'companies.*.id' => Rule::forEach(function ($value, $attribute) {
+        return [
+            Rule::exists(Company::class, 'id'),
+            new HasPermission('manage-company', $value),
+        ];
+    }),
+]);
+```
 
 <a name="laravel-breeze-api"></a>
 ### Laravel Breeze API & Next.js
@@ -448,23 +468,31 @@ Laravel 9.x 引入了两个新的便捷辅助函数，你可以在自己的应�
 
 `str` 函数为给定字符串返回一个新的 `Illuminate\Support\Stringable` 实例。此函数等价于 `Str::of` 方法：
 
-    $string = str('Taylor')->append(' Otwell');
+```php
+$string = str('Taylor')->append(' Otwell');
 
-    // 'Taylor Otwell'
+// 'Taylor Otwell'
+```
 
 如果未向 `str` 函数提供参数，该函数返回 `Illuminate\Support\Str` 的实例：
 
-    $snake = str()->snake('LaravelFramework');
+```php
+$snake = str()->snake('LaravelFramework');
 
-    // 'laravel_framework'
+// 'laravel_framework'
+```
 
 <a name="new-helpers-to-route"></a>
 #### `to_route`
 
 `to_route` 函数为给定的命名路由生成重定向 HTTP 响应，提供了一种从路由和控制器重定向到命名路由的富有表现力的方式：
 
-    return to_route('users.show', ['user' => 1]);
+```php
+return to_route('users.show', ['user' => 1]);
+```
 
 如有必要，你可以将应分配给重定向的 HTTP 状态码和任何额外的响应头作为 to_route 方法的第三和第四个参数传递：
 
-    return to_route('users.show', ['user' => 1], 302, ['X-Framework' => 'Laravel']);
+```php
+return to_route('users.show', ['user' => 1], 302, ['X-Framework' => 'Laravel']);
+```

@@ -1,13 +1,14 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import { useRoute } from 'vitepress'
+import { versions, versionPattern } from '../../shared/versions.mjs'
 
 const route = useRoute()
 const open = ref(false)
-const versions = ['13.x', '12.x', '9.x']
+const versionRe = new RegExp(`^/(${versionPattern})/`)
 
 const current = computed(() => {
-  const m = route.path.match(/^\/(13\.x|12\.x|9\.x)\//)
+  const m = route.path.match(versionRe)
   return m ? m[1] : ''
 })
 
@@ -15,7 +16,7 @@ function href(v: string) {
   let rest = ''
   if (current.value) {
     rest = route.path
-      .replace(/^\/(13\.x|12\.x|9\.x)\//, '')
+      .replace(versionRe, '')
       .replace(/\/index\.html$/, '')
       .replace(/\.html$/, '')
       .replace(/\/$/, '')

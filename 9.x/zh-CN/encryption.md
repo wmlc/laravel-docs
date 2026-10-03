@@ -22,41 +22,45 @@ Laravel 的加密服务提供了一个简单、便捷的接口，通过 OpenSSL 
 
 你可以使用 `Crypt` Facade 提供的 `encryptString` 方法加密值。所有加密值都使用 OpenSSL 和 AES-256-CBC 密码进行加密。此外，所有加密值都使用消息认证码（MAC）进行签名。集成的消息认证码将阻止解密任何被恶意用户篡改的值：
 
-    <?php
+```php
+<?php
 
-    namespace App\Http\Controllers;
+namespace App\Http\Controllers;
 
-    use App\Http\Controllers\Controller;
-    use App\Models\User;
-    use Illuminate\Http\Request;
-    use Illuminate\Support\Facades\Crypt;
+use App\Http\Controllers\Controller;
+use App\Models\User;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Crypt;
 
-    class DigitalOceanTokenController extends Controller
+class DigitalOceanTokenController extends Controller
+{
+    /**
+     * 为用户存储 DigitalOcean API 令牌。
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function storeSecret(Request $request)
     {
-        /**
-         * 为用户存储 DigitalOcean API 令牌。
-         *
-         * @param  \Illuminate\Http\Request  $request
-         * @return \Illuminate\Http\Response
-         */
-        public function storeSecret(Request $request)
-        {
-            $request->user()->fill([
-                'token' => Crypt::encryptString($request->token),
-            ])->save();
-        }
+        $request->user()->fill([
+            'token' => Crypt::encryptString($request->token),
+        ])->save();
     }
+}
+```
 
 <a name="decrypting-a-value"></a>
 #### 解密值
 
 你可以使用 `Crypt` Facade 提供的 `decryptString` 方法解密值。如果值无法被正确解密，例如消息认证码无效时，将抛出 `Illuminate\Contracts\Encryption\DecryptException` 异常：
 
-    use Illuminate\Contracts\Encryption\DecryptException;
-    use Illuminate\Support\Facades\Crypt;
+```php
+use Illuminate\Contracts\Encryption\DecryptException;
+use Illuminate\Support\Facades\Crypt;
 
-    try {
-        $decrypted = Crypt::decryptString($encryptedValue);
-    } catch (DecryptException $e) {
-        //
-    }
+try {
+    $decrypted = Crypt::decryptString($encryptedValue);
+} catch (DecryptException $e) {
+    //
+}
+```

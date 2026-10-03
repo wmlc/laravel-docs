@@ -130,21 +130,23 @@ Fortify 服务提供者注册 Fortify 发布的动作，并指示 Fortify 在执
 
 所有认证视图的渲染逻辑都可以使用 `Laravel\Fortify\Fortify` 类提供的相应方法进行自定义。通常，应从应用 `App\Providers\FortifyServiceProvider` 类的 `boot` 方法调用此方法。Fortify 将负责定义返回此视图的 `/login` 路由：
 
-    use Laravel\Fortify\Fortify;
+```php
+use Laravel\Fortify\Fortify;
 
-    /**
-     * 引导任何应用服务。
-     *
-     * @return void
-     */
-    public function boot()
-    {
-        Fortify::loginView(function () {
-            return view('auth.login');
-        });
+/**
+ * 引导任何应用服务。
+ *
+ * @return void
+ */
+public function boot()
+{
+    Fortify::loginView(function () {
+        return view('auth.login');
+    });
 
-        // ...
-    }
+    // ...
+}
+```
 
 登录模板应包含一个向 `/login` 发起 POST 请求的表单。`/login` 端点期望接收字符串 `email` / `username` 和 `password`。邮箱 / 用户名字段的名称应与 `config/fortify.php` 配置文件中的 `username` 值匹配。此外，可以提供布尔值 `remember` 字段以指示用户希望使用 Laravel 提供的"记住我"功能。
 
@@ -435,7 +437,7 @@ Fortify 将负责定义返回此视图的 `/forgot-password` 端点。`forgot-pa
 
 成功请求后被重定向回 `/forgot-password` 端点后，可以使用 `status` 会话变量显示密码重置链接请求尝试的状态。此会话变量的值将与应用 `passwords` [语言文件](/docs/{{version}}/localization)中定义的翻译字符串之一匹配：
 
-```html
+```blade
 @if (session('status'))
     <div class="mb-4 font-medium text-sm text-green-600">
         {{ session('status') }}

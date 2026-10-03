@@ -135,48 +135,54 @@ Laravel Breeze 是 Laravel 全部认证功能的极简实现，包含登录、�
 
 安装认证入门套件并允许用户注册和认证你的应用之后，你经常需要与当前已认证的用户进行交互。在处理传入请求时，你可以通过 `Auth` Facade 的 `user` 方法访问已认证用户：
 
-    use Illuminate\Support\Facades\Auth;
+```php
+use Illuminate\Support\Facades\Auth;
 
-    // 获取当前已认证的用户...
-    $user = Auth::user();
+// 获取当前已认证的用户...
+$user = Auth::user();
 
-    // 获取当前已认证用户的 ID...
-    $id = Auth::id();
+// 获取当前已认证用户的 ID...
+$id = Auth::id();
+```
 
 或者，一旦用户通过认证，你也可以通过 `Illuminate\Http\Request` 实例访问已认证用户。请记住，类型提示过的类会被自动注入到你的控制器方法中。通过类型提示 `Illuminate\Http\Request` 对象，你就可以从应用中任意控制器方法方便地访问已认证用户，方式是使用请求对象的 `user` 方法：
 
-    <?php
+```php
+<?php
 
-    namespace App\Http\Controllers;
+namespace App\Http\Controllers;
 
-    use Illuminate\Http\RedirectResponse;
-    use Illuminate\Http\Request;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 
-    class FlightController extends Controller
+class FlightController extends Controller
+{
+    /**
+     * 更新现有航班的航班信息。
+     */
+    public function update(Request $request): RedirectResponse
     {
-        /**
-         * 更新现有航班的航班信息。
-         */
-        public function update(Request $request): RedirectResponse
-        {
-            $user = $request->user();
+        $user = $request->user();
 
-            // ...
+        // ...
 
-            return redirect('/flights');
-        }
+        return redirect('/flights');
     }
+}
+```
 
 <a name="determining-if-the-current-user-is-authenticated"></a>
 #### 判断当前用户是否已认证
 
 要判断发起传入 HTTP 请求的用户是否已认证，可以使用 `Auth` Facade 上的 `check` 方法。如果用户已通过认证，该方法会返回 `true`：
 
-    use Illuminate\Support\Facades\Auth;
+```php
+use Illuminate\Support\Facades\Auth;
 
-    if (Auth::check()) {
-        // 用户已登录...
-    }
+if (Auth::check()) {
+    // 用户已登录...
+}
+```
 
 > [!NOTE]
 > 尽管可以使用 `check` 方法判断用户是否已认证，但你通常会使用中间件来验证用户身份，然后才允许其访问特定路由 / 控制器。若想了解更多内容，请查阅[保护路由](/docs/{{version}}/authentication#protecting-routes)文档。
@@ -186,32 +192,38 @@ Laravel Breeze 是 Laravel 全部认证功能的极简实现，包含登录、�
 
 [路由中间件](/docs/{{version}}/middleware)可用于只允许已认证用户访问指定路由。Laravel 自带一个 `auth` 中间件，它是 `Illuminate\Auth\Middleware\Authenticate` 类的[中间件别名](/docs/{{version}}/middleware#middleware-aliases)。由于该中间件在 Laravel 内部已经拥有别名，你只需把中间件附加到路由定义上即可：
 
-    Route::get('/flights', function () {
-        // 只有已认证用户才能访问此路由...
-    })->middleware('auth');
+```php
+Route::get('/flights', function () {
+    // 只有已认证用户才能访问此路由...
+})->middleware('auth');
+```
 
 <a name="redirecting-unauthenticated-users"></a>
 #### 重定向未认证用户
 
 当 `auth` 中间件检测到未认证用户时，会把该用户重定向到 `login` [命名路由](/docs/{{version}}/routing#named-routes)。你可以使用应用 `bootstrap/app.php` 文件中的 `redirectGuestsTo` 方法修改这一行为：
 
-    use Illuminate\Http\Request;
+```php
+use Illuminate\Http\Request;
 
-    ->withMiddleware(function (Middleware $middleware) {
-        $middleware->redirectGuestsTo('/login');
+->withMiddleware(function (Middleware $middleware) {
+    $middleware->redirectGuestsTo('/login');
 
-        // 使用闭包...
-        $middleware->redirectGuestsTo(fn (Request $request) => route('login'));
-    })
+    // 使用闭包...
+    $middleware->redirectGuestsTo(fn (Request $request) => route('login'));
+})
+```
 
 <a name="specifying-a-guard"></a>
 #### 指定守卫
 
 把 `auth` 中间件附加到路由时，你还可以指定使用哪个"守卫"来认证用户。所指定的守卫应对应 `auth.php` 配置文件中 `guards` 数组的某个键：
 
-    Route::get('/flights', function () {
-        // 只有已认证用户才能访问此路由...
-    })->middleware('auth:admin');
+```php
+Route::get('/flights', function () {
+    // 只有已认证用户才能访问此路由...
+})->middleware('auth:admin');
+```
 
 <a name="login-throttling"></a>
 ### 登录限流
@@ -228,37 +240,39 @@ Laravel Breeze 是 Laravel 全部认证功能的极简实现，包含登录、�
 
 我们将通过 `Auth` [Facade](/docs/{{version}}/facades)访问 Laravel 的认证服务，因此需要在类的顶部导入 `Auth` Facade。接下来，看看 `attempt` 方法。`attempt` 方法通常用于处理来自应用"登录"表单的认证尝试。如果认证成功，你应该重新生成用户的[会话](/docs/{{version}}/session)，以防止[会话固定](https://en.wikipedia.org/wiki/Session_fixation)攻击：
 
-    <?php
+```php
+<?php
 
-    namespace App\Http\Controllers;
+namespace App\Http\Controllers;
 
-    use Illuminate\Http\Request;
-    use Illuminate\Http\RedirectResponse;
-    use Illuminate\Support\Facades\Auth;
+use Illuminate\Http\Request;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\Auth;
 
-    class LoginController extends Controller
+class LoginController extends Controller
+{
+    /**
+     * 处理一次认证尝试。
+     */
+    public function authenticate(Request $request): RedirectResponse
     {
-        /**
-         * 处理一次认证尝试。
-         */
-        public function authenticate(Request $request): RedirectResponse
-        {
-            $credentials = $request->validate([
-                'email' => ['required', 'email'],
-                'password' => ['required'],
-            ]);
+        $credentials = $request->validate([
+            'email' => ['required', 'email'],
+            'password' => ['required'],
+        ]);
 
-            if (Auth::attempt($credentials)) {
-                $request->session()->regenerate();
+        if (Auth::attempt($credentials)) {
+            $request->session()->regenerate();
 
-                return redirect()->intended('dashboard');
-            }
-
-            return back()->withErrors([
-                'email' => 'The provided credentials do not match our records.',
-            ])->onlyInput('email');
+            return redirect()->intended('dashboard');
         }
+
+        return back()->withErrors([
+            'email' => 'The provided credentials do not match our records.',
+        ])->onlyInput('email');
     }
+}
+```
 
 `attempt` 方法的第一个参数接受一个键 / 值对数组。数组中的值将用于在你的数据库表中查找用户。因此，在上面的例子中，系统会根据 `email` 列的值检索用户。如果找到了用户，数据库中存储的哈希密码会与通过数组传给该方法的 `password` 值进行比较。你不应对传入请求中的 `password` 值做哈希处理，因为框架会在与数据库中的哈希密码比较之前自动对该值进行哈希。如果两个哈希密码匹配，系统就会为该用户启动一个已认证的会话。
 
@@ -273,35 +287,41 @@ Laravel 重定向器提供的 `intended` 方法会把用户重定向到他们在
 
 如果需要，除了用户的邮箱和密码之外，你还可以为认证查询添加额外的查询条件。为此，只需把查询条件加入传给 `attempt` 方法的数组即可。例如，你可以验证用户是否被标记为"活跃"：
 
-    if (Auth::attempt(['email' => $email, 'password' => $password, 'active' => 1])) {
-        // 认证成功...
-    }
+```php
+if (Auth::attempt(['email' => $email, 'password' => $password, 'active' => 1])) {
+    // 认证成功...
+}
+```
 
 对于复杂的查询条件，你可以在凭据数组中提供一个闭包。该闭包会接收查询实例，让你可以根据应用需求自定义查询：
 
-    use Illuminate\Database\Eloquent\Builder;
+```php
+use Illuminate\Database\Eloquent\Builder;
 
-    if (Auth::attempt([
-        'email' => $email,
-        'password' => $password,
-        fn (Builder $query) => $query->has('activeSubscription'),
-    ])) {
-        // 认证成功...
-    }
+if (Auth::attempt([
+    'email' => $email,
+    'password' => $password,
+    fn (Builder $query) => $query->has('activeSubscription'),
+])) {
+    // 认证成功...
+}
+```
 
 > [!WARNING]
 > 在这些例子中，`email` 并不是必需的选项，它仅仅是被用作示例。你应当使用与数据库表中"用户名"对应的列名。
 
 `attemptWhen` 方法的第二个参数接收一个闭包，可用于在真正认证用户之前对候选用户进行更详尽的检查。该闭包会接收候选用户，并应返回 `true` 或 `false` 来表示该用户是否可以认证：
 
-    if (Auth::attemptWhen([
-        'email' => $email,
-        'password' => $password,
-    ], function (User $user) {
-        return $user->isNotBanned();
-    })) {
-        // 认证成功...
-    }
+```php
+if (Auth::attemptWhen([
+    'email' => $email,
+    'password' => $password,
+], function (User $user) {
+    return $user->isNotBanned();
+})) {
+    // 认证成功...
+}
+```
 
 <a name="accessing-specific-guard-instances"></a>
 #### 访问特定的守卫实例
@@ -310,9 +330,11 @@ Laravel 重定向器提供的 `intended` 方法会把用户重定向到他们在
 
 传给 `guard` 方法的守卫名称应对应 `auth.php` 配置文件中配置的某个守卫：
 
-    if (Auth::guard('admin')->attempt($credentials)) {
-        // ...
-    }
+```php
+if (Auth::guard('admin')->attempt($credentials)) {
+    // ...
+}
+```
 
 <a name="remembering-users"></a>
 ### 记住用户
@@ -321,19 +343,23 @@ Laravel 重定向器提供的 `intended` 方法会把用户重定向到他们在
 
 当该值为 `true` 时，Laravel 会让用户持续保持认证状态，直到他们主动退出登录为止。你的 `users` 表必须包含字符串 `remember_token` 列，该列用于存储"记住我"令牌。新 Laravel 应用自带的 `users` 表数据库迁移已经包含了这个列：
 
-    use Illuminate\Support\Facades\Auth;
+```php
+use Illuminate\Support\Facades\Auth;
 
-    if (Auth::attempt(['email' => $email, 'password' => $password], $remember)) {
-        // 正在记住该用户...
-    }
+if (Auth::attempt(['email' => $email, 'password' => $password], $remember)) {
+    // 正在记住该用户...
+}
+```
 
 如果你的应用提供"记住我"功能，可以使用 `viaRemember` 方法判断当前已认证用户是否是使用"记住我"Cookie 完成认证的：
 
-    use Illuminate\Support\Facades\Auth;
+```php
+use Illuminate\Support\Facades\Auth;
 
-    if (Auth::viaRemember()) {
-        // ...
-    }
+if (Auth::viaRemember()) {
+    // ...
+}
+```
 
 <a name="other-authentication-methods"></a>
 ### 其他认证方式
@@ -343,46 +369,60 @@ Laravel 重定向器提供的 `intended` 方法会把用户重定向到他们在
 
 如果你需要把一个已有的用户实例设置为当前已认证用户，可以把该用户实例传给 `Auth` Facade 的 `login` 方法。传入的用户实例必须是 `Illuminate\Contracts\Auth\Authenticatable` [契约](/docs/{{version}}/contracts)的一个实现。Laravel 自带的 `App\Models\User` 模型已经实现了这个接口。当你手上已经有一个有效的用户实例时，例如用户刚在你的应用中注册之后，这种认证方式会非常方便：
 
-    use Illuminate\Support\Facades\Auth;
+```php
+use Illuminate\Support\Facades\Auth;
 
-    Auth::login($user);
+Auth::login($user);
+```
 
 你可以把一个布尔值作为 `login` 方法的第二个参数传入。该值表示是否需要为已认证的会话启用"记住我"功能。请记住，这意味着会话将保持认证状态，直到用户主动从应用中退出登录：
 
-    Auth::login($user, $remember = true);
+```php
+Auth::login($user, $remember = true);
+```
 
 如有需要，你可以在调用 `login` 方法之前指定一个认证守卫：
 
-    Auth::guard('admin')->login($user);
+```php
+Auth::guard('admin')->login($user);
+```
 
 <a name="authenticate-a-user-by-id"></a>
 #### 通过 ID 认证用户
 
 要使用数据库记录的主键认证用户，可以使用 `loginUsingId` 方法。该方法接受你希望认证的用户的主键：
 
-    Auth::loginUsingId(1);
+```php
+Auth::loginUsingId(1);
+```
 
 你可以给 `loginUsingId` 方法的 `remember` 参数传入一个布尔值。该值表示是否需要为已认证的会话启用"记住我"功能。请记住，这意味着会话将保持认证状态，直到用户主动从应用中退出登录：
 
-    Auth::loginUsingId(1, remember: true);
+```php
+Auth::loginUsingId(1, remember: true);
+```
 
 <a name="authenticate-a-user-once"></a>
 #### 一次性认证用户
 
 你可以使用 `once` 方法针对单次请求认证用户。调用该方法时不会使用任何会话或 Cookie：
 
-    if (Auth::once($credentials)) {
-        // ...
-    }
+```php
+if (Auth::once($credentials)) {
+    // ...
+}
+```
 
 <a name="http-basic-authentication"></a>
 ## HTTP Basic 认证
 
 [HTTP Basic 认证](https://en.wikipedia.org/wiki/Basic_access_authentication)提供了一种无需搭建专用"登录"页面就能认证应用用户的快捷方式。要开始上手，只需把 `auth.basic` [中间件](/docs/{{version}}/middleware)附加到路由上即可。`auth.basic` 中间件随 Laravel 框架一同提供，因此你不需要自行定义：
 
-    Route::get('/profile', function () {
-        // 只有已认证用户才能访问此路由...
-    })->middleware('auth.basic');
+```php
+Route::get('/profile', function () {
+    // 只有已认证用户才能访问此路由...
+})->middleware('auth.basic');
+```
 
 中间件附加到路由之后，在浏览器中访问该路由时就会自动提示你输入凭据。默认情况下，`auth.basic` 中间件会假定 `users` 数据库表中的 `email` 列就是用户的"用户名"。
 
@@ -401,34 +441,38 @@ RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
 
 你也可以使用 HTTP Basic 认证而不设置会话用户标识 Cookie。如果选择用 HTTP 认证来认证对应用 API 的请求，这一点会尤为方便。为此，请[定义一个中间件](/docs/{{version}}/middleware)并在其中调用 `onceBasic` 方法。如果 `onceBasic` 方法没有返回任何响应，请求可以继续进入应用：
 
-    <?php
+```php
+<?php
 
-    namespace App\Http\Middleware;
+namespace App\Http\Middleware;
 
-    use Closure;
-    use Illuminate\Http\Request;
-    use Illuminate\Support\Facades\Auth;
-    use Symfony\Component\HttpFoundation\Response;
+use Closure;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Symfony\Component\HttpFoundation\Response;
 
-    class AuthenticateOnceWithBasicAuth
+class AuthenticateOnceWithBasicAuth
+{
+    /**
+     * 处理传入的请求。
+     *
+     * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
+     */
+    public function handle(Request $request, Closure $next): Response
     {
-        /**
-         * 处理传入的请求。
-         *
-         * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
-         */
-        public function handle(Request $request, Closure $next): Response
-        {
-            return Auth::onceBasic() ?: $next($request);
-        }
-
+        return Auth::onceBasic() ?: $next($request);
     }
+
+}
+```
 
 接下来，把该中间件附加到路由上：
 
-    Route::get('/api/user', function () {
-        // 只有已认证用户才能访问此路由...
-    })->middleware(AuthenticateOnceWithBasicAuth::class);
+```php
+Route::get('/api/user', function () {
+    // 只有已认证用户才能访问此路由...
+})->middleware(AuthenticateOnceWithBasicAuth::class);
+```
 
 <a name="logging-out"></a>
 ## 退出登录
@@ -437,23 +481,25 @@ RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
 
 除了调用 `logout` 方法之外，我们还建议你使该用户的会话失效，并重新生成其 [CSRF 令牌](/docs/{{version}}/csrf)。在让用户退出登录之后，你通常会把用户重定向到应用的根路径：
 
-    use Illuminate\Http\Request;
-    use Illuminate\Http\RedirectResponse;
-    use Illuminate\Support\Facades\Auth;
+```php
+use Illuminate\Http\Request;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\Auth;
 
-    /**
-     * 将该用户从应用中登出。
-     */
-    public function logout(Request $request): RedirectResponse
-    {
-        Auth::logout();
+/**
+ * 将该用户从应用中登出。
+ */
+public function logout(Request $request): RedirectResponse
+{
+    Auth::logout();
 
-        $request->session()->invalidate();
+    $request->session()->invalidate();
 
-        $request->session()->regenerateToken();
+    $request->session()->regenerateToken();
 
-        return redirect('/');
-    }
+    return redirect('/');
+}
+```
 
 <a name="invalidating-sessions-on-other-devices"></a>
 ### 使其他设备上的会话失效
@@ -462,17 +508,21 @@ Laravel 还提供了一套机制，可以在不使当前设备会话失效的前
 
 开始之前，请确保在需要接收会话认证的路由上包含 `Illuminate\Session\Middleware\AuthenticateSession` 中间件。通常，你应当把该中间件放在路由组定义上，以便它能应用到应用中大多数路由上。默认情况下，可以使用 `auth.session` [中间件别名](/docs/{{version}}/middleware#middleware-aliases)把 `AuthenticateSession` 中间件附加到路由：
 
-    Route::middleware(['auth', 'auth.session'])->group(function () {
-        Route::get('/', function () {
-            // ...
-        });
+```php
+Route::middleware(['auth', 'auth.session'])->group(function () {
+    Route::get('/', function () {
+        // ...
     });
+});
+```
 
 然后，你可以使用 `Auth` Facade 提供的 `logoutOtherDevices` 方法。该方法要求用户确认其当前密码，你的应用应当通过一个输入表单来接收该密码：
 
-    use Illuminate\Support\Facades\Auth;
+```php
+use Illuminate\Support\Facades\Auth;
 
-    Auth::logoutOtherDevices($currentPassword);
+Auth::logoutOtherDevices($currentPassword);
+```
 
 `logoutOtherDevices` 方法被调用时，该用户的其他会话会被彻底失效，也就是说用户会在其此前通过认证的所有守卫中"退出登录"。
 
@@ -497,9 +547,11 @@ Laravel 还提供了一套机制，可以在不使当前设备会话失效的前
 
 首先，我们将定义一个路由，用来展示要求用户确认密码的视图：
 
-    Route::get('/confirm-password', function () {
-        return view('auth.confirm-password');
-    })->middleware('auth')->name('password.confirm');
+```php
+Route::get('/confirm-password', function () {
+    return view('auth.confirm-password');
+})->middleware('auth')->name('password.confirm');
+```
 
 你可能已经猜到，该路由返回的视图应当包含一个带 `password` 字段的表单。此外，你可以在视图中自由加入说明性文字，告知用户正在进入应用的受保护区域，必须确认密码。
 
@@ -508,21 +560,23 @@ Laravel 还提供了一套机制，可以在不使当前设备会话失效的前
 
 接下来，我们将定义一个路由，用于处理来自"确认密码"视图的表单请求。该路由负责校验密码，并把用户重定向到其目标位置：
 
-    use Illuminate\Http\Request;
-    use Illuminate\Support\Facades\Hash;
-    use Illuminate\Support\Facades\Redirect;
+```php
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Redirect;
 
-    Route::post('/confirm-password', function (Request $request) {
-        if (! Hash::check($request->password, $request->user()->password)) {
-            return back()->withErrors([
-                'password' => ['The provided password does not match our records.']
-            ]);
-        }
+Route::post('/confirm-password', function (Request $request) {
+    if (! Hash::check($request->password, $request->user()->password)) {
+        return back()->withErrors([
+            'password' => ['The provided password does not match our records.']
+        ]);
+    }
 
-        $request->session()->passwordConfirmed();
+    $request->session()->passwordConfirmed();
 
-        return redirect()->intended();
-    })->middleware(['auth', 'throttle:6,1']);
+    return redirect()->intended();
+})->middleware(['auth', 'throttle:6,1']);
+```
 
 在继续之前，让我们更仔细地看看这条路由。首先，要确认请求中的 `password` 字段是否确实与已认证用户的密码相符。如果密码有效，就需要告知 Laravel 的会话该用户已确认密码。`passwordConfirmed` 方法会在用户会话中设置一个时间戳，Laravel 可以据此判断用户上次确认密码的时间。最后，我们可以把用户重定向到其目标位置。
 
@@ -531,53 +585,59 @@ Laravel 还提供了一套机制，可以在不使当前设备会话失效的前
 
 你应当确保任何执行需要近期密码确认之操作的路由都指定了 `password.confirm` 中间件。该中间件随 Laravel 的默认安装一同提供，它会自动把用户的目标位置存储在会话中，以便用户在确认密码后被重定向到该位置。在把用户的目标位置存储到会话之后，该中间件会把用户重定向到 `password.confirm` [命名路由](/docs/{{version}}/routing#named-routes)：
 
-    Route::get('/settings', function () {
-        // ...
-    })->middleware(['password.confirm']);
+```php
+Route::get('/settings', function () {
+    // ...
+})->middleware(['password.confirm']);
 
-    Route::post('/settings', function () {
-        // ...
-    })->middleware(['password.confirm']);
+Route::post('/settings', function () {
+    // ...
+})->middleware(['password.confirm']);
+```
 
 <a name="adding-custom-guards"></a>
 ## 添加自定义守卫
 
 你可以使用 `Auth` Facade 上的 `extend` 方法定义自己的认证守卫。应当把对 `extend` 方法的调用放在[服务提供者](/docs/{{version}}/providers)中。由于 Laravel 已经自带了一个 `AppServiceProvider`，我们可以把代码放在该提供者中：
 
-    <?php
+```php
+<?php
 
-    namespace App\Providers;
+namespace App\Providers;
 
-    use App\Services\Auth\JwtGuard;
-    use Illuminate\Contracts\Foundation\Application;
-    use Illuminate\Support\Facades\Auth;
-    use Illuminate\Support\ServiceProvider;
+use App\Services\Auth\JwtGuard;
+use Illuminate\Contracts\Foundation\Application;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\ServiceProvider;
 
-    class AppServiceProvider extends ServiceProvider
+class AppServiceProvider extends ServiceProvider
+{
+    // ...
+
+    /**
+     * 引导任何应用服务。
+     */
+    public function boot(): void
     {
-        // ...
+        Auth::extend('jwt', function (Application $app, string $name, array $config) {
+            // 返回 Illuminate\Contracts\Auth\Guard 的实例...
 
-        /**
-         * 引导任何应用服务。
-         */
-        public function boot(): void
-        {
-            Auth::extend('jwt', function (Application $app, string $name, array $config) {
-                // 返回 Illuminate\Contracts\Auth\Guard 的实例...
-
-                return new JwtGuard(Auth::createUserProvider($config['provider']));
-            });
-        }
+            return new JwtGuard(Auth::createUserProvider($config['provider']));
+        });
     }
+}
+```
 
 如上面例子所示，传给 `extend` 方法的回调应当返回 `Illuminate\Contracts\Auth\Guard` 的一个实现。该接口包含若干你需要实现的方法，用于定义自定义守卫。定义好自定义守卫之后，你可以在 `auth.php` 配置文件的 `guards` 配置中引用该守卫：
 
-    'guards' => [
-        'api' => [
-            'driver' => 'jwt',
-            'provider' => 'users',
-        ],
+```php
+'guards' => [
+    'api' => [
+        'driver' => 'jwt',
+        'provider' => 'users',
     ],
+],
+```
 
 <a name="closure-request-guards"></a>
 ### 闭包请求守卫
@@ -586,81 +646,93 @@ Laravel 还提供了一套机制，可以在不使当前设备会话失效的前
 
 要开始上手，请在应用的 `AppServiceProvider` 的 `boot` 方法内调用 `Auth::viaRequest` 方法。`viaRequest` 方法的第一个参数接受一个认证驱动名称。这个名称可以是任何能描述你的自定义守卫的字符串。传给该方法的第二个参数应当是一个闭包，它接收传入的 HTTP 请求，并返回一个用户实例；若认证失败，则返回 `null`：
 
-    use App\Models\User;
-    use Illuminate\Http\Request;
-    use Illuminate\Support\Facades\Auth;
+```php
+use App\Models\User;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
-    /**
-     * 引导任何应用服务。
-     */
-    public function boot(): void
-    {
-        Auth::viaRequest('custom-token', function (Request $request) {
-            return User::where('token', (string) $request->token)->first();
-        });
-    }
+/**
+ * 引导任何应用服务。
+ */
+public function boot(): void
+{
+    Auth::viaRequest('custom-token', function (Request $request) {
+        return User::where('token', (string) $request->token)->first();
+    });
+}
+```
 
 定义好自定义认证驱动之后，你可以在 `auth.php` 配置文件的 `guards` 配置中将其配置为一个驱动：
 
-    'guards' => [
-        'api' => [
-            'driver' => 'custom-token',
-        ],
+```php
+'guards' => [
+    'api' => [
+        'driver' => 'custom-token',
     ],
+],
+```
 
 最后，在给路由指定认证中间件时，你可以引用该守卫：
 
-    Route::middleware('auth:api')->group(function () {
-        // ...
-    });
+```php
+Route::middleware('auth:api')->group(function () {
+    // ...
+});
+```
 
 <a name="adding-custom-user-providers"></a>
 ## 添加自定义用户提供者
 
 如果你没有使用传统的关系型数据库存储用户，就需要用自己的认证用户提供者扩展 Laravel。我们将使用 `Auth` Facade 上的 `provider` 方法来定义自定义用户提供者。用户提供者解析器应当返回 `Illuminate\Contracts\Auth\UserProvider` 的一个实现：
 
-    <?php
+```php
+<?php
 
-    namespace App\Providers;
+namespace App\Providers;
 
-    use App\Extensions\MongoUserProvider;
-    use Illuminate\Contracts\Foundation\Application;
-    use Illuminate\Support\Facades\Auth;
-    use Illuminate\Support\ServiceProvider;
+use App\Extensions\MongoUserProvider;
+use Illuminate\Contracts\Foundation\Application;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\ServiceProvider;
 
-    class AppServiceProvider extends ServiceProvider
+class AppServiceProvider extends ServiceProvider
+{
+    // ...
+
+    /**
+     * 引导任何应用服务。
+     */
+    public function boot(): void
     {
-        // ...
+        Auth::provider('mongo', function (Application $app, array $config) {
+            // 返回 Illuminate\Contracts\Auth\UserProvider 的实例...
 
-        /**
-         * 引导任何应用服务。
-         */
-        public function boot(): void
-        {
-            Auth::provider('mongo', function (Application $app, array $config) {
-                // 返回 Illuminate\Contracts\Auth\UserProvider 的实例...
-
-                return new MongoUserProvider($app->make('mongo.connection'));
-            });
-        }
+            return new MongoUserProvider($app->make('mongo.connection'));
+        });
     }
+}
+```
 
 使用 `provider` 方法注册该提供者之后，你可以在 `auth.php` 配置文件中切换到新的用户提供者。首先，定义一个使用新驱动的 `provider`：
 
-    'providers' => [
-        'users' => [
-            'driver' => 'mongo',
-        ],
+```php
+'providers' => [
+    'users' => [
+        'driver' => 'mongo',
     ],
+],
+```
 
 最后，你可以在 `guards` 配置中引用该提供者：
 
-    'guards' => [
-        'web' => [
-            'driver' => 'session',
-            'provider' => 'users',
-        ],
+```php
+'guards' => [
+    'web' => [
+        'driver' => 'session',
+        'provider' => 'users',
     ],
+],
+```
 
 <a name="the-user-provider-contract"></a>
 ### 用户提供者契约
@@ -669,19 +741,21 @@ Laravel 还提供了一套机制，可以在不使当前设备会话失效的前
 
 我们来看看 `Illuminate\Contracts\Auth\UserProvider` 契约：
 
-    <?php
+```php
+<?php
 
-    namespace Illuminate\Contracts\Auth;
+namespace Illuminate\Contracts\Auth;
 
-    interface UserProvider
-    {
-        public function retrieveById($identifier);
-        public function retrieveByToken($identifier, $token);
-        public function updateRememberToken(Authenticatable $user, $token);
-        public function retrieveByCredentials(array $credentials);
-        public function validateCredentials(Authenticatable $user, array $credentials);
-        public function rehashPasswordIfRequired(Authenticatable $user, array $credentials, bool $force = false);
-    }
+interface UserProvider
+{
+    public function retrieveById($identifier);
+    public function retrieveByToken($identifier, $token);
+    public function updateRememberToken(Authenticatable $user, $token);
+    public function retrieveByCredentials(array $credentials);
+    public function validateCredentials(Authenticatable $user, array $credentials);
+    public function rehashPasswordIfRequired(Authenticatable $user, array $credentials, bool $force = false);
+}
+```
 
 `retrieveById` 函数通常接收一个代表用户的键，例如 MySQL 数据库中自增的 ID。该方法应检索并返回与该 ID 匹配的 `Authenticatable` 实现。
 
@@ -700,20 +774,22 @@ Laravel 还提供了一套机制，可以在不使当前设备会话失效的前
 
 我们已经了解了 `UserProvider` 上的每个方法，现在来看看 `Authenticatable` 契约。请记住，用户提供者应从 `retrieveById`、`retrieveByToken` 和 `retrieveByCredentials` 方法中返回该接口的实现：
 
-    <?php
+```php
+<?php
 
-    namespace Illuminate\Contracts\Auth;
+namespace Illuminate\Contracts\Auth;
 
-    interface Authenticatable
-    {
-        public function getAuthIdentifierName();
-        public function getAuthIdentifier();
-        public function getAuthPasswordName();
-        public function getAuthPassword();
-        public function getRememberToken();
-        public function setRememberToken($value);
-        public function getRememberTokenName();
-    }
+interface Authenticatable
+{
+    public function getAuthIdentifierName();
+    public function getAuthIdentifier();
+    public function getAuthPasswordName();
+    public function getAuthPassword();
+    public function getRememberToken();
+    public function setRememberToken($value);
+    public function getRememberTokenName();
+}
+```
 
 这个接口很简单。`getAuthIdentifierName` 方法应返回用户的"主键"列名，`getAuthIdentifier` 方法应返回用户的"主键"。使用 MySQL 后端时，这很可能就是分配给该用户记录的自增主键。`getAuthPasswordName` 方法应返回用户密码列的名称。`getAuthPassword` 方法应返回用户的哈希密码。
 

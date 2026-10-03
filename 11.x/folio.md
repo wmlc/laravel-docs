@@ -140,7 +140,7 @@ php artisan folio:page "users/[id]"
 
 Captured segments can be accessed as variables within your Blade template:
 
-```html
+```blade
 <div>
     User {{ $id }}
 </div>
@@ -156,7 +156,7 @@ php artisan folio:page "users/[...ids]"
 
 When capturing multiple segments, the captured segments will be injected into the page as an array:
 
-```html
+```blade
 <ul>
     @foreach ($ids as $id)
         <li>User {{ $id }}</li>
@@ -177,7 +177,7 @@ php artisan folio:page "users/[User]"
 
 Captured models can be accessed as variables within your Blade template. The model's variable name will be converted to "camel case":
 
-```html
+```blade
 <div>
     User {{ $user->id }}
 </div>

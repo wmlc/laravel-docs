@@ -93,19 +93,23 @@ Laravel 应用的 `bootstrap/providers.php` 文件包含了应由 Laravel 加载
 
 通常，你需要把包的配置文件发布到应用的 `config` 目录。这样一来，你包的用户就能轻松覆盖你的默认配置选项。要允许发布配置文件，请在你服务提供者的 `boot` 方法中调用 `publishes` 方法：
 
-    /**
-     * 引导任何包服务。
-     */
-    public function boot(): void
-    {
-        $this->publishes([
-            __DIR__.'/../config/courier.php' => config_path('courier.php'),
-        ]);
-    }
+```php
+/**
+ * 引导任何包服务。
+ */
+public function boot(): void
+{
+    $this->publishes([
+        __DIR__.'/../config/courier.php' => config_path('courier.php'),
+    ]);
+}
+```
 
 现在，当你包的用户执行 Laravel 的 `vendor:publish` 命令时，你的文件就会被复制到指定的发布位置。一旦配置发布完成，就可以像访问其他任何配置文件一样访问它的值：
 
-    $value = config('courier.option');
+```php
+$value = config('courier.option');
+```
 
 > [!WARNING]
 > 不要在配置文件中定义闭包。当用户执行 `config:cache` Artisan 命令时，闭包无法被正确序列化。
@@ -117,15 +121,17 @@ Laravel 应用的 `bootstrap/providers.php` 文件包含了应由 Laravel 加载
 
 `mergeConfigFrom` 方法的第一个参数是你包中配置文件的路径，第二个参数是应用中该配置文件副本的名称：
 
-    /**
-     * 注册任何应用服务。
-     */
-    public function register(): void
-    {
-        $this->mergeConfigFrom(
-            __DIR__.'/../config/courier.php', 'courier'
-        );
-    }
+```php
+/**
+ * 注册任何应用服务。
+ */
+public function register(): void
+{
+    $this->mergeConfigFrom(
+        __DIR__.'/../config/courier.php', 'courier'
+    );
+}
+```
 
 > [!WARNING]
 > 该方法只会合并配置数组的第一层。如果你的用户只定义了一个多维配置数组的部分内容，缺失的选项将不会被合并。
@@ -135,45 +141,53 @@ Laravel 应用的 `bootstrap/providers.php` 文件包含了应由 Laravel 加载
 
 如果你的包包含路由，可以使用 `loadRoutesFrom` 方法加载它们。该方法会自动判断应用的路由是否已缓存；如果路由已被缓存，就不会加载你的路由文件：
 
-    /**
-     * 引导任何包服务。
-     */
-    public function boot(): void
-    {
-        $this->loadRoutesFrom(__DIR__.'/../routes/web.php');
-    }
+```php
+/**
+ * 引导任何包服务。
+ */
+public function boot(): void
+{
+    $this->loadRoutesFrom(__DIR__.'/../routes/web.php');
+}
+```
 
 <a name="migrations"></a>
 ### 数据库迁移
 
 如果你的包包含[数据库迁移](/docs/{{version}}/migrations)，可以使用 `publishesMigrations` 方法告知 Laravel 给定的目录或文件中包含数据库迁移。当 Laravel 发布这些迁移时，会自动更新文件名中的时间戳，使其反映当前的日期和时间：
 
-    /**
-     * 引导任何包服务。
-     */
-    public function boot(): void
-    {
-        $this->publishesMigrations([
-            __DIR__.'/../database/migrations' => database_path('migrations'),
-        ]);
-    }
+```php
+/**
+ * 引导任何包服务。
+ */
+public function boot(): void
+{
+    $this->publishesMigrations([
+        __DIR__.'/../database/migrations' => database_path('migrations'),
+    ]);
+}
+```
 
 <a name="language-files"></a>
 ### 语言文件
 
 如果你的包包含[语言文件](/docs/{{version}}/localization)，可以使用 `loadTranslationsFrom` 方法告知 Laravel 如何加载它们。例如，如果你的包名为 `courier`，则应在服务提供者的 `boot` 方法中添加如下内容：
 
-    /**
-     * 引导任何包服务。
-     */
-    public function boot(): void
-    {
-        $this->loadTranslationsFrom(__DIR__.'/../lang', 'courier');
-    }
+```php
+/**
+ * 引导任何包服务。
+ */
+public function boot(): void
+{
+    $this->loadTranslationsFrom(__DIR__.'/../lang', 'courier');
+}
+```
 
 包的翻译行按照 `package::file.line` 的语法约定来引用。因此，你可以这样加载 `courier` 包中 `messages` 文件的 `welcome` 行：
 
-    echo trans('courier::messages.welcome');
+```php
+echo trans('courier::messages.welcome');
+```
 
 你可以使用 `loadJsonTranslationsFrom` 方法为你的包注册 JSON 翻译文件。该方法接受一个路径，指向包含你包 JSON 翻译文件的目录：
 
@@ -192,17 +206,19 @@ public function boot(): void
 
 如果你想把包的语言文件发布到应用的 `lang/vendor` 目录，可以使用服务提供者的 `publishes` 方法。`publishes` 方法接受一个数组，其中包含包的路径及其期望的发布位置。例如，要发布 `courier` 包的语言文件，可以这样做：
 
-    /**
-     * 引导任何包服务。
-     */
-    public function boot(): void
-    {
-        $this->loadTranslationsFrom(__DIR__.'/../lang', 'courier');
+```php
+/**
+ * 引导任何包服务。
+ */
+public function boot(): void
+{
+    $this->loadTranslationsFrom(__DIR__.'/../lang', 'courier');
 
-        $this->publishes([
-            __DIR__.'/../lang' => $this->app->langPath('vendor/courier'),
-        ]);
-    }
+    $this->publishes([
+        __DIR__.'/../lang' => $this->app->langPath('vendor/courier'),
+    ]);
+}
+```
 
 现在，当你包的用户执行 Laravel 的 `vendor:publish` Artisan 命令时，你包的语言文件就会被发布到指定的发布位置。
 
@@ -211,19 +227,23 @@ public function boot(): void
 
 要把你包的[视图](/docs/{{version}}/views)注册到 Laravel，你必须告诉 Laravel 视图位于何处。你可以使用服务提供者的 `loadViewsFrom` 方法来做到这一点。`loadViewsFrom` 方法接受两个参数：视图模板的路径和你包的名称。例如，如果你的包名为 `courier`，则应在服务提供者的 `boot` 方法中添加如下内容：
 
-    /**
-     * 引导任何包服务。
-     */
-    public function boot(): void
-    {
-        $this->loadViewsFrom(__DIR__.'/../resources/views', 'courier');
-    }
+```php
+/**
+ * 引导任何包服务。
+ */
+public function boot(): void
+{
+    $this->loadViewsFrom(__DIR__.'/../resources/views', 'courier');
+}
+```
 
 包的视图按照 `package::view` 的语法约定来引用。因此，一旦在服务提供者中注册了视图路径，就可以这样加载 `courier` 包的 `dashboard` 视图：
 
-    Route::get('/dashboard', function () {
-        return view('courier::dashboard');
-    });
+```php
+Route::get('/dashboard', function () {
+    return view('courier::dashboard');
+});
+```
 
 <a name="overriding-package-views"></a>
 #### 覆盖包视图
@@ -235,17 +255,19 @@ public function boot(): void
 
 如果你希望让视图可被发布到应用的 `resources/views/vendor` 目录，可以使用服务提供者的 `publishes` 方法。`publishes` 方法接受一个数组，其中包含包视图的路径及其期望的发布位置：
 
-    /**
-     * 引导包服务。
-     */
-    public function boot(): void
-    {
-        $this->loadViewsFrom(__DIR__.'/../resources/views', 'courier');
+```php
+/**
+ * 引导包服务。
+ */
+public function boot(): void
+{
+    $this->loadViewsFrom(__DIR__.'/../resources/views', 'courier');
 
-        $this->publishes([
-            __DIR__.'/../resources/views' => resource_path('views/vendor/courier'),
-        ]);
-    }
+    $this->publishes([
+        __DIR__.'/../resources/views' => resource_path('views/vendor/courier'),
+    ]);
+}
+```
 
 现在，当你包的用户执行 Laravel 的 `vendor:publish` Artisan 命令时，你包的视图就会被复制到指定的发布位置。
 
@@ -254,16 +276,18 @@ public function boot(): void
 
 如果你正在构建一个使用 Blade 组件的包，或者把组件放在非常规目录中，就需要手动注册组件类及其 HTML 标签别名，好让 Laravel 知道去哪里查找该组件。通常，你应该在包的 `boot` 方法内注册组件：
 
-    use Illuminate\Support\Facades\Blade;
-    use VendorPackage\View\Components\AlertComponent;
+```php
+use Illuminate\Support\Facades\Blade;
+use VendorPackage\View\Components\AlertComponent;
 
-    /**
-     * 引导你包的服务。
-     */
-    public function boot(): void
-    {
-        Blade::component('package-alert', AlertComponent::class);
-    }
+/**
+ * 引导你包的服务。
+ */
+public function boot(): void
+{
+    Blade::component('package-alert', AlertComponent::class);
+}
+```
 
 组件注册完成后，就可以使用它的标签别名来渲染：
 
@@ -276,15 +300,17 @@ public function boot(): void
 
 或者，你也可以使用 `componentNamespace` 方法按约定自动加载组件类。例如，一个 `Nightshade` 包可能有位于 `Nightshade\Views\Components` 命名空间下的 `Calendar` 和 `ColorPicker` 组件：
 
-    use Illuminate\Support\Facades\Blade;
+```php
+use Illuminate\Support\Facades\Blade;
 
-    /**
-     * 引导你包的服务。
-     */
-    public function boot(): void
-    {
-        Blade::componentNamespace('Nightshade\\Views\\Components', 'nightshade');
-    }
+/**
+ * 引导你包的服务。
+ */
+public function boot(): void
+{
+    Blade::componentNamespace('Nightshade\\Views\\Components', 'nightshade');
+}
+```
 
 这样就可以使用 `package-name::` 语法，通过包的供应商命名空间来使用组件：
 
@@ -309,69 +335,77 @@ Blade 会自动把组件名转为帕斯卡命名，从而检测出与该组件�
 
 Laravel 内置的 `about` Artisan 命令提供了应用环境与配置的概要信息。包可以通过 `AboutCommand` 类向该命令的输出推送额外信息。通常，你可以在包的 `boot` 方法中添加这些信息：
 
-    use Illuminate\Foundation\Console\AboutCommand;
+```php
+use Illuminate\Foundation\Console\AboutCommand;
 
-    /**
-     * 引导任何应用服务。
-     */
-    public function boot(): void
-    {
-        AboutCommand::add('My Package', fn () => ['Version' => '1.0.0']);
-    }
+/**
+ * 引导任何应用服务。
+ */
+public function boot(): void
+{
+    AboutCommand::add('My Package', fn () => ['Version' => '1.0.0']);
+}
+```
 
 <a name="commands"></a>
 ## 命令
 
 你可以使用 `commands` 方法把你包的 Artisan 命令注册到 Laravel。该方法接受一个命令类名数组。命令注册完成后，你可以使用 [Artisan CLI](/docs/{{version}}/artisan) 执行它们：
 
-    use Courier\Console\Commands\InstallCommand;
-    use Courier\Console\Commands\NetworkCommand;
+```php
+use Courier\Console\Commands\InstallCommand;
+use Courier\Console\Commands\NetworkCommand;
 
-    /**
-     * 引导任何包服务。
-     */
-    public function boot(): void
-    {
-        if ($this->app->runningInConsole()) {
-            $this->commands([
-                InstallCommand::class,
-                NetworkCommand::class,
-            ]);
-        }
+/**
+ * 引导任何包服务。
+ */
+public function boot(): void
+{
+    if ($this->app->runningInConsole()) {
+        $this->commands([
+            InstallCommand::class,
+            NetworkCommand::class,
+        ]);
     }
+}
+```
 
 <a name="optimize-commands"></a>
 ### 优化命令
 
 Laravel 的 [`optimize` 命令](/docs/{{version}}/deployment#optimization)会缓存应用的配置、事件、路由和视图。通过 `optimizes` 方法，你可以注册你自己的 Artisan 命令，使其在执行 `optimize` 和 `optimize:clear` 命令时被调用：
 
-    /**
-     * 引导任何包服务。
-     */
-    public function boot(): void
-    {
-        if ($this->app->runningInConsole()) {
-            $this->optimizes(
-                optimize: 'package:optimize',
-                clear: 'package:clear-optimizations',
-            );
-        }
+```php
+/**
+ * 引导任何包服务。
+ */
+public function boot(): void
+{
+    if ($this->app->runningInConsole()) {
+        $this->optimizes(
+            optimize: 'package:optimize',
+            clear: 'package:clear-optimizations',
+        );
     }
+}
+```
 
 <a name="public-assets"></a>
 ## 公共资源
 
 你的包可能包含 JavaScript、CSS 和图片等资源。要把这些资源发布到应用的 `public` 目录，请使用服务提供者的 `publishes` 方法。在这个例子中，我们还会添加一个 `public` 资源分组标签，它可以用来轻松发布成组的相关资源：
 
-    /**
-     * 引导任何包服务。
-     */
-    public function boot(): void
-    {
-        $this->publishes([
-            __DIR__.'/../public' => public_path('vendor/courier'),
-        ], 'public');
-    }
+```php
+/**
+ * 引导任何包服务。
+ */
+public function boot(): void
+{
+    $this->publishes([
+        __DIR__.'/../public' => public_path('vendor/courier'),
+    ], 'public');
+}
+```
 
 现在，当你包的用户执行 `vendor:publish` 命令时，你的资源就会被复制到指定的发布位置。由于用户通常需要在每次更新包时都覆盖这些资源，因此你可以使用 `--force` 标志：
 
@@ -384,19 +418,21 @@ php artisan vendor:publish --tag=public --force
 
 你可能希望把包的各组资源和资源文件分开发布。例如，你可能希望允许用户发布包的配置文件，而不必同时发布包的资源。你可以在从包的服务提供者调用 `publishes` 方法时对它们进行"标记"来实现这一点。让我们以 `courier` 包为例，在包的服务提供者的 `boot` 方法中使用标签定义两个发布分组（`courier-config` 和 `courier-migrations`）：
 
-    /**
-     * 引导任何包服务。
-     */
-    public function boot(): void
-    {
-        $this->publishes([
-            __DIR__.'/../config/package.php' => config_path('package.php')
-        ], 'courier-config');
+```php
+/**
+ * 引导任何包服务。
+ */
+public function boot(): void
+{
+    $this->publishes([
+        __DIR__.'/../config/package.php' => config_path('package.php')
+    ], 'courier-config');
 
-        $this->publishesMigrations([
-            __DIR__.'/../database/migrations/' => database_path('migrations')
-        ], 'courier-migrations');
-    }
+    $this->publishesMigrations([
+        __DIR__.'/../database/migrations/' => database_path('migrations')
+    ], 'courier-migrations');
+}
+```
 
 现在，用户在执行 `vendor:publish` 命令时引用相应的标签，即可分别发布这些分组：
 

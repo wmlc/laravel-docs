@@ -32,35 +32,39 @@
 
 在这个示例中，我们将为 `first_name` 属性定义一个访问器。当尝试获取 `first_name` 属性的值时，Eloquent 会自动调用该访问器。所有属性访问器／修改器方法都必须声明返回类型提示 `Illuminate\Database\Eloquent\Casts\Attribute`：
 
-    <?php
+```php
+<?php
 
-    namespace App\Models;
+namespace App\Models;
 
-    use Illuminate\Database\Eloquent\Casts\Attribute;
-    use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Casts\Attribute;
+use Illuminate\Database\Eloquent\Model;
 
-    class User extends Model
+class User extends Model
+{
+    /**
+     * 获取用户的名字。
+     */
+    protected function firstName(): Attribute
     {
-        /**
-         * 获取用户的名字。
-         */
-        protected function firstName(): Attribute
-        {
-            return Attribute::make(
-                get: fn (string $value) => ucfirst($value),
-            );
-        }
+        return Attribute::make(
+            get: fn (string $value) => ucfirst($value),
+        );
     }
+}
+```
 
 所有访问器方法都返回一个 `Attribute` 实例，它定义了该属性如何被访问，以及可选地如何被修改。在这个示例中，我们只定义了该属性如何被访问。为此，我们向 `Attribute` 类构造函数传入 `get` 参数。
 
 如你所见，列的原始值会被传入访问器，让你能够对该值进行加工并返回。要获取访问器的值，只需在模型实例上访问 `first_name` 属性即可：
 
-    use App\Models\User;
+```php
+use App\Models\User;
 
-    $user = User::find(1);
+$user = User::find(1);
 
-    $firstName = $user->first_name;
+$firstName = $user->first_name;
+```
 
 > [!NOTE]
 > 如果希望把这些计算得出的值也加入模型的数组／JSON 表示中，[你需要把它们追加进去](/docs/{{version}}/eloquent-serialization#appending-values-to-json)。
@@ -93,14 +97,16 @@ protected function address(): Attribute
 
 当从访问器返回值对象时，对该值对象所做的任何改动都会在模型保存之前自动同步回模型。之所以能这样做，是因为 Eloquent 会保留访问器返回的实例，从而在每次调用访问器时都返回同一个实例：
 
-    use App\Models\User;
+```php
+use App\Models\User;
 
-    $user = User::find(1);
+$user = User::find(1);
 
-    $user->address->lineOne = 'Updated Address Line 1 Value';
-    $user->address->lineTwo = 'Updated Address Line 2 Value';
+$user->address->lineOne = 'Updated Address Line 1 Value';
+$user->address->lineTwo = 'Updated Address Line 2 Value';
 
-    $user->save();
+$user->save();
+```
 
 不过，有时你可能希望为字符串、布尔值这类基本类型启用缓存，尤其是在它们计算量较大时。为此，你可以在定义访问器时调用 `shouldCache` 方法：
 
@@ -135,34 +141,38 @@ protected function address(): Attribute
 
 修改器在设置 Eloquent 属性值时对其进行转换。要定义修改器，你可以在定义属性时传入 `set` 参数。让我们为 `first_name` 属性定义一个修改器。当我们尝试在模型上设置 `first_name` 属性的值时，该修改器会被自动调用：
 
-    <?php
+```php
+<?php
 
-    namespace App\Models;
+namespace App\Models;
 
-    use Illuminate\Database\Eloquent\Casts\Attribute;
-    use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Casts\Attribute;
+use Illuminate\Database\Eloquent\Model;
 
-    class User extends Model
+class User extends Model
+{
+    /**
+     * 与用户的名字交互。
+     */
+    protected function firstName(): Attribute
     {
-        /**
-         * 与用户的名字交互。
-         */
-        protected function firstName(): Attribute
-        {
-            return Attribute::make(
-                get: fn (string $value) => ucfirst($value),
-                set: fn (string $value) => strtolower($value),
-            );
-        }
+        return Attribute::make(
+            get: fn (string $value) => ucfirst($value),
+            set: fn (string $value) => strtolower($value),
+        );
     }
+}
+```
 
 修改器闭包会接收到正在设置到该属性上的值，让你能够对该值进行加工并返回加工后的值。要使用我们的修改器，只需在 Eloquent 模型上设置 `first_name` 属性：
 
-    use App\Models\User;
+```php
+use App\Models\User;
 
-    $user = User::find(1);
+$user = User::find(1);
 
-    $user->first_name = 'Sally';
+$user->first_name = 'Sally';
+```
 
 在这个示例中，`set` 回调会接收到值 `Sally`。随后修改器会对该名字应用 `strtolower` 函数，并把结果存入模型内部的 `$attributes` 数组。
 
@@ -228,41 +238,47 @@ protected function address(): Attribute
 
 为了演示属性类型转换，我们把 `is_admin` 属性（它在数据库中以整数 `0` 或 `1` 存储）转换为布尔值：
 
-    <?php
+```php
+<?php
 
-    namespace App\Models;
+namespace App\Models;
 
-    use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Model;
 
-    class User extends Model
+class User extends Model
+{
+    /**
+     * 获取应当被转换的属性。
+     *
+     * @return array<string, string>
+     */
+    protected function casts(): array
     {
-        /**
-         * 获取应当被转换的属性。
-         *
-         * @return array<string, string>
-         */
-        protected function casts(): array
-        {
-            return [
-                'is_admin' => 'boolean',
-            ];
-        }
+        return [
+            'is_admin' => 'boolean',
+        ];
     }
+}
+```
 
 定义转换后，访问 `is_admin` 属性时它总会转换为布尔值，即使底层值在数据库中以整数形式存储：
 
-    $user = App\Models\User::find(1);
+```php
+$user = App\Models\User::find(1);
 
-    if ($user->is_admin) {
-        // ...
-    }
+if ($user->is_admin) {
+    // ...
+}
+```
 
 如果需要在运行时添加一个新的临时转换，可以使用 `mergeCasts` 方法。这些转换定义会被添加到模型上已有的任何转换之上：
 
-    $user->mergeCasts([
-        'is_admin' => 'integer',
-        'options' => 'object',
-    ]);
+```php
+$user->mergeCasts([
+    'is_admin' => 'integer',
+    'options' => 'object',
+]);
+```
 
 > [!WARNING]
 > 值为 `null` 的属性不会被转换。此外，你绝不应当定义与某个关联同名的转换（或属性），也不应当把转换赋给模型的主键。
@@ -272,131 +288,147 @@ protected function address(): Attribute
 
 你可以使用 `Illuminate\Database\Eloquent\Casts\AsStringable` 转换类，把模型属性转换为[链式的 `Illuminate\Support\Stringable` 对象](/docs/{{version}}/strings#fluent-strings-method-list)：
 
-    <?php
+```php
+<?php
 
-    namespace App\Models;
+namespace App\Models;
 
-    use Illuminate\Database\Eloquent\Casts\AsStringable;
-    use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Casts\AsStringable;
+use Illuminate\Database\Eloquent\Model;
 
-    class User extends Model
+class User extends Model
+{
+    /**
+     * 获取应当被转换的属性。
+     *
+     * @return array<string, string>
+     */
+    protected function casts(): array
     {
-        /**
-         * 获取应当被转换的属性。
-         *
-         * @return array<string, string>
-         */
-        protected function casts(): array
-        {
-            return [
-                'directory' => AsStringable::class,
-            ];
-        }
+        return [
+            'directory' => AsStringable::class,
+        ];
     }
+}
+```
 
 <a name="array-and-json-casting"></a>
 ### 数组与 JSON 类型转换
 
 `array` 转换在处理以序列化 JSON 存储的列时尤为有用。例如，如果你的数据库有一个包含序列化 JSON 的 `JSON` 或 `TEXT` 字段类型，为该属性添加 `array` 转换后，通过 Eloquent 模型访问它时会自动把该属性反序列化为 PHP 数组：
 
-    <?php
+```php
+<?php
 
-    namespace App\Models;
+namespace App\Models;
 
-    use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Model;
 
-    class User extends Model
+class User extends Model
+{
+    /**
+     * 获取应当被转换的属性。
+     *
+     * @return array<string, string>
+     */
+    protected function casts(): array
     {
-        /**
-         * 获取应当被转换的属性。
-         *
-         * @return array<string, string>
-         */
-        protected function casts(): array
-        {
-            return [
-                'options' => 'array',
-            ];
-        }
+        return [
+            'options' => 'array',
+        ];
     }
+}
+```
 
 定义转换后，你可以访问 `options` 属性，它会自动从 JSON 反序列化为 PHP 数组。当你设置 `options` 属性的值时，给定的数组会自动被序列化回 JSON 以便存储：
 
-    use App\Models\User;
+```php
+use App\Models\User;
 
-    $user = User::find(1);
+$user = User::find(1);
 
-    $options = $user->options;
+$options = $user->options;
 
-    $options['key'] = 'value';
+$options['key'] = 'value';
 
-    $user->options = $options;
+$user->options = $options;
 
-    $user->save();
+$user->save();
+```
 
 如果想用更简洁的语法更新 JSON 属性中的单个字段，你可以[让该属性可批量赋值](/docs/{{version}}/eloquent#mass-assignment-json-columns)，并在调用 `update` 方法时使用 `->` 运算符：
 
-    $user = User::find(1);
+```php
+$user = User::find(1);
 
-    $user->update(['options->key' => 'value']);
+$user->update(['options->key' => 'value']);
+```
 
 <a name="array-object-and-collection-casting"></a>
 #### 数组对象与集合类型转换
 
 虽然标准的 `array` 转换对许多应用来说已经足够，但它确实存在一些缺点。由于 `array` 转换返回的是基本类型，因此无法直接修改数组的某个下标。例如，以下代码会触发 PHP 错误：
 
-    $user = User::find(1);
+```php
+$user = User::find(1);
 
-    $user->options['key'] = $value;
+$user->options['key'] = $value;
+```
 
 为解决这一问题，Laravel 提供了 `AsArrayObject` 转换，可把 JSON 属性转换为 [ArrayObject](https://www.php.net/manual/en/class.arrayobject.php) 类。该特性使用 Laravel 的[自定义转换](#custom-casts)实现，这让 Laravel 能够智能地缓存并转换被修改的对象，从而可以修改单个下标而不会触发 PHP 错误。要使用 `AsArrayObject` 转换，只需把它赋给某个属性：
 
-    use Illuminate\Database\Eloquent\Casts\AsArrayObject;
+```php
+use Illuminate\Database\Eloquent\Casts\AsArrayObject;
 
-    /**
-     * 获取应当被转换的属性。
-     *
-     * @return array<string, string>
-     */
-    protected function casts(): array
-    {
-        return [
-            'options' => AsArrayObject::class,
-        ];
-    }
+/**
+ * 获取应当被转换的属性。
+ *
+ * @return array<string, string>
+ */
+protected function casts(): array
+{
+    return [
+        'options' => AsArrayObject::class,
+    ];
+}
+```
 
 类似地，Laravel 提供了 `AsCollection` 转换，可把 JSON 属性转换为 Laravel 的[集合](/docs/{{version}}/collections)实例：
 
-    use Illuminate\Database\Eloquent\Casts\AsCollection;
+```php
+use Illuminate\Database\Eloquent\Casts\AsCollection;
 
-    /**
-     * 获取应当被转换的属性。
-     *
-     * @return array<string, string>
-     */
-    protected function casts(): array
-    {
-        return [
-            'options' => AsCollection::class,
-        ];
-    }
+/**
+ * 获取应当被转换的属性。
+ *
+ * @return array<string, string>
+ */
+protected function casts(): array
+{
+    return [
+        'options' => AsCollection::class,
+    ];
+}
+```
 
 如果你希望 `AsCollection` 转换实例化一个自定义集合类，而不是 Laravel 的基础集合类，可以把集合类名作为转换参数传入：
 
-    use App\Collections\OptionCollection;
-    use Illuminate\Database\Eloquent\Casts\AsCollection;
+```php
+use App\Collections\OptionCollection;
+use Illuminate\Database\Eloquent\Casts\AsCollection;
 
-    /**
-     * 获取应当被转换的属性。
-     *
-     * @return array<string, string>
-     */
-    protected function casts(): array
-    {
-        return [
-            'options' => AsCollection::using(OptionCollection::class),
-        ];
-    }
+/**
+ * 获取应当被转换的属性。
+ *
+ * @return array<string, string>
+ */
+protected function casts(): array
+{
+    return [
+        'options' => AsCollection::using(OptionCollection::class),
+    ];
+}
+```
 
 <a name="date-casting"></a>
 ### 日期类型转换
@@ -405,38 +437,44 @@ protected function address(): Attribute
 
 定义 `date` 或 `datetime` 转换时，你还可以指定日期格式。该格式会在[模型被序列化为数组或 JSON](/docs/{{version}}/eloquent-serialization)时使用：
 
-    /**
-     * 获取应当被转换的属性。
-     *
-     * @return array<string, string>
-     */
-    protected function casts(): array
-    {
-        return [
-            'created_at' => 'datetime:Y-m-d',
-        ];
-    }
+```php
+/**
+ * 获取应当被转换的属性。
+ *
+ * @return array<string, string>
+ */
+protected function casts(): array
+{
+    return [
+        'created_at' => 'datetime:Y-m-d',
+    ];
+}
+```
 
 当某一列被转换为日期时，你可以把对应的模型属性值设为 UNIX 时间戳、日期字符串（`Y-m-d`）、日期时间字符串，或一个 `DateTime`／`Carbon` 实例。该日期的值会被正确转换并存入数据库。
 
 你可以通过在模型上定义 `serializeDate` 方法，自定义模型所有日期的默认序列化格式。该方法不会影响日期在数据库中存储时的格式：
 
-    /**
-     * 为数组／JSON 序列化准备日期。
-     */
-    protected function serializeDate(DateTimeInterface $date): string
-    {
-        return $date->format('Y-m-d');
-    }
+```php
+/**
+ * 为数组／JSON 序列化准备日期。
+ */
+protected function serializeDate(DateTimeInterface $date): string
+{
+    return $date->format('Y-m-d');
+}
+```
 
 要指定模型日期实际存入数据库时所使用的格式，你应当在模型上定义 `$dateFormat` 属性：
 
-    /**
-     * 模型日期列的存储格式。
-     *
-     * @var string
-     */
-    protected $dateFormat = 'U';
+```php
+/**
+ * 模型日期列的存储格式。
+ *
+ * @var string
+ */
+protected $dateFormat = 'U';
+```
 
 <a name="date-casting-and-timezones"></a>
 #### 日期类型转换、序列化与时区
@@ -450,47 +488,53 @@ protected function address(): Attribute
 
 Eloquent 还允许你把属性值转换为 PHP [枚举](https://www.php.net/manual/en/language.enumerations.backed.php)。为此，你可以在模型的 `casts` 方法中指定希望转换的属性和枚举：
 
-    use App\Enums\ServerStatus;
+```php
+use App\Enums\ServerStatus;
 
-    /**
-     * 获取应当被转换的属性。
-     *
-     * @return array<string, string>
-     */
-    protected function casts(): array
-    {
-        return [
-            'status' => ServerStatus::class,
-        ];
-    }
+/**
+ * 获取应当被转换的属性。
+ *
+ * @return array<string, string>
+ */
+protected function casts(): array
+{
+    return [
+        'status' => ServerStatus::class,
+    ];
+}
+```
 
 在模型上定义好转换后，当你与该属性交互时，指定属性会自动在枚举与原始值之间双向转换：
 
-    if ($server->status == ServerStatus::Provisioned) {
-        $server->status = ServerStatus::Ready;
+```php
+if ($server->status == ServerStatus::Provisioned) {
+    $server->status = ServerStatus::Ready;
 
-        $server->save();
-    }
+    $server->save();
+}
+```
 
 <a name="casting-arrays-of-enums"></a>
 #### 转换枚举数组
 
 有时你可能需要让模型在单个列中存储一组枚举值。为此，你可以使用 Laravel 提供的 `AsEnumArrayObject` 或 `AsEnumCollection` 转换：
 
-    use App\Enums\ServerStatus;
-    use Illuminate\Database\Eloquent\Casts\AsEnumCollection;
+```php
+use App\Enums\ServerStatus;
+use Illuminate\Database\Eloquent\Casts\AsEnumCollection;
 
-    /**
-     * 获取应当被转换的属性。
-     *
-     * @return array<string, string>
-     */
-    protected function casts(): array
-    {
-        return [
-            'statuses' => AsEnumCollection::of(ServerStatus::class),
-        ];
-    }
+/**
+ * 获取应当被转换的属性。
+ *
+ * @return array<string, string>
+ */
+protected function casts(): array
+{
+    return [
+        'statuses' => AsEnumCollection::of(ServerStatus::class),
+    ];
+}
+```
 
 <a name="encrypted-casting"></a>
 ### 加密类型转换
@@ -509,24 +553,28 @@ Eloquent 还允许你把属性值转换为 PHP [枚举](https://www.php.net/manu
 
 有时你可能需要在执行查询时应用转换，例如从表中选取原始值时。举例来说，请考虑以下查询：
 
-    use App\Models\Post;
-    use App\Models\User;
+```php
+use App\Models\Post;
+use App\Models\User;
 
-    $users = User::select([
-        'users.*',
-        'last_posted_at' => Post::selectRaw('MAX(created_at)')
-            ->whereColumn('user_id', 'users.id')
-    ])->get();
+$users = User::select([
+    'users.*',
+    'last_posted_at' => Post::selectRaw('MAX(created_at)')
+        ->whereColumn('user_id', 'users.id')
+])->get();
+```
 
 该查询结果中的 `last_posted_at` 属性会是一个简单字符串。如果能在执行查询时对该属性应用 `datetime` 转换那就太好了。幸运的是，我们可以用 `withCasts` 方法实现这一点：
 
-    $users = User::select([
-        'users.*',
-        'last_posted_at' => Post::selectRaw('MAX(created_at)')
-            ->whereColumn('user_id', 'users.id')
-    ])->withCasts([
-        'last_posted_at' => 'datetime'
-    ])->get();
+```php
+$users = User::select([
+    'users.*',
+    'last_posted_at' => Post::selectRaw('MAX(created_at)')
+        ->whereColumn('user_id', 'users.id')
+])->withCasts([
+    'last_posted_at' => 'datetime'
+])->get();
+```
 
 <a name="custom-casts"></a>
 ## 自定义类型转换
@@ -539,60 +587,64 @@ php artisan make:cast Json
 
 所有自定义转换类都实现 `CastsAttributes` 接口。实现该接口的类必须定义 `get` 和 `set` 方法。`get` 方法负责把来自数据库的原始值转换为转换后的值，而 `set` 方法应当把转换后的值转换为可存入数据库的原始值。举个例子，我们将把内置的 `json` 转换类型重新实现为一个自定义转换类型：
 
-    <?php
+```php
+<?php
 
-    namespace App\Casts;
+namespace App\Casts;
 
-    use Illuminate\Contracts\Database\Eloquent\CastsAttributes;
-    use Illuminate\Database\Eloquent\Model;
+use Illuminate\Contracts\Database\Eloquent\CastsAttributes;
+use Illuminate\Database\Eloquent\Model;
 
-    class Json implements CastsAttributes
+class Json implements CastsAttributes
+{
+    /**
+     * 转换给定的值。
+     *
+     * @param  array<string, mixed>  $attributes
+     * @return array<string, mixed>
+     */
+    public function get(Model $model, string $key, mixed $value, array $attributes): array
     {
-        /**
-         * 转换给定的值。
-         *
-         * @param  array<string, mixed>  $attributes
-         * @return array<string, mixed>
-         */
-        public function get(Model $model, string $key, mixed $value, array $attributes): array
-        {
-            return json_decode($value, true);
-        }
-
-        /**
-         * 为存储准备给定的值。
-         *
-         * @param  array<string, mixed>  $attributes
-         */
-        public function set(Model $model, string $key, mixed $value, array $attributes): string
-        {
-            return json_encode($value);
-        }
+        return json_decode($value, true);
     }
+
+    /**
+     * 为存储准备给定的值。
+     *
+     * @param  array<string, mixed>  $attributes
+     */
+    public function set(Model $model, string $key, mixed $value, array $attributes): string
+    {
+        return json_encode($value);
+    }
+}
+```
 
 定义好自定义转换类型后，你可以使用其类名把它挂到模型属性上：
 
-    <?php
+```php
+<?php
 
-    namespace App\Models;
+namespace App\Models;
 
-    use App\Casts\Json;
-    use Illuminate\Database\Eloquent\Model;
+use App\Casts\Json;
+use Illuminate\Database\Eloquent\Model;
 
-    class User extends Model
+class User extends Model
+{
+    /**
+     * 获取应当被转换的属性。
+     *
+     * @return array<string, string>
+     */
+    protected function casts(): array
     {
-        /**
-         * 获取应当被转换的属性。
-         *
-         * @return array<string, string>
-         */
-        protected function casts(): array
-        {
-            return [
-                'options' => Json::class,
-            ];
-        }
+        return [
+            'options' => Json::class,
+        ];
     }
+}
+```
 
 <a name="value-object-casting"></a>
 ### 值对象类型转换
@@ -601,58 +653,62 @@ php artisan make:cast Json
 
 举个例子，我们将定义一个自定义转换类，把多个模型值转换为单个 `Address` 值对象。我们假设 `Address` 值有两个公开属性：`lineOne` 和 `lineTwo`：
 
-    <?php
+```php
+<?php
 
-    namespace App\Casts;
+namespace App\Casts;
 
-    use App\ValueObjects\Address as AddressValueObject;
-    use Illuminate\Contracts\Database\Eloquent\CastsAttributes;
-    use Illuminate\Database\Eloquent\Model;
-    use InvalidArgumentException;
+use App\ValueObjects\Address as AddressValueObject;
+use Illuminate\Contracts\Database\Eloquent\CastsAttributes;
+use Illuminate\Database\Eloquent\Model;
+use InvalidArgumentException;
 
-    class Address implements CastsAttributes
+class Address implements CastsAttributes
+{
+    /**
+     * 转换给定的值。
+     *
+     * @param  array<string, mixed>  $attributes
+     */
+    public function get(Model $model, string $key, mixed $value, array $attributes): AddressValueObject
     {
-        /**
-         * 转换给定的值。
-         *
-         * @param  array<string, mixed>  $attributes
-         */
-        public function get(Model $model, string $key, mixed $value, array $attributes): AddressValueObject
-        {
-            return new AddressValueObject(
-                $attributes['address_line_one'],
-                $attributes['address_line_two']
-            );
-        }
-
-        /**
-         * 为存储准备给定的值。
-         *
-         * @param  array<string, mixed>  $attributes
-         * @return array<string, string>
-         */
-        public function set(Model $model, string $key, mixed $value, array $attributes): array
-        {
-            if (! $value instanceof AddressValueObject) {
-                throw new InvalidArgumentException('The given value is not an Address instance.');
-            }
-
-            return [
-                'address_line_one' => $value->lineOne,
-                'address_line_two' => $value->lineTwo,
-            ];
-        }
+        return new AddressValueObject(
+            $attributes['address_line_one'],
+            $attributes['address_line_two']
+        );
     }
+
+    /**
+     * 为存储准备给定的值。
+     *
+     * @param  array<string, mixed>  $attributes
+     * @return array<string, string>
+     */
+    public function set(Model $model, string $key, mixed $value, array $attributes): array
+    {
+        if (! $value instanceof AddressValueObject) {
+            throw new InvalidArgumentException('The given value is not an Address instance.');
+        }
+
+        return [
+            'address_line_one' => $value->lineOne,
+            'address_line_two' => $value->lineTwo,
+        ];
+    }
+}
+```
 
 当转换为值对象时，对该值对象所做的任何改动都会在模型保存之前自动同步回模型：
 
-    use App\Models\User;
+```php
+use App\Models\User;
 
-    $user = User::find(1);
+$user = User::find(1);
 
-    $user->address->lineOne = 'Updated Address Value';
+$user->address->lineOne = 'Updated Address Value';
 
-    $user->save();
+$user->save();
+```
 
 > [!NOTE]
 > 如果你打算把包含值对象的 Eloquent 模型序列化为 JSON 或数组，就应当在值对象上实现 `Illuminate\Contracts\Support\Arrayable` 和 `JsonSerializable` 接口。
@@ -680,15 +736,17 @@ class Address implements CastsAttributes
 
 因此，你可以指定由自定义转换类负责序列化该值对象。为此，你的自定义转换类应当实现 `Illuminate\Contracts\Database\Eloquent\SerializesCastableAttributes` 接口。该接口要求你的类包含一个 `serialize` 方法，该方法应返回值对象的序列化形式：
 
-    /**
-     * 获取该值的序列化表示。
-     *
-     * @param  array<string, mixed>  $attributes
-     */
-    public function serialize(Model $model, string $key, mixed $value, array $attributes): string
-    {
-        return (string) $value;
-    }
+```php
+/**
+ * 获取该值的序列化表示。
+ *
+ * @param  array<string, mixed>  $attributes
+ */
+public function serialize(Model $model, string $key, mixed $value, array $attributes): string
+{
+    return (string) $value;
+}
+```
 
 <a name="inbound-casting"></a>
 ### 入站类型转换
@@ -703,139 +761,151 @@ php artisan make:cast Hash --inbound
 
 仅入站转换的经典例子是「哈希」转换。例如，我们可以定义一个通过指定算法对入站值进行哈希的转换：
 
-    <?php
+```php
+<?php
 
-    namespace App\Casts;
+namespace App\Casts;
 
-    use Illuminate\Contracts\Database\Eloquent\CastsInboundAttributes;
-    use Illuminate\Database\Eloquent\Model;
+use Illuminate\Contracts\Database\Eloquent\CastsInboundAttributes;
+use Illuminate\Database\Eloquent\Model;
 
-    class Hash implements CastsInboundAttributes
+class Hash implements CastsInboundAttributes
+{
+    /**
+     * 创建一个新的转换类实例。
+     */
+    public function __construct(
+        protected string|null $algorithm = null,
+    ) {}
+
+    /**
+     * 为存储准备给定的值。
+     *
+     * @param  array<string, mixed>  $attributes
+     */
+    public function set(Model $model, string $key, mixed $value, array $attributes): string
     {
-        /**
-         * 创建一个新的转换类实例。
-         */
-        public function __construct(
-            protected string|null $algorithm = null,
-        ) {}
-
-        /**
-         * 为存储准备给定的值。
-         *
-         * @param  array<string, mixed>  $attributes
-         */
-        public function set(Model $model, string $key, mixed $value, array $attributes): string
-        {
-            return is_null($this->algorithm)
-                ? bcrypt($value)
-                : hash($this->algorithm, $value);
-        }
+        return is_null($this->algorithm)
+            ? bcrypt($value)
+            : hash($this->algorithm, $value);
     }
+}
+```
 
 <a name="cast-parameters"></a>
 ### 转换参数
 
 把自定义转换挂到模型上时，可以用 `:` 字符把转换参数与类名分开，并用逗号分隔多个参数，从而指定转换参数。这些参数会被传给转换类的构造函数：
 
-    /**
-     * 获取应当被转换的属性。
-     *
-     * @return array<string, string>
-     */
-    protected function casts(): array
-    {
-        return [
-            'secret' => Hash::class.':sha256',
-        ];
-    }
+```php
+/**
+ * 获取应当被转换的属性。
+ *
+ * @return array<string, string>
+ */
+protected function casts(): array
+{
+    return [
+        'secret' => Hash::class.':sha256',
+    ];
+}
+```
 
 <a name="castables"></a>
 ### 可转换对象
 
 你可能希望允许应用的值对象自行定义自定义转换类。为此，你可以不把自定义转换类挂到模型上，而是改为挂一个实现了 `Illuminate\Contracts\Database\Eloquent\Castable` 接口的值对象类：
 
-    use App\ValueObjects\Address;
+```php
+use App\ValueObjects\Address;
 
-    protected function casts(): array
-    {
-        return [
-            'address' => Address::class,
-        ];
-    }
+protected function casts(): array
+{
+    return [
+        'address' => Address::class,
+    ];
+}
+```
 
 实现了 `Castable` 接口的对象必须定义一个 `castUsing` 方法，它返回负责与该 `Castable` 类相互转换的自定义转换器类名：
 
-    <?php
+```php
+<?php
 
-    namespace App\ValueObjects;
+namespace App\ValueObjects;
 
-    use Illuminate\Contracts\Database\Eloquent\Castable;
-    use App\Casts\Address as AddressCast;
+use Illuminate\Contracts\Database\Eloquent\Castable;
+use App\Casts\Address as AddressCast;
 
-    class Address implements Castable
+class Address implements Castable
+{
+    /**
+     * 获取与该转换目标相互转换时使用的转换器类名。
+     *
+     * @param  array<string, mixed>  $arguments
+     */
+    public static function castUsing(array $arguments): string
     {
-        /**
-         * 获取与该转换目标相互转换时使用的转换器类名。
-         *
-         * @param  array<string, mixed>  $arguments
-         */
-        public static function castUsing(array $arguments): string
-        {
-            return AddressCast::class;
-        }
+        return AddressCast::class;
     }
+}
+```
 
 使用 `Castable` 类时，你仍然可以在 `casts` 方法定义中提供参数。这些参数会被传给 `castUsing` 方法：
 
-    use App\ValueObjects\Address;
+```php
+use App\ValueObjects\Address;
 
-    protected function casts(): array
-    {
-        return [
-            'address' => Address::class.':argument',
-        ];
-    }
+protected function casts(): array
+{
+    return [
+        'address' => Address::class.':argument',
+    ];
+}
+```
 
 <a name="anonymous-cast-classes"></a>
 #### 可转换对象与匿名转换类
 
 把「可转换对象」与 PHP 的[匿名类](https://www.php.net/manual/en/language.oop5.anonymous.php)结合起来，你就可以把一个值对象及其转换逻辑定义为单个可转换对象。为此，请从你的值对象的 `castUsing` 方法中返回一个匿名类。该匿名类应当实现 `CastsAttributes` 接口：
 
-    <?php
+```php
+<?php
 
-    namespace App\ValueObjects;
+namespace App\ValueObjects;
 
-    use Illuminate\Contracts\Database\Eloquent\Castable;
-    use Illuminate\Contracts\Database\Eloquent\CastsAttributes;
+use Illuminate\Contracts\Database\Eloquent\Castable;
+use Illuminate\Contracts\Database\Eloquent\CastsAttributes;
 
-    class Address implements Castable
+class Address implements Castable
+{
+    // ...
+
+    /**
+     * 获取与该转换目标相互转换时使用的转换器类。
+     *
+     * @param  array<string, mixed>  $arguments
+     */
+    public static function castUsing(array $arguments): CastsAttributes
     {
-        // ...
-
-        /**
-         * 获取与该转换目标相互转换时使用的转换器类。
-         *
-         * @param  array<string, mixed>  $arguments
-         */
-        public static function castUsing(array $arguments): CastsAttributes
+        return new class implements CastsAttributes
         {
-            return new class implements CastsAttributes
+            public function get(Model $model, string $key, mixed $value, array $attributes): Address
             {
-                public function get(Model $model, string $key, mixed $value, array $attributes): Address
-                {
-                    return new Address(
-                        $attributes['address_line_one'],
-                        $attributes['address_line_two']
-                    );
-                }
+                return new Address(
+                    $attributes['address_line_one'],
+                    $attributes['address_line_two']
+                );
+            }
 
-                public function set(Model $model, string $key, mixed $value, array $attributes): array
-                {
-                    return [
-                        'address_line_one' => $value->lineOne,
-                        'address_line_two' => $value->lineTwo,
-                    ];
-                }
-            };
-        }
+            public function set(Model $model, string $key, mixed $value, array $attributes): array
+            {
+                return [
+                    'address_line_one' => $value->lineOne,
+                    'address_line_two' => $value->lineTwo,
+                ];
+            }
+        };
     }
+}
+```

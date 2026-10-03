@@ -34,50 +34,56 @@ php artisan config:publish hashing
 
 你可以调用 `Hash` Facade 上的 `make` 方法对一个密码进行哈希：
 
-    <?php
+```php
+<?php
 
-    namespace App\Http\Controllers;
+namespace App\Http\Controllers;
 
-    use Illuminate\Http\RedirectResponse;
-    use Illuminate\Http\Request;
-    use Illuminate\Support\Facades\Hash;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 
-    class PasswordController extends Controller
+class PasswordController extends Controller
+{
+    /**
+     * 更新用户的密码。
+     */
+    public function update(Request $request): RedirectResponse
     {
-        /**
-         * 更新用户的密码。
-         */
-        public function update(Request $request): RedirectResponse
-        {
-            // 验证新密码的长度……
+        // 验证新密码的长度……
 
-            $request->user()->fill([
-                'password' => Hash::make($request->newPassword)
-            ])->save();
+        $request->user()->fill([
+            'password' => Hash::make($request->newPassword)
+        ])->save();
 
-            return redirect('/profile');
-        }
+        return redirect('/profile');
     }
+}
+```
 
 <a name="adjusting-the-bcrypt-work-factor"></a>
 #### 调整 Bcrypt 工作因子
 
 如果你使用 Bcrypt 算法，`make` 方法允许你通过 `rounds` 选项管理算法的工作因子；不过 Laravel 管理的默认工作因子对大多数应用来说已经够用：
 
-    $hashed = Hash::make('password', [
-        'rounds' => 12,
-    ]);
+```php
+$hashed = Hash::make('password', [
+    'rounds' => 12,
+]);
+```
 
 <a name="adjusting-the-argon2-work-factor"></a>
 #### 调整 Argon2 工作因子
 
 如果你使用 Argon2 算法，`make` 方法允许你通过 `memory`、`time` 和 `threads` 选项管理算法的工作因子；不过 Laravel 管理的默认值对大多数应用来说已经够用：
 
-    $hashed = Hash::make('password', [
-        'memory' => 1024,
-        'time' => 2,
-        'threads' => 2,
-    ]);
+```php
+$hashed = Hash::make('password', [
+    'memory' => 1024,
+    'time' => 2,
+    'threads' => 2,
+]);
+```
 
 > [!NOTE]
 > 想了解这些选项的更多信息，请参阅 [PHP 官方文档中关于 Argon 哈希的说明](https://secure.php.net/manual/en/function.password-hash.php)。
@@ -87,18 +93,22 @@ php artisan config:publish hashing
 
 `Hash` Facade 提供的 `check` 方法允许你验证给定的明文字符串是否对应给定的哈希：
 
-    if (Hash::check('plain-text', $hashedPassword)) {
-        // 密码匹配……
-    }
+```php
+if (Hash::check('plain-text', $hashedPassword)) {
+    // 密码匹配……
+}
+```
 
 <a name="determining-if-a-password-needs-to-be-rehashed"></a>
 ### 判断密码是否需要重新哈希
 
 `Hash` Facade 提供的 `needsRehash` 方法允许你判断哈希器使用的工作因子在密码被哈希之后是否发生了变化。有些应用选择在认证流程中执行这项检查：
 
-    if (Hash::needsRehash($hashed)) {
-        $hashed = Hash::make('plain-text');
-    }
+```php
+if (Hash::needsRehash($hashed)) {
+    $hashed = Hash::make('plain-text');
+}
+```
 
 <a name="hash-algorithm-verification"></a>
 ## 哈希算法验证

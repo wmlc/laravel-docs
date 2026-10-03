@@ -140,7 +140,7 @@ php artisan folio:page "users/[id]"
 
 捕获到的片段可以在 Blade 模板中作为变量访问：
 
-```html
+```blade
 <div>
     User {{ $id }}
 </div>
@@ -156,7 +156,7 @@ php artisan folio:page "users/[...ids]"
 
 捕获多段时，被捕获的片段会作为一个数组注入页面：
 
-```html
+```blade
 <ul>
     @foreach ($ids as $id)
         <li>User {{ $id }}</li>
@@ -177,7 +177,7 @@ php artisan folio:page "users/[User]"
 
 捕获到的模型可以在 Blade 模板中作为变量访问。模型的变量名会被转换为"驼峰式"：
 
-```html
+```blade
 <div>
     User {{ $user->id }}
 </div>

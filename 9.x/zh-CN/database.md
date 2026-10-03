@@ -81,27 +81,29 @@ driver://username:password@host:port/database?options
 
 要了解读写连接应如何配置，让我们看这个示例：
 
-    'mysql' => [
-        'read' => [
-            'host' => [
-                '192.168.1.1',
-                '196.168.1.2',
-            ],
+```php
+'mysql' => [
+    'read' => [
+        'host' => [
+            '192.168.1.1',
+            '196.168.1.2',
         ],
-        'write' => [
-            'host' => [
-                '196.168.1.3',
-            ],
-        ],
-        'sticky' => true,
-        'driver' => 'mysql',
-        'database' => 'database',
-        'username' => 'root',
-        'password' => '',
-        'charset' => 'utf8mb4',
-        'collation' => 'utf8mb4_unicode_ci',
-        'prefix' => '',
     ],
+    'write' => [
+        'host' => [
+            '196.168.1.3',
+        ],
+    ],
+    'sticky' => true,
+    'driver' => 'mysql',
+    'database' => 'database',
+    'username' => 'root',
+    'password' => '',
+    'charset' => 'utf8mb4',
+    'collation' => 'utf8mb4_unicode_ci',
+    'prefix' => '',
+],
+```
 
 注意，配置数组中添加了三个键：`read`、`write` 和 `sticky`。`read` 和 `write` 键的数组值包含一个键：`host`。`read` 和 `write` 连接的其余数据库选项将从主 `mysql` 配置数组合并而来。
 
@@ -122,99 +124,117 @@ driver://username:password@host:port/database?options
 
 要运行基本的 SELECT 查询，可以使用 `DB` Facade 的 `select` 方法：
 
-    <?php
+```php
+<?php
 
-    namespace App\Http\Controllers;
+namespace App\Http\Controllers;
 
-    use App\Http\Controllers\Controller;
-    use Illuminate\Support\Facades\DB;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\DB;
 
-    class UserController extends Controller
+class UserController extends Controller
+{
+    /**
+     * 显示所有应用用户的列表。
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function index()
     {
-        /**
-         * 显示所有应用用户的列表。
-         *
-         * @return \Illuminate\Http\Response
-         */
-        public function index()
-        {
-            $users = DB::select('select * from users where active = ?', [1]);
+        $users = DB::select('select * from users where active = ?', [1]);
 
-            return view('user.index', ['users' => $users]);
-        }
+        return view('user.index', ['users' => $users]);
     }
+}
+```
 
 传递给 `select` 方法的第一个参数是 SQL 查询，第二个参数是需要绑定到查询的参数绑定。通常，这些是 `where` 子句约束的值。参数绑定提供了针对 SQL 注入的保护。
 
 `select` 方法将始终返回结果 `array`。数组中的每个结果都是一个 PHP `stdClass` 对象，表示数据库中的一条记录：
 
-    use Illuminate\Support\Facades\DB;
+```php
+use Illuminate\Support\Facades\DB;
 
-    $users = DB::select('select * from users');
+$users = DB::select('select * from users');
 
-    foreach ($users as $user) {
-        echo $user->name;
-    }
+foreach ($users as $user) {
+    echo $user->name;
+}
+```
 
 <a name="selecting-scalar-values"></a>
 #### 选择标量值
 
 有时数据库查询可能返回单个标量值。Laravel 允许你使用 `scalar` 方法直接获取此值，而无需从记录对象中获取查询的标量结果：
 
-    $burgers = DB::scalar(
-        "select count(case when food = 'burger' then 1 end) as burgers from menu"
-    );
+```php
+$burgers = DB::scalar(
+    "select count(case when food = 'burger' then 1 end) as burgers from menu"
+);
+```
 
 <a name="using-named-bindings"></a>
 #### 使用命名绑定
 
 除了使用 `?` 表示参数绑定外，你还可以使用命名绑定执行查询：
 
-    $results = DB::select('select * from users where id = :id', ['id' => 1]);
+```php
+$results = DB::select('select * from users where id = :id', ['id' => 1]);
+```
 
 <a name="running-an-insert-statement"></a>
 #### 运行 Insert 语句
 
 要执行 `insert` 语句，可以使用 `DB` Facade 的 `insert` 方法。与 `select` 一样，此方法接受 SQL 查询作为第一个参数，绑定作为第二个参数：
 
-    use Illuminate\Support\Facades\DB;
+```php
+use Illuminate\Support\Facades\DB;
 
-    DB::insert('insert into users (id, name) values (?, ?)', [1, 'Marc']);
+DB::insert('insert into users (id, name) values (?, ?)', [1, 'Marc']);
+```
 
 <a name="running-an-update-statement"></a>
 #### 运行 Update 语句
 
 应使用 `update` 方法更新数据库中的现有记录。方法返回受语句影响的行数：
 
-    use Illuminate\Support\Facades\DB;
+```php
+use Illuminate\Support\Facades\DB;
 
-    $affected = DB::update(
-        'update users set votes = 100 where name = ?',
-        ['Anita']
-    );
+$affected = DB::update(
+    'update users set votes = 100 where name = ?',
+    ['Anita']
+);
+```
 
 <a name="running-a-delete-statement"></a>
 #### 运行 Delete 语句
 
 应使用 `delete` 方法从数据库删除记录。与 `update` 一样，方法将返回受影响的行数：
 
-    use Illuminate\Support\Facades\DB;
+```php
+use Illuminate\Support\Facades\DB;
 
-    $deleted = DB::delete('delete from users');
+$deleted = DB::delete('delete from users');
+```
 
 <a name="running-a-general-statement"></a>
 #### 运行通用语句
 
 某些数据库语句不返回任何值。对于这些类型的操作，可以使用 `DB` Facade 的 `statement` 方法：
 
-    DB::statement('drop table users');
+```php
+DB::statement('drop table users');
+```
 
 <a name="running-an-unprepared-statement"></a>
 #### 运行未预处理的语句
 
 有时你可能希望执行不绑定任何值的 SQL 语句。可以使用 `DB` Facade 的 `unprepared` 方法来实现：
 
-    DB::unprepared('update users set votes = 100 where name = "Dries"');
+```php
+DB::unprepared('update users set votes = 100 where name = "Dries"');
+```
 
 > **Warning**
 > 由于未预处理的语句不绑定参数，可能容易受到 SQL 注入攻击。切勿在未预处理的语句中允许用户可控的值。
@@ -224,7 +244,9 @@ driver://username:password@host:port/database?options
 
 在事务中使用 `DB` Facade 的 `statement` 和 `unprepared` 方法时，必须小心避免会导致[隐式提交](https://dev.mysql.com/doc/refman/8.0/en/implicit-commit.html)的语句。这些语句会导致数据库引擎间接提交整个事务，使 Laravel 无法感知数据库的事务级别。此类语句的一个示例是创建数据库表：
 
-    DB::unprepared('create table a (col varchar(1) null)');
+```php
+DB::unprepared('create table a (col varchar(1) null)');
+```
 
 请参阅 MySQL 手册中[触发隐式提交的所有语句列表](https://dev.mysql.com/doc/refman/8.0/en/implicit-commit.html)。
 
@@ -233,134 +255,152 @@ driver://username:password@host:port/database?options
 
 如果你的应用在 `config/database.php` 配置文件中定义了多个连接，可以通过 `DB` Facade 提供的 `connection` 方法访问每个连接。传递给 `connection` 方法的连接名称应对应 `config/database.php` 配置文件中列出的某个连接，或在运行时使用 `config` 辅助函数配置的连接：
 
-    use Illuminate\Support\Facades\DB;
+```php
+use Illuminate\Support\Facades\DB;
 
-    $users = DB::connection('sqlite')->select(/* ... */);
+$users = DB::connection('sqlite')->select(/* ... */);
+```
 
 可以使用连接实例的 `getPdo` 方法访问连接的原始底层 PDO 实例：
 
-    $pdo = DB::connection()->getPdo();
+```php
+$pdo = DB::connection()->getPdo();
+```
 
 <a name="listening-for-query-events"></a>
 ### 监听查询事件
 
 如果你想为应用执行的每个 SQL 查询指定一个被调用的闭包，可以使用 `DB` Facade 的 `listen` 方法。此方法可用于记录查询或调试。你可以在[服务提供者（Service Provider）](/docs/{{version}}/providers)的 `boot` 方法中注册查询监听器闭包：
 
-    <?php
+```php
+<?php
 
-    namespace App\Providers;
+namespace App\Providers;
 
-    use Illuminate\Support\Facades\DB;
-    use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\ServiceProvider;
 
-    class AppServiceProvider extends ServiceProvider
+class AppServiceProvider extends ServiceProvider
+{
+    /**
+     * 注册任何应用服务。
+     *
+     * @return void
+     */
+    public function register()
     {
-        /**
-         * 注册任何应用服务。
-         *
-         * @return void
-         */
-        public function register()
-        {
-            //
-        }
-
-        /**
-         * 引导任何应用服务。
-         *
-         * @return void
-         */
-        public function boot()
-        {
-            DB::listen(function ($query) {
-                // $query->sql;
-                // $query->bindings;
-                // $query->time;
-            });
-        }
+        //
     }
+
+    /**
+     * 引导任何应用服务。
+     *
+     * @return void
+     */
+    public function boot()
+    {
+        DB::listen(function ($query) {
+            // $query->sql;
+            // $query->bindings;
+            // $query->time;
+        });
+    }
+}
+```
 
 <a name="monitoring-cumulative-query-time"></a>
 ### 监控累计查询时间
 
 现代 Web 应用的一个常见性能瓶颈是查询数据库所花费的时间。幸运的是，当 Laravel 在单个请求中花费过多时间查询数据库时，可以调用你选择的闭包或回调。首先，向 `whenQueryingForLongerThan` 方法提供一个查询时间阈值（毫秒）和闭包。你可以在[服务提供者](/docs/{{version}}/providers)的 `boot` 方法中调用此方法：
 
-    <?php
+```php
+<?php
 
-    namespace App\Providers;
+namespace App\Providers;
 
-    use Illuminate\Database\Connection;
-    use Illuminate\Support\Facades\DB;
-    use Illuminate\Support\ServiceProvider;
-    use Illuminate\Database\Events\QueryExecuted;
+use Illuminate\Database\Connection;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\ServiceProvider;
+use Illuminate\Database\Events\QueryExecuted;
 
-    class AppServiceProvider extends ServiceProvider
+class AppServiceProvider extends ServiceProvider
+{
+    /**
+     * 注册任何应用服务。
+     *
+     * @return void
+     */
+    public function register()
     {
-        /**
-         * 注册任何应用服务。
-         *
-         * @return void
-         */
-        public function register()
-        {
-            //
-        }
-
-        /**
-         * 引导任何应用服务。
-         *
-         * @return void
-         */
-        public function boot()
-        {
-            DB::whenQueryingForLongerThan(500, function (Connection $connection, QueryExecuted $event) {
-                // 通知开发团队...
-            });
-        }
+        //
     }
+
+    /**
+     * 引导任何应用服务。
+     *
+     * @return void
+     */
+    public function boot()
+    {
+        DB::whenQueryingForLongerThan(500, function (Connection $connection, QueryExecuted $event) {
+            // 通知开发团队...
+        });
+    }
+}
+```
 
 <a name="database-transactions"></a>
 ## 数据库事务
 
 可以使用 `DB` Facade 提供的 `transaction` 方法在数据库事务中运行一组操作。如果事务闭包内抛出异常，事务将自动回滚并重新抛出异常。如果闭包执行成功，事务将自动提交。使用 `transaction` 方法时，你无需担心手动回滚或提交：
 
-    use Illuminate\Support\Facades\DB;
+```php
+use Illuminate\Support\Facades\DB;
 
-    DB::transaction(function () {
-        DB::update('update users set votes = 1');
+DB::transaction(function () {
+    DB::update('update users set votes = 1');
 
-        DB::delete('delete from posts');
-    });
+    DB::delete('delete from posts');
+});
+```
 
 <a name="handling-deadlocks"></a>
 #### 处理死锁
 
 `transaction` 方法接受一个可选的第二个参数，定义发生死锁时事务应重试的次数。一旦这些尝试耗尽，将抛出异常：
 
-    use Illuminate\Support\Facades\DB;
+```php
+use Illuminate\Support\Facades\DB;
 
-    DB::transaction(function () {
-        DB::update('update users set votes = 1');
+DB::transaction(function () {
+    DB::update('update users set votes = 1');
 
-        DB::delete('delete from posts');
-    }, 5);
+    DB::delete('delete from posts');
+}, 5);
+```
 
 <a name="manually-using-transactions"></a>
 #### 手动使用事务
 
 如果你想手动开始事务并完全控制回滚和提交，可以使用 `DB` Facade 提供的 `beginTransaction` 方法：
 
-    use Illuminate\Support\Facades\DB;
+```php
+use Illuminate\Support\Facades\DB;
 
-    DB::beginTransaction();
+DB::beginTransaction();
+```
 
 可以通过 `rollBack` 方法回滚事务：
 
-    DB::rollBack();
+```php
+DB::rollBack();
+```
 
 最后，可以通过 `commit` 方法提交事务：
 
-    DB::commit();
+```php
+DB::commit();
+```
 
 > **Note**
 > `DB` Facade 的事务方法同时控制[查询构造器](/docs/{{version}}/queries)和 [Eloquent ORM](/docs/{{version}}/eloquent) 的事务。

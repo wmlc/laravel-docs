@@ -39,15 +39,17 @@ Laravel 会为应用管理的每个活跃[用户会话](/docs/{{version}}/sessio
 
 当前会话的 CSRF 令牌可以通过请求的会话或 `csrf_token` 辅助函数获取：
 
-    use Illuminate\Http\Request;
+```php
+use Illuminate\Http\Request;
 
-    Route::get('/token', function (Request $request) {
-        $token = $request->session()->token();
+Route::get('/token', function (Request $request) {
+    $token = $request->session()->token();
 
-        $token = csrf_token();
+    $token = csrf_token();
 
-        // ...
-    });
+    // ...
+});
+```
 
 每当你在应用中定义"POST"、"PUT"、"PATCH"或"DELETE"的 HTML 表单时，都应该在表单中包含一个隐藏的 CSRF `_token` 字段，以便 CSRF 保护中间件能够校验该请求。为方便起见，你可以使用 `@csrf` Blade 指令生成这个隐藏的令牌输入框：
 
@@ -74,13 +76,15 @@ Laravel 会为应用管理的每个活跃[用户会话](/docs/{{version}}/sessio
 
 通常情况下，你应把这类路由放在 Laravel 为 `routes/web.php` 文件中所有路由应用 `web` 中间件组之外。不过，你也可以在应用的 `bootstrap/app.php` 文件中通过 `validateCsrfTokens` 方法提供特定路由的 URI，将它们排除掉：
 
-    ->withMiddleware(function (Middleware $middleware) {
-        $middleware->validateCsrfTokens(except: [
-            'stripe/*',
-            'http://example.com/foo/bar',
-            'http://example.com/foo/*',
-        ]);
-    })
+```php
+->withMiddleware(function (Middleware $middleware) {
+    $middleware->validateCsrfTokens(except: [
+        'stripe/*',
+        'http://example.com/foo/bar',
+        'http://example.com/foo/*',
+    ]);
+})
+```
 
 > [!NOTE]
 > 为方便起见，在[运行测试](/docs/{{version}}/testing)时，CSRF 中间件会对所有路由自动禁用。

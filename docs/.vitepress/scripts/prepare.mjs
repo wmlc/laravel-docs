@@ -2,9 +2,10 @@ import { readFileSync, writeFileSync, mkdirSync, readdirSync, existsSync } from 
 import { resolve, dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
+import { versions } from '../shared/versions.mjs'
+
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const root = resolve(__dirname, '../../../')
-const versions = ['13.x', '12.x', '9.x']
 
 const alertMap = {
   NOTE: 'info',
