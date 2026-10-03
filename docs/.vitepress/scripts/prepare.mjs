@@ -58,7 +58,9 @@ function escapeBladeInterpolation(text) {
         if (blockHasInterp) {
           const info = lines[blockStart].match(/^(\s*)(```+)(.*)$/)[3]
           if (!/\bv-pre\b/.test(info)) {
-            lines[blockStart] = lines[blockStart].replace(/(```+)(.*)$/, '$1$2 v-pre')
+            // 无语言时补一个 txt，避免 `v-pre` 被 Shiki 当成语言名
+            const suffix = info.trim() ? 'v-pre' : 'txt v-pre'
+            lines[blockStart] = lines[blockStart].replace(/(```+)(.*)$/, `$1$2 ${suffix}`)
           }
         }
         inBlock = false
@@ -76,6 +78,55 @@ function escapeBladeInterpolation(text) {
   return lines.join('\n')
 }
 
+/** 文档里出现的非标准代码块语言标签 -> Shiki 可用的语言 */
+const fenceLangMap = {
+  none: 'txt',
+  nothing: 'txt',
+  env: 'dotenv',
+  alpine: 'html'
+}
+
+/**
+ * 规范化代码块的语言标签：
+ * 1. `none` / `nothing` 之类无意义标签改为 `txt`（纯文本）
+ * 2. `env` / `alpine` 映射到 Shiki 已支持的语言，保留高亮
+ * 3. `v-pre` 独占语言位时补 `txt`，避免被当成语言名
+ * 目的是消除 `The language 'xxx' is not loaded` 告警。
+ */
+function normalizeFenceLangs(text) {
+  const lines = text.split('\n')
+  let inBlock = false
+
+  for (let i = 0; i < lines.length; i++) {
+    const m = lines[i].match(/^(\s*)(```+)(.*)$/)
+    if (!m) continue
+
+    if (inBlock) {
+      inBlock = false
+      continue
+    }
+    inBlock = true
+
+    const [, indent, fence, info] = m
+    if (!info.trim()) continue
+
+    const tokens = info.trim().split(/\s+/)
+    const lang = tokens[0].toLowerCase()
+
+    if (fenceLangMap[lang]) {
+      tokens[0] = fenceLangMap[lang]
+    } else if (lang === 'v-pre') {
+      tokens.unshift('txt')
+    } else {
+      continue
+    }
+
+    lines[i] = `${indent}${fence}${tokens.join(' ')}`
+  }
+
+  return lines.join('\n')
+}
+
 /** 预处理单篇文档：替换占位符、重写链接、转换 alerts、处理锚点 */
 function transform(content, version) {
   let out = content
@@ -87,6 +138,7 @@ function transform(content, version) {
 
   out = convertAlerts(out)
   out = escapeBladeInterpolation(out)
+  out = normalizeFenceLangs(out)
   return out
 }
 

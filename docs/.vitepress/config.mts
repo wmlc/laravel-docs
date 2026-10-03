@@ -1,5 +1,11 @@
 import { defineConfig } from 'vitepress'
 import { parseSidebar, versions } from './shared/sidebar.mjs'
+import { createVersionSearchFilter } from './shared/versions.mjs'
+
+/** 搜索结果只保留当前版本文档（首页等非版本页回退到默认版本） */
+const versionSearchFilter = createVersionSearchFilter() as unknown as (
+  result: { id: string }
+) => boolean
 
 export default defineConfig({
   title: 'Laravel 文档',
@@ -34,6 +40,10 @@ export default defineConfig({
     search: {
       provider: 'local',
       options: {
+        miniSearch: {
+          searchOptions: { filter: versionSearchFilter }
+        },
+
         translations: {
           button: {
             buttonText: '搜索文档',
