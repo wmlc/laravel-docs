@@ -23,7 +23,8 @@ export default defineConfig({
 
     sidebar: {
       '/13.x/': parseSidebar('13.x'),
-      '/12.x/': parseSidebar('12.x')
+      '/12.x/': parseSidebar('12.x'),
+      '/9.x/': parseSidebar('9.x')
     },
 
     socialLinks: [

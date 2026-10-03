@@ -4,7 +4,7 @@ import { fileURLToPath } from 'node:url'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const root = resolve(__dirname, '../../../')
-const versions = ['13.x', '12.x']
+const versions = ['13.x', '12.x', '9.x']
 
 const alertMap = {
   NOTE: 'info',
@@ -38,6 +38,43 @@ function convertAlerts(text) {
   return out.join('\n')
 }
 
+/** 处理 Blade 插值 `{{ }}`，避免被 VitePress 当作 Vue 模板插值：
+ *  - 代码块内含 `{{ }}`：在代码块 info string 追加 `v-pre`
+ *  - 代码块外含 `{{ }}`：替换为 HTML 实体 `&#123;&#123; ... &#125;&#125;` */
+function escapeBladeInterpolation(text) {
+  const lines = text.split('\n')
+  let inBlock = false
+  let blockStart = -1
+  let blockHasInterp = false
+  for (let i = 0; i < lines.length; i++) {
+    const fenceMatch = lines[i].match(/^(\s*)(```+)(.*)$/)
+    if (fenceMatch) {
+      if (!inBlock) {
+        inBlock = true
+        blockStart = i
+        blockHasInterp = false
+      } else {
+        if (blockHasInterp) {
+          const info = lines[blockStart].match(/^(\s*)(```+)(.*)$/)[3]
+          if (!/\bv-pre\b/.test(info)) {
+            lines[blockStart] = lines[blockStart].replace(/(```+)(.*)$/, '$1$2 v-pre')
+          }
+        }
+        inBlock = false
+        blockStart = -1
+        blockHasInterp = false
+      }
+      continue
+    }
+    if (inBlock) {
+      if (/\{\{[^}]+\}\}/.test(lines[i])) blockHasInterp = true
+    } else if (/\{\{[^}]+\}\}/.test(lines[i])) {
+      lines[i] = lines[i].replace(/\{\{([^}]+)\}\}/g, '&#123;&#123;$1&#125;&#125;')
+    }
+  }
+  return lines.join('\n')
+}
+
 /** 预处理单篇文档：替换占位符、重写链接、转换 alerts、处理锚点 */
 function transform(content, version) {
   let out = content
@@ -48,6 +85,7 @@ function transform(content, version) {
   out = out.replace(/<a\s+name="([^"]+)"><\/a>/g, '<a id="$1" class="laravel-anchor"></a>')
 
   out = convertAlerts(out)
+  out = escapeBladeInterpolation(out)
   return out
 }
 

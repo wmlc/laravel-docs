@@ -45,4 +45,4 @@ export function parseSidebar(version) {
   return sidebar
 }
 
-export const versions = ['13.x', '12.x']
+export const versions = ['13.x', '12.x', '9.x']

@@ -4,10 +4,10 @@ import { useRoute } from 'vitepress'
 
 const route = useRoute()
 const open = ref(false)
-const versions = ['13.x', '12.x']
+const versions = ['13.x', '12.x', '9.x']
 
 const current = computed(() => {
-  const m = route.path.match(/^\/(13\.x|12\.x)\//)
+  const m = route.path.match(/^\/(13\.x|12\.x|9\.x)\//)
   return m ? m[1] : ''
 })
 
@@ -15,7 +15,7 @@ function href(v: string) {
   let rest = ''
   if (current.value) {
     rest = route.path
-      .replace(/^\/(13\.x|12\.x)\//, '')
+      .replace(/^\/(13\.x|12\.x|9\.x)\//, '')
       .replace(/\/index\.html$/, '')
       .replace(/\.html$/, '')
       .replace(/\/$/, '')
