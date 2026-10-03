@@ -1,47 +1,47 @@
 # Eloquent：入门
 
-- [Introduction](#introduction)
-- [Generating Model Classes](#generating-model-classes)
-- [Eloquent Model Conventions](#eloquent-model-conventions)
-    - [Table Names](#table-names)
-    - [Primary Keys](#primary-keys)
-    - [UUID and ULID Keys](#uuid-and-ulid-keys)
-    - [Timestamps](#timestamps)
-    - [Database Connections](#database-connections)
-    - [Default Attribute Values](#default-attribute-values)
-    - [Refreshing Attributes After Writes](#refreshing-attributes-after-writes)
-    - [Configuring Eloquent Strictness](#configuring-eloquent-strictness)
-- [Retrieving Models](#retrieving-models)
-    - [Collections](#collections)
-    - [Chunking Results](#chunking-results)
-    - [Chunking Using Lazy Collections](#chunking-using-lazy-collections)
-    - [Cursors](#cursors)
-    - [Advanced Subqueries](#advanced-subqueries)
-- [Retrieving Single Models / Aggregates](#retrieving-single-models)
-    - [Retrieving or Creating Models](#retrieving-or-creating-models)
-    - [Retrieving Aggregates](#retrieving-aggregates)
-- [Inserting and Updating Models](#inserting-and-updating-models)
-    - [Inserts](#inserts)
-    - [Updates](#updates)
-    - [Mass Assignment](#mass-assignment)
-    - [Upserts](#upserts)
-- [Deleting Models](#deleting-models)
-    - [Soft Deleting](#soft-deleting)
-    - [Querying Soft Deleted Models](#querying-soft-deleted-models)
-- [Pruning Models](#pruning-models)
-- [Replicating Models](#replicating-models)
-- [Query Scopes](#query-scopes)
-    - [Global Scopes](#global-scopes)
-    - [Local Scopes](#local-scopes)
-    - [Pending Attributes](#pending-attributes)
-- [Comparing Models](#comparing-models)
-- [Events](#events)
-    - [Using Closures](#events-using-closures)
-    - [Observers](#observers)
-    - [Muting Events](#muting-events)
+- [简介](#introduction)
+- [生成模型类](#generating-model-classes)
+- [Eloquent 模型约定](#eloquent-model-conventions)
+    - [表名](#table-names)
+    - [主键](#primary-keys)
+    - [UUID 与 ULID 主键](#uuid-and-ulid-keys)
+    - [时间戳](#timestamps)
+    - [数据库连接](#database-connections)
+    - [默认属性值](#default-attribute-values)
+    - [写入后刷新属性](#refreshing-attributes-after-writes)
+    - [配置 Eloquent 严格模式](#configuring-eloquent-strictness)
+- [检索模型](#retrieving-models)
+    - [集合](#collections)
+    - [分块处理结果](#chunking-results)
+    - [使用 Lazy Collection 分块处理](#chunking-using-lazy-collections)
+    - [游标](#cursors)
+    - [高级子查询](#advanced-subqueries)
+- [检索单个模型 / 聚合结果](#retrieving-single-models)
+    - [检索或创建模型](#retrieving-or-creating-models)
+    - [检索聚合结果](#retrieving-aggregates)
+- [插入与更新模型](#inserting-and-updating-models)
+    - [插入](#inserts)
+    - [更新](#updates)
+    - [批量赋值](#mass-assignment)
+    - [Upsert](#upserts)
+- [删除模型](#deleting-models)
+    - [软删除](#soft-deleting)
+    - [查询软删除的模型](#querying-soft-deleted-models)
+- [修剪模型](#pruning-models)
+- [复制模型](#replicating-models)
+- [查询作用域](#query-scopes)
+    - [全局作用域](#global-scopes)
+    - [局部作用域](#local-scopes)
+    - [待定属性](#pending-attributes)
+- [比较模型](#comparing-models)
+- [事件](#events)
+    - [使用闭包](#events-using-closures)
+    - [观察者](#observers)
+    - [静默事件](#muting-events)
 
 <a name="introduction"></a>
-## Introduction
+## 简介
 
 Laravel 内置了 Eloquent，一个对象关系映射器（ORM），让你与数据库交互变得愉悦。使用 Eloquent 时，每个数据库表都有一个对应的「模型（Model）」用来与该表交互。除了从数据库表中检索记录，Eloquent 模型还允许你向表中插入、更新和删除记录。
 
@@ -49,7 +49,7 @@ Laravel 内置了 Eloquent，一个对象关系映射器（ORM），让你与数
 > 在开始之前，请确保在应用的 `config/database.php` 配置文件中配置了数据库连接。要了解配置数据库的更多信息，请查阅 [数据库配置文档](/docs/{{version}}/database#configuration)。
 
 <a name="generating-model-classes"></a>
-## Generating Model Classes
+## 生成模型类
 
 开始之前，让我们先创建一个 Eloquent 模型。模型通常位于 `app/Models` 目录，并继承 `Illuminate\Database\Eloquent\Model` 类。你可以使用 `make:model` [Artisan 命令](/docs/{{version}}/artisan) 来生成一个新的模型：
 
@@ -98,7 +98,7 @@ php artisan make:model Member -p
 ```
 
 <a name="inspecting-models"></a>
-#### Inspecting Models
+#### 检视模型
 
 有时仅仅浏览模型的代码很难确定它所有可用的属性和关联。此时可以试试 `model:show` Artisan 命令，它会方便地概览模型的所有属性和关系：
 
@@ -107,7 +107,7 @@ php artisan model:show Flight
 ```
 
 <a name="eloquent-model-conventions"></a>
-## Eloquent Model Conventions
+## Eloquent 模型约定
 
 由 `make:model` 命令生成的模型会被放置在 `app/Models` 目录。让我们检视一个基础的模型类，并讨论 Eloquent 的一些关键约定：
 
@@ -125,7 +125,7 @@ class Flight extends Model
 ```
 
 <a name="table-names"></a>
-### Table Names
+### 表名
 
 看完上面的示例，你可能已经注意到我们并没有告诉 Eloquent 哪个数据库表对应于我们的 `Flight` 模型。按照约定，除非显式指定了其他名称，否则类的「蛇形（snake case）」复数形式会被用作表名。因此，在本例中，Eloquent 会假定 `Flight` 模型将记录存储在 `flights` 表中，而 `AirTrafficController` 模型会将记录存储在 `air_traffic_controllers` 表中。
 
@@ -147,7 +147,7 @@ class Flight extends Model
 ```
 
 <a name="primary-keys"></a>
-### Primary Keys
+### 主键
 
 Eloquent 还会假定每个模型对应的数据库表都有一个名为 `id` 的主键列。如有必要，可以使用 `Table` 属性上的 `key` 参数来指定作为模型主键的另一个列：
 
@@ -201,12 +201,12 @@ class Flight extends Model
 ```
 
 <a name="composite-primary-keys"></a>
-#### "Composite" Primary Keys
+#### 「复合」主键
 
 Eloquent 要求每个模型至少有一个能充当其主键的唯一标识「ID」。Eloquent 模型不支持「复合」主键。不过，除了表的主键之外，你可以自由地为数据库表添加额外的多列唯一索引。
 
 <a name="uuid-and-ulid-keys"></a>
-### UUID and ULID Keys
+### UUID 与 ULID 主键
 
 除了使用自增整数作为 Eloquent 模型的主键，你也可以选择使用 UUID。UUID 是 36 个字符长的、全球唯一的字母数字标识符。
 
@@ -273,7 +273,7 @@ $article->id; // "01gd4d3tgrrfqeda94gdbtdk5c"
 ```
 
 <a name="timestamps"></a>
-### Timestamps
+### 时间戳
 
 默认情况下，Eloquent 期望模型对应的数据库表上存在 `created_at` 和 `updated_at` 列。模型被创建或更新时，Eloquent 会自动设置这些列的值。如果你不希望这些列被 Eloquent 自动管理，可以在模型 `Table` 属性上将 `timestamps` 设为 `false`：
 
@@ -373,7 +373,7 @@ Model::withoutTimestamps(fn () => $post->increment('reads'));
 ```
 
 <a name="database-connections"></a>
-### Database Connections
+### 数据库连接
 
 默认情况下，所有 Eloquent 模型都会使用为应用配置的默认数据库连接。如果你想指定与某个特定模型交互时所使用的不同连接，可以使用 `Connection` 属性：
 
@@ -393,7 +393,7 @@ class Flight extends Model
 ```
 
 <a name="default-attribute-values"></a>
-### Default Attribute Values
+### 默认属性值
 
 默认情况下，新实例化的模型实例不会包含任何属性值。如果你想为模型的某些属性定义默认值，可以在模型上定义一个 `$attributes` 属性。放置在 `$attributes` 数组中的属性值应当是其原始的、「可存储」格式，就像刚从数据库读取出来一样：
 
@@ -419,7 +419,7 @@ class Flight extends Model
 ```
 
 <a name="refreshing-attributes-after-writes"></a>
-### Refreshing Attributes After Writes
+### 写入后刷新属性
 
 如果你的数据库包含生成列（generated columns），可以配置 Eloquent 在模型插入或更新后刷新特定属性。为此，请在模型上定义 `Refreshes` 属性：
 
@@ -442,7 +442,7 @@ class User extends Model
 模型写入后，配置的属性将从数据库中刷新。
 
 <a name="configuring-eloquent-strictness"></a>
-### Configuring Eloquent Strictness
+### 配置 Eloquent 严格模式
 
 Laravel 提供了几个方法，让你可以配置 Eloquent 在各种情形下的行为和「严格度（strictness）」。
 
@@ -467,7 +467,7 @@ Model::preventSilentlyDiscardingAttributes(! $this->app->isProduction());
 ```
 
 <a name="retrieving-models"></a>
-## Retrieving Models
+## 检索模型
 
 一旦你创建了模型以及 [它关联的数据库表](/docs/{{version}}/migrations#generating-migrations)，就可以开始从数据库中检索数据了。你可以把每个 Eloquent 模型都看作一个强大的 [查询构造器](/docs/{{version}}/queries)，让你可以流畅地查询与模型关联的数据库表。模型的 `all` 方法会检索模型关联数据库表中的所有记录：
 
@@ -480,7 +480,7 @@ foreach (Flight::all() as $flight) {
 ```
 
 <a name="building-queries"></a>
-#### Building Queries
+#### 构建查询
 
 Eloquent 的 `all` 方法会返回模型表中的所有结果。不过，由于每个 Eloquent 模型都是一个 [查询构造器](/docs/{{version}}/queries)，你可以为查询添加额外的约束，然后调用 `get` 方法来检索结果：
 
@@ -495,7 +495,7 @@ $flights = Flight::where('active', 1)
 > 由于 Eloquent 模型就是查询构造器，你应该查阅 Laravel [查询构造器](/docs/{{version}}/queries) 提供的所有方法。在编写 Eloquent 查询时，你可以使用其中任意一个方法。
 
 <a name="refreshing-models"></a>
-#### Refreshing Models
+#### 刷新模型
 
 如果你已经拥有一个从数据库检索到的 Eloquent 模型实例，可以使用 `fresh` 和 `refresh` 方法来「刷新」模型。`fresh` 方法会从数据库重新检索模型，已有的模型实例不会受影响：
 
@@ -528,7 +528,7 @@ DB::transaction(function () use ($flight) {
 ```
 
 <a name="collections"></a>
-### Collections
+### 集合
 
 正如我们所见，`all` 和 `get` 等 Eloquent 方法会从数据库中检索多条记录。不过，这些方法返回的并不是普通的 PHP 数组，而是返回一个 `Illuminate\Database\Eloquent\Collection` 实例。
 
@@ -553,7 +553,7 @@ foreach ($flights as $flight) {
 ```
 
 <a name="chunking-results"></a>
-### Chunking Results
+### 分块处理结果
 
 如果你的应用尝试通过 `all` 或 `get` 方法加载数以万计的 Eloquent 记录，可能会耗尽内存。你可以使用 `chunk` 方法来更高效地处理大量模型，而不是使用这些方法。
 
@@ -595,7 +595,7 @@ Flight::where(function ($query) {
 ```
 
 <a name="chunking-using-lazy-collections"></a>
-### Chunking Using Lazy Collections
+### 使用 Lazy Collection 分块处理
 
 `lazy` 方法的工作方式类似于 [the `chunk` method](#chunking-results)，在底层它同样是分块执行查询。不过，`lazy` 方法不是把每个分块直接传入回调，而是返回一个扁平化的 Eloquent 模型 [LazyCollection](/docs/{{version}}/collections#lazy-collections)，让你能够像处理单一数据流一样与结果交互：
 
@@ -618,7 +618,7 @@ Flight::where('departed', true)
 你也可以使用 `lazyByIdDesc` 方法根据 `id` 的降序对结果进行过滤。
 
 <a name="cursors"></a>
-### Cursors
+### 游标
 
 与 `lazy` 方法类似，`cursor` 方法可用于在遍历数以万计的 Eloquent 模型记录时，显著减少应用的内存消耗。
 
@@ -654,10 +654,10 @@ foreach ($users as $user) {
 尽管 `cursor` 方法使用的内存远少于常规查询（因为它任意时刻只在内存中保留一个 Eloquent 模型），它最终仍会耗尽内存。这是 [由于 PHP 的 PDO 驱动在内部将所有原始查询结果缓存在其缓冲区中](https://www.php.net/manual/en/mysqlinfo.concepts.buffering.php)。如果你要处理数量非常庞大的 Eloquent 记录，请考虑改用 [the `lazy` method](#chunking-using-lazy-collections)。
 
 <a name="advanced-subqueries"></a>
-### Advanced Subqueries
+### 高级子查询
 
 <a name="subquery-selects"></a>
-#### Subquery Selects
+#### 子查询 select
 
 Eloquent 还提供了高级子查询支持，让你能够用单条查询从关联表中提取信息。例如，假设我们有一张航班 `destinations`（目的地）表和一张飞往目的地的 `flights` 表。`flights` 表包含一个 `arrived_at` 列，表示航班抵达目的地的时间。
 
@@ -675,7 +675,7 @@ return Destination::addSelect(['last_flight' => Flight::select('name')
 ```
 
 <a name="subquery-ordering"></a>
-#### Subquery Ordering
+#### 子查询排序
 
 此外，查询构造器的 `orderBy` 函数支持子查询。继续沿用我们的航班示例，我们可以利用这个功能根据最后一个航班抵达该目的地的时间对所有目的地进行排序。同样，这可以在执行单条数据库查询时完成：
 
@@ -689,7 +689,7 @@ return Destination::orderByDesc(
 ```
 
 <a name="retrieving-single-models"></a>
-## Retrieving Single Models / Aggregates
+## 检索单个模型 / 聚合结果
 
 除了检索匹配给定查询的所有记录，你还可以使用 `find`、`first` 或 `firstWhere` 方法来检索单条记录。这些方法返回的是单个模型实例，而非模型集合：
 
@@ -719,7 +719,7 @@ $flight = Flight::where('legs', '>', 3)->firstOr(function () {
 ```
 
 <a name="not-found-exceptions"></a>
-#### Not Found Exceptions
+#### 未找到异常
 
 有时你可能希望在找不到模型时抛出异常。这在路由或控制器中尤其有用。`findOrFail` 和 `firstOrFail` 方法会检索查询的第一条结果；不过，如果找不到结果，则会抛出 `Illuminate\Database\Eloquent\ModelNotFoundException` 异常：
 
@@ -740,7 +740,7 @@ Route::get('/api/flights/{id}', function (string $id) {
 ```
 
 <a name="retrieving-or-creating-models"></a>
-### Retrieving or Creating Models
+### 检索或创建模型
 
 `firstOrCreate` 方法会尝试使用给定的列 / 值对定位数据库记录。如果在数据库中找不到该模型，则会插入一条记录，其属性由第一个数组参数与可选的第二个数组参数合并得到。
 
@@ -773,7 +773,7 @@ $flight = Flight::firstOrNew(
 ```
 
 <a name="retrieving-aggregates"></a>
-### Retrieving Aggregates
+### 检索聚合结果
 
 在与 Eloquent 模型交互时，你也可以使用 Laravel [查询构造器](/docs/{{version}}/queries) 提供的 `count`、`sum`、`max` 等 [聚合方法](/docs/{{version}}/queries#aggregates)。正如你所预期的，这些方法返回的是标量值，而非 Eloquent 模型实例：
 
@@ -784,10 +784,10 @@ $max = Flight::where('active', 1)->max('price');
 ```
 
 <a name="inserting-and-updating-models"></a>
-## Inserting and Updating Models
+## 插入与更新模型
 
 <a name="inserts"></a>
-### Inserts
+### 插入
 
 当然，使用 Eloquent 时，我们不只是需要从数据库中检索模型，还需要插入新记录。所幸 Eloquent 让这件事变得简单。要向数据库插入一条新记录，你应该实例化一个新的模型实例并设置其属性，然后调用该模型实例的 `save` 方法：
 
@@ -841,7 +841,7 @@ $flight = Flight::create([
 不过，在使用 `create` 方法之前，你需要在模型类上指定 `Fillable` 或 `Guarded` 属性。这些属性是必需的，因为默认情况下所有 Eloquent 模型都受到批量赋值漏洞的保护。要了解关于批量赋值的更多信息，请查阅 [批量赋值文档](#mass-assignment)。
 
 <a name="updates"></a>
-### Updates
+### 更新
 
 `save` 方法也可用于更新数据库中已存在的模型。要更新模型，你应该检索它并设置任何你希望更新的属性，然后调用模型的 `save` 方法。同样，`updated_at` 时间戳会自动更新，所以无需手动设置其值：
 
@@ -885,7 +885,7 @@ if ($flight->wasRecentlyCreated) {
 ```
 
 <a name="mass-updates"></a>
-#### Mass Updates
+#### 批量更新
 
 也可以对匹配给定查询的模型执行更新。在本例中，所有 `active` 且 `destination` 为 `San Diego` 的航班都会被标记为延迟：
 
@@ -901,7 +901,7 @@ Flight::where('active', 1)
 > 通过 Eloquent 执行批量更新时，被更新模型的 `saving`、`saved`、`updating` 和 `updated` 模型事件不会被触发。这是因为执行批量更新时模型从未被实际检索。
 
 <a name="examining-attribute-changes"></a>
-#### Examining Attribute Changes
+#### 检查属性变化
 
 Eloquent 提供了 `isDirty`、`isClean` 和 `wasChanged` 方法，用于检查模型的内部状态，并判断其属性自最初检索以来发生了哪些变化。
 
@@ -1002,7 +1002,7 @@ $user->getPrevious();
 ```
 
 <a name="mass-assignment"></a>
-### Mass Assignment
+### 批量赋值
 
 你可以使用 `create` 方法通过单条 PHP 语句来「保存」一个新模型。该方法会返回插入的模型实例给你：
 
@@ -1048,7 +1048,7 @@ $flight->fill(['name' => 'Amsterdam to Frankfurt']);
 ```
 
 <a name="mass-assignment-json-columns"></a>
-#### Mass Assignment and JSON Columns
+#### 批量赋值与 JSON 列
 
 在赋值 JSON 列时，每个列的可批量赋值键必须在模型的 `Fillable` 属性中指定。出于安全考虑，Laravel 在使用 `Guarded` 属性时不支持更新嵌套的 JSON 属性：
 
@@ -1063,7 +1063,7 @@ class Flight extends Model
 ```
 
 <a name="allowing-mass-assignment"></a>
-#### Allowing Mass Assignment
+#### 允许批量赋值
 
 如果你想让所有属性都可批量赋值，可以在模型上使用 `Unguarded` 属性。如果你选择取消模型的 guard 保护，应当格外小心，始终手动精心构造传给 Eloquent 的 `fill`、`create` 和 `update` 方法的数组：
 
@@ -1083,7 +1083,7 @@ class Flight extends Model
 ```
 
 <a name="mass-assignment-exceptions"></a>
-#### Mass Assignment Exceptions
+#### 批量赋值异常
 
 默认情况下，在执行批量赋值操作时，未包含在 `Fillable` 属性中的属性会被静默丢弃。在生产环境中，这是预期的行为；不过，在本地开发时，它可能导致困惑，让人不知道为什么模型的修改没有生效。
 
@@ -1102,7 +1102,7 @@ public function boot(): void
 ```
 
 <a name="upserts"></a>
-### Upserts
+### Upsert
 
 Eloquent 的 `upsert` 方法可用于在单个原子操作中更新或创建记录。该方法的第一个参数由要插入或更新的值组成，第二个参数列出了在关联表中唯一标识记录的列（或列组），第三个也是最后一个参数是一个列数组，表示如果数据库中已存在匹配记录时应当被更新的列。`upsert` 方法会在模型启用时间戳时自动设置 `created_at` 和 `updated_at` 时间戳：
 
@@ -1117,7 +1117,7 @@ Flight::upsert([
 > 除 SQL Server 之外的所有数据库，都要求 `upsert` 方法的第二个参数中的列拥有「主键」或「唯一」索引。此外，MariaDB 和 MySQL 数据库驱动会忽略 `upsert` 方法的第二个参数，并总是使用表的「主键」和「唯一」索引来检测已存在的记录。
 
 <a name="deleting-models"></a>
-## Deleting Models
+## 删除模型
 
 要删除一个模型，可以调用模型实例上的 `delete` 方法：
 
@@ -1136,7 +1136,7 @@ $flight->deleteOrFail();
 ```
 
 <a name="deleting-an-existing-model-by-its-primary-key"></a>
-#### Deleting an Existing Model by its Primary Key
+#### 通过主键删除现有模型
 
 在上面的示例中，我们在调用 `delete` 方法之前先从数据库检索模型。不过，如果你知道模型的主键，可以通过调用 `destroy` 方法在不显式检索模型的情况下删除它。`destroy` 方法除了接受单个主键外，还接受多个主键、一个主键数组或一组 [集合](/docs/{{version}}/collections)（collection）形式的主键：
 
@@ -1160,7 +1160,7 @@ Flight::forceDestroy(1);
 > `destroy` 方法会逐个加载每个模型并调用 `delete` 方法，以便为每个模型正确派发 `deleting` 和 `deleted` 事件。
 
 <a name="deleting-models-using-queries"></a>
-#### Deleting Models Using Queries
+#### 通过查询删除模型
 
 当然，你可以构建一个 Eloquent 查询来删除所有匹配查询条件的模型。在本例中，我们将删除所有被标记为未激活的航班。与批量更新一样，批量删除不会为被删除的模型派发模型事件：
 
@@ -1178,7 +1178,7 @@ $deleted = Flight::query()->delete();
 > 通过 Eloquent 执行批量删除语句时，被删除模型的 `deleting` 和 `deleted` 模型事件不会被派发。这是因为执行删除语句时模型从未被实际检索。
 
 <a name="soft-deleting"></a>
-### Soft Deleting
+### 软删除
 
 除了真正从数据库中移除记录，Eloquent 还可以「软删除」模型。当模型被软删除时，它们并不会真正从数据库中被移除。相反，模型上会被设置一个 `deleted_at` 属性，表示模型被「删除」的日期和时间。要为模型启用软删除，请在模型上添加 `Illuminate\Database\Eloquent\SoftDeletes` trait：
 
@@ -1225,7 +1225,7 @@ if ($flight->trashed()) {
 ```
 
 <a name="restoring-soft-deleted-models"></a>
-#### Restoring Soft Deleted Models
+#### 恢复软删除的模型
 
 有时你可能希望「撤销删除」一个软删除的模型。要恢复一个软删除的模型，可以在模型实例上调用 `restore` 方法。`restore` 方法会将模型的 `deleted_at` 列设为 `null`：
 
@@ -1248,7 +1248,7 @@ $flight->history()->restore();
 ```
 
 <a name="permanently-deleting-models"></a>
-#### Permanently Deleting Models
+#### 永久删除模型
 
 有时你可能需要真正从数据库中移除一个模型。可以使用 `forceDelete` 方法将软删除的模型从数据库表中永久移除：
 
@@ -1263,10 +1263,10 @@ $flight->history()->forceDelete();
 ```
 
 <a name="querying-soft-deleted-models"></a>
-### Querying Soft Deleted Models
+### 查询软删除的模型
 
 <a name="including-soft-deleted-models"></a>
-#### Including Soft Deleted Models
+#### 包含软删除的模型
 
 如上所述，软删除的模型会自动被排除在查询结果之外。不过，你可以通过在查询上调用 `withTrashed` 方法，强制将软删除的模型包含在查询结果中：
 
@@ -1285,7 +1285,7 @@ $flight->history()->withTrashed()->get();
 ```
 
 <a name="retrieving-only-soft-deleted-models"></a>
-#### Retrieving Only Soft Deleted Models
+#### 仅检索软删除的模型
 
 `onlyTrashed` 方法只会检索 **仅** 软删除的模型：
 
@@ -1296,7 +1296,7 @@ $flights = Flight::onlyTrashed()
 ```
 
 <a name="pruning-models"></a>
-## Pruning Models
+## 修剪模型
 
 有时你可能希望定期删除不再需要的模型。为此，你可以为你希望定期修剪的模型添加 `Illuminate\Database\Eloquent\Prunable` 或 `Illuminate\Database\Eloquent\MassPrunable` trait。将其中一个 trait 添加到模型后，实现一个 `prunable` 方法，该方法返回一个解析出不再需要的模型的 Eloquent 查询构造器：
 
@@ -1369,7 +1369,7 @@ php artisan model:prune --pretend
 > 如果软删除的模型匹配了可修剪查询，它们会被永久删除（`forceDelete`）。
 
 <a name="mass-pruning"></a>
-#### Mass Pruning
+#### 批量修剪
 
 当模型被标记为 `Illuminate\Database\Eloquent\MassPrunable` trait 时，模型会使用批量删除查询从数据库中删除。因此，`pruning` 方法不会被调用，`deleting` 和 `deleted` 模型事件也不会被派发。这是因为模型在删除前从未被实际检索，从而使修剪过程高效得多：
 
@@ -1397,7 +1397,7 @@ class Flight extends Model
 ```
 
 <a name="replicating-models"></a>
-## Replicating Models
+## 复制模型
 
 你可以使用 `replicate` 方法创建一个已有模型实例的未保存副本。当你的模型实例共享许多相同属性时，这个方法尤其有用：
 
@@ -1436,15 +1436,15 @@ $flight = $flight->replicate([
 ```
 
 <a name="query-scopes"></a>
-## Query Scopes
+## 查询作用域
 
 <a name="global-scopes"></a>
-### Global Scopes
+### 全局作用域
 
 全局作用域（global scope）允许你为给定模型的所有查询添加约束。Laravel 自己的 [软删除](#soft-deleting) 功能就利用了全局作用域，来只从数据库中检索「未删除」的模型。编写你自己的全局作用域，可以方便地确保对给定模型的每个查询都收到某些约束。
 
 <a name="generating-scopes"></a>
-#### Generating Scopes
+#### 生成作用域
 
 要生成一个新的全局作用域，你可以调用 `make:scope` Artisan 命令，它会把生成的作用域放置在应用的 `app/Models/Scopes` 目录：
 
@@ -1453,7 +1453,7 @@ php artisan make:scope AncientScope
 ```
 
 <a name="writing-global-scopes"></a>
-#### Writing Global Scopes
+#### 编写全局作用域
 
 编写全局作用域很简单。首先，使用 `make:scope` 命令生成一个实现了 `Illuminate\Database\Eloquent\Scope` 接口的类。`Scope` 接口要求你实现一个方法：`apply`。`apply` 方法可以根据需要向查询添加 `where` 约束或其他类型的子句：
 
@@ -1482,7 +1482,7 @@ class AncientScope implements Scope
 > 如果你的全局作用域要向查询的 select 子句添加列，你应该使用 `addSelect` 方法而非 `select`。这样可以防止无意中替换掉查询已有的 select 子句。
 
 <a name="applying-global-scopes"></a>
-#### Applying Global Scopes
+#### 应用全局作用域
 
 要将全局作用域分配给一个模型，只需在模型上放置 `ScopedBy` 属性：
 
@@ -1530,7 +1530,7 @@ select * from `users` where `created_at` < 0021-02-18 00:00:00
 ```
 
 <a name="anonymous-global-scopes"></a>
-#### Anonymous Global Scopes
+#### 匿名全局作用域
 
 Eloquent 还允许你使用闭包定义全局作用域，这对于不值得单独成类的简单作用域尤其有用。使用闭包定义全局作用域时，你应该提供一个你自己选定的作用域名称作为 `addGlobalScope` 方法的第一个参数：
 
@@ -1557,7 +1557,7 @@ class User extends Model
 ```
 
 <a name="removing-global-scopes"></a>
-#### Removing Global Scopes
+#### 移除全局作用域
 
 如果你希望为给定查询移除某个全局作用域，可以使用 `withoutGlobalScope` 方法。该方法接受全局作用域的类名作为其唯一参数：
 
@@ -1589,7 +1589,7 @@ User::withoutGlobalScopesExcept([
 ```
 
 <a name="local-scopes"></a>
-### Local Scopes
+### 局部作用域
 
 本地作用域（local scope）允许你定义一组可重用的常用查询约束，便于在应用中反复使用。例如，你可能需要频繁检索所有被认为是「popular」的用户。要定义一个作用域，请在 Eloquent 方法上添加 `Scope` 属性。
 
@@ -1627,7 +1627,7 @@ class User extends Model
 ```
 
 <a name="utilizing-a-local-scope"></a>
-#### Utilizing a Local Scope
+#### 使用局部作用域
 
 一旦作用域被定义，你就可以在查询模型时调用该作用域方法。你甚至可以链式调用各种作用域：
 
@@ -1652,7 +1652,7 @@ $users = User::popular()->orWhere->active()->get();
 ```
 
 <a name="dynamic-scopes"></a>
-#### Dynamic Scopes
+#### 动态作用域
 
 有时你可能希望定义一个接受参数的作用域。作为开始，只需在你的作用域方法签名中添加额外的参数。作用域参数应定义在 `$query` 参数之后：
 
@@ -1687,7 +1687,7 @@ $users = User::ofType('admin')->get();
 带属性的作用域方法应为 `protected`。在模型类内部调用带属性的作用域时，应通过查询构造器实例调用该作用域，例如 `static::query()->ofType('admin')`，以确保调用经由 Eloquent 的作用域处理。
 
 <a name="pending-attributes"></a>
-### Pending Attributes
+### 待定属性
 
 如果你想使用作用域来创建具有与约束该作用域所用属性相同的模型，可以在构建作用域查询时使用 `withAttributes` 方法：
 
@@ -1732,7 +1732,7 @@ $query->withAttributes([
 ```
 
 <a name="comparing-models"></a>
-## Comparing Models
+## 比较模型
 
 有时你可能需要判断两个模型是否「相同」。`is` 和 `isNot` 方法可用于快速验证两个模型是否具有相同的主键、表以及数据库连接：
 
@@ -1755,7 +1755,7 @@ if ($post->author()->is($user)) {
 ```
 
 <a name="events"></a>
-## Events
+## 事件
 
 > [!NOTE]
 > 想将你的 Eloquent 事件直接广播到客户端应用？请查阅 Laravel 的 [模型事件广播](/docs/{{version}}/broadcasting#model-broadcasting)。
@@ -1798,7 +1798,7 @@ class User extends Authenticatable
 > 通过 Eloquent 执行批量更新或删除查询时，受影响模型的 `saved`、`updated`、`deleting` 和 `deleted` 模型事件不会被派发。这是因为执行批量更新或删除时模型从未被实际检索。
 
 <a name="events-using-closures"></a>
-### Using Closures
+### 使用闭包
 
 除了使用自定义事件类，你还可以注册在各类模型事件派发时执行的闭包。通常，你应该在模型的 `booted` 方法中注册这些闭包：
 
@@ -1834,10 +1834,10 @@ static::created(queueable(function (User $user) {
 ```
 
 <a name="observers"></a>
-### Observers
+### 观察者
 
 <a name="defining-observers"></a>
-#### Defining Observers
+#### 定义观察者
 
 如果你在某个给定模型上监听许多事件，可以使用观察者（observer）将所有监听器归并到单个类中。观察者类的方法名反映了你希望监听的 Eloquent 事件。这些方法中的每一个都只接收受影响模型作为其唯一参数。`make:observer` Artisan 命令是创建新观察者类最简单的方式：
 
@@ -1930,7 +1930,7 @@ public function boot(): void
 > 观察者还可以监听其他事件，例如 `saving` 和 `retrieved`。这些事件在 [events](#events) 文档中有说明。
 
 <a name="observers-and-database-transactions"></a>
-#### Observers and Database Transactions
+#### 观察者与数据库事务
 
 当模型在数据库事务内部被创建时，你可能希望指示观察者在数据库事务提交之后才执行其事件处理器。你可以通过在观察者上实现 `ShouldHandleEventsAfterCommit` 接口来实现。如果数据库事务没有进行中，事件处理器会立即执行：
 
@@ -1955,7 +1955,7 @@ class UserObserver implements ShouldHandleEventsAfterCommit
 ```
 
 <a name="muting-events"></a>
-### Muting Events
+### 静默事件
 
 你可能偶尔需要临时「静默」模型派发的全部事件。可以使用 `withoutEvents` 方法来实现。`withoutEvents` 方法接受唯一一个闭包作为参数。在该闭包内执行的任何代码都不会派发模型事件，且闭包返回的任何值都会由 `withoutEvents` 方法返回：
 
@@ -1970,7 +1970,7 @@ $user = User::withoutEvents(function () {
 ```
 
 <a name="saving-a-single-model-without-events"></a>
-#### Saving a Single Model Without Events
+#### 不触发事件保存单个模型
 
 有时你可能希望「保存」一个给定模型而不派发任何事件。可以使用 `saveQuietly` 方法来实现：
 

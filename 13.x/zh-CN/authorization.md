@@ -1,7 +1,7 @@
 # 授权
 
 - [简介](#introduction)
-- [Gates](#gates)
+- [守卫](#gates)
     - [编写 Gates](#writing-gates)
     - [授权操作](#authorizing-actions-via-gates)
     - [Gate 响应](#gate-responses)
@@ -34,7 +34,7 @@ Laravel 提供了两种主要的授权操作方式：[Gates](#gates) 和[策略]
 在构建应用程序时，你不需要在仅使用 Gates 或仅使用策略之间做出选择。大多数应用程序很可能包含 Gates 和策略的某种混合，这完全没有问题！Gates 最适用于与任何模型或资源无关的操作，例如查看管理员仪表盘。相反，当你希望针对特定模型或资源授权操作时，应使用策略。
 
 <a name="gates"></a>
-## Gates
+## 守卫
 
 <a name="writing-gates"></a>
 ### 编写 Gates

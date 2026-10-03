@@ -4,7 +4,7 @@
 - [可用方法](#available-methods)
 - [其他工具](#other-utilities)
     - [基准测试](#benchmarking)
-    - [Lottery](#lottery)
+    - [抽奖（Lottery）](#lottery)
 
 <a name="introduction"></a>
 ## 简介
@@ -4733,7 +4733,7 @@ Benchmark::dd(fn () => User::count(), iterations: 10); // 0.5 ms
 ```
 
 <a name="lottery"></a>
-### Lottery
+### 抽奖（Lottery）
 
 Laravel 的 lottery 类可用于根据一组给定的赔率执行回调。当你只想对传入请求的一部分执行代码时，这尤其有用：
 

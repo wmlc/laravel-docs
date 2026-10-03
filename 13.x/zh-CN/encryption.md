@@ -1,22 +1,22 @@
-# Encryption
+# 加密
 
-- [Introduction](#introduction)
-- [Configuration](#configuration)
-    - [Gracefully Rotating Encryption Keys](#gracefully-rotating-encryption-keys)
-- [Using the Encrypter](#using-the-encrypter)
+- [简介](#introduction)
+- [配置](#configuration)
+    - [平滑轮换加密密钥](#gracefully-rotating-encryption-keys)
+- [使用加密器](#using-the-encrypter)
 
 <a name="introduction"></a>
-## Introduction
+## 简介
 
 Laravel 的加密服务（encryption services）提供了一个简单、便捷的接口，用于通过 OpenSSL 使用 AES-256 与 AES-128 加密算法对文本进行加密和解密。Laravel 的所有加密值都使用消息认证码（MAC，message authentication code）进行签名，因此其底层值在加密后无法被修改或篡改。
 
 <a name="configuration"></a>
-## Configuration
+## 配置
 
 在使用 Laravel 的加密器（encrypter）之前，你必须在 `config/app.php` 配置文件中设置 `key` 配置项。该配置值由 `APP_KEY` 环境变量驱动。你应该使用 `php artisan key:generate` 命令来生成该变量的值，因为 `key:generate` 命令会使用 PHP 的安全随机字节生成器，为你的应用构建一个密码学安全的密钥。通常，`APP_KEY` 环境变量的值会在 [Laravel 安装](/docs/{{version}}/installation) 过程中为你自动生成。
 
 <a name="gracefully-rotating-encryption-keys"></a>
-### Gracefully Rotating Encryption Keys
+### 平滑轮换加密密钥
 
 如果你更改应用的加密密钥，所有已认证的用户会话都会被登出应用。这是因为包括会话 Cookie 在内的每个 Cookie 都由 Laravel 加密。此外，使用旧加密密钥加密的任何数据都将无法再被解密。
 
@@ -32,10 +32,10 @@ APP_PREVIOUS_KEYS="base64:2nLsGFGzyoae2ax3EF2Lyq/hH6QghBGLIq5uL+Gp8/w="
 这种优雅解密（graceful decryption）的方式，使得即使轮换加密密钥，用户也能不受干扰地继续使用你的应用。
 
 <a name="using-the-encrypter"></a>
-## Using the Encrypter
+## 使用加密器
 
 <a name="encrypting-a-value"></a>
-#### Encrypting a Value
+#### 加密一个值
 
 你可以使用 `Crypt` facade 提供的 `encryptString` 方法来加密一个值。所有加密值都使用 OpenSSL 与 AES-256-CBC 密码算法（cipher）进行加密。此外，所有加密值都会使用消息认证码（MAC）进行签名。集成的消息认证码能防止任何被恶意用户篡改过的值被解密：
 
@@ -65,7 +65,7 @@ class DigitalOceanTokenController extends Controller
 ```
 
 <a name="decrypting-a-value"></a>
-#### Decrypting a Value
+#### 解密一个值
 
 你可以使用 `Crypt` facade 提供的 `decryptString` 方法来解密值。如果该值无法被正确解密（例如消息认证码无效），会抛出 `Illuminate\Contracts\Encryption\DecryptException` 异常：
 

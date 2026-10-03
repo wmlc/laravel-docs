@@ -5,7 +5,7 @@
     - [一对一 / Has One](#one-to-one)
     - [一对多 / Has Many](#one-to-many)
     - [一对多（反向）/ Belongs To](#one-to-many-inverse)
-    - [多条中的一条（Has One of Many）](#has-one-of-many)
+    - [多条记录中的一条（Has One of Many）](#has-one-of-many)
     - [远程一对一（Has One Through）](#has-one-through)
     - [远程一对多（Has Many Through）](#has-many-through)
 - [带作用域的关联](#scoped-relationships)
@@ -399,7 +399,7 @@ $posts = Post::whereBelongsTo($user, 'author')->get();
 ```
 
 <a name="has-one-of-many"></a>
-### 多条中的一条（Has One of Many）
+### 多条记录中的一条（Has One of Many）
 
 有时，一个模型可能有许多关联模型，而你只想便捷地检索该关联中「最新」或「最旧」的关联模型。例如，一个 `User` 模型可能与许多 `Order` 模型相关联，但你希望定义一种便捷方式来与用户最近下的订单交互。你可以将 `hasOne` 关联类型与 `ofMany` 系列方法结合使用来实现：
 

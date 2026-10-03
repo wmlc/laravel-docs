@@ -18,7 +18,7 @@
     - [入站转换](#inbound-casting)
     - [转换参数](#cast-parameters)
     - [比较转换值](#comparing-cast-values)
-    - [Castables](#castables)
+    - [可转换对象（Castables）](#castables)
 
 <a name="introduction"></a>
 ## 简介
@@ -1043,7 +1043,7 @@ public function compare(
 ```
 
 <a name="castables"></a>
-### Castables
+### 可转换对象（Castables）
 
 你可能希望允许应用的值对象定义它们自己的自定义转换类。除了将自定义转换类附加到模型之外，你还可以附加一个实现了 `Illuminate\Contracts\Database\Eloquent\Castable` 接口的值对象类：
 

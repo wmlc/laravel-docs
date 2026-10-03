@@ -5,9 +5,9 @@
     - [一对一](#one-to-one)
     - [一对多](#one-to-many)
     - [一对多（反向）/ Belongs To](#one-to-many-inverse)
-    - [多条记录中的一条](#has-one-of-many)
-    - [一对一穿透](#has-one-through)
-    - [一对多穿透](#has-many-through)
+    - [多条记录中的一条（Has One of Many）](#has-one-of-many)
+    - [远程一对一（Has One Through）](#has-one-through)
+    - [远程一对多（Has Many Through）](#has-many-through)
 - [多对多关联](#many-to-many)
     - [获取中间表字段](#retrieving-intermediate-table-columns)
     - [通过中间表字段过滤查询](#filtering-queries-via-intermediate-table-columns)
@@ -48,8 +48,8 @@
 - [一对一](#one-to-one)
 - [一对多](#one-to-many)
 - [多对多](#many-to-many)
-- [一对一穿透](#has-one-through)
-- [一对多穿透](#has-many-through)
+- [远程一对一（Has One Through）](#has-one-through)
+- [远程一对多（Has Many Through）](#has-many-through)
 - [一对一（多态）](#one-to-one-polymorphic-relations)
 - [一对多（多态）](#one-to-many-polymorphic-relations)
 - [多对多（多态）](#many-to-many-polymorphic-relations)
@@ -344,7 +344,7 @@ $posts = Post::whereBelongsTo($user, 'author')->get();
 ```
 
 <a name="has-one-of-many"></a>
-### 多条记录中的一条
+### 多条记录中的一条（Has One of Many）
 
 有时一个模型可能拥有多个关联模型，但你希望轻松获取关联中"最新"或"最旧"的关联模型。例如，`User` 模型可能与多个 `Order` 模型相关联，但你希望定义一种便捷的方式来访问用户最近下的订单。你可以使用 `hasOne` 关联类型结合 `ofMany` 方法来实现：
 
@@ -410,7 +410,7 @@ public function currentPricing()
 ```
 
 <a name="has-one-through"></a>
-### 一对一穿透
+### 远程一对一（Has One Through）
 
 "一对一穿透"关联定义了与另一个模型的一对一关联。但是，这种关联表示声明模型可以通过第三个模型_穿透_匹配另一个模型的一个实例。
 
@@ -501,7 +501,7 @@ return $this->throughCars()->hasOwner();
 ```
 
 <a name="has-many-through"></a>
-### 一对多穿透
+### 远程一对多（Has Many Through）
 
 "一对多穿透"关联提供了一种通过中间关联访问远端关联的便捷方式。例如，假设我们正在构建一个类似 [Laravel Vapor](https://vapor.laravel.com) 的部署平台。`Project` 模型可以通过中间 `Environment` 模型访问多个 `Deployment` 模型。使用此示例，你可以轻松获取给定项目的所有部署。让我们看看定义此关联所需的表：
 

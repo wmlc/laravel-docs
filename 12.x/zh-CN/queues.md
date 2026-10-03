@@ -97,7 +97,7 @@ php artisan queue:work --queue=high,default
 ### 驱动说明与前提条件
 
 <a name="database"></a>
-#### Database
+#### 数据库
 
 要使用 `database` 队列驱动，你需要一张数据库表来存放任务。通常，这已包含在 Laravel 默认的 `0001_01_01_000002_create_jobs_table.php` [数据库迁移](/docs/{{version}}/migrations)中；不过，如果你的应用不包含这个迁移，可以使用 `make:queue-table` Artisan 命令来创建它：
 

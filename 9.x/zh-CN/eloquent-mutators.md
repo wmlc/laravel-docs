@@ -15,7 +15,7 @@
     - [数组 / JSON 序列化](#array-json-serialization)
     - [入站类型转换](#inbound-casting)
     - [类型转换参数](#cast-parameters)
-    - [Castables](#castables)
+    - [可转换对象（Castables）](#castables)
 
 <a name="introduction"></a>
 ## 简介
@@ -788,7 +788,7 @@ protected $casts = [
 ```
 
 <a name="castables"></a>
-### Castables
+### 可转换对象（Castables）
 
 你可能希望允许应用的值对象定义自己的自定义类型转换类。除了将自定义类型转换类附加到模型外，还可以附加一个实现了 `Illuminate\Contracts\Database\Eloquent\Castable` 接口的值对象类：
 

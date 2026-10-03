@@ -6,7 +6,7 @@
      - [安装](#installation)
      - [可用工具](#available-tools)
      - [AI 指南](#ai-guidelines)
-     - [Agent Skills](#agent-skills)
+     - [智能体技能](#agent-skills)
      - [文档搜索](#documentation-search)
      - [与 Agents 集成](#agents-integration)
 
@@ -90,7 +90,7 @@ Boost 包含一套专为 Laravel 生态精心打造的、全面的 AI 指南。�
 当你运行 `boost:install` 时，Boost 会自动检测你的应用使用了哪些包，并将相关的指南组装进你项目的 AI 上下文文件中。
 
 <a name="agent-skills"></a>
-### Agent Skills
+### 智能体技能
 
 [Agent Skills](https://agentskills.io/home) 是轻量级的、有针对性的知识模块，智能体在处理特定领域时可以按需激活。与在前端加载的指南不同，技能仅在相关时才加载详细的模式与最佳实践，从而减少上下文膨胀并提升 AI 生成代码的相关性。
 

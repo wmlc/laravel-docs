@@ -131,7 +131,7 @@ public function handle(Request $request, Closure $next): Response
 > 你应确保 `horizon` 配置文件的 `environments` 部分包含你计划运行 Horizon 的每个[环境](/docs/{{version}}/configuration#environment-configuration)的条目。
 
 <a name="supervisors"></a>
-#### 主管（Supervisor）
+#### 监督者
 
 正如你在 Horizon 的默认配置文件中所见，每个环境可以包含一个或多个"主管"。默认情况下，配置文件将该主管定义为 `supervisor-1`；不过，你可以随意命名你的主管。每个主管主要负责"监管"一组工作进程，并负责在各队列之间均衡工作进程。
 

@@ -1,21 +1,14 @@
-The MIT License (MIT)
+MIT 许可证（MIT）
 
-Copyright (c) Taylor Otwell
+版权所有 (c) Taylor Otwell
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
+特此免费授予任何取得本软件及其相关文档文件（以下称"本软件"）副本的人使用本软件的权利，
+以在不限制本软件的前提下使用本软件，包括无限制地使用、复制、修改、合并、发布、分发、
+再许可和/或销售本软件的副本，并允许向本软件的被许可人提供本软件，但须满足以下条件：
 
-The above copyright notice and this permission notice shall be included in
-all copies or substantial portions of the Software.
+上述版权声明及本许可声明须包含在本软件的所有副本或实质性部分中。
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-THE SOFTWARE.
+本软件按"原样"提供，不附带任何明示或默示的担保，包括但不限于对适销性、特定用途适用性
+及不侵权性的担保。在任何情况下，作者或版权所有者均不对任何索赔、损害赔偿或其他责任
+承担责任，无论该责任源于合同、侵权还是其他原因，也无论是否与本软件的使用或其他行为
+相关。

@@ -6,10 +6,10 @@
    - [基准测试](#benchmarking)
    - [日期](#dates)
    - [延迟函数](#deferred-functions)
-   - [抽奖](#lottery)
-   - [管道](#pipeline)
-   - [休眠](#sleep)
-   - [时间沙箱](#timebox)
+   - [抽奖（Lottery）](#lottery)
+   - [管道（Pipeline）](#pipeline)
+   - [休眠（Sleep）](#sleep)
+   - [时间沙箱（Timebox）](#timebox)
 
 <a name="introduction"></a>
 ## 简介
@@ -2921,7 +2921,7 @@ abstract class TestCase extends BaseTestCase
 ```
 
 <a name="lottery"></a>
-### 抽奖
+### 抽奖（Lottery）
 
 Laravel 的 Lottery 类可用于按一组给定的概率执行回调。当你只想对一部分比例的传入请求执行代码时，这会非常有用：
 
@@ -2967,7 +2967,7 @@ Lottery::determineResultsNormally();
 ```
 
 <a name="pipeline"></a>
-### 管道
+### 管道（Pipeline）
 
 Laravel 的 `Pipeline` Facade 提供了一种便捷方式，把给定输入"传入"一系列可调用类、闭包或 callable 管道，让每个类都有机会检查或修改输入，并调用管道中的下一个 callable：
 
@@ -3009,7 +3009,7 @@ $user = Pipeline::send($user)
 ```
 
 <a name="sleep"></a>
-### 休眠
+### 休眠（Sleep）
 
 Laravel 的 `Sleep` 类是 PHP 原生 `sleep` 和 `usleep` 函数的轻量封装，它在提供更高可测试性的同时，也对外暴露了一套对开发者友好的时间操作 API：
 
@@ -3182,7 +3182,7 @@ $start->diffForHumans(); // 1 second ago
 Laravel 在内部每次需要暂停执行时都会使用 `Sleep` 类。例如，[`retry`](#method-retry) 辅助函数在休眠时会使用 `Sleep` 类，这使得使用该辅助函数时测试性更好。
 
 <a name="timebox"></a>
-### 时间沙箱
+### 时间沙箱（Timebox）
 
 Laravel 的 `Timebox` 类确保给定回调的执行时长始终固定，即使它实际很快就完成执行。这在加密运算和用户身份验证检查等场景中特别有用，因为攻击者可能会利用执行时间的差异来推断敏感信息。
 

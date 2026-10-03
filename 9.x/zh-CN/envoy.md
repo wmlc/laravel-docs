@@ -5,7 +5,7 @@
 - [编写任务](#writing-tasks)
     - [定义任务](#defining-tasks)
     - [多服务器](#multiple-servers)
-    - [设置](#setup)
+    - [前置设置](#setup)
     - [变量](#variables)
     - [故事](#stories)
     - [钩子](#completion-hooks)
@@ -107,7 +107,7 @@ Envoy 允许你轻松地在多台服务器上运行任务。首先，在 `@serve
 ```
 
 <a name="setup"></a>
-### 设置
+### 前置设置
 
 有时，你可能需要在运行 Envoy 任务之前执行一些任意 PHP 代码。可以使用 `@setup` 指令来定义一段在任务之前执行的 PHP 代码：
 

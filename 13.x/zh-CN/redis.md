@@ -8,7 +8,7 @@
 - [与 Redis 交互](#interacting-with-redis)
     - [事务](#transactions)
     - [管道命令](#pipelining-commands)
-- [Pub / Sub](#pubsub)
+- [发布 / 订阅](#pubsub)
 
 <a name="introduction"></a>
 ## 简介
@@ -431,7 +431,7 @@ Facades\Redis::pipeline(function (Redis $pipe) {
 ```
 
 <a name="pubsub"></a>
-## Pub / Sub
+## 发布 / 订阅
 
 Laravel 为 Redis 的 `publish` 和 `subscribe` 命令提供了便捷的接口。这些 Redis 命令允许你监听给定"频道"上的消息。你可以从另一个应用、甚至使用另一种编程语言向该频道发布消息，从而实现应用与进程之间的轻松通信。
 

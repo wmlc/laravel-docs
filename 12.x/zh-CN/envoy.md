@@ -5,9 +5,9 @@
 - [编写任务](#writing-tasks)
     - [定义任务](#defining-tasks)
     - [多服务器](#multiple-servers)
-    - [Setup](#setup)
+    - [前置设置](#setup)
     - [变量](#variables)
-    - [Stories](#stories)
+    - [故事](#stories)
     - [钩子](#completion-hooks)
 - [运行任务](#running-tasks)
     - [确认任务执行](#confirming-task-execution)
@@ -107,7 +107,7 @@ Envoy 允许你轻松地在多台服务器上运行任务。首先，向你的 `
 ```
 
 <a name="setup"></a>
-### Setup
+### 前置设置
 
 有时，你可能需要在运行 Envoy 任务之前执行任意 PHP 代码。你可以使用 `@setup` 指令来定义一段在任务执行之前运行的 PHP 代码：
 
@@ -153,7 +153,7 @@ php vendor/bin/envoy run deploy --branch=master
 ```
 
 <a name="stories"></a>
-### Stories
+### 故事
 
 Story 将一组任务归拢到一个便捷的名称之下。例如，一个 `deploy` story 可以通过在其定义中列出任务名，来运行 `update-code` 和 `install-dependencies` 任务：
 

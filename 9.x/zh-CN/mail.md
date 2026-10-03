@@ -15,7 +15,7 @@
     - [头信息](#headers)
     - [标签与元数据](#tags-and-metadata)
     - [自定义 Symfony Message](#customizing-the-symfony-message)
-- [Markdown Mailable](#markdown-mailables)
+- [Markdown 邮件（Markdown Mailable）](#markdown-mailables)
     - [生成 Markdown Mailable](#generating-markdown-mailables)
     - [编写 Markdown 消息](#writing-markdown-messages)
     - [自定义组件](#customizing-the-components)
@@ -721,7 +721,7 @@ public function envelope()
 ```
 
 <a name="markdown-mailables"></a>
-## Markdown Mailable
+## Markdown 邮件（Markdown Mailable）
 
 Markdown mailable 消息允许你在 mailable 中利用[邮件通知](/docs/{{version}}/notifications#mail-notifications)的预构建模板和组件。由于消息以 Markdown 编写，Laravel 能够为消息渲染美观、响应式的 HTML 模板，同时自动生成纯文本对应版本。
 

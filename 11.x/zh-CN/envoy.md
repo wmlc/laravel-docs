@@ -7,7 +7,7 @@
     - [多台服务器](#multiple-servers)
     - [前置设置](#setup)
     - [变量](#variables)
-    - [Story](#stories)
+    - [故事](#stories)
     - [钩子](#completion-hooks)
 - [运行任务](#running-tasks)
     - [确认任务执行](#confirming-task-execution)
@@ -153,7 +153,7 @@ php vendor/bin/envoy run deploy --branch=master
 ```
 
 <a name="stories"></a>
-### Story
+### 故事
 
 Story 把一组任务归到一个方便调用的名称下。例如，一个 `deploy` story 可以在其定义中列出任务名，从而运行 `update-code` 和 `install-dependencies` 任务：
 

@@ -1,29 +1,29 @@
 # Laravel Envoy
 
-- [Introduction](#introduction)
-- [Installation](#installation)
-- [Writing Tasks](#writing-tasks)
-    - [Defining Tasks](#defining-tasks)
-    - [Multiple Servers](#multiple-servers)
-    - [Setup](#setup)
-    - [Variables](#variables)
-    - [Stories](#stories)
-    - [Hooks](#completion-hooks)
-- [Running Tasks](#running-tasks)
-    - [Confirming Task Execution](#confirming-task-execution)
-- [Notifications](#notifications)
+- [简介](#introduction)
+- [安装](#installation)
+- [编写任务](#writing-tasks)
+    - [定义任务](#defining-tasks)
+    - [多服务器](#multiple-servers)
+    - [前置设置](#setup)
+    - [变量](#variables)
+    - [故事](#stories)
+    - [钩子](#completion-hooks)
+- [运行任务](#running-tasks)
+    - [确认任务执行](#confirming-task-execution)
+- [通知](#notifications)
     - [Slack](#slack)
     - [Discord](#discord)
     - [Telegram](#telegram)
     - [Microsoft Teams](#microsoft-teams)
 
 <a name="introduction"></a>
-## Introduction
+## 简介
 
 [Laravel Envoy](https://github.com/laravel/envoy) 是一个用于在远程服务器上执行常见任务的工具。借助 [Blade](/docs/{{version}}/blade) 风格的语法，你可以轻松地为部署、Artisan 命令等设置任务。目前，Envoy 仅支持 Mac 与 Linux 操作系统。不过，使用 [WSL2](https://docs.microsoft.com/en-us/windows/wsl/install-win10) 也可以在 Windows 上运行。
 
 <a name="installation"></a>
-## Installation
+## 安装
 
 首先，使用 Composer 包管理器将 Envoy 安装到你的项目中：
 
@@ -38,10 +38,10 @@ php vendor/bin/envoy
 ```
 
 <a name="writing-tasks"></a>
-## Writing Tasks
+## 编写任务
 
 <a name="defining-tasks"></a>
-### Defining Tasks
+### 定义任务
 
 任务是 Envoy 的基本构建块（building block）。任务定义了在调用任务时应该在你的远程服务器上执行的 Shell 命令。例如，你可以定义一个任务，在所有应用队列工作服务器上执行 `php artisan queue:restart` 命令。
 
@@ -59,7 +59,7 @@ php vendor/bin/envoy
 如你所见，文件顶部定义了一个 `@servers` 数组，让你可以通过任务声明中的 `on` 选项来引用这些服务器。`@servers` 声明应始终写在一行内。在 `@task` 声明中，你应该放置调用任务时应在服务器上执行的 Shell 命令。
 
 <a name="local-tasks"></a>
-#### Local Tasks
+#### 本地任务
 
 你可以将服务器的 IP 地址指定为 `127.0.0.1`，从而强制脚本在你的本地计算机上运行：
 
@@ -68,7 +68,7 @@ php vendor/bin/envoy
 ```
 
 <a name="importing-envoy-tasks"></a>
-#### Importing Envoy Tasks
+#### 导入 Envoy 任务
 
 使用 `@import` 指令，你可以导入其他 Envoy 文件，将其中的 story 与任务添加到你的文件中。导入文件后，你就可以像执行自己 Envoy 文件中定义的任务一样执行它们包含的任务：
 
@@ -77,7 +77,7 @@ php vendor/bin/envoy
 ```
 
 <a name="multiple-servers"></a>
-### Multiple Servers
+### 多服务器
 
 Envoy 允许你轻松地在多台服务器上运行任务。首先，在你的 `@servers` 声明中添加更多服务器。每台服务器应被分配一个唯一的名称。定义好额外的服务器后，你可以在任务的 `on` 数组中列出每台服务器：
 
@@ -92,7 +92,7 @@ Envoy 允许你轻松地在多台服务器上运行任务。首先，在你的 `
 ```
 
 <a name="parallel-execution"></a>
-#### Parallel Execution
+#### 并行执行
 
 默认情况下，任务会在各台服务器上串行执行。换句话说，任务会在第一台服务器上运行完成，才会继续在第二台服务器上执行。如果你希望在多台服务器上并行运行任务，可以在任务声明中添加 `parallel` 选项：
 
@@ -107,7 +107,7 @@ Envoy 允许你轻松地在多台服务器上运行任务。首先，在你的 `
 ```
 
 <a name="setup"></a>
-### Setup
+### 前置设置
 
 有时，你可能需要在运行 Envoy 任务之前执行任意 PHP 代码。你可以使用 `@setup` 指令定义一个应该在任务执行前运行的 PHP 代码块：
 
@@ -128,7 +128,7 @@ Envoy 允许你轻松地在多台服务器上运行任务。首先，在你的 `
 ```
 
 <a name="variables"></a>
-### Variables
+### 变量
 
 如果需要，你可以在调用 Envoy 时在命令行中指定参数，从而将它们传递给 Envoy 任务：
 
@@ -153,7 +153,7 @@ php vendor/bin/envoy run deploy --branch=master
 ```
 
 <a name="stories"></a>
-### Stories
+### 故事
 
 Stories 将一组任务归到一个方便的名称下。例如，一个 `deploy` story 可以通过在其定义中列出任务名来运行 `update-code` 与 `install-dependencies` 任务：
 
@@ -183,7 +183,7 @@ php vendor/bin/envoy run deploy
 ```
 
 <a name="completion-hooks"></a>
-### Hooks
+### 钩子
 
 当任务和 story 运行时，会执行若干钩子（hook）。Envoy 支持的钩子类型有 `@before`、`@after`、`@error`、`@success` 与 `@finished`。这些钩子中的所有代码都会被当作 PHP 解释并在本地执行，而非在任务交互的远程服务器上执行。
 
@@ -253,7 +253,7 @@ php vendor/bin/envoy run deploy
 ```
 
 <a name="running-tasks"></a>
-## Running Tasks
+## 运行任务
 
 要运行定义在应用 `Envoy.blade.php` 文件中的任务或 story，请执行 Envoy 的 `run` 命令，并传入你想要执行的任务或 story 名称。Envoy 会执行该任务，并在任务运行时显示来自远程服务器的输出：
 
@@ -262,7 +262,7 @@ php vendor/bin/envoy run deploy
 ```
 
 <a name="confirming-task-execution"></a>
-### Confirming Task Execution
+### 确认任务执行
 
 如果你希望在服务器上运行某个给定任务之前弹出确认提示，应该在任务声明中添加 `confirm` 指令。该选项对于破坏性操作尤其有用：
 
@@ -275,7 +275,7 @@ php vendor/bin/envoy run deploy
 ```
 
 <a name="notifications"></a>
-## Notifications
+## 通知
 
 <a name="slack"></a>
 ### Slack

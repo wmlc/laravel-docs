@@ -40,7 +40,7 @@
 ### 驱动前提条件
 
 <a name="prerequisites-database"></a>
-#### Database
+#### 数据库
 
 使用 `database` 缓存驱动时，你需要设置一个表来存放缓存数据。下面是该表的 `Schema` 声明示例：
 

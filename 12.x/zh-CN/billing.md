@@ -57,7 +57,7 @@
     - [即将到来的发票](#upcoming-invoices)
     - [预览订阅发票](#previewing-subscription-invoices)
     - [生成发票 PDF](#generating-invoice-pdfs)
-- [Checkout](#checkout)
+- [结账](#checkout)
     - [产品结账](#product-checkouts)
     - [单次收费结账](#single-charge-checkouts)
     - [订阅结账](#subscription-checkouts)
@@ -2241,7 +2241,7 @@ class ApiInvoiceRenderer implements InvoiceRenderer
 实现发票渲染器契约之后，你应当更新应用 `config/cashier.php` 配置文件中的 `cashier.invoices.renderer` 配置值。该配置值应当设置为你的自定义渲染器实现的类名。
 
 <a name="checkout"></a>
-## Checkout
+## 结账
 
 Cashier Stripe 还支持 [Stripe Checkout](https://stripe.com/payments/checkout)。Stripe Checkout 提供了一个预构建的托管支付页面，免去了实现自定义收款页面的痛苦。
 

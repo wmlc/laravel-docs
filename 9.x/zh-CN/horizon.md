@@ -82,7 +82,7 @@ php artisan horizon:install
 > 你应该确保 `horizon` 配置文件的 `environments` 部分包含你计划运行 Horizon 的每个[环境](/docs/{{version}}/configuration#environment-configuration)的条目。
 
 <a name="supervisors"></a>
-#### Supervisor
+#### 监督者
 
 正如 Horizon 默认配置文件所示，每个环境可以包含一个或多个 "supervisor"。默认情况下，配置文件将此 supervisor 定义为 `supervisor-1`；不过，你可以随意命名 supervisor。每个 supervisor 本质上负责"监督"一组工作进程，并处理工作进程在队列之间的均衡。
 
