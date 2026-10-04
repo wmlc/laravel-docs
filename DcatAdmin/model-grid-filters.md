@@ -43,7 +43,7 @@ $grid->filter(function (Grid\Filter $filter) {
 ```
 效果
 
-![](https://cdn.learnku.com/uploads/images/202004/26/38389/3g9EdvZTQA.png!large)
+<a href="./images/3g9EdvZTQA.png" target="_blank"><img class="img" src="./images/3g9EdvZTQA.png"></a>
 
 
 ### panel
@@ -61,7 +61,7 @@ $grid->filter(function (Grid\Filter $filter) {
 ```
 效果
 
-![](https://cdn.learnku.com/uploads/images/202004/26/38389/vkPFs0Hnil.png!large)
+<a href="./images/vkPFs0Hnil.png" target="_blank"><img class="img" src="./images/vkPFs0Hnil.png"></a>
 
 
 ### 自定义布局 (view)

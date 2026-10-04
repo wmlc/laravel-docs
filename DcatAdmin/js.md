@@ -135,7 +135,7 @@ Dcat.success('更新成功', null, {
 });
 ```
 
-![](https://cdn.learnku.com/uploads/images/202004/26/38389/zmB4EPhS3u.png!large)
+<a href="./images/zmB4EPhS3u.png" target="_blank"><img class="img" src="./images/zmB4EPhS3u.png"></a>
 
 
 ### error
@@ -201,7 +201,7 @@ Dcat.confirm('确认要删除这行数据吗？', null, function () {
     $.post(...);
 });
 ```
-![](https://cdn.learnku.com/uploads/images/202004/26/38389/lp40C74OtV.png!large)
+<a href="./images/lp40C74OtV.png" target="_blank"><img class="img" src="./images/lp40C74OtV.png"></a>
 
 
 
@@ -216,7 +216,7 @@ Dcat.swal.success('标题', '内容', {
     ...
 });
 ```
-![](https://cdn.learnku.com/uploads/images/202004/26/38389/OrhZ4dvA5R.png!large)
+<a href="./images/OrhZ4dvA5R.png" target="_blank"><img class="img" src="./images/OrhZ4dvA5R.png"></a>
 
 
 ### error
@@ -230,7 +230,7 @@ Dcat.swal.error('标题', '内容', {
     ...
 });
 ```
-![](https://cdn.learnku.com/uploads/images/202004/26/38389/lnp47PDecK.png!large)
+<a href="./images/lnp47PDecK.png" target="_blank"><img class="img" src="./images/lnp47PDecK.png"></a>
 
 
 ### warning
@@ -301,7 +301,7 @@ setTimeout(function () {
 
 效果
 
-![](https://cdn.learnku.com/uploads/images/202004/26/38389/FIWAUFg1qn.png!large)
+<a href="./images/FIWAUFg1qn.png" target="_blank"><img class="img" src="./images/FIWAUFg1qn.png"></a>
 
 
 更改loading图标的颜色
@@ -312,7 +312,7 @@ Dcat.loading({
     color: Dcat.color.primary,
 });
 ```
-![](https://cdn.learnku.com/uploads/images/202004/26/38389/WPIC4wwq5Q.png!large)
+<a href="./images/WPIC4wwq5Q.png" target="_blank"><img class="img" src="./images/WPIC4wwq5Q.png"></a>
 
 
 ### 附着于指定元素
@@ -348,7 +348,7 @@ $('#card').loading({
 
 效果
 
-![](https://cdn.learnku.com/uploads/images/202004/26/38389/ziHL5feEAV.png!large)
+<a href="./images/ziHL5feEAV.png" target="_blank"><img class="img" src="./images/ziHL5feEAV.png"></a>
 
 
 
@@ -363,7 +363,7 @@ $('#submit-button').buttonLoading(false);
 ```
 
 效果
-![](https://cdn.learnku.com/uploads/images/202004/26/38389/rNMFWAHPqJ.png!large)
+<a href="./images/rNMFWAHPqJ.png" target="_blank"><img class="img" src="./images/rNMFWAHPqJ.png"></a>
 
 
 ### a标签
@@ -379,7 +379,7 @@ $('a').buttonLoading();
 $('a').buttonLoading(false);
 ```
 效果
-![](https://cdn.learnku.com/uploads/images/202004/26/38389/IE8kGdupKW.png!large)
+<a href="./images/IE8kGdupKW.png" target="_blank"><img class="img" src="./images/IE8kGdupKW.png"></a>
 
 
 
@@ -560,8 +560,8 @@ $('#xx-form').form({
 
 效果
 
-![](https://cdn.learnku.com/uploads/images/202004/26/38389/wJxcYaC9GP.png!large)
-![](https://cdn.learnku.com/uploads/images/202004/26/38389/qdXUaNEMSQ.png!large)
+<a href="./images/wJxcYaC9GP.png" target="_blank"><img class="img" src="./images/wJxcYaC9GP.png"></a>
+<a href="./images/qdXUaNEMSQ.png" target="_blank"><img class="img" src="./images/qdXUaNEMSQ.png"></a>
 
 <a name="extend-validator"></a>
 #### 扩展验证规则

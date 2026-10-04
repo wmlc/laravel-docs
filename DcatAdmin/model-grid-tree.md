@@ -3,7 +3,7 @@
 树状表格支持分页和点击加载功能，特别适合用来展示数据量较大的多层级结构数据。
 
 <a href="http://103.39.211.179:8080/admin/tree" target="_blank">
-    <img class="img img-full" src="{{public}}/assets/img/screenshots/grid-tree.png">
+    <img class="img img-full" src="./images/grid-tree.png">
 </a>
 
 ### 表结构和模型

@@ -148,8 +148,8 @@ class MyController
 
 效果
 
-<a href="{{public}}/assets/img/screenshots/widget-bar.png" target="_blank">
-    <img src="{{public}}/assets/img/screenshots/widget-bar.png"  style="box-shadow:0 1px 6px 1px rgba(0, 0, 0, 0.12)" width="100%" >
+<a href="./images/widget-bar.png" target="_blank">
+    <img src="./images/widget-bar.png"  style="box-shadow:0 1px 6px 1px rgba(0, 0, 0, 0.12)" width="100%" >
 </a>
 
 ### 图表与后端API交互
@@ -311,8 +311,8 @@ class MyController
 
 效果
 
-<a href="{{public}}/assets/img/screenshots/widget-bar2.png" target="_blank">
-    <img src="{{public}}/assets/img/screenshots/widget-bar2.png"  style="box-shadow:0 1px 6px 1px rgba(0, 0, 0, 0.12)" width="100%" >
+<a href="./images/widget-bar2.png" target="_blank">
+    <img src="./images/widget-bar2.png"  style="box-shadow:0 1px 6px 1px rgba(0, 0, 0, 0.12)" width="100%" >
 </a>
 
 <a href="js"></a>

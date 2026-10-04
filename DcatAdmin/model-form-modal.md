@@ -135,8 +135,8 @@ class RoleController
 ```
 
 #### 效果
-<a href="{{public}}/assets/img/screenshots/form-modal.png" target="_blank">
-    <img style="box-shadow:0 1px 6px 1px rgba(0, 0, 0, 0.12)" width="100%" src="{{public}}/assets/img/screenshots/form-modal.png">
+<a href="./images/form-modal.png" target="_blank">
+    <img style="box-shadow:0 1px 6px 1px rgba(0, 0, 0, 0.12)" width="100%" src="./images/form-modal.png">
 </a>
 
 ### 功能接口
@@ -273,8 +273,8 @@ Form::dialog('编辑角色')
 数据表单的弹窗功能通常需要结合一个资源控制器去实现，相对会比较复杂一点，所以系统也内置了另外一种更简便的表单弹窗功能，使用方法请参考[工具表单-弹窗](widgets-form.md#modal)。
 
 
-<a href="{{public}}/assets/img/screenshots/modal-widget-form.png" target="_blank">
-    <img class="img img-full" src="{{public}}/assets/img/screenshots/modal-widget-form.png">
+<a href="./images/modal-widget-form.png" target="_blank">
+    <img class="img img-full" src="./images/modal-widget-form.png">
 </a>
 
 

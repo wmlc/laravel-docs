@@ -214,7 +214,7 @@ $grid->column('approved')->bool(['Y' => true, 'N' => false]);
 ```
 
 效果
-![](https://cdn.learnku.com/uploads/images/202007/12/38389/U0OSrJwzyt.png!large)
+<a href="./images/U0OSrJwzyt.png" target="_blank"><img class="img" src="./images/U0OSrJwzyt.png"></a>
 
 
 
@@ -240,7 +240,7 @@ $grid->column('state')
 ```
 
 效果
-![](https://cdn.learnku.com/uploads/images/202004/30/38389/ByUqo6bZc8.png!large)
+<a href="./images/ByUqo6bZc8.png" target="_blank"><img class="img" src="./images/ByUqo6bZc8.png"></a>
 
 
 <a name="expand"></a>
@@ -324,7 +324,7 @@ $grid->post->expand(function () {
 
 效果
 
-![](https://cdn.learnku.com/uploads/images/202006/14/38389/KMHagem4OZ.gif!large)
+<a href="./images/KMHagem4OZ.gif" target="_blank"><img class="img" src="./images/KMHagem4OZ.gif"></a>
 
 
 #### 异步加载工具表单
@@ -466,7 +466,7 @@ $grid->post->modal(function ($modal) {
 ```
 
 效果
-![](https://cdn.learnku.com/uploads/images/202006/14/38389/DvvyZUTXpG.gif!large)
+<a href="./images/DvvyZUTXpG.gif" target="_blank"><img class="img" src="./images/DvvyZUTXpG.gif"></a>
 
 
 
@@ -572,7 +572,7 @@ $grid->permissions->showTreeInDialog(function (Grid\Displayers\DialogTree $tree)
     }
 });
 ```
-![](https://cdn.learnku.com/uploads/images/202004/26/38389/s1htW08Iko.png!large)
+<a href="./images/s1htW08Iko.png" target="_blank"><img class="img" src="./images/s1htW08Iko.png"></a>
 
 
 ### 内容映射 (using)
@@ -831,7 +831,7 @@ protected function grid()
 
 效果
 
-![](https://cdn.learnku.com/uploads/images/202005/17/38389/g8F7p8gnsE.png!large)
+<a href="./images/g8F7p8gnsE.png" target="_blank"><img class="img" src="./images/g8F7p8gnsE.png"></a>
 
 
 ## 帮助方法

@@ -501,8 +501,8 @@ class UserTable extends LazyRenderable
 
 效果
 
-<a href="https://cdn.learnku.com/uploads/images/202008/23/38389/P5hZXiqAj9.gif!large" target="_blank">
-![](https://cdn.learnku.com/uploads/images/202008/23/38389/P5hZXiqAj9.gif!large)
+<a href="./images/P5hZXiqAj9.gif" target="_blank">
+<a href="./images/P5hZXiqAj9.gif" target="_blank"><img class="img" src="./images/P5hZXiqAj9.gif"></a>
 </a>
 
 ### 设置选中后将保存到表单的字段和显示的字段
@@ -604,7 +604,7 @@ $form->autocomplete($column[, $label])->groups([
 ```
 
 效果如下
-![](https://cdn.learnku.com/uploads/images/202112/12/38389/ArVNSvChag.png!large)
+<a href="./images/ArVNSvChag.png" target="_blank"><img class="img" src="./images/ArVNSvChag.png"></a>
 
 ### 从远程API获取数据
 
@@ -1297,7 +1297,7 @@ $form->tree('xxx')
 
 效果
 
-![](https://cdn.learnku.com/uploads/images/202104/30/38389/oChwzky2BT.gif!large)
+<a href="./images/oChwzky2BT.gif" target="_blank"><img class="img" src="./images/oChwzky2BT.gif"></a>
 
 
 
@@ -1426,7 +1426,7 @@ return Form::make($builder, function (Form $form) {
 
 效果
 
-![]({{public}}/assets/img/screenshots/has-many.png)
+<a href="./images/has-many.png" target="_blank"><img class="img" src="./images/has-many.png"></a>
 
 
 <a name="has-many-table"></a>
@@ -1443,8 +1443,8 @@ $form->hasMany('paintings', function (Form\NestedForm $form) {
 ```
 效果
 
-<a href="{{public}}/assets/img/screenshots/has-many-table.png" target="_blank">
-    <img  src="{{public}}/assets/img/screenshots/has-many-table.png" style="box-shadow:0 1px 6px 1px rgba(0, 0, 0, 0.12)" width="100%">
+<a href="./images/has-many-table.png" target="_blank">
+    <img  src="./images/has-many-table.png" style="box-shadow:0 1px 6px 1px rgba(0, 0, 0, 0.12)" width="100%">
 </a>
 
 

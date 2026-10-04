@@ -24,8 +24,8 @@ $radio = Radio::make($name, $options)->check(1); // 选中第一个选项
 
 效果
 
-<a href="{{public}}/assets/img/screenshots/radio-1.png" target="_blank">
-    <img src="{{public}}/assets/img/screenshots/radio-1.png"  style="box-shadow:0 1px 6px 1px rgba(0, 0, 0, 0.12)" >
+<a href="./images/radio-1.png" target="_blank">
+    <img src="./images/radio-1.png"  style="box-shadow:0 1px 6px 1px rgba(0, 0, 0, 0.12)" >
 </a>
 
 ### 显示在同一行 (inline)
@@ -45,8 +45,8 @@ $radio = Radio::make($name, $options)->check(1)->inline();
 ```
 效果
 
-<a href="{{public}}/assets/img/screenshots/radio-2.png" target="_blank">
-    <img src="{{public}}/assets/img/screenshots/radio-2.png"  style="box-shadow:0 1px 6px 1px rgba(0, 0, 0, 0.12)" >
+<a href="./images/radio-2.png" target="_blank">
+    <img src="./images/radio-2.png"  style="box-shadow:0 1px 6px 1px rgba(0, 0, 0, 0.12)" >
 </a>
 
 ### 设置禁选的选项 (disable)
@@ -67,8 +67,8 @@ $radio = Radio::make($name, $options)->inline()->disable([2, 3]);
 ```
 效果
 
-<a href="{{public}}/assets/img/screenshots/radio-3.png" target="_blank">
-    <img src="{{public}}/assets/img/screenshots/radio-3.png"  style="box-shadow:0 1px 6px 1px rgba(0, 0, 0, 0.12)" >
+<a href="./images/radio-3.png" target="_blank">
+    <img src="./images/radio-3.png"  style="box-shadow:0 1px 6px 1px rgba(0, 0, 0, 0.12)" >
 </a>
 
 ### 设置样式 (style)
@@ -118,8 +118,8 @@ $checkbox = Checkbox::make($name, $options)
 
 效果
 
-<a href="{{public}}/assets/img/screenshots/checkbox-1.png" target="_blank">
-    <img src="{{public}}/assets/img/screenshots/checkbox-1.png"  style="box-shadow:0 1px 6px 1px rgba(0, 0, 0, 0.12)" >
+<a href="./images/checkbox-1.png" target="_blank">
+    <img src="./images/checkbox-1.png"  style="box-shadow:0 1px 6px 1px rgba(0, 0, 0, 0.12)" >
 </a>
 
 ### 全选

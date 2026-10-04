@@ -4,8 +4,8 @@
 
 表单字段动态显示是指，在选择表单项的指定的选项时，联动显示其他的表单项。
 
-<a href="{{public}}/assets/img/screenshots/form-when.gif" target="_blank">
-    <img class="img" src="{{public}}/assets/img/screenshots/form-when.gif" />
+<a href="./images/form-when.gif" target="_blank">
+    <img class="img" src="./images/form-when.gif" />
 </a>    
 
 

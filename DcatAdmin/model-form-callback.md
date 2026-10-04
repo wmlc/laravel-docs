@@ -260,7 +260,7 @@ $form->submitted(function ($form) {
 });
 ```
 
-![](https://cdn.learnku.com/uploads/images/202109/14/38389/S0KtwNRYGK.png!large)
+<a href="./images/S0KtwNRYGK.png" target="_blank"><img class="img" src="./images/S0KtwNRYGK.png"></a>
 
 ### 返回字段验证出错信息
 

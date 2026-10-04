@@ -14,7 +14,7 @@ $grid->column('nickname')->editable(true);
 ```
 
 效果
-![](https://cdn.learnku.com/uploads/images/202109/14/38389/mX4Za4nj1y.png!large)
+<a href="./images/mX4Za4nj1y.png" target="_blank"><img class="img" src="./images/mX4Za4nj1y.png"></a>
 
 
 ### 开关 (switch)
@@ -104,7 +104,7 @@ $grid->column('switch_group')->switchGroup([...], true);
 ```
 
 
-![]({{public}}/assets/img/screenshots/grid-column-switch-group.png)
+<a href="./images/grid-column-switch-group.png" target="_blank"><img class="img" src="./images/grid-column-switch-group.png"></a>
 
 
 ### 下拉选框 (select)
@@ -128,7 +128,7 @@ $grid->column('options')->select([...], true);
 ```
 
 
-![]({{public}}/assets/img/screenshots/grid-column-select.png)
+<a href="./images/grid-column-select.png" target="_blank"><img class="img" src="./images/grid-column-select.png"></a>
 
 ### 单选框 (radio)
 ```php
@@ -148,7 +148,7 @@ $grid->column('options')->radio([
 $grid->column('options')->radio([...], true);
 ```
 
-![](https://cdn.learnku.com/uploads/images/202109/14/38389/6Bo4phkB3f.png!large)
+<a href="./images/6Bo4phkB3f.png" target="_blank"><img class="img" src="./images/6Bo4phkB3f.png"></a>
 
 ### 多选框 (checkbox)
 ```php
@@ -169,7 +169,7 @@ $grid->column('options')->checkbox([
 $grid->column('options')->checkbox([...], true);
 ```
 
-![]({{public}}/assets/img/screenshots/grid-column-checkbox.png)
+<a href="./images/grid-column-checkbox.png" target="_blank"><img class="img" src="./images/grid-column-checkbox.png"></a>
 
 
 ### textarea
@@ -178,4 +178,4 @@ $grid->column('options')->checkbox([...], true);
 $grid->column('...')->textarea();
 ```
 
-![](https://cdn.learnku.com/uploads/images/202109/14/38389/wViO5EoPBg.png!large)
+<a href="./images/wViO5EoPBg.png" target="_blank"><img class="img" src="./images/wViO5EoPBg.png"></a>

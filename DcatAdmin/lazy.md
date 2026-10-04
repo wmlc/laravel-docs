@@ -97,8 +97,8 @@ public function index(Content $content)
 
 效果
 
-<a href="https://cdn.learnku.com/uploads/images/202008/20/38389/Z1X46kZLtM.gif!large" target="_blank">
-![](https://cdn.learnku.com/uploads/images/202008/20/38389/Z1X46kZLtM.gif!large)
+<a href="./images/Z1X46kZLtM.gif" target="_blank">
+<a href="./images/Z1X46kZLtM.gif" target="_blank"><img class="img" src="./images/Z1X46kZLtM.gif"></a>
 </a>
 
 
@@ -316,8 +316,8 @@ public function index(Content $content)
 
 效果
 
-<a href="https://cdn.learnku.com/uploads/images/202008/23/38389/HiAMIvKext.gif!large" target="_blank">
-    ![](https://cdn.learnku.com/uploads/images/202008/23/38389/HiAMIvKext.gif!large)
+<a href="./images/HiAMIvKext.gif" target="_blank">
+    <a href="./images/HiAMIvKext.gif" target="_blank"><img class="img" src="./images/HiAMIvKext.gif"></a>
 </a>
 
 
@@ -523,7 +523,7 @@ public function index(Content $content)
 
 效果
 
-![](https://cdn.learnku.com/uploads/images/202008/20/38389/C8InwPTsQG.gif!large)
+<a href="./images/C8InwPTsQG.gif" target="_blank"><img class="img" src="./images/C8InwPTsQG.gif"></a>
 
 
 当然异步表单实例，也可以在其他组件中使用

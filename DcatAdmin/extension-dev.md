@@ -90,8 +90,8 @@ php artisan admin:ext-make dcat-admin/operation-log --namespace="Dcat\Admin\Oper
 
 扩展创建成功之后就可以在管理页面`http://localhost/admin/auth/extensions` 看到新创建的扩展了，效果如下
 
-<a href="{{public}}/assets/img/2x/ext-1.png" target="_blank">
-    ![]({{public}}/assets/img/2x/ext-1.png)
+<a href="./images/ext-1.png" target="_blank">
+    <a href="./images/ext-1.png" target="_blank"><img class="img" src="./images/ext-1.png"></a>
 </a>
 
 然后我们分别点击扩展对应的 `更新至1.0.0版本` 以及 `启用` 按钮，就可以使这个扩展生效了。
@@ -373,8 +373,8 @@ class Setting extends Form
 
 以上设置完成之后我们就可以在扩展管理页面保存自定义参数了
 
-<a href="{{public}}/assets/img/2x/ext-2.png" target="_blank">
-    ![]({{public}}/assets/img/2x/ext-2.png)
+<a href="./images/ext-2.png" target="_blank">
+    <a href="./images/ext-2.png" target="_blank"><img class="img" src="./images/ext-2.png"></a>
 </a>
 
 配置参数读取用法如下，我们可以在中间件 `LogOperation` 中使用这些参数

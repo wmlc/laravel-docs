@@ -322,7 +322,7 @@ $content->row(function (Row $row) {
 
 效果如下
 
-![](https://cdn.learnku.com/uploads/images/202102/05/38389/4YlO8aOPCW.jpg!large)
+<a href="./images/4YlO8aOPCW.jpg" target="_blank"><img class="img" src="./images/4YlO8aOPCW.jpg"></a>
 
 
 
@@ -600,7 +600,7 @@ public function index(Content $content)
 
 实现效果如下
 
-![](https://cdn.learnku.com/uploads/images/202005/06/38389/p1lAW4NpQi.png!large)
+<a href="./images/p1lAW4NpQi.png" target="_blank"><img class="img" src="./images/p1lAW4NpQi.png"></a>
 
 
 <a name="bootstrap-styles"></a>

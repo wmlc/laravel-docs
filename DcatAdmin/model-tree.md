@@ -2,7 +2,7 @@
 
 这个功能可以实现一个树状组件，可以用拖拽的方式实现数据的层级、排序等操作，下面是基本的用法。
 
-![](https://cdn.learnku.com/uploads/images/202004/26/38389/RfWVwRHMs7.png!large)
+<a href="./images/RfWVwRHMs7.png" target="_blank"><img class="img" src="./images/RfWVwRHMs7.png"></a>
 
 
 ## 表结构和模型

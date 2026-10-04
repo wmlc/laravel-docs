@@ -2,8 +2,8 @@
 
 ### 多列布局 (column)
 
-<a href="{{public}}/assets/img/screenshots/form-column.png" target="_blank">
-    <img class="img" src="{{public}}/assets/img/screenshots/form-column.png" />
+<a href="./images/form-column.png" target="_blank">
+    <img class="img" src="./images/form-column.png" />
 </a>   
 
 类似于上图的左右两列布局方式，可以参考下面的代码来实现
@@ -77,8 +77,8 @@ $form->row(function (Form\Row $form) {
 ...
 ```
 效果
-<a href="{{public}}/assets/img/screenshots/form-rows.png" target="_blank">
-    <img class="img img-full" src="{{public}}/assets/img/screenshots/form-rows.png">
+<a href="./images/form-rows.png" target="_blank">
+    <img class="img img-full" src="./images/form-rows.png">
 </a>
 
 并且也支持在`hasMany`和`array`表单中使用
@@ -178,7 +178,7 @@ $form->fieldset('分组', function (Form $form) {
 
 效果
 
-![](https://cdn.learnku.com/uploads/images/202005/12/38389/B0tXWUxHDp.png!large)
+<a href="./images/B0tXWUxHDp.png" target="_blank"><img class="img" src="./images/B0tXWUxHDp.png"></a>
 
 
 ### 分块布局 (block)
@@ -227,7 +227,7 @@ $form->block(4, function (Form\BlockForm $form) {
 ```
 
 效果
-<a href="https://cdn.learnku.com/uploads/images/202010/19/38389/AMCtHBcmSQ.jpg!large" target="_blank">
-    <img class="img img-full" src="https://cdn.learnku.com/uploads/images/202010/19/38389/AMCtHBcmSQ.jpg!large">
+<a href="./images/AMCtHBcmSQ.jpg" target="_blank">
+    <img class="img img-full" src="./images/AMCtHBcmSQ.jpg">
 </a>
 

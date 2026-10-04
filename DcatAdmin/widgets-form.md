@@ -476,7 +476,7 @@ $grid->actions([new ResetPassword()]);
 
 效果
 
-![]({{public}}/assets/img/screenshots/modal-widget-form.png)
+<a href="./images/modal-widget-form.png" target="_blank"><img class="img" src="./images/modal-widget-form.png"></a>
 
 
 <a name="batch-modal"></a>

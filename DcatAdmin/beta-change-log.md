@@ -220,7 +220,7 @@ $form->autocomplete($column[, $label])->options(['foo', 'bar', ...]);
 ```
 
 效果如下
-![](https://cdn.learnku.com/uploads/images/202112/12/38389/ArVNSvChag.png!large)
+<a href="./images/ArVNSvChag.png" target="_blank"><img class="img" src="./images/ArVNSvChag.png"></a>
 
 也可以从远程API中获取数据
 ```php
@@ -356,10 +356,10 @@ php artisan admin:update # 不会覆盖翻译文件 menu.php 以及 global.php
 
 当前版本重构了`editable`、`checkbox`和`radio`等三种行内编辑表单的`UI`样式，改为在弹窗中展示表单。并且增加了新的行内编辑表单`textarea`，效果如下：
 
-![](https://cdn.learnku.com/uploads/images/202109/14/38389/mX4Za4nj1y.png!large)
-![](https://cdn.learnku.com/uploads/images/202109/14/38389/9A2GdY3nSx.png!large)
-![](https://cdn.learnku.com/uploads/images/202109/14/38389/6Bo4phkB3f.png!large)
-![](https://cdn.learnku.com/uploads/images/202109/14/38389/wViO5EoPBg.png!large)
+<a href="./images/mX4Za4nj1y.png" target="_blank"><img class="img" src="./images/mX4Za4nj1y.png"></a>
+<a href="./images/9A2GdY3nSx.png" target="_blank"><img class="img" src="./images/9A2GdY3nSx.png"></a>
+<a href="./images/6Bo4phkB3f.png" target="_blank"><img class="img" src="./images/6Bo4phkB3f.png"></a>
+<a href="./images/wViO5EoPBg.png" target="_blank"><img class="img" src="./images/wViO5EoPBg.png"></a>
 
 
 **2.配置文件增加`favicon`参数**
@@ -377,7 +377,7 @@ $form->submitted(function ($form) {
 
 那么将可以在页面中看到如下提示
 
-![](https://cdn.learnku.com/uploads/images/202109/14/38389/S0KtwNRYGK.png!large)
+<a href="./images/S0KtwNRYGK.png" target="_blank"><img class="img" src="./images/S0KtwNRYGK.png"></a>
 
 
 **5.优化`array`、`table`表单在工具表单中的使用**
@@ -672,7 +672,7 @@ php artisan admin:update # 不会覆盖翻译文件 menu.php 以及 global.php
 
 在角色和权限的创建以及编辑页面可以直接绑定菜单，此功能默认开启，可以通过配置参数`admin.menu.role_bind_menu`以及`admin.menu.permission_bind_menu`进行关闭，效果如下
 
-![](https://cdn.learnku.com/uploads/images/202104/30/38389/OUgvZVSA5l.jpg!large)
+<a href="./images/OUgvZVSA5l.jpg" target="_blank"><img class="img" src="./images/OUgvZVSA5l.jpg"></a>
 
 **2.新增`Form\Tree::treeStatus()`方法，允许单独选择父节点**
 
@@ -685,7 +685,7 @@ $form->tree('xxx')
 ```
 
 效果
-![](https://cdn.learnku.com/uploads/images/202104/30/38389/oChwzky2BT.gif!large)
+<a href="./images/oChwzky2BT.gif" target="_blank"><img class="img" src="./images/oChwzky2BT.gif"></a>
 
 ### BUG修复
 
@@ -1263,7 +1263,7 @@ php artisan migrate
 
 设置配置参数 `admin.layout.horizontal_menu` 的值为 `true` 开启此功能，效果如下
 
-![](https://cdn.learnku.com/uploads/images/202102/20/38389/SpmXMujJ3D.png!large)
+<a href="./images/SpmXMujJ3D.png" target="_blank"><img class="img" src="./images/SpmXMujJ3D.png"></a>
 
 **2.权限中间件以及跳过登陆判断时可以填写路由别名并且无需增加前缀**
 
@@ -1376,7 +1376,7 @@ $show->field('...')->files();
 
 效果
 
-![](https://cdn.learnku.com/uploads/images/202102/02/38389/B0a2qZEBUL.png!large)
+<a href="./images/B0a2qZEBUL.png" target="_blank"><img class="img" src="./images/B0a2qZEBUL.png"></a>
 
 
 **4.`Form::input`支持数组批量设置**
@@ -1474,7 +1474,7 @@ $content->row(function (Row $row) {
 
 效果如下
 
-![](https://cdn.learnku.com/uploads/images/202102/05/38389/4YlO8aOPCW.jpg!large)
+<a href="./images/4YlO8aOPCW.jpg" target="_blank"><img class="img" src="./images/4YlO8aOPCW.jpg"></a>
 
 **11.表格删除数据后保留URL的get参数**
 
@@ -1574,7 +1574,7 @@ admin_exit(
 
 效果如下
 
-![](https://cdn.learnku.com/uploads/images/202101/11/38389/FLg6C7kwRq.png!large)
+<a href="./images/FLg6C7kwRq.png" target="_blank"><img class="img" src="./images/FLg6C7kwRq.png"></a>
 
 用法2，返回 `json` 格式数据，此用法经常用于表单提交数据的`api`请求拦截，或`Action`的`api`请求拦截
 

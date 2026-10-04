@@ -17,11 +17,11 @@
 
 部分主题色预览
 
-![](images/p1lAW4NpQi.png)
+<a href="./images/p1lAW4NpQi.png" target="_blank"><img class="img" src="./images/p1lAW4NpQi.png"></a>
 
-![](images/ISATQMYO0i.png)
+<a href="./images/ISATQMYO0i.png" target="_blank"><img class="img" src="./images/ISATQMYO0i.png"></a>
 
-![](images/GBkt9jYnW0.png)
+<a href="./images/GBkt9jYnW0.png" target="_blank"><img class="img" src="./images/GBkt9jYnW0.png"></a>
 
 <a name="custom"></a>
 ### 自定义主题配色
@@ -116,7 +116,7 @@ Dcat\Admin\Color::extend('orange', [
 <a name="darkmode"></a>
 ### 深色模式
 
-![]({{public}}/assets/img/screenshots/users-dark.png)
+<a href="./images/users-dark.png" target="_blank"><img class="img" src="./images/users-dark.png"></a>
 
 
 #### 启用切换按钮
@@ -134,7 +134,7 @@ Dcat\Admin\Color::extend('orange', [
 ```
 
 效果如下
-![]({{public}}/assets/img/screenshots/dark-switch.gif)
+<a href="./images/dark-switch.gif" target="_blank"><img class="img" src="./images/dark-switch.gif"></a>
 
 #### 默认深色
 
@@ -169,14 +169,14 @@ Dcat\Admin\Color::extend('orange', [
 
 `light` 效果
 
-![]({{public}}/assets/img/users.jpg)
+<a href="./images/users.jpg" target="_blank"><img class="img" src="./images/users.jpg"></a>
 
 
 `primary` 效果
 
-![]({{public}}/assets/img/users-menu-primary.jpg)
+<a href="./images/users-menu-primary.jpg" target="_blank"><img class="img" src="./images/users-menu-primary.jpg"></a>
 
-![]({{public}}/assets/img/users-green-menu-primary.jpg)
+<a href="./images/users-green-menu-primary.jpg" target="_blank"><img class="img" src="./images/users-green-menu-primary.jpg"></a>
 
 
 ### 菜单布局
@@ -185,7 +185,7 @@ Dcat\Admin\Color::extend('orange', [
 
 设置配置参数 `admin.layout.horizontal_menu` 的值为 `true` 开启此功能，效果如下
 
-![](https://cdn.learnku.com/uploads/images/202102/20/38389/SpmXMujJ3D.png!large)
+<a href="./images/SpmXMujJ3D.png" target="_blank"><img class="img" src="./images/SpmXMujJ3D.png"></a>
 
 
 

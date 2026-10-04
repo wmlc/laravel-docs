@@ -2,7 +2,7 @@
 
 这个功能可以给表格的列设置一个过滤器，可以更方便的根据这一列进行数据表格过滤操作
 
-![]({{public}}/assets/img/screenshots/column-filter.png)
+<a href="./images/column-filter.png" target="_blank"><img class="img" src="./images/column-filter.png"></a>
 
 
 ## 字符串比较查询
@@ -37,14 +37,14 @@ $grid->ip->filter(
 ```
 
 鼠标移动到开启了值查询功能的列上面，右边会显示一个“放大镜”图标
-<a href="{{public}}/assets/img/screenshots/column-value-filter-1.png" target="_blank">
-    <img class="img" width="400px" src="{{public}}/assets/img/screenshots/column-value-filter-1.png">
+<a href="./images/column-value-filter-1.png" target="_blank">
+    <img class="img" width="400px" src="./images/column-value-filter-1.png">
 </a>
 
 点击列之后，表头会出现“重置”按钮，点击可以取消筛选
 
-<a href="{{public}}/assets/img/screenshots/column-value-filter-search.png" target="_blank">
-    <img class="img" width="400px" src="{{public}}/assets/img/screenshots/column-value-filter-search.png">
+<a href="./images/column-value-filter-search.png" target="_blank">
+    <img class="img" width="400px" src="./images/column-value-filter-search.png">
 </a>
 
 #### 设置值的字段名称
@@ -83,8 +83,8 @@ $grid->user_id->filter(
 
 效果如下
 
-<a href="{{public}}/assets/img/screenshots/column-value-filter.png" target="_blank">
-    <img class="img" width="400px" src="{{public}}/assets/img/screenshots/column-value-filter.png">
+<a href="./images/column-value-filter.png" target="_blank">
+    <img class="img" width="400px" src="./images/column-value-filter.png">
 </a>
 
 

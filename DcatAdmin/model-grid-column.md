@@ -63,7 +63,7 @@ $grid->fixColumns(2, -2);
 
 效果
 
-![](https://cdn.learnku.com/uploads/images/202007/12/38389/8aKnpG11g4.gif!large)
+<a href="./images/8aKnpG11g4.gif" target="_blank"><img class="img" src="./images/8aKnpG11g4.gif"></a>
   
 
 ### 获取行序号 (index)
@@ -112,7 +112,7 @@ $grid->showColumnSelector();
 $grid->hideColumns(['field1', ...]);
 ``` 
 
-![](https://cdn.learnku.com/uploads/images/202004/26/38389/MTgikMeV1o.png!large)
+<a href="./images/MTgikMeV1o.png" target="_blank"><img class="img" src="./images/MTgikMeV1o.png"></a>
 
 <a name="column-selector-store"></a>
 #### 存储驱动 (持久化)
@@ -143,7 +143,7 @@ $grid->hideColumns(['field1', ...]);
  - $style `string` 提示窗背景颜色，支持`green`、 `blue`、`red`、`purple`
  - $placement `string` 提示窗位置，支持`top`、`left`、`right`、`bottom`
 
-![](https://cdn.learnku.com/uploads/images/202004/26/38389/MTgikMeV1o.png!large)
+<a href="./images/MTgikMeV1o.png" target="_blank"><img class="img" src="./images/MTgikMeV1o.png"></a>
 
 
 ```php
@@ -154,7 +154,7 @@ $grid->column('id')->help('提示信息');
 
 通过`Grid\Column::filter`方法可以给列设置一个过滤器，可以很方便的根据这一列进行数据表格过滤操作，具体使用方法请参考[列过滤器](model-grid-column-filter.md)。
 
-![](https://cdn.learnku.com/uploads/images/202004/26/38389/8zNK7CHS3V.png!large)
+<a href="./images/8zNK7CHS3V.png" target="_blank"><img class="img" src="./images/8zNK7CHS3V.png"></a>
 
 
 

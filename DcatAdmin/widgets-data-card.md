@@ -6,8 +6,8 @@
 
 基础卡片(`Dcat\Admin\Widgets\Metrics\Card`)是一种默认不显示图表的卡片，也是数据卡片中最简单的一种。
 
-<a href="{{public}}/assets/img/screenshots/total-users.png" target="_blank">
-    <img src="{{public}}/assets/img/screenshots/total-users.png"  style="box-shadow:0 1px 6px 1px rgba(0, 0, 0, 0.12)" width="100%" >
+<a href="./images/total-users.png" target="_blank">
+    <img src="./images/total-users.png"  style="box-shadow:0 1px 6px 1px rgba(0, 0, 0, 0.12)" width="100%" >
 </a>
 
 
@@ -803,8 +803,8 @@ class MyCard extend Line
 
 圆环图卡片(`Dcat\Admin\Widgets\Metrics\Donut`)是一个附带了圆环图的数据统计卡片，继承自基础卡片`Dcat\Admin\Widgets\Metrics\Card`。
 
-<a href="{{public}}/assets/img/screenshots/card-donut.png" target="_blank">
-    <img src="{{public}}/assets/img/screenshots/card-donut.png"  style="box-shadow:0 1px 6px 1px rgba(0, 0, 0, 0.12)" width="100%" >
+<a href="./images/card-donut.png" target="_blank">
+    <img src="./images/card-donut.png"  style="box-shadow:0 1px 6px 1px rgba(0, 0, 0, 0.12)" width="100%" >
 </a>
 
 ### 示例
@@ -943,8 +943,8 @@ class MyCard extend Line
 
 柱状图卡片(`Dcat\Admin\Widgets\Metrics\Bar`)是一个附带了柱状图的数据统计卡片，继承自基础卡片`Dcat\Admin\Widgets\Metrics\Card`。
 
-<a href="{{public}}/assets/img/screenshots/card-bar.png" target="_blank">
-    <img src="{{public}}/assets/img/screenshots/card-bar.png"  style="box-shadow:0 1px 6px 1px rgba(0, 0, 0, 0.12)" width="100%" >
+<a href="./images/card-bar.png" target="_blank">
+    <img src="./images/card-bar.png"  style="box-shadow:0 1px 6px 1px rgba(0, 0, 0, 0.12)" width="100%" >
 </a>
 
 ### 示例
@@ -1076,8 +1076,8 @@ HTML
 
 柱状图卡片(`Dcat\Admin\Widgets\Metrics\Round`)是一个附带了多环形图的数据统计卡片，继承自基础卡片`Dcat\Admin\Widgets\Metrics\Card`。
 
-<a href="{{public}}/assets/img/screenshots/card-ra.png" target="_blank">
-    <img src="{{public}}/assets/img/screenshots/card-ra.png"  style="box-shadow:0 1px 6px 1px rgba(0, 0, 0, 0.12)" width="100%" >
+<a href="./images/card-ra.png" target="_blank">
+    <img src="./images/card-ra.png"  style="box-shadow:0 1px 6px 1px rgba(0, 0, 0, 0.12)" width="100%" >
 </a>
 
 ### 示例

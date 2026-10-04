@@ -23,8 +23,8 @@ $alert->icon('feather icon-x');
 $alert->removable();
 ```
 效果
-<a href="{{public}}/assets/img/screenshots/alert.png" target="_blank">
-    <img src="{{public}}/assets/img/screenshots/alert.png" width="100%" style="box-shadow:0 1px 6px 1px rgba(0, 0, 0, 0.12)" >
+<a href="./images/alert.png" target="_blank">
+    <img src="./images/alert.png" width="100%" style="box-shadow:0 1px 6px 1px rgba(0, 0, 0, 0.12)" >
 </a>
 
 ### Callout
@@ -45,6 +45,6 @@ $callout->removable();
 ```
 
 效果
-<a href="{{public}}/assets/img/screenshots/callout.png" target="_blank">
-    <img src="{{public}}/assets/img/screenshots/callout.png" width="100%" style="box-shadow:0 1px 6px 1px rgba(0, 0, 0, 0.12)" >
+<a href="./images/callout.png" target="_blank">
+    <img src="./images/callout.png" width="100%" style="box-shadow:0 1px 6px 1px rgba(0, 0, 0, 0.12)" >
 </a>

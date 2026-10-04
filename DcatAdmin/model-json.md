@@ -5,7 +5,7 @@
 
 ## 键值对象 (keyValue)
 
-![]({{public}}/assets/img/screenshots/key-value.png)
+<a href="./images/key-value.png" target="_blank"><img class="img" src="./images/key-value.png"></a>
 
 如果你的字段存储的是不固定`键`的`{"field":"value"}`格式，可以用`keyValue`组件:
 
@@ -24,7 +24,7 @@ $form->keyValue(...)->setKeyLabel('键名')->setValueLabel('键值');
 
 ## 固定键值对象 (embeds)
 
-![]({{public}}/assets/img/screenshots/embeds.png)
+<a href="./images/embeds.png" target="_blank"><img class="img" src="./images/embeds.png"></a>
 
 用于处理`mysql`的`JSON`类型字段数据或者`mongodb`的`object`类型数据，也可以将多个`field`的数据值以`JSON`字符串的形式存储在`mysql`的字符串类型字段中
 
@@ -53,7 +53,7 @@ $form->embeds('column_name', '字段标题', function ($form) {
 
 ## 一维数组 (list)
 
-![]({{public}}/assets/img/screenshots/form-list.png)
+<a href="./images/form-list.png" target="_blank"><img class="img" src="./images/form-list.png"></a>
 
 如果你的字段是用来存储`["foo", "Bar"]`格式的一维数组, 可以使用`list`组件:
 
@@ -69,7 +69,7 @@ $form->list('column_name')->max(10)->min(5);
 
 ## 二维数组 (table)
 
-![]({{public}}/assets/img/screenshots/form-table.png)
+<a href="./images/form-table.png" target="_blank"><img class="img" src="./images/form-table.png"></a>
 
 如果某一个字段存储的是`json`格式的二维数组，可以使用`table`表单组件来实现快速的编辑：
 
@@ -88,7 +88,7 @@ $form->table('column_name', function ($table) {
 
 ## 二维数组 (array)
 
-![]({{public}}/assets/img/screenshots/has-many.png)
+<a href="./images/has-many.png" target="_blank"><img class="img" src="./images/has-many.png"></a>
 
 如果某一个字段存储的是`json`格式的二维数组，并且字段比较多，可以使用`array`表单组件来实现快速的编辑：
 

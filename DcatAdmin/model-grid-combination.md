@@ -3,7 +3,7 @@
 通过 `Grid::combine` 方法可以很方便的把任意两个以上的字段组合成一级表头
 
 <a href="http://103.39.211.179:8080/admin/reports" target="_blank">
-    <img style="box-shadow:0 1px 6px 1px rgba(0, 0, 0, 0.12)" width="100%" src="{{public}}/assets/img/screenshots/grid-combination.png">
+    <img style="box-shadow:0 1px 6px 1px rgba(0, 0, 0, 0.12)" width="100%" src="./images/grid-combination.png">
 </a>
 
 示例

@@ -26,6 +26,6 @@ HTML
 }
 ```
 效果
-<a href="{{public}}/assets/img/screenshots/tooltip.png" target="_blank">
-    <img src="{{public}}/assets/img/screenshots/tooltip.png" width="70%" style="box-shadow:0 1px 6px 1px rgba(0, 0, 0, 0.12)" >
+<a href="./images/tooltip.png" target="_blank">
+    <img src="./images/tooltip.png" width="70%" style="box-shadow:0 1px 6px 1px rgba(0, 0, 0, 0.12)" >
 </a>

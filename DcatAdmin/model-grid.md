@@ -106,11 +106,11 @@ class MovieController extends AdminController
 
 在这个版本开始，默认的表格布局将会采用 `table_collapse` 模式，效果如下
 
-<a href="https://cdn.learnku.com/uploads/images/202007/24/38389/4bCfBdtvq5.png!large" target="_blank">
-    <img class="img" src="https://cdn.learnku.com/uploads/images/202007/24/38389/4bCfBdtvq5.png!large" />
+<a href="./images/4bCfBdtvq5.png" target="_blank">
+    <img class="img" src="./images/4bCfBdtvq5.png" />
 </a>
-<a href="https://cdn.learnku.com/uploads/images/202007/24/38389/35KJXfVXib.png!large" target="_blank">
-    <img class="img" src="https://cdn.learnku.com/uploads/images/202007/24/38389/35KJXfVXib.png!large" />
+<a href="./images/35KJXfVXib.png" target="_blank">
+    <img class="img" src="./images/35KJXfVXib.png" />
 </a>    
 
 如果想要切换回旧版本的表格布局样式，可以在 `app/Admin/bootstrap.php`中加上
@@ -130,7 +130,7 @@ $grid->withBorder();
 ```
 
 效果
-![](https://cdn.learnku.com/uploads/images/202004/26/38389/lKTZe0jwGg.png!large)
+<a href="./images/lKTZe0jwGg.png" target="_blank"><img class="img" src="./images/lKTZe0jwGg.png"></a>
 
 
 
@@ -253,11 +253,11 @@ $grid->toolsWithOutline(false);
 ```
 
 效果
-![](https://cdn.learnku.com/uploads/images/202005/23/38389/hKWC1crYHw.png!large)
+<a href="./images/hKWC1crYHw.png" target="_blank"><img class="img" src="./images/hKWC1crYHw.png"></a>
 
 禁用`outline`后的效果
 
-![](https://cdn.learnku.com/uploads/images/202005/23/38389/aaMdymSxoY.png!large)
+<a href="./images/aaMdymSxoY.png" target="_blank"><img class="img" src="./images/aaMdymSxoY.png"></a>
 
 
 如果你希望某个按钮不使用`outline`模式，可以在按钮的`class`属性中加上`disable-outline`

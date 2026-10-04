@@ -3,8 +3,8 @@
 
 在表格中开启这个功能之后，会在表格头部增加一个`form`表单来创建数据，对于一些简单的表格页面，可以方便快速创建数据，不用跳转到创建页面操作
 
-<a href="{{public}}/assets/img/screenshots/quick-create.png" target="_blank">
-    <img  src="{{public}}/assets/img/screenshots/quick-create.png" style="box-shadow:0 1px 6px 1px rgba(0, 0, 0, 0.12)" width="100%">
+<a href="./images/quick-create.png" target="_blank">
+    <img  src="./images/quick-create.png" style="box-shadow:0 1px 6px 1px rgba(0, 0, 0, 0.12)" width="100%">
 </a>
 
 

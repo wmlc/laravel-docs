@@ -9,8 +9,8 @@ $grid->quickSearch();
 $grid->quickSearch()->placeholder('搜索...');
 ```
 这样表头会出现一个搜索框:
-<a href="{{public}}/assets/img/screenshots/grid-quick-search.png" target="_blank">
-    <img style="box-shadow:0 1px 6px 1px rgba(0, 0, 0, 0.12)" width="100%" src="{{public}}/assets/img/screenshots/grid-quick-search.png">
+<a href="./images/grid-quick-search.png" target="_blank">
+    <img style="box-shadow:0 1px 6px 1px rgba(0, 0, 0, 0.12)" width="100%" src="./images/grid-quick-search.png">
 </a>
 
 

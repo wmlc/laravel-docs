@@ -3,8 +3,8 @@
 
 这个功能用来构建类似淘宝或京东商品的规格选择。
 
-<a href="{{public}}/assets/img/screenshots/grid-selector.png" target="_blank">
-    <img src="{{public}}/assets/img/screenshots/grid-selector.png" style="box-shadow:0 1px 6px 1px rgba(0, 0, 0, 0.12)" width="100%" >
+<a href="./images/grid-selector.png" target="_blank">
+    <img src="./images/grid-selector.png" style="box-shadow:0 1px 6px 1px rgba(0, 0, 0, 0.12)" width="100%" >
 </a>
 
 

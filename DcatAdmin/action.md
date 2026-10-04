@@ -219,8 +219,8 @@ class IndexController
 
 效果如下
 
-<a href="{{public}}/assets/img/screenshots/action-default.png" target="_blank">
-    <img class="img img-full" src="{{public}}/assets/img/screenshots/action-default.png" />
+<a href="./images/action-default.png" target="_blank">
+    <img class="img img-full" src="./images/action-default.png" />
 </a>
 
 ## 属性

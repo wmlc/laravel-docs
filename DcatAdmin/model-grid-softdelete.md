@@ -43,7 +43,7 @@ $grid->filter(function () {
 
 在表头的筛选按钮的下拉菜单中就会出现一个`回收站`按钮，点击它，就会调用模型的`onlyTrashed`方法，从表中查询出被删除的数据，也就是回收站中的数据。
 
-<img style="box-shadow:0 1px 6px 1px rgba(0, 0, 0, 0.12)" width="40%" src="{{public}}/assets/img/screenshots/trash-button.png">
+<img style="box-shadow:0 1px 6px 1px rgba(0, 0, 0, 0.12)" width="40%" src="./images/trash-button.png">
 
 
 

@@ -39,8 +39,8 @@ class MyController
 ```
 效果
 
-<a href="{{public}}/assets/img/screenshots/dropdown-1.png" target="_blank">
-    <img src="{{public}}/assets/img/screenshots/dropdown-1.png"  style="box-shadow:0 1px 6px 1px rgba(0, 0, 0, 0.12)" width="70%" >
+<a href="./images/dropdown-1.png" target="_blank">
+    <img src="./images/dropdown-1.png"  style="box-shadow:0 1px 6px 1px rgba(0, 0, 0, 0.12)" width="70%" >
 </a>
 
 ### 点击菜单更换按钮文本
@@ -77,8 +77,8 @@ $dropdown = Dropdown::make()
 ```
 效果
 
-<a href="{{public}}/assets/img/screenshots/dropdown-2.png" target="_blank">
-    <img src="{{public}}/assets/img/screenshots/dropdown-2.png"  style="box-shadow:0 1px 6px 1px rgba(0, 0, 0, 0.12)" width="70%" >
+<a href="./images/dropdown-2.png" target="_blank">
+    <img src="./images/dropdown-2.png"  style="box-shadow:0 1px 6px 1px rgba(0, 0, 0, 0.12)" width="70%" >
 </a>
 
 ### 增加分割线
@@ -98,8 +98,8 @@ $dropdown = Dropdown::make()
 ```
 效果
 
-<a href="{{public}}/assets/img/screenshots/dropdown-3.png" target="_blank">
-    <img src="{{public}}/assets/img/screenshots/dropdown-3.png"  style="box-shadow:0 1px 6px 1px rgba(0, 0, 0, 0.12)" width="70%" >
+<a href="./images/dropdown-3.png" target="_blank">
+    <img src="./images/dropdown-3.png"  style="box-shadow:0 1px 6px 1px rgba(0, 0, 0, 0.12)" width="70%" >
 </a>
 
 ### 自定义按钮
@@ -138,6 +138,6 @@ HTML
 
 效果
 
-<a href="{{public}}/assets/img/screenshots/dropdown-4.png" target="_blank">
-    <img src="{{public}}/assets/img/screenshots/dropdown-4.png"  style="box-shadow:0 1px 6px 1px rgba(0, 0, 0, 0.12)" width="70%" >
+<a href="./images/dropdown-4.png" target="_blank">
+    <img src="./images/dropdown-4.png"  style="box-shadow:0 1px 6px 1px rgba(0, 0, 0, 0.12)" width="70%" >
 </a>

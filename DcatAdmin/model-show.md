@@ -120,6 +120,6 @@ $show->row(function (Show\Row $show) {
 ```
 
 效果
-<a href="{{public}}/assets/img/screenshots/show-rows.png" target="_blank">
-    <img class="img img-full" src="{{public}}/assets/img/screenshots/show-rows.png">
+<a href="./images/show-rows.png" target="_blank">
+    <img class="img img-full" src="./images/show-rows.png">
 </a>

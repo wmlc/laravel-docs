@@ -35,7 +35,7 @@ admin_exit(
 
 效果如下
 
-![](https://cdn.learnku.com/uploads/images/202101/11/38389/FLg6C7kwRq.png!large)
+<a href="./images/FLg6C7kwRq.png" target="_blank"><img class="img" src="./images/FLg6C7kwRq.png"></a>
 
 用法2，返回 `json` 格式数据，此用法经常用于表单提交数据的`api`请求拦截，或`Action`的`api`请求拦截
 
