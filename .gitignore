@@ -9,5 +9,6 @@ docs/12.x/
 docs/11.x/
 docs/9.x/
 docs/dcat-admin/
+docs/.vitepress/page-index.json
 .vitepress/dist-verify
 deploy/vendor

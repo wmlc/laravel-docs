@@ -22,8 +22,9 @@ export default defineConfig({
   ],
 
   themeConfig: {
-    logo: '/logo.svg',
-
+    // 各版本的左上角 logo 与标题由自定义 Layout 的 nav-bar-title-before 插槽按路由动态渲染；
+    // siteTitle 置为 false 且不设 logo，以隐藏默认标题（见 theme/Layout.vue）
+    siteTitle: false,
     nav: [
       { text: '首页', link: '/' },
       { component: 'VersionSwitcher' }

@@ -156,7 +156,7 @@ function prepareVersion(version) {
   const srcDir = resolve(root, meta.srcDir || `${version}/zh-CN`)
   if (!existsSync(srcDir)) {
     console.warn(`[skip] 源目录不存在: ${srcDir}`)
-    return
+    return []
   }
   const outDir = resolve(__dirname, `../../${version}`)
   mkdirSync(outDir, { recursive: true })
@@ -170,10 +170,12 @@ function prepareVersion(version) {
 
   const skipFiles = ['documentation.md', ...(meta.exclude || [])]
   let count = 0
+  const slugs = []
   for (const file of readdirSync(srcDir)) {
     if (!file.endsWith('.md') || skipFiles.includes(file)) continue
     const content = readFileSync(join(srcDir, file), 'utf-8')
     writeFileSync(join(outDir, file), transform(content, version))
+    slugs.push(file.slice(0, -3))
     count++
   }
 
@@ -187,7 +189,18 @@ function prepareVersion(version) {
   )
 
   console.log(`[ok] ${version}: ${count} 篇文档已生成`)
+  return slugs
 }
 
-for (const v of versions) prepareVersion(v)
+// 生成各版本页面索引（供 VersionSwitcher 编译期判断目标版本是否存在同 slug 页面，
+// 生产环境 site.pages 为空，不能依赖运行时数据）
+const pageIndex = {}
+for (const v of versions) {
+  const slugs = prepareVersion(v)
+  if (slugs.length) pageIndex[v] = slugs
+}
+writeFileSync(
+  resolve(__dirname, '../page-index.json'),
+  JSON.stringify(pageIndex)
+)
 console.log('文档预处理完成。')

@@ -2,6 +2,7 @@
 import { computed, ref } from 'vue'
 import { useRoute } from 'vitepress'
 import { versions, versionPattern, versionMeta } from '../../shared/versions.mjs'
+import pageIndex from '../../page-index.json'
 
 const route = useRoute()
 const open = ref(false)
@@ -19,6 +20,14 @@ const current = computed(() => {
 
 const currentLabel = computed(() => (current.value ? labelOf(current.value) : ''))
 
+/** 目标版本是否存在同 slug 页面（基于 prepare 生成、编译期打包的页面索引；
+ *    生产环境 site.pages 为空，不可用于运行时判断） */
+function pageExists(v: string, rest: string) {
+  if (!rest) return true
+  const slugs = (pageIndex as Record<string, string[]>)[v] || []
+  return slugs.includes(rest) || rest === 'index'
+}
+
 function href(v: string) {
   let rest = ''
   if (current.value) {
@@ -28,7 +37,12 @@ function href(v: string) {
       .replace(/\.html$/, '')
       .replace(/\/$/, '')
   }
-  return `/${v}/${rest || 'installation'}`
+  if (!rest) rest = 'installation'
+  // 目标版本没有该页时回退：优先 installation（各版本均有），再回退版本落地页
+  if (!pageExists(v, rest)) {
+    rest = pageExists(v, 'installation') ? 'installation' : ''
+  }
+  return `/${v}/${rest}`
 }
 </script>
 

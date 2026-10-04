@@ -9,12 +9,20 @@ export const versions = ['13.x', '12.x', '11.x', '9.x', 'dcat-admin']
  * - exclude: 不导入站点的 md 文件
  */
 export const versionMeta = {
+  '13.x': { siteTitle: 'Laravel 13.x 文档', logo: '/logos/13x.svg', icon: '/icons/13x.svg' },
+  '12.x': { siteTitle: 'Laravel 12.x 文档', logo: '/logos/12x.svg', icon: '/icons/12x.svg' },
+  '11.x': { siteTitle: 'Laravel 11.x 文档', logo: '/logos/11x.svg', icon: '/icons/11x.svg' },
+  '9.x': { siteTitle: 'Laravel 9.x 文档', logo: '/logos/9x.svg', icon: '/icons/9x.svg' },
   'dcat-admin': {
     srcDir: 'DcatAdmin',
     label: 'Dcat Admin',
-    title: '1.x 文档',
+    // 源文档对应 dcat/laravel-admin 2.*（见 installation.md 的 composer require 与 beta-change-log.md 的 v2.x 日志）
+    title: '2.x 文档',
     tagline: 'Dcat Admin 后台系统构建工具文档',
-    exclude: ['README.md', 'LICENSE.md']
+    exclude: ['README.md', 'LICENSE.md'],
+    siteTitle: 'Dcat Admin 2.x 文档',
+    logo: '/logos/dcat.svg',
+    icon: '/icons/dcat.svg'
   }
 }
 
