@@ -1,3 +1,58 @@
+/* Ecoku 「纸墨」配色（https://ecoku.zsh.moe）
+   主色基色：陶土红 #c8553a；brand 变量为它与墨/纸色的 oklab 混色，
+   保留 color-mix 表达式以与 Ecoku 实际渲染完全一致（现代浏览器均支持）。
+   字体：不加载网络字体，使用设备自带的中英文无衬线字体栈。 */
+:root {
+  /* 品牌主色 */
+  --vp-c-brand-1: color-mix(in oklab, #c8553a 75%, #1e1c19);
+  --vp-c-brand-2: color-mix(in oklab, #c8553a 75%, #1e1c19);
+  --vp-c-brand-3: color-mix(in oklab, #c8553a 75%, #1e1c19);
+  --vp-c-brand-soft: color-mix(in srgb, color-mix(in oklab, #c8553a 75%, #1e1c19) 8%, transparent);
+
+  /* 纸面背景 */
+  --vp-c-bg: #f7f4ee;
+  --vp-c-bg-alt: #fbf9f5;
+  --vp-c-bg-elv: #fbf9f5;
+  --vp-c-bg-soft: #efebe3;
+
+  /* 墨色文字 */
+  --vp-c-text-1: #1e1c19;
+  --vp-c-text-2: #35312b;
+  --vp-c-text-3: #6b655b;
+
+  --vp-c-divider: rgb(30 28 25 / 12%);
+  --vp-nav-bg-color: #f7f4ee;
+  --vp-sidebar-bg-color: #fbf9f5;
+
+  /* 字体栈（与 Ecoku 一致，无网络字体） */
+  --vp-font-family-base: -apple-system, BlinkMacSystemFont, "Segoe UI",
+    "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei UI", "Microsoft YaHei",
+    "Noto Sans CJK SC", "Source Han Sans SC", "Noto Sans SC",
+    "Helvetica Neue", Arial, sans-serif;
+  --vp-font-family-mono: "Maple Mono Normal", ui-monospace, "SF Mono",
+    "Cascadia Mono", Menlo, Consolas, "Roboto Mono", monospace;
+}
+
+.dark {
+  --vp-c-brand-1: color-mix(in oklab, #c8553a 75%, #eee8dd);
+  --vp-c-brand-2: color-mix(in oklab, #c8553a 75%, #eee8dd);
+  --vp-c-brand-3: color-mix(in oklab, #c8553a 75%, #eee8dd);
+  --vp-c-brand-soft: color-mix(in srgb, color-mix(in oklab, #c8553a 75%, #eee8dd) 8%, transparent);
+
+  --vp-c-bg: #1a1816;
+  --vp-c-bg-alt: #211f1c;
+  --vp-c-bg-elv: #211f1c;
+  --vp-c-bg-soft: #26231f;
+
+  --vp-c-text-1: #eee8dd;
+  --vp-c-text-2: #d3ccbf;
+  --vp-c-text-3: #a29a8c;
+
+  --vp-c-divider: rgb(238 232 221 / 12%);
+  --vp-nav-bg-color: #1a1816;
+  --vp-sidebar-bg-color: #211f1c;
+}
+
 /* Laravel 文档锚点：空标签作为跳转目标，不占据布局空间 */
 .laravel-anchor {
   position: absolute;

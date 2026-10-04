@@ -9,3 +9,4 @@ docs/12.x/
 docs/11.x/
 docs/9.x/
 .vitepress/dist-verify
+deploy/vendor

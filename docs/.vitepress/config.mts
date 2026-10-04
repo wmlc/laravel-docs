@@ -16,7 +16,7 @@ export default defineConfig({
   ignoreDeadLinks: 'localhostLinks',
 
   head: [
-    ['meta', { name: 'theme-color', content: '#ff2d20' }],
+    ['meta', { name: 'theme-color', content: '#f7f4ee' }],
     ['link', { rel: 'icon', type: 'image/svg+xml', href: '/logo.svg' }],
     ['link', { rel: 'apple-touch-icon', href: '/logo.svg' }]
   ],
@@ -36,6 +36,12 @@ export default defineConfig({
     socialLinks: [
       { icon: 'github', link: 'https://github.com/laravel/docs' }
     ],
+
+    // 页脚（对应 Ecoku 版式的页尾版权区）
+    footer: {
+      message: '基于 Laravel 官方文档翻译，仅供学习参考。',
+      copyright: '文档版权归 Laravel 团队所有。'
+    },
 
     search: {
       provider: 'local',
