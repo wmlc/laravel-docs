@@ -18,10 +18,13 @@ hero:
     - theme: alt
       text: Laravel 9.x
       link: /9.x/installation
+    - theme: alt
+      text: Dcat Admin
+      link: /dcat-admin/installation
 
 features:
   - title: 多版本切换
-    details: 顶部版本切换器可在 13.x、12.x、11.x、9.x 之间无缝切换，并保持当前文档页面。
+    details: 顶部版本切换器可在 13.x、12.x、11.x、9.x 与 Dcat Admin 之间无缝切换，切换 Laravel 版本时保持当前文档页面。
     icon: 🔄
   - title: 三栏布局
     details: 左侧文档目录、中间正文、右侧本页标题大纲，阅读体验清晰。

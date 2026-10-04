@@ -1,16 +1,23 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import { useRoute } from 'vitepress'
-import { versions, versionPattern } from '../../shared/versions.mjs'
+import { versions, versionPattern, versionMeta } from '../../shared/versions.mjs'
 
 const route = useRoute()
 const open = ref(false)
 const versionRe = new RegExp(`^/(${versionPattern})/`)
 
+/** 展示名：优先取 versionMeta.label，未配置的直接用版本号 */
+function labelOf(v: string) {
+  return (versionMeta as Record<string, { label?: string }>)[v]?.label || v
+}
+
 const current = computed(() => {
   const m = route.path.match(versionRe)
   return m ? m[1] : ''
 })
+
+const currentLabel = computed(() => (current.value ? labelOf(current.value) : ''))
 
 function href(v: string) {
   let rest = ''
@@ -28,7 +35,7 @@ function href(v: string) {
 <template>
   <div class="version-switch" @mouseenter="open = true" @mouseleave="open = false">
     <button class="trigger" :aria-expanded="open" aria-label="切换版本">
-      <span class="label">{{ current || '版本' }}</span>
+      <span class="label">{{ currentLabel || '版本' }}</span>
       <svg class="icon" viewBox="0 0 24 24" width="12" height="12" aria-hidden="true">
         <path d="M7 10l5 5 5-5z" fill="currentColor" />
       </svg>
@@ -36,7 +43,7 @@ function href(v: string) {
     <transition name="fade">
       <ul v-if="open" class="menu">
         <li v-for="v in versions" :key="v">
-          <a :href="href(v)" :class="{ active: v === current }" @click="open = false">{{ v }}</a>
+          <a :href="href(v)" :class="{ active: v === current }" @click="open = false">{{ labelOf(v) }}</a>
         </li>
       </ul>
     </transition>

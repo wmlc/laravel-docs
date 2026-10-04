@@ -6,7 +6,7 @@
   "scripts": {
     "prepare": "node docs/.vitepress/scripts/prepare.mjs",
     "dev": "npm run prepare && vitepress dev docs",
-    "build": "npm run prepare && vitepress build docs",
+    "build": "npm run prepare && NODE_OPTIONS=--max-old-space-size=8192 vitepress build docs",
     "preview": "vitepress preview docs"
   },
   "devDependencies": {

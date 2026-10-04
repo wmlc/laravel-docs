@@ -8,5 +8,6 @@ docs/13.x/
 docs/12.x/
 docs/11.x/
 docs/9.x/
+docs/dcat-admin/
 .vitepress/dist-verify
 deploy/vendor

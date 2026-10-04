@@ -1,8 +1,8 @@
-import { readFileSync, writeFileSync, mkdirSync, readdirSync, existsSync } from 'node:fs'
+import { readFileSync, writeFileSync, mkdirSync, readdirSync, existsSync, cpSync } from 'node:fs'
 import { resolve, dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
-import { versions } from '../shared/versions.mjs'
+import { versions, versionMeta } from '../shared/versions.mjs'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const root = resolve(__dirname, '../../../')
@@ -133,6 +133,15 @@ function transform(content, version) {
     .replaceAll('{{version}}', version)
     .replaceAll(`/docs/${version}/`, `/${version}/`)
 
+  // Dcat Admin 文档用 {{public}} 引用原官网的图片/链接，重写为可访问的绝对地址，
+  // 否则 HTML 属性里的插值会被 Vue 编译器当作资源 import 解析导致构建失败
+  out = out.replaceAll('{{public}}', 'https://www.dcatadmin.com')
+
+  // 重写正文中的相对 md 链接（如 DcatAdmin 文档的 [文本](slug.md#锚点)）为站点绝对路径，
+  // 不影响外部链接、站内绝对路径与纯锚点链接
+  out = out.replace(/\]\((?!https?:\/\/|mailto:|\/|#)([^)\s#]+?)\.md(#[^)]*)?\)/g,
+    (_, slug, anchor) => `](/${version}/${slug}${anchor || ''})`)
+
   // <a name="xxx"></a> -> <a id="xxx" class="laravel-anchor"></a>，确保 #xxx 跳转生效
   out = out.replace(/<a\s+name="([^"]+)"><\/a>/g, '<a id="$1" class="laravel-anchor"></a>')
 
@@ -143,7 +152,8 @@ function transform(content, version) {
 }
 
 function prepareVersion(version) {
-  const srcDir = resolve(root, `${version}/zh-CN`)
+  const meta = versionMeta[version] || {}
+  const srcDir = resolve(root, meta.srcDir || `${version}/zh-CN`)
   if (!existsSync(srcDir)) {
     console.warn(`[skip] 源目录不存在: ${srcDir}`)
     return
@@ -151,18 +161,29 @@ function prepareVersion(version) {
   const outDir = resolve(__dirname, `../../${version}`)
   mkdirSync(outDir, { recursive: true })
 
+  // 同步正文相对路径引用的静态资源子目录（如 DcatAdmin/images 截图）
+  for (const entry of readdirSync(srcDir, { withFileTypes: true })) {
+    if (entry.isDirectory()) {
+      cpSync(join(srcDir, entry.name), join(outDir, entry.name), { recursive: true })
+    }
+  }
+
+  const skipFiles = ['documentation.md', ...(meta.exclude || [])]
   let count = 0
   for (const file of readdirSync(srcDir)) {
-    if (!file.endsWith('.md') || file === 'documentation.md') continue
+    if (!file.endsWith('.md') || skipFiles.includes(file)) continue
     const content = readFileSync(join(srcDir, file), 'utf-8')
     writeFileSync(join(outDir, file), transform(content, version))
     count++
   }
 
   // 版本落地页
+  const label = meta.label || 'Laravel'
+  const title = meta.title || `${version} 文档`
+  const tagline = meta.tagline || `Laravel ${version} 官方文档中文翻译`
   writeFileSync(
     join(outDir, 'index.md'),
-    `---\nlayout: home\n\nhero:\n  name: Laravel\n  text: ${version} 文档\n  tagline: Laravel ${version} 官方文档中文翻译\n  actions:\n    - theme: brand\n      text: 开始阅读\n      link: /${version}/installation\n    - theme: alt\n      text: 切换版本\n      link: /\n---\n`
+    `---\nlayout: home\n\nhero:\n  name: ${label}\n  text: ${title}\n  tagline: ${tagline}\n  actions:\n    - theme: brand\n      text: 开始阅读\n      link: /${version}/installation\n    - theme: alt\n      text: 切换版本\n      link: /\n---\n`
   )
 
   console.log(`[ok] ${version}: ${count} 篇文档已生成`)

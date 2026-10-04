@@ -17,13 +17,11 @@
 
 部分主题色预览
 
-<a href="{{public}}/assets/img/screenshots/users-blue-dark.png" target="_blank">
-    <img  src="{{public}}/assets/img/screenshots/users-blue-dark.png" style="box-shadow:0 1px 6px 1px rgba(0, 0, 0, 0.12)" width="100%">
-</a>
-<a href="{{public}}/assets/img/screenshots/users-green.png" target="_blank">
-    <img  src="{{public}}/assets/img/screenshots/users-green.png" style="box-shadow:0 1px 6px 1px rgba(0, 0, 0, 0.12)" width="100%">
-</a>
+![](images/p1lAW4NpQi.png)
 
+![](images/ISATQMYO0i.png)
+
+![](images/GBkt9jYnW0.png)
 
 <a name="custom"></a>
 ### 自定义主题配色
@@ -447,132 +445,132 @@ var allColors = Dcat.color.all();
 		color: #fff;
 	}
 </style>
- <section class="container color-sections" style="min-height: 500px">
-        <div class="color-section white" style="background: #5c6bc6">
-            <code>.text-primary</code> <code>.bg-primary</code> primary/indigo
-        </div>
-        <div class="color-section white" style="background: #495abf">
-            <code>.text-primary-darker</code> indigo-darker
-        </div>
+<section class="container color-sections" style="min-height: 500px">
+<div class="color-section white" style="background: #5c6bc6">
+<code>.text-primary</code> <code>.bg-primary</code> primary/indigo
+</div>
+<div class="color-section white" style="background: #495abf">
+<code>.text-primary-darker</code> indigo-darker
+</div>
 
-        <div class="color-section white" style="background: #5b69bc">
-            purple
-        </div>
+<div class="color-section white" style="background: #5b69bc">
+purple
+</div>
 
-        <div class="color-section white" style="background: #7367f0">
-            cyan
-        </div>
-        <div class="color-section white" style="background: #6355ee">
-            cyan-darker
-        </div>
+<div class="color-section white" style="background: #7367f0">
+cyan
+</div>
+<div class="color-section white" style="background: #6355ee">
+cyan-darker
+</div>
 
-        <div class="color-section white" style="background: #3085d6">
-            <code>.text-info</code> <code>.bg-info</code> blue/info
-        </div>
-        <div class="color-section white" style="background: #236bb0">
-            <code>.text-blue-darker</code> blue-darker
-        </div>
-        <div class="color-section white" style="background: #007ee5">
-            <code>.text-blue-1</code> <code>.bg-blue-1</code> blue1
-        </div>
-        <div class="color-section white" style="background: #4199de">
-            <code>.text-blue-2</code> <code>.bg-blue-2</code> blue2
-        </div>
+<div class="color-section white" style="background: #3085d6">
+<code>.text-info</code> <code>.bg-info</code> blue/info
+</div>
+<div class="color-section white" style="background: #236bb0">
+<code>.text-blue-darker</code> blue-darker
+</div>
+<div class="color-section white" style="background: #007ee5">
+<code>.text-blue-1</code> <code>.bg-blue-1</code> blue1
+</div>
+<div class="color-section white" style="background: #4199de">
+<code>.text-blue-2</code> <code>.bg-blue-2</code> blue2
+</div>
 
-        <div class="color-section white" style="background: #59a9f8">
-            <code>.text-custom</code> <code>.bg-custom</code> custom
-        </div>
+<div class="color-section white" style="background: #59a9f8">
+<code>.text-custom</code> <code>.bg-custom</code> custom
+</div>
 
-        <div class="color-section white" style="background: #21b978">
-            <code>.text-success</code> <code>.bg-success</code> green/success
-        </div>
-        <div class="color-section white" style="background: #ea5455">
-            <code>.text-danger</code> <code>.bg-danger</code> danger/red
-        </div>
-        <div class="color-section white" style="background: #bd4147">
-            <code>.text-danger-darker</code> red-darker
-        </div>
-
-
-        <div class="color-section white" style="background: #dda451">
-            <code>.text-warning</code> <code>.bg-warning</code> warning/orange
-        </div>
+<div class="color-section white" style="background: #21b978">
+<code>.text-success</code> <code>.bg-success</code> green/success
+</div>
+<div class="color-section white" style="background: #ea5455">
+<code>.text-danger</code> <code>.bg-danger</code> danger/red
+</div>
+<div class="color-section white" style="background: #bd4147">
+<code>.text-danger-darker</code> red-darker
+</div>
 
 
-        <div class="color-section white" style="background: #ffcc80">
-            <code>.text-orange-1</code> <code>.bg-orange-1</code> orange1
-        </div>
-        <div class="color-section white" style="background: #F99037">
-            <code>.text-orange-2</code> <code>.bg-orange-2</code> orange2
-        </div>
-        <div class="color-section white" style="background: #edc30e">
-            <code>.text-yellow</code> <code>.bg-yellow</code> yellow
-        </div>
-
-        <div class="color-section white" style="background: #ff8acc">
-            <code>.text-pink</code> <code>.bg-pink</code> pink
-        </div>
+<div class="color-section white" style="background: #dda451">
+<code>.text-warning</code> <code>.bg-warning</code> warning/orange
+</div>
 
 
-        <div class="color-section white" style="background: #01847f">
-            <code>.text-tear</code> <code>.bg-tear</code> tear
-        </div>
-        <div class="color-section white" style="background: #00b5b5">
-            <code>.text-tear-1</code> <code>.bg-tear-1</code> tear1
-        </div>
+<div class="color-section white" style="background: #ffcc80">
+<code>.text-orange-1</code> <code>.bg-orange-1</code> orange1
+</div>
+<div class="color-section white" style="background: #F99037">
+<code>.text-orange-2</code> <code>.bg-orange-2</code> orange2
+</div>
+<div class="color-section white" style="background: #edc30e">
+<code>.text-yellow</code> <code>.bg-yellow</code> yellow
+</div>
+
+<div class="color-section white" style="background: #ff8acc">
+<code>.text-pink</code> <code>.bg-pink</code> pink
+</div>
 
 
-        <div class="color-section white" style="background: #22292f">
-            dark
-        </div>
+<div class="color-section white" style="background: #01847f">
+<code>.text-tear</code> <code>.bg-tear</code> tear
+</div>
+<div class="color-section white" style="background: #00b5b5">
+<code>.text-tear-1</code> <code>.bg-tear-1</code> tear1
+</div>
 
-        <div class="color-section white" style="background: #b9c3cd">
-            <code>.text-gray</code> <code>.bg-gray</code> gray
-        </div>
-        <div class="color-section white" style="background: #f7f7f9;color: #666">
-            <code>.text-light</code> <code>.bg-light</code> light
-        </div>
-        <div class="color-section white" style="background: #f6fbff;color: #666">
-            <code>.text-dark20</code> <code>.bg-dark20</code> dark20
-        </div>
-        <div class="color-section white" style="background: #f4f7fa;color: #666">
-            <code>.text-dark30</code> <code>.bg-dark30</code> dark30
-        </div>
-        <div class="color-section white" style="background: #e7eef7;color: #666">
-            <code>.text-dark35</code> <code>.bg-dark35</code> dark35
-        </div>
 
-        <div class="color-section white" style="background: #ebf0f3;color: #666">
-            <code>.text-dark40</code> <code>.bg-dark40</code> dark40
-        </div>
-        <div class="color-section white" style="background: #d3dde5;color: #666">
-            <code>.text-dark50</code> <code>.bg-dark50</code> dark50
-        </div>
-        <div class="color-section white" style="background: #bacad6">
-            <code>.text-dark60</code> <code>.bg-dark60</code> dark60
-        </div>
-        <div class="color-section white" style="background: #b3b9bf">
-            <code>.text-dark70</code> <code>.bg-dark70</code> dark70
-        </div>
-        <div class="color-section white" style="background: #7c858e">
-            <code>.text-dark80</code> <code>.bg-dark80</code> dark80
-        </div>
-        <div class="color-section white" style="background: #5c7089">
-            <code>.text-dark85</code> <code>.bg-dark85</code> dark85
-        </div>
-        <div class="color-section white" style="background: #252d37">
-            dark90
-        </div>
-        <div class="color-section white" style="background: #414750">
-            font字体颜色
-        </div>
-        <div class="color-section white" style="background: #f1f1f1;color: #666">
-            gray-bg
-        </div>
-        <div class="color-section white" style="background: #ebeff2;color: #666">
-            border
-        </div>
-        <div class="color-section white" style="background: #d9d9d9;color: #666">
-            input-border
-        </div>
-    </section>
+<div class="color-section white" style="background: #22292f">
+dark
+</div>
+
+<div class="color-section white" style="background: #b9c3cd">
+<code>.text-gray</code> <code>.bg-gray</code> gray
+</div>
+<div class="color-section white" style="background: #f7f7f9;color: #666">
+<code>.text-light</code> <code>.bg-light</code> light
+</div>
+<div class="color-section white" style="background: #f6fbff;color: #666">
+<code>.text-dark20</code> <code>.bg-dark20</code> dark20
+</div>
+<div class="color-section white" style="background: #f4f7fa;color: #666">
+<code>.text-dark30</code> <code>.bg-dark30</code> dark30
+</div>
+<div class="color-section white" style="background: #e7eef7;color: #666">
+<code>.text-dark35</code> <code>.bg-dark35</code> dark35
+</div>
+
+<div class="color-section white" style="background: #ebf0f3;color: #666">
+<code>.text-dark40</code> <code>.bg-dark40</code> dark40
+</div>
+<div class="color-section white" style="background: #d3dde5;color: #666">
+<code>.text-dark50</code> <code>.bg-dark50</code> dark50
+</div>
+<div class="color-section white" style="background: #bacad6">
+<code>.text-dark60</code> <code>.bg-dark60</code> dark60
+</div>
+<div class="color-section white" style="background: #b3b9bf">
+<code>.text-dark70</code> <code>.bg-dark70</code> dark70
+</div>
+<div class="color-section white" style="background: #7c858e">
+<code>.text-dark80</code> <code>.bg-dark80</code> dark80
+</div>
+<div class="color-section white" style="background: #5c7089">
+<code>.text-dark85</code> <code>.bg-dark85</code> dark85
+</div>
+<div class="color-section white" style="background: #252d37">
+dark90
+</div>
+<div class="color-section white" style="background: #414750">
+font字体颜色
+</div>
+<div class="color-section white" style="background: #f1f1f1;color: #666">
+gray-bg
+</div>
+<div class="color-section white" style="background: #ebeff2;color: #666">
+border
+</div>
+<div class="color-section white" style="background: #d9d9d9;color: #666">
+input-border
+</div>
+</section>

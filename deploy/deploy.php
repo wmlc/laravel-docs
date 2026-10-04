@@ -51,7 +51,14 @@ task('deploy:check_dist', function () {
     if (!testLocally("[ -f $root/docs/.vitepress/dist/index.html ]")) {
         throw new \RuntimeException('构建产物不存在（docs/.vitepress/dist），请先在宿主机执行 npm run build。');
     }
-    $stale = runLocally("find $root/docs -name '*.md' -newer $root/docs/.vitepress/dist/index.html 2>/dev/null | head -1");
+    // 只比较真实源文档目录（与 shared/versions.mjs 的 versions + versionMeta.srcDir 保持同步）；
+    // docs/ 下的 md 是 prepare 生成的中间产物，dev 进程重启会刷新其 mtime，不能作为新鲜度基准
+    $srcDirs = '13.x/zh-CN 12.x/zh-CN 11.x/zh-CN 9.x/zh-CN DcatAdmin';
+    $find = "find";
+    foreach (explode(' ', $srcDirs) as $d) {
+        $find .= " $root/$d";
+    }
+    $stale = runLocally("$find -name '*.md' -newer $root/docs/.vitepress/dist/index.html 2>/dev/null | head -1");
     if ($stale !== '') {
         throw new \RuntimeException("文档比构建产物更新（如 {$stale}），请先在宿主机执行 npm run build 再部署。");
     }

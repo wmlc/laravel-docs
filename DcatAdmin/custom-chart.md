@@ -76,4 +76,4 @@ public function index()
 
 ```
 
-按照上面的方式可以引入任意图表库，多图表页面的布局，参考[视图布局](layout.md)
+按照上面的方式可以引入任意图表库，多图表页面的布局，参考[视图布局](https://learnku.com/docs/dcat-admin/1.x)

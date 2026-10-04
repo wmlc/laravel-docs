@@ -319,7 +319,7 @@ $grid->disablePagination()
 
 > {tip} 此接口只有某些特殊字段会用到，如图片、文件上传字段，当更改了图片或文件时可以根据这个接口查出的数据删除旧文件。所以如果你的表单中没有用到此类特殊字段，此接口可以返回一个空数组。
 
-```phpjie
+```php
     public function updating(Form $form)
     {
         // 获取数据主键值

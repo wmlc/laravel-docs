@@ -3,19 +3,21 @@ import { resolve, dirname } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
 export { versions } from './versions.mjs'
+import { versionMeta } from './versions.mjs'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 
 /**
- * 从 {version}/zh-CN/documentation.md 解析出 VitePress sidebar 结构。
+ * 从源目录 documentation.md 解析出 VitePress sidebar 结构。
  *
  * documentation.md 格式：
  *   - ## 分组名
- *       - [标题](/docs/{{version}}/slug)
+ *       - [标题](/docs/{{version}}/slug)   Laravel 版本
+ *       - [标题](slug.md)                  Dcat Admin 等相对路径写法（也支持 slug.md#锚点）
  *   - [标题](https://external)
  */
 export function parseSidebar(version) {
-  const docPath = resolve(__dirname, `../../../${version}/zh-CN/documentation.md`)
+  const docPath = resolve(__dirname, `../../../${versionMeta[version]?.srcDir || `${version}/zh-CN`}/documentation.md`)
   const content = readFileSync(docPath, 'utf-8')
   const sidebar = []
   let currentGroup = null
@@ -34,6 +36,13 @@ export function parseSidebar(version) {
       let link = itemMatch[2]
         .replace('{{version}}', version)
         .replace(`/docs/${version}/`, `/${version}/`)
+
+      // 相对路径写法 slug.md(#锚点) 重写为站点绝对路径 /{version}/slug(#锚点)；外链与绝对路径保持原样
+      if (!/^([a-z]+:)?\//i.test(link)) {
+        const [path, anchor] = link.split('#')
+        const slug = path.replace(/\.md$/, '')
+        link = `/${version}/${slug}` + (anchor ? `#${anchor}` : '')
+      }
 
       const item = { text, link }
       if (currentGroup) {

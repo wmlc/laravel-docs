@@ -45,8 +45,8 @@ cd /Users/wml/alidata/www/laravel-docs/deploy && dep8 deploy
 
 1. `deploy:setup` — 首次部署时创建 `releases/`、`shared/`、`.dep/` 目录结构
 2. `deploy:lock` — 加部署锁，防止并发部署
-3. `deploy:check_dist` — 产物新鲜度校验：`dist/index.html` 必须存在，且不早于任何
-   `docs/**/*.md` 源码；否则中断并提示先在宿主机 `npm run build`（防止部署旧内容）
+3. `deploy:check_dist` — 产物新鲜度校验：`dist/index.html` 必须存在，且不早于真实源文档
+   （`{13.x,12.x,11.x,9.x}/zh-CN/` 与 `DcatAdmin/`）；否则中断并提示先在宿主机 `npm run build`（防止部署旧内容）
 4. `deploy:release` — 创建新版本目录 `releases/<id>`
 5. `rsync` — 将 `docs/.vitepress/dist/` 同步到 `releases/<id>/`（只同步产物，不含源码）
 6. `deploy:symlink` — `current` 软链原子切换（nginx 无感知，不掉线）

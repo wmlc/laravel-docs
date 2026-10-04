@@ -1,5 +1,22 @@
-/** 站点支持的 Laravel 版本，按从新到旧排序。新增/移除版本只需改这里。 */
-export const versions = ['13.x', '12.x', '11.x', '9.x']
+/** 站点支持的文档版本（Laravel 各版本 + Dcat Admin），按从新到旧排序。新增/移除版本只需改这里。 */
+export const versions = ['13.x', '12.x', '11.x', '9.x', 'dcat-admin']
+
+/**
+ * 版本元数据（未配置的版本走默认规则：源目录 {version}/zh-CN）。
+ * - srcDir: 源文档目录（相对仓库根）
+ * - label:  切换器/首页展示名
+ * - title/tagline: 版本落地页 hero 文案
+ * - exclude: 不导入站点的 md 文件
+ */
+export const versionMeta = {
+  'dcat-admin': {
+    srcDir: 'DcatAdmin',
+    label: 'Dcat Admin',
+    title: '1.x 文档',
+    tagline: 'Dcat Admin 后台系统构建工具文档',
+    exclude: ['README.md', 'LICENSE.md']
+  }
+}
 
 /** 默认进入的版本 */
 export const defaultVersion = versions[0]
